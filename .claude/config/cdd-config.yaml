@@ -1,0 +1,52 @@
+# Compliance-Driven Development Configuration
+# SLA Governance Platform
+
+cdd:
+  enabled: true
+  evidence_directory: evidence/
+  require_evidence_before_merge: true
+  evidence_types:
+    - bpmn_validation_report
+    - bdd_scenarios
+    - test_results
+    - regulatory_mapping
+    - decision_log_entry
+    - governance_review
+    - security_scan
+    - code_coverage
+  quality_gates:
+    phase1:
+      gates: [prd_exists, work_items_created]
+      enforcement: advisory
+    phase2:
+      gates: [tests_pass, coverage_above_80, no_critical_vulnerabilities]
+      enforcement: blocking
+    phase3:
+      gates: [pr_approved, evidence_attached, regulatory_review]
+      enforcement: blocking
+    phase4:
+      gates: [memory_bank_updated, patterns_documented]
+      enforcement: semi-automated
+
+# Evidence posting target
+evidence_target:
+  type: jira_issue_comments
+  project: SLM
+  url: "https://agentic-sdlc.atlassian.net"
+  format: markdown
+  auto_post: true
+
+# Evidence retention
+retention:
+  active_evidence_max_files: 50
+  archive_after_days: 30
+  archive_directory: evidence/archive/
+
+# Label automation
+labels:
+  on_branch_create: ["cdd:evidence-required"]
+  on_pr_merge: ["cdd:verified"]
+
+# Compliance reporting
+reporting:
+  output_file: .cdd-compliance-report.md

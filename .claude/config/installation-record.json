@@ -1,0 +1,30 @@
+{
+  "platform": "Agentic SDLC Platform",
+  "version": "1.0.0",
+  "installedAt": "2026-03-01T00:00:00Z",
+  "project": {
+    "name": "SLA Governance Platform",
+    "key": "SLM",
+    "repo": "proth1/sla",
+    "domain": "Enterprise Software Governance"
+  },
+  "pmTool": "Jira",
+  "jira": {
+    "url": "https://agentic-sdlc.atlassian.net",
+    "projectKey": "SLM",
+    "boardId": 501
+  },
+  "vcsTool": "GitHub",
+  "github": {
+    "owner": "proth1",
+    "repo": "sla"
+  },
+  "sourcedFrom": ["rival", "kmflow", "helix"],
+  "components": {
+    "agents": 20,
+    "skills": 12,
+    "rules": 9,
+    "hooks": 8,
+    "validators": 3
+  }
+}

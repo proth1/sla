@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_ExceptionHandling" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.42.0">
+  <bpmn:collaboration id="Collaboration_ExceptionHandling">
+    <bpmn:participant id="Participant_ExceptionHandling" name="Exception &amp; Approval Handling Patterns" processRef="Process_ExceptionHandling" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_ExceptionHandling" isExecutable="false">
+    <bpmn:documentation>
+      Reference model: Exception Handling and Approval Subprocess Patterns.
+      Demonstrates: error boundary events with escalation, compensation patterns, retry logic with timer events,
+      approval subprocess with rejection loop, and escalation authority chains.
+      Use as structural reference for exception handling in SLA governance processes.
+      Key patterns: (1) Error boundary + compensation, (2) Timer retry loop, (3) Approval subprocess.
+    </bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_Exception">
+      <bpmn:lane id="Lane_Requestor" name="Requestor">
+        <bpmn:flowNodeRef>StartEvent_ExceptionRaised</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SubmitException</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ProvideAdditionalInfo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_AdditionalInfoMerge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_ExceptionApproved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_ExceptionRejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ReviewTeam" name="Review Team">
+        <bpmn:flowNodeRef>Task_InitialReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ReviewOutcome</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RequestMoreInfo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PrepareRecommendation</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ApprovalAuthority" name="Approval Authority">
+        <bpmn:flowNodeRef>CallActivity_ApprovalSubprocess</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ApprovalDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ConditionalApproval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ConditionsMerge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_FormalizeApproval</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Compensation" name="Compensation &amp; Recovery">
+        <bpmn:flowNodeRef>Task_CompensatePreviousActions</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_AuditTrailUpdate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_ExceptionClosed</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="StartEvent_ExceptionRaised" name="Exception&#10;Raised">
+      <bpmn:documentation>Exception handling lifecycle triggered when a process step cannot proceed within standard parameters. May be raised by: governance rule violation, SLA breach, compliance finding, or manual escalation.</bpmn:documentation>
+      <bpmn:outgoing>Flow_01</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_SubmitException" name="Submit Exception&#10;Request" camunda:candidateGroups="requestors">
+      <bpmn:documentation>
+        Requestor submits formal exception request with: exception type, business justification, risk assessment, compensating controls proposed, and CxO/VP sponsor attestation.
+        Inputs: exception type (DMN_ExceptionApproval input), risk level, pathway type, requested variance
+        Reference: DMN_ExceptionApproval determines authority level and required justification.
+      </bpmn:documentation>
+      <bpmn:incoming>Flow_01</bpmn:incoming>
+      <bpmn:outgoing>Flow_02</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_InitialReview" name="Initial Exception&#10;Review" camunda:candidateGroups="review-team">
+      <bpmn:documentation>
+        Review Team performs initial quality check: completeness of documentation, accuracy of risk classification, adequacy of proposed compensating controls, and sponsor validity.
+        SLA: 2 business days. Timer_InitialReviewSLA enforces.
+      </bpmn:documentation>
+      <bpmn:incoming>Flow_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_03</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="Timer_InitialReviewSLA" name="2-Day Review&#10;SLA" cancelActivity="false" attachedToRef="Task_InitialReview">
+      <bpmn:documentation>Non-interrupting SLA timer for initial review. If 2 business days elapse, escalation event fires and Review Team manager is notified.</bpmn:documentation>
+      <bpmn:outgoing>Flow_ReviewSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="Event_ReviewEscalated" name="Review&#10;Escalated">
+      <bpmn:documentation>Escalation end event for initial review SLA breach. Review Team manager takes over.</bpmn:documentation>
+      <bpmn:incoming>Flow_ReviewSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_ReviewSLAEscalate" sourceRef="Timer_InitialReviewSLA" targetRef="Event_ReviewEscalated" />
+
+    <bpmn:exclusiveGateway id="Gateway_ReviewOutcome" name="Review&#10;Outcome?">
+      <bpmn:documentation>Routes based on initial review outcome: Proceed (complete and sponsor confirmed), NeedMoreInfo (incomplete or questions), or Reject (clearly inappropriate exception request).</bpmn:documentation>
+      <bpmn:incoming>Flow_03</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReviewProceed</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ReviewNeedInfo</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ReviewReject</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_RequestMoreInfo" name="Request Additional&#10;Information" camunda:candidateGroups="review-team">
+      <bpmn:documentation>Review Team documents specific information gaps and sends formal information request to Requestor. Timer: 5 business days for Requestor response before auto-escalation.</bpmn:documentation>
+      <bpmn:incoming>Flow_ReviewNeedInfo</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToAdditionalInfo</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="Timer_InfoResponseSLA" name="5-Day Info&#10;Response SLA" cancelActivity="false" attachedToRef="Task_RequestMoreInfo">
+      <bpmn:documentation>Non-interrupting timer. If Requestor does not respond within 5 business days, the exception request is auto-closed as abandoned.</bpmn:documentation>
+      <bpmn:outgoing>Flow_InfoSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="Event_RequestAbandoned" name="Request&#10;Abandoned">
+      <bpmn:documentation>Exception request auto-closed due to no Requestor response within SLA. Audit trail entry created.</bpmn:documentation>
+      <bpmn:incoming>Flow_InfoSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_InfoSLAEscalate" sourceRef="Timer_InfoResponseSLA" targetRef="Event_RequestAbandoned" />
+
+    <bpmn:userTask id="Task_ProvideAdditionalInfo" name="Provide Additional&#10;Information" camunda:candidateGroups="requestors">
+      <bpmn:documentation>Requestor provides the requested additional information, clarifications, or supplementary evidence. Retry loop: returns to Initial Review after information is provided.</bpmn:documentation>
+      <bpmn:incoming>Flow_ToAdditionalInfo</bpmn:incoming>
+      <bpmn:outgoing>Flow_RetryReview</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_AdditionalInfoMerge">
+      <bpmn:documentation>Merge gateway: converges initial submission path and additional information retry path before initial review.</bpmn:documentation>
+      <bpmn:incoming>Flow_01a</bpmn:incoming>
+      <bpmn:incoming>Flow_RetryReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_02</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_PrepareRecommendation" name="Prepare Review&#10;Recommendation" camunda:candidateGroups="review-team">
+      <bpmn:documentation>Review Team prepares formal recommendation package for Approval Authority: exception summary, risk rating, compensating controls adequacy assessment, and recommended approval conditions.</bpmn:documentation>
+      <bpmn:incoming>Flow_ReviewProceed</bpmn:incoming>
+      <bpmn:outgoing>Flow_04</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:callActivity id="CallActivity_ApprovalSubprocess" name="Authority&#10;Approval Process" calledElement="Process_AuthorityApproval">
+      <bpmn:documentation>
+        Calls the authority-level approval sub-process. The called process is determined by DMN_ExceptionApproval output:
+        - Manager: 4-hour SLA, single approver
+        - Director: 8-hour SLA, single approver
+        - VP: 24-hour SLA, dual approvers
+        - Board: 48-hour SLA, quorum vote required
+        The sub-process returns: approvalDecision (Approved/Rejected/ConditionalApproval), approvalConditions (list), approverName, approvalTimestamp.
+      </bpmn:documentation>
+      <bpmn:incoming>Flow_04</bpmn:incoming>
+      <bpmn:outgoing>Flow_05</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:boundaryEvent id="Error_ApprovalTimeout" name="Approval&#10;Timeout Error" attachedToRef="CallActivity_ApprovalSubprocess">
+      <bpmn:documentation>Interrupting error boundary event. Catches approval process timeout (approver unavailable, quorum not achieved). Routes to compensation and escalation.</bpmn:documentation>
+      <bpmn:outgoing>Flow_ApprovalError</bpmn:outgoing>
+      <bpmn:errorEventDefinition errorRef="Error_ApprovalTimeoutDef" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_ApprovalError" sourceRef="Error_ApprovalTimeout" targetRef="Task_CompensatePreviousActions" />
+
+    <bpmn:exclusiveGateway id="Gateway_ApprovalDecision" name="Approval&#10;Decision?">
+      <bpmn:documentation>Routes based on authority approval decision: Approved (exception granted), ConditionalApproval (conditions must be met), Rejected (exception denied).</bpmn:documentation>
+      <bpmn:incoming>Flow_05</bpmn:incoming>
+      <bpmn:outgoing>Flow_Approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Conditional</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Rejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_ConditionalApproval" name="Define Approval&#10;Conditions" camunda:candidateGroups="approval-authority">
+      <bpmn:documentation>Approval Authority documents specific conditions that must be met for the exception to remain valid: timeline, compensating controls to implement, monitoring requirements, re-review date.</bpmn:documentation>
+      <bpmn:incoming>Flow_Conditional</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConditionsMerge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_ConditionsMerge">
+      <bpmn:documentation>Merge gateway: converges clean approval path and conditional approval path before formalization.</bpmn:documentation>
+      <bpmn:incoming>Flow_Approved</bpmn:incoming>
+      <bpmn:incoming>Flow_ConditionsMerge</bpmn:incoming>
+      <bpmn:outgoing>Flow_06</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_FormalizeApproval" name="Formalize Exception&#10;Approval" camunda:candidateGroups="approval-authority">
+      <bpmn:documentation>Approval Authority creates formal exception record: approval decision, conditions, validity period, monitoring requirements, and renewal date. Exception ID assigned and logged in governance register.</bpmn:documentation>
+      <bpmn:incoming>Flow_06</bpmn:incoming>
+      <bpmn:outgoing>Flow_07</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="Task_AuditTrailUpdate" name="Update Audit Trail&#10;&amp; Exception Register">
+      <bpmn:documentation>
+        Updates governance audit trail: exception ID, approval chain, decision, conditions, timestamps, and all document references.
+        Reference: OCC 2023-17 §III — evidence requirements; SOX §404 — control evidence.
+      </bpmn:documentation>
+      <bpmn:incoming>Flow_07</bpmn:incoming>
+      <bpmn:incoming>Flow_CompensationComplete</bpmn:incoming>
+      <bpmn:outgoing>Flow_08</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:userTask id="Task_CompensatePreviousActions" name="Compensate Previous&#10;Process Actions" camunda:candidateGroups="review-team">
+      <bpmn:documentation>
+        Compensation task: when approval process errors out or exception is rejected after partial completion, this task reverses actions taken in anticipation of approval.
+        Examples: cancel vendor notifications sent, reverse preliminary access grants, undo configuration changes.
+        Also handles approval timeout by routing to higher authority.
+      </bpmn:documentation>
+      <bpmn:incoming>Flow_ApprovalError</bpmn:incoming>
+      <bpmn:incoming>Flow_Rejected</bpmn:incoming>
+      <bpmn:outgoing>Flow_CompensationComplete</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="EndEvent_ExceptionApproved" name="Exception&#10;Approved">
+      <bpmn:documentation>Terminal success state. Exception is formally approved, conditions documented, and governance register updated. Requestor notified with approval record.</bpmn:documentation>
+      <bpmn:incoming>Flow_ToApproved</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_ExceptionRejected" name="Exception&#10;Rejected">
+      <bpmn:documentation>Terminal rejection state. Exception denied. Requestor notified with rejection rationale. Compensating actions completed. Standard process requirements remain in force.</bpmn:documentation>
+      <bpmn:incoming>Flow_ToRejected</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_ExceptionClosed" name="Exception&#10;Closed">
+      <bpmn:documentation>Terminal closure state. Audit trail updated. Exception record finalized (approved or rejected with compensation). Process complete.</bpmn:documentation>
+      <bpmn:incoming>Flow_08</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:error id="Error_ApprovalTimeoutDef" name="Approval Timeout" errorCode="APPROVAL_TIMEOUT" />
+
+    <bpmn:sequenceFlow id="Flow_01" sourceRef="StartEvent_ExceptionRaised" targetRef="Task_SubmitException" />
+    <bpmn:sequenceFlow id="Flow_01a" sourceRef="Task_SubmitException" targetRef="Gateway_AdditionalInfoMerge" />
+    <bpmn:sequenceFlow id="Flow_ToAdditionalInfo" sourceRef="Task_RequestMoreInfo" targetRef="Task_ProvideAdditionalInfo" />
+    <bpmn:sequenceFlow id="Flow_RetryReview" sourceRef="Task_ProvideAdditionalInfo" targetRef="Gateway_AdditionalInfoMerge" />
+    <bpmn:sequenceFlow id="Flow_02" sourceRef="Gateway_AdditionalInfoMerge" targetRef="Task_InitialReview" />
+    <bpmn:sequenceFlow id="Flow_03" sourceRef="Task_InitialReview" targetRef="Gateway_ReviewOutcome" />
+    <bpmn:sequenceFlow id="Flow_ReviewProceed" name="Proceed" sourceRef="Gateway_ReviewOutcome" targetRef="Task_PrepareRecommendation" />
+    <bpmn:sequenceFlow id="Flow_ReviewNeedInfo" name="Need Info" sourceRef="Gateway_ReviewOutcome" targetRef="Task_RequestMoreInfo" />
+    <bpmn:sequenceFlow id="Flow_ReviewReject" name="Reject" sourceRef="Gateway_ReviewOutcome" targetRef="Task_CompensatePreviousActions" />
+    <bpmn:sequenceFlow id="Flow_04" sourceRef="Task_PrepareRecommendation" targetRef="CallActivity_ApprovalSubprocess" />
+    <bpmn:sequenceFlow id="Flow_05" sourceRef="CallActivity_ApprovalSubprocess" targetRef="Gateway_ApprovalDecision" />
+    <bpmn:sequenceFlow id="Flow_Approved" name="Approved" sourceRef="Gateway_ApprovalDecision" targetRef="Gateway_ConditionsMerge" />
+    <bpmn:sequenceFlow id="Flow_Conditional" name="Conditional" sourceRef="Gateway_ApprovalDecision" targetRef="Task_ConditionalApproval" />
+    <bpmn:sequenceFlow id="Flow_Rejected" name="Rejected" sourceRef="Gateway_ApprovalDecision" targetRef="Task_CompensatePreviousActions" />
+    <bpmn:sequenceFlow id="Flow_ConditionsMerge" sourceRef="Task_ConditionalApproval" targetRef="Gateway_ConditionsMerge" />
+    <bpmn:sequenceFlow id="Flow_06" sourceRef="Gateway_ConditionsMerge" targetRef="Task_FormalizeApproval" />
+    <bpmn:sequenceFlow id="Flow_07" sourceRef="Task_FormalizeApproval" targetRef="Task_AuditTrailUpdate" />
+    <bpmn:sequenceFlow id="Flow_CompensationComplete" sourceRef="Task_CompensatePreviousActions" targetRef="Task_AuditTrailUpdate" />
+    <bpmn:sequenceFlow id="Flow_08" sourceRef="Task_AuditTrailUpdate" targetRef="EndEvent_ExceptionClosed" />
+    <bpmn:sequenceFlow id="Flow_ToApproved" sourceRef="Task_FormalizeApproval" targetRef="EndEvent_ExceptionApproved" />
+    <bpmn:sequenceFlow id="Flow_ToRejected" sourceRef="Task_CompensatePreviousActions" targetRef="EndEvent_ExceptionRejected" />
+    <bpmn:sequenceFlow id="Flow_ReviewRejectCompensate" name="Early Reject" sourceRef="Gateway_ReviewOutcome" targetRef="Task_CompensatePreviousActions" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_ExceptionHandling">
+    <bpmndi:BPMNPlane id="BPMNPlane_ExceptionHandling" bpmnElement="Collaboration_ExceptionHandling">
+      <bpmndi:BPMNShape id="Participant_ExceptionHandling_di" bpmnElement="Participant_ExceptionHandling" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="1800" height="880" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Requestor_di" bpmnElement="Lane_Requestor" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="1770" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ReviewTeam_di" bpmnElement="Lane_ReviewTeam" isHorizontal="true">
+        <dc:Bounds x="185" y="247" width="1770" height="210" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ApprovalAuthority_di" bpmnElement="Lane_ApprovalAuthority" isHorizontal="true">
+        <dc:Bounds x="185" y="457" width="1770" height="230" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Compensation_di" bpmnElement="Lane_Compensation" isHorizontal="true">
+        <dc:Bounds x="185" y="687" width="1770" height="240" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="StartEvent_ExceptionRaised_di" bpmnElement="StartEvent_ExceptionRaised">
+        <dc:Bounds x="247" y="129" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="238" y="172" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SubmitException_di" bpmnElement="Task_SubmitException">
+        <dc:Bounds x="335" y="107" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AdditionalInfoMerge_di" bpmnElement="Gateway_AdditionalInfoMerge" isMarkerVisible="true">
+        <dc:Bounds x="487" y="122" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ProvideAdditionalInfo_di" bpmnElement="Task_ProvideAdditionalInfo">
+        <dc:Bounds x="791" y="107" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ExceptionApproved_di" bpmnElement="EndEvent_ExceptionApproved">
+        <dc:Bounds x="1557" y="129" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1545" y="172" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ExceptionRejected_di" bpmnElement="EndEvent_ExceptionRejected">
+        <dc:Bounds x="1757" y="129" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1744" y="172" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_InitialReview_di" bpmnElement="Task_InitialReview">
+        <dc:Bounds x="639" y="312" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_InitialReviewSLA_di" bpmnElement="Timer_InitialReviewSLA">
+        <dc:Bounds x="703" y="374" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="747" y="378" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ReviewEscalated_di" bpmnElement="Event_ReviewEscalated">
+        <dc:Bounds x="761" y="384" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="745" y="427" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ReviewOutcome_di" bpmnElement="Gateway_ReviewOutcome" isMarkerVisible="true">
+        <dc:Bounds x="791" y="327" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="787" y="297" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RequestMoreInfo_di" bpmnElement="Task_RequestMoreInfo">
+        <dc:Bounds x="943" y="312" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_InfoResponseSLA_di" bpmnElement="Timer_InfoResponseSLA">
+        <dc:Bounds x="1007" y="374" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1051" y="378" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_RequestAbandoned_di" bpmnElement="Event_RequestAbandoned">
+        <dc:Bounds x="1065" y="384" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1047" y="427" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PrepareRecommendation_di" bpmnElement="Task_PrepareRecommendation">
+        <dc:Bounds x="1095" y="312" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="CallActivity_ApprovalSubprocess_di" bpmnElement="CallActivity_ApprovalSubprocess">
+        <dc:Bounds x="1247" y="532" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Error_ApprovalTimeout_di" bpmnElement="Error_ApprovalTimeout">
+        <dc:Bounds x="1247" y="594" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1205" y="618" width="56" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ApprovalDecision_di" bpmnElement="Gateway_ApprovalDecision" isMarkerVisible="true">
+        <dc:Bounds x="1399" y="547" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1393" y="517" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConditionalApproval_di" bpmnElement="Task_ConditionalApproval">
+        <dc:Bounds x="1501" y="532" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ConditionsMerge_di" bpmnElement="Gateway_ConditionsMerge" isMarkerVisible="true">
+        <dc:Bounds x="1553" y="547" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FormalizeApproval_di" bpmnElement="Task_FormalizeApproval">
+        <dc:Bounds x="1655" y="532" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_CompensatePreviousActions_di" bpmnElement="Task_CompensatePreviousActions">
+        <dc:Bounds x="1399" y="762" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AuditTrailUpdate_di" bpmnElement="Task_AuditTrailUpdate">
+        <dc:Bounds x="1557" y="762" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ExceptionClosed_di" bpmnElement="EndEvent_ExceptionClosed">
+        <dc:Bounds x="1709" y="784" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1695" y="827" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_01_di" bpmnElement="Flow_01">
+        <di:waypoint x="283" y="147" />
+        <di:waypoint x="335" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01a_di" bpmnElement="Flow_01a">
+        <di:waypoint x="435" y="147" />
+        <di:waypoint x="487" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02_di" bpmnElement="Flow_02">
+        <di:waypoint x="537" y="147" />
+        <di:waypoint x="639" y="147" />
+        <di:waypoint x="639" y="312" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03_di" bpmnElement="Flow_03">
+        <di:waypoint x="739" y="352" />
+        <di:waypoint x="791" y="352" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReviewSLAEscalate_di" bpmnElement="Flow_ReviewSLAEscalate">
+        <di:waypoint x="721" y="410" />
+        <di:waypoint x="721" y="427" />
+        <di:waypoint x="761" y="402" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReviewProceed_di" bpmnElement="Flow_ReviewProceed">
+        <di:waypoint x="841" y="352" />
+        <di:waypoint x="1095" y="352" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="936" y="334" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReviewNeedInfo_di" bpmnElement="Flow_ReviewNeedInfo">
+        <di:waypoint x="816" y="377" />
+        <di:waypoint x="816" y="430" />
+        <di:waypoint x="943" y="430" />
+        <di:waypoint x="943" y="392" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="848" y="412" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReviewReject_di" bpmnElement="Flow_ReviewReject">
+        <di:waypoint x="816" y="377" />
+        <di:waypoint x="816" y="802" />
+        <di:waypoint x="1399" y="802" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="823" y="580" width="33" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToAdditionalInfo_di" bpmnElement="Flow_ToAdditionalInfo">
+        <di:waypoint x="993" y="312" />
+        <di:waypoint x="993" y="147" />
+        <di:waypoint x="791" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_RetryReview_di" bpmnElement="Flow_RetryReview">
+        <di:waypoint x="791" y="147" />
+        <di:waypoint x="512" y="147" />
+        <di:waypoint x="512" y="122" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_InfoSLAEscalate_di" bpmnElement="Flow_InfoSLAEscalate">
+        <di:waypoint x="1025" y="410" />
+        <di:waypoint x="1025" y="427" />
+        <di:waypoint x="1065" y="402" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04_di" bpmnElement="Flow_04">
+        <di:waypoint x="1145" y="352" />
+        <di:waypoint x="1297" y="352" />
+        <di:waypoint x="1297" y="532" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05_di" bpmnElement="Flow_05">
+        <di:waypoint x="1347" y="572" />
+        <di:waypoint x="1399" y="572" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ApprovalError_di" bpmnElement="Flow_ApprovalError">
+        <di:waypoint x="1265" y="630" />
+        <di:waypoint x="1265" y="802" />
+        <di:waypoint x="1399" y="802" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Approved_di" bpmnElement="Flow_Approved">
+        <di:waypoint x="1449" y="572" />
+        <di:waypoint x="1553" y="572" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1471" y="554" width="54" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Conditional_di" bpmnElement="Flow_Conditional">
+        <di:waypoint x="1424" y="597" />
+        <di:waypoint x="1424" y="640" />
+        <di:waypoint x="1551" y="640" />
+        <di:waypoint x="1551" y="612" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1432" y="612" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Rejected_di" bpmnElement="Flow_Rejected">
+        <di:waypoint x="1424" y="597" />
+        <di:waypoint x="1424" y="762" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1432" y="672" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ConditionsMerge_di" bpmnElement="Flow_ConditionsMerge">
+        <di:waypoint x="1601" y="572" />
+        <di:waypoint x="1553" y="572" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06_di" bpmnElement="Flow_06">
+        <di:waypoint x="1603" y="572" />
+        <di:waypoint x="1655" y="572" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07_di" bpmnElement="Flow_07">
+        <di:waypoint x="1705" y="612" />
+        <di:waypoint x="1705" y="802" />
+        <di:waypoint x="1557" y="802" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToApproved_di" bpmnElement="Flow_ToApproved">
+        <di:waypoint x="1705" y="532" />
+        <di:waypoint x="1705" y="147" />
+        <di:waypoint x="1557" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CompensationComplete_di" bpmnElement="Flow_CompensationComplete">
+        <di:waypoint x="1499" y="802" />
+        <di:waypoint x="1557" y="802" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToRejected_di" bpmnElement="Flow_ToRejected">
+        <di:waypoint x="1499" y="762" />
+        <di:waypoint x="1499" y="147" />
+        <di:waypoint x="1757" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08_di" bpmnElement="Flow_08">
+        <di:waypoint x="1657" y="802" />
+        <di:waypoint x="1709" y="802" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

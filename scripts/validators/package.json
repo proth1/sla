@@ -1,0 +1,15 @@
+{
+  "name": "sla-bpmn-validators",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "BPMN 2.0 validators for SLA Governance Platform",
+  "scripts": {
+    "validate": "node bpmn-validator.js",
+    "check-elements": "node element-checker.js",
+    "check-overlaps": "node visual-overlap-checker.js",
+    "validate-all": "bash validate-bpmn.sh"
+  },
+  "dependencies": {
+    "bpmn-moddle": "^9.0.1"
+  }
+}

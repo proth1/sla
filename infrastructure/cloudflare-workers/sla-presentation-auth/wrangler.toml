@@ -1,0 +1,19 @@
+name = "sla-presentation-auth"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Protected URL: https://sla.agentic-innovations.com
+#
+# This worker protects the SLA Governance presentation with:
+# - Descope OTP authentication
+# - SLA Governance branding
+# - Email restrictions: proth1@gmail.com, @agentic-innovations.com
+
+[vars]
+DESCOPE_PROJECT_ID = "P3AN0dLWf9ZTyBi3vF6xaDbThO8q"
+PAGES_URL = "https://sla-presentation.pages.dev"
+WORKER_DOMAIN = "https://sla.agentic-innovations.com"
+
+# Email restrictions are hardcoded in src/index.ts:
+# - ALLOWED_EMAILS = ['proth1@gmail.com']
+# - ALLOWED_DOMAINS = ['agentic-innovations.com']

@@ -1,0 +1,19 @@
+{
+  "name": "sla-presentation-auth",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Descope OTP auth worker for SLA Governance presentation",
+  "devDependencies": {
+    "wrangler": "^4.65.0"
+  },
+  "dependencies": {
+    "jose": "^6.1.3"
+  }
+}

@@ -1,0 +1,84 @@
+# Project Management Tool Configuration
+# SLA Governance Platform - Jira Integration
+
+project_management_tool: "Jira"
+jira:
+  url: "https://agentic-sdlc.atlassian.net"
+  project_key: "SLM"
+  board_id: 501
+  branch_format: "feature/SLM-{id}-{description}"
+  default_issue_type: "story"
+
+  # Issue types
+  issue_types:
+    - epic
+    - story
+    - task
+    - bug
+    - sub-task
+
+  # Statuses
+  statuses:
+    - "Backlog"
+    - "To Do"
+    - "In Progress"
+    - "In Review"
+    - "Done"
+
+  # Domain labels
+  labels:
+    types:
+      - "type:story"
+      - "type:task"
+      - "type:bug"
+      - "type:epic"
+      - "type:spike"
+    priorities:
+      - "P0-critical"
+      - "P1-high"
+      - "P2-medium"
+      - "P3-low"
+    domains:
+      - "domain:bpmn"
+      - "domain:dmn"
+      - "domain:tprm"
+      - "domain:ai-governance"
+      - "domain:pdlc"
+      - "domain:presentation"
+      - "domain:governance"
+      - "domain:regulatory"
+
+github:
+  owner: "proth1"
+  repo: "sla"
+
+# PR linking
+pr_linking:
+  format: "Resolves: SLM-{id}"
+  require_issue_ref: true
+  keywords:
+    - "Resolves"
+    - "Closes"
+    - "Fixes"
+
+# Status workflow
+status_workflows:
+  enabled: true
+  transitions:
+    on_branch_create: "In Progress"
+    on_pr_create: "In Review"
+    on_pr_merge: "Done"
+
+# BDD enforcement
+bdd:
+  enabled: true
+  require_gherkin: true
+  acceptance_criteria_heading: "## Acceptance Criteria"
+
+# VCS Provider
+vcs_provider: "github"
+
+# PM Tool Lock
+_installation_locked: true
+_installed_at: "2026-03-01T00:00:00Z"
+_platform_version: "1.0.0"

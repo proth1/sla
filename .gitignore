@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Claude Code
+.claude/memory-bank/archive/
+.claude/memory-bank/.session-state.json
+
+# Evidence (active evidence is ephemeral)
+evidence/active/
+
+# Build artifacts
+dist/
+build/
+
+# Pipeline markers
+.pipeline-passed
+.pipeline-report.md
+.cdd-compliance-report.md

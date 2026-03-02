@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="SLA_UW_Decision_Rules"
+             name="SLA Governance Platform - Governance Pathway Decision Rules"
+             namespace="http://sla-governance.example.com/dmn">
+
+  <!--
+    SLA Governance Platform - Governance Pathway Underwriting Decision Rules
+    Reference DMN model demonstrating UNIQUE hit policy, multi-input decision tables,
+    and authority routing patterns used in the SLA governance lifecycle.
+    Based on: DMN_PathwaySelection and DMN_EscalationAuthority tables.
+    Camunda 7 compatible namespace.
+  -->
+
+  <decision id="GovernancePathwaySelection" name="Governance Pathway Selection">
+    <decisionTable id="dt_pathway_selection" hitPolicy="UNIQUE">
+      <input id="input_risk_score" label="Risk Score">
+        <inputExpression id="ie_risk_score" typeRef="string">
+          <text>riskLevel</text>
+        </inputExpression>
+        <inputValues id="iv_risk_score">
+          <text>"Low","Medium","High","Critical"</text>
+        </inputValues>
+      </input>
+      <input id="input_contract_value" label="Contract Value (USD)">
+        <inputExpression id="ie_contract_value" typeRef="double">
+          <text>requestedAmount</text>
+        </inputExpression>
+      </input>
+      <input id="input_data_class" label="Data Classification">
+        <inputExpression id="ie_data_class" typeRef="string">
+          <text>dataClassification</text>
+        </inputExpression>
+        <inputValues id="iv_data_class">
+          <text>"Public","Internal","Confidential","Restricted"</text>
+        </inputValues>
+      </input>
+      <input id="input_urgency" label="Urgency Flag">
+        <inputExpression id="ie_urgency" typeRef="boolean">
+          <text>urgencyFlag</text>
+        </inputExpression>
+      </input>
+      <output id="output_pathway" label="Selected Pathway" typeRef="string" />
+      <output id="output_approval_authority" label="Approval Authority" typeRef="string" />
+      <output id="output_sla_days" label="Target SLA (Business Days)" typeRef="integer" />
+      <output id="output_phases" label="Required Phases" typeRef="string" />
+
+      <!-- Emergency pathway: urgency overrides normal classification -->
+      <rule id="rule_emergency">
+        <description>Emergency pathway: urgent business need with CxO sponsorship — all risk levels eligible</description>
+        <inputEntry id="ie1_r1"><text>-</text></inputEntry>
+        <inputEntry id="ie2_r1"><text>-</text></inputEntry>
+        <inputEntry id="ie3_r1"><text>-</text></inputEntry>
+        <inputEntry id="ie4_r1"><text>true</text></inputEntry>
+        <outputEntry id="oe1_r1"><text>"emergency"</text></outputEntry>
+        <outputEntry id="oe2_r1"><text>"CxO"</text></outputEntry>
+        <outputEntry id="oe3_r1"><text>5</text></outputEntry>
+        <outputEntry id="oe4_r1"><text>"P0,P1,P4,P5"</text></outputEntry>
+      </rule>
+
+      <!-- Fast-Track pathway: Low risk, small value, public/internal data, no urgency -->
+      <rule id="rule_fast_track_low_value">
+        <description>Fast-Track: Low risk, under $100K, non-sensitive data — expedited governance</description>
+        <inputEntry id="ie1_r2"><text>"Low"</text></inputEntry>
+        <inputEntry id="ie2_r2"><text>&lt; 100000</text></inputEntry>
+        <inputEntry id="ie3_r2"><text>"Public","Internal"</text></inputEntry>
+        <inputEntry id="ie4_r2"><text>false</text></inputEntry>
+        <outputEntry id="oe1_r2"><text>"fast-track"</text></outputEntry>
+        <outputEntry id="oe2_r2"><text>"Manager"</text></outputEntry>
+        <outputEntry id="oe3_r2"><text>10</text></outputEntry>
+        <outputEntry id="oe4_r2"><text>"P0,P1,P4,P5"</text></outputEntry>
+      </rule>
+
+      <!-- Standard pathway: Medium risk OR Low risk with PII OR medium value -->
+      <rule id="rule_standard_medium_risk">
+        <description>Standard: Medium risk — full lifecycle governance, Director approval</description>
+        <inputEntry id="ie1_r3"><text>"Medium"</text></inputEntry>
+        <inputEntry id="ie2_r3"><text>[100000..500000]</text></inputEntry>
+        <inputEntry id="ie3_r3"><text>"Public","Internal","Confidential"</text></inputEntry>
+        <inputEntry id="ie4_r3"><text>false</text></inputEntry>
+        <outputEntry id="oe1_r3"><text>"standard"</text></outputEntry>
+        <outputEntry id="oe2_r3"><text>"Director"</text></outputEntry>
+        <outputEntry id="oe3_r3"><text>60</text></outputEntry>
+        <outputEntry id="oe4_r3"><text>"P0,P1,P2,P3,P4,P5,P6"</text></outputEntry>
+      </rule>
+
+      <!-- Standard pathway: Low risk but with Confidential data -->
+      <rule id="rule_standard_low_confidential">
+        <description>Standard: Low risk but Confidential data classification triggers standard pathway</description>
+        <inputEntry id="ie1_r4"><text>"Low"</text></inputEntry>
+        <inputEntry id="ie2_r4"><text>-</text></inputEntry>
+        <inputEntry id="ie3_r4"><text>"Confidential"</text></inputEntry>
+        <inputEntry id="ie4_r4"><text>false</text></inputEntry>
+        <outputEntry id="oe1_r4"><text>"standard"</text></outputEntry>
+        <outputEntry id="oe2_r4"><text>"Director"</text></outputEntry>
+        <outputEntry id="oe3_r4"><text>60</text></outputEntry>
+        <outputEntry id="oe4_r4"><text>"P0,P1,P2,P3,P4,P5,P6"</text></outputEntry>
+      </rule>
+
+      <!-- Standard pathway: Medium risk, small value -->
+      <rule id="rule_standard_medium_small">
+        <description>Standard: Medium risk, small contract value — still requires full lifecycle</description>
+        <inputEntry id="ie1_r5"><text>"Medium"</text></inputEntry>
+        <inputEntry id="ie2_r5"><text>&lt; 100000</text></inputEntry>
+        <inputEntry id="ie3_r5"><text>"Confidential","Restricted"</text></inputEntry>
+        <inputEntry id="ie4_r5"><text>false</text></inputEntry>
+        <outputEntry id="oe1_r5"><text>"standard"</text></outputEntry>
+        <outputEntry id="oe2_r5"><text>"Director"</text></outputEntry>
+        <outputEntry id="oe3_r5"><text>60</text></outputEntry>
+        <outputEntry id="oe4_r5"><text>"P0,P1,P2,P3,P4,P5,P6"</text></outputEntry>
+      </rule>
+
+      <!-- Enhanced pathway: High risk -->
+      <rule id="rule_enhanced_high_risk">
+        <description>Enhanced: High risk — VP/CxO and Governance Board approval, extended SLA</description>
+        <inputEntry id="ie1_r6"><text>"High"</text></inputEntry>
+        <inputEntry id="ie2_r6"><text>-</text></inputEntry>
+        <inputEntry id="ie3_r6"><text>-</text></inputEntry>
+        <inputEntry id="ie4_r6"><text>false</text></inputEntry>
+        <outputEntry id="oe1_r6"><text>"enhanced"</text></outputEntry>
+        <outputEntry id="oe2_r6"><text>"VP/CxO+Board"</text></outputEntry>
+        <outputEntry id="oe3_r6"><text>120</text></outputEntry>
+        <outputEntry id="oe4_r6"><text>"P0,P1,P2,P3,P4,P5,P6"</text></outputEntry>
+      </rule>
+
+      <!-- Enhanced pathway: Critical risk -->
+      <rule id="rule_enhanced_critical">
+        <description>Enhanced: Critical risk — mandatory Governance Board vote, longest SLA</description>
+        <inputEntry id="ie1_r7"><text>"Critical"</text></inputEntry>
+        <inputEntry id="ie2_r7"><text>-</text></inputEntry>
+        <inputEntry id="ie3_r7"><text>-</text></inputEntry>
+        <inputEntry id="ie4_r7"><text>false</text></inputEntry>
+        <outputEntry id="oe1_r7"><text>"enhanced"</text></outputEntry>
+        <outputEntry id="oe2_r7"><text>"Board"</text></outputEntry>
+        <outputEntry id="oe3_r7"><text>120</text></outputEntry>
+        <outputEntry id="oe4_r7"><text>"P0,P1,P2,P3,P4,P5,P6"</text></outputEntry>
+      </rule>
+
+      <!-- Enhanced pathway: Any risk with Restricted data and large contract -->
+      <rule id="rule_enhanced_restricted_large">
+        <description>Enhanced: Restricted data (PII/PHI) with contract over $500K — enhanced controls mandatory</description>
+        <inputEntry id="ie1_r8"><text>"Medium","High","Critical"</text></inputEntry>
+        <inputEntry id="ie2_r8"><text>&gt; 500000</text></inputEntry>
+        <inputEntry id="ie3_r8"><text>"Restricted"</text></inputEntry>
+        <inputEntry id="ie4_r8"><text>false</text></inputEntry>
+        <outputEntry id="oe1_r8"><text>"enhanced"</text></outputEntry>
+        <outputEntry id="oe2_r8"><text>"VP/CxO+Board"</text></outputEntry>
+        <outputEntry id="oe3_r8"><text>120</text></outputEntry>
+        <outputEntry id="oe4_r8"><text>"P0,P1,P2,P3,P4,P5,P6"</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+
+  <decision id="EscalationApprovalAuthority" name="Escalation Approval Authority">
+    <decisionTable id="dt_escalation_authority" hitPolicy="UNIQUE">
+      <input id="input_escalation_type" label="Escalation Type">
+        <inputExpression id="ie_esc_type" typeRef="string">
+          <text>escalationType</text>
+        </inputExpression>
+        <inputValues id="iv_esc_type">
+          <text>"SLA_BREACH","COMPLIANCE_EXCEPTION","BUDGET_OVERRIDE","POLICY_EXCEPTION","RISK_OVERRIDE","VENDOR_EXCEPTION"</text>
+        </inputValues>
+      </input>
+      <input id="input_pathway_type" label="Governance Pathway">
+        <inputExpression id="ie_pathway_type" typeRef="string">
+          <text>pathwayType</text>
+        </inputExpression>
+        <inputValues id="iv_pathway_type">
+          <text>"fast-track","standard","enhanced","emergency"</text>
+        </inputValues>
+      </input>
+      <input id="input_financial_impact" label="Financial Impact (USD)">
+        <inputExpression id="ie_financial_impact" typeRef="double">
+          <text>financialImpact</text>
+        </inputExpression>
+      </input>
+      <output id="output_authority" label="Required Authority" typeRef="string" />
+      <output id="output_sla_hours" label="SLA Hours" typeRef="integer" />
+      <output id="output_required_docs" label="Required Documentation" typeRef="string" />
+
+      <!-- SLA breach on fast-track: Manager can resolve -->
+      <rule id="rule_sla_fast_track">
+        <description>SLA breach on fast-track pathway — Manager authority sufficient</description>
+        <inputEntry id="ie1_ea1"><text>"SLA_BREACH"</text></inputEntry>
+        <inputEntry id="ie2_ea1"><text>"fast-track"</text></inputEntry>
+        <inputEntry id="ie3_ea1"><text>-</text></inputEntry>
+        <outputEntry id="oe1_ea1"><text>"Manager"</text></outputEntry>
+        <outputEntry id="oe2_ea1"><text>4</text></outputEntry>
+        <outputEntry id="oe3_ea1"><text>"sla-breach-notification,remediation-plan"</text></outputEntry>
+      </rule>
+
+      <!-- SLA breach on standard pathway: Director required -->
+      <rule id="rule_sla_standard">
+        <description>SLA breach on standard pathway — Director authority required</description>
+        <inputEntry id="ie1_ea2"><text>"SLA_BREACH"</text></inputEntry>
+        <inputEntry id="ie2_ea2"><text>"standard"</text></inputEntry>
+        <inputEntry id="ie3_ea2"><text>-</text></inputEntry>
+        <outputEntry id="oe1_ea2"><text>"Director"</text></outputEntry>
+        <outputEntry id="oe2_ea2"><text>8</text></outputEntry>
+        <outputEntry id="oe3_ea2"><text>"sla-breach-notification,root-cause-analysis,remediation-plan"</text></outputEntry>
+      </rule>
+
+      <!-- SLA breach on enhanced pathway: VP required -->
+      <rule id="rule_sla_enhanced">
+        <description>SLA breach on enhanced pathway — VP/CxO authority required</description>
+        <inputEntry id="ie1_ea3"><text>"SLA_BREACH"</text></inputEntry>
+        <inputEntry id="ie2_ea3"><text>"enhanced","emergency"</text></inputEntry>
+        <inputEntry id="ie3_ea3"><text>-</text></inputEntry>
+        <outputEntry id="oe1_ea3"><text>"VP/CxO"</text></outputEntry>
+        <outputEntry id="oe2_ea3"><text>4</text></outputEntry>
+        <outputEntry id="oe3_ea3"><text>"sla-breach-notification,root-cause-analysis,remediation-plan,board-notification"</text></outputEntry>
+      </rule>
+
+      <!-- Compliance exception: always Director minimum -->
+      <rule id="rule_compliance_exception">
+        <description>Compliance exception — Director minimum regardless of pathway</description>
+        <inputEntry id="ie1_ea4"><text>"COMPLIANCE_EXCEPTION"</text></inputEntry>
+        <inputEntry id="ie2_ea4"><text>"fast-track","standard"</text></inputEntry>
+        <inputEntry id="ie3_ea4"><text>-</text></inputEntry>
+        <outputEntry id="oe1_ea4"><text>"Director"</text></outputEntry>
+        <outputEntry id="oe2_ea4"><text>24</text></outputEntry>
+        <outputEntry id="oe3_ea4"><text>"compliance-exception-request,legal-review,risk-assessment"</text></outputEntry>
+      </rule>
+
+      <!-- Compliance exception on enhanced: VP required -->
+      <rule id="rule_compliance_exception_enhanced">
+        <description>Compliance exception on enhanced pathway — VP/CxO required with Board notification</description>
+        <inputEntry id="ie1_ea5"><text>"COMPLIANCE_EXCEPTION"</text></inputEntry>
+        <inputEntry id="ie2_ea5"><text>"enhanced","emergency"</text></inputEntry>
+        <inputEntry id="ie3_ea5"><text>-</text></inputEntry>
+        <outputEntry id="oe1_ea5"><text>"VP/CxO"</text></outputEntry>
+        <outputEntry id="oe2_ea5"><text>8</text></outputEntry>
+        <outputEntry id="oe3_ea5"><text>"compliance-exception-request,legal-review,risk-assessment,board-notification"</text></outputEntry>
+      </rule>
+
+      <!-- Budget override under $50K -->
+      <rule id="rule_budget_small">
+        <description>Budget override under $50K — Manager authority</description>
+        <inputEntry id="ie1_ea6"><text>"BUDGET_OVERRIDE"</text></inputEntry>
+        <inputEntry id="ie2_ea6"><text>-</text></inputEntry>
+        <inputEntry id="ie3_ea6"><text>&lt; 50000</text></inputEntry>
+        <outputEntry id="oe1_ea6"><text>"Manager"</text></outputEntry>
+        <outputEntry id="oe2_ea6"><text>4</text></outputEntry>
+        <outputEntry id="oe3_ea6"><text>"budget-override-request,business-justification"</text></outputEntry>
+      </rule>
+
+      <!-- Budget override $50K-$250K -->
+      <rule id="rule_budget_medium">
+        <description>Budget override $50K-$250K — Director authority</description>
+        <inputEntry id="ie1_ea7"><text>"BUDGET_OVERRIDE"</text></inputEntry>
+        <inputEntry id="ie2_ea7"><text>-</text></inputEntry>
+        <inputEntry id="ie3_ea7"><text>[50000..250000]</text></inputEntry>
+        <outputEntry id="oe1_ea7"><text>"Director"</text></outputEntry>
+        <outputEntry id="oe2_ea7"><text>8</text></outputEntry>
+        <outputEntry id="oe3_ea7"><text>"budget-override-request,business-justification,finance-review"</text></outputEntry>
+      </rule>
+
+      <!-- Budget override over $250K -->
+      <rule id="rule_budget_large">
+        <description>Budget override over $250K — VP/CxO required with Board notification</description>
+        <inputEntry id="ie1_ea8"><text>"BUDGET_OVERRIDE"</text></inputEntry>
+        <inputEntry id="ie2_ea8"><text>-</text></inputEntry>
+        <inputEntry id="ie3_ea8"><text>&gt; 250000</text></inputEntry>
+        <outputEntry id="oe1_ea8"><text>"VP/CxO"</text></outputEntry>
+        <outputEntry id="oe2_ea8"><text>24</text></outputEntry>
+        <outputEntry id="oe3_ea8"><text>"budget-override-request,business-justification,finance-review,board-approval"</text></outputEntry>
+      </rule>
+
+      <!-- Policy exception: always requires Board -->
+      <rule id="rule_policy_exception">
+        <description>Policy exception — always requires Governance Board approval regardless of pathway or amount</description>
+        <inputEntry id="ie1_ea9"><text>"POLICY_EXCEPTION"</text></inputEntry>
+        <inputEntry id="ie2_ea9"><text>-</text></inputEntry>
+        <inputEntry id="ie3_ea9"><text>-</text></inputEntry>
+        <outputEntry id="oe1_ea9"><text>"Board"</text></outputEntry>
+        <outputEntry id="oe2_ea9"><text>48</text></outputEntry>
+        <outputEntry id="oe3_ea9"><text>"policy-exception-request,legal-review,risk-assessment,cxo-attestation"</text></outputEntry>
+      </rule>
+
+      <!-- Risk override: VP minimum -->
+      <rule id="rule_risk_override">
+        <description>Risk override — VP/CxO minimum; escalates to Board for enhanced pathway</description>
+        <inputEntry id="ie1_ea10"><text>"RISK_OVERRIDE"</text></inputEntry>
+        <inputEntry id="ie2_ea10"><text>-</text></inputEntry>
+        <inputEntry id="ie3_ea10"><text>-</text></inputEntry>
+        <outputEntry id="oe1_ea10"><text>"VP/CxO"</text></outputEntry>
+        <outputEntry id="oe2_ea10"><text>24</text></outputEntry>
+        <outputEntry id="oe3_ea10"><text>"risk-override-request,independent-risk-assessment,compensating-controls"</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+
+</definitions>
