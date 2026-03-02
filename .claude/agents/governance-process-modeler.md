@@ -207,7 +207,7 @@ The BPMNDI section defines visual positions. Follow these layout guidelines:
 - Process flows left-to-right
 - Swim lanes stacked vertically (top to bottom in order: sla-governance-board, business-owner, it-architecture, procurement, legal-compliance, information-security, vendor-management)
 - Each lane height: minimum 120px, expand if tasks require more space
-- Task width: 100px, height: 80px
+- Task width: 140px, height: 80px
 - Gateway width/height: 50px × 50px (diamond shape)
 - Events: 36px × 36px (circle)
 - Horizontal spacing between elements: minimum 50px
@@ -215,7 +215,7 @@ The BPMNDI section defines visual positions. Follow these layout guidelines:
 
 ```xml
 <bpmndi:BPMNShape id="Task_0_InitialRiskScreen_di" bpmnElement="Task_0_InitialRiskScreen">
-  <dc:Bounds x="350" y="77" width="100" height="80" />
+  <dc:Bounds x="350" y="77" width="140" height="80" />
   <bpmndi:BPMNLabel />
 </bpmndi:BPMNShape>
 

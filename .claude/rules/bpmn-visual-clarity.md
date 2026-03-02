@@ -167,8 +167,8 @@ Within a lane:
 
 | Element | Width | Height |
 |---------|-------|--------|
-| Task | 100 | 80 |
-| Collapsed Sub-Process | 100 | 80 |
+| Task | 140 | 80 |
+| Collapsed Sub-Process | 140 | 80 |
 | Gateway | 50 | 50 |
 | Event | 36 | 36 |
 

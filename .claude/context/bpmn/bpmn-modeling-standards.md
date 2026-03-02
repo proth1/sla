@@ -264,8 +264,8 @@ Before saving any BPMN file, verify:
 
 | Element Type | Width | Height |
 |--------------|-------|--------|
-| Task (User, Service, Business Rule) | 100 | 80 |
-| Collapsed Sub-Process | 100 | 80 |
+| Task (User, Service, Business Rule) | 140 | 80 |
+| Collapsed Sub-Process | 140 | 80 |
 | Gateway | 50 | 50 |
 | Event (Start, End, Intermediate) | 36 | 36 |
 

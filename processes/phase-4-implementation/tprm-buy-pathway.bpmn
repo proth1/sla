@@ -60,213 +60,147 @@
         <bpmn:flowNodeRef>Gateway_ReassessmentOutcome</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-
-    <!-- Start Event -->
     <bpmn:startEvent id="StartEvent_Phase5BInitiated" name="Buy Pathway&#10;Initiated (Budget&#10;Released)">
       <bpmn:outgoing>Flow_Start_RFP</bpmn:outgoing>
     </bpmn:startEvent>
-
-    <!-- RFP Construction -->
     <bpmn:userTask id="Task_RFPConstruction" name="RFP Construction&#10;(Legal Knowledge Graph&#10;Clause Selection)" camunda:candidateGroups="procurement">
       <bpmn:incoming>Flow_Start_RFP</bpmn:incoming>
       <bpmn:outgoing>Flow_RFP_SourcingEvent</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- SLA Timer on RFP -->
     <bpmn:boundaryEvent id="Timer_RFPConstructionSLA" attachedToRef="Task_RFPConstruction" cancelActivity="false">
       <bpmn:outgoing>Flow_RFPSLAEscalate</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerDef_RFPConstruction">
         <bpmn:timeDuration>P5D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-
-    <!-- Sourcing Event -->
     <bpmn:userTask id="Task_SourcingEvent" name="Sourcing Event&#10;(RFP Issued, Vendor&#10;Responses Collected)" camunda:candidateGroups="procurement">
       <bpmn:incoming>Flow_RFP_SourcingEvent</bpmn:incoming>
       <bpmn:outgoing>Flow_SourcingEvent_VendorEval</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- SLA Timer on Sourcing Event -->
     <bpmn:boundaryEvent id="Timer_SourcingEventSLA" attachedToRef="Task_SourcingEvent" cancelActivity="false">
       <bpmn:outgoing>Flow_SourcingEventSLAEscalate</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerDef_SourcingEvent">
         <bpmn:timeDuration>P10D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-
-    <!-- Vendor Evaluation -->
     <bpmn:userTask id="Task_VendorEvaluation" name="Vendor Evaluation&#10;(Scoring Matrix,&#10;Demonstrations)" camunda:candidateGroups="procurement">
       <bpmn:incoming>Flow_SourcingEvent_VendorEval</bpmn:incoming>
       <bpmn:outgoing>Flow_VendorEval_DMN06</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- DMN-06: Vendor Risk Tier -->
     <bpmn:businessRuleTask id="Task_DMN06_VendorRiskTier" name="DMN-06: Vendor Risk&#10;Tier Assignment" camunda:decisionRef="DMN_06_VendorRiskTier" camunda:resultVariable="vendorRiskTier" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_VendorEval_DMN06</bpmn:incoming>
       <bpmn:outgoing>Flow_DMN06_SecurityDD</bpmn:outgoing>
     </bpmn:businessRuleTask>
-
-    <!-- Security Due Diligence -->
     <bpmn:userTask id="Task_SecurityDueDiligence" name="Security Due Diligence&#10;(SOC 2, BitSight,&#10;SBOM Review)" camunda:candidateGroups="information-security">
       <bpmn:incoming>Flow_DMN06_SecurityDD</bpmn:incoming>
       <bpmn:outgoing>Flow_SecurityDD_PenTest</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- SLA Timer on Security DD -->
     <bpmn:boundaryEvent id="Timer_SecurityDDSLA" attachedToRef="Task_SecurityDueDiligence" cancelActivity="false">
       <bpmn:outgoing>Flow_SecurityDDSLAEscalate</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerDef_SecurityDD">
         <bpmn:timeDuration>P5D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-
-    <!-- Pen Test Review -->
     <bpmn:userTask id="Task_PenTestReview" name="Penetration Test&#10;Results Review + SBOM&#10;Vulnerability Scan" camunda:candidateGroups="information-security">
       <bpmn:incoming>Flow_SecurityDD_PenTest</bpmn:incoming>
       <bpmn:outgoing>Flow_PenTest_DMN07</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- DMN-07: Vendor Selection RAE -->
     <bpmn:businessRuleTask id="Task_DMN07_VendorSelectionRAE" name="DMN-07: Vendor Selection&#10;Risk Assessment Evaluation" camunda:decisionRef="DMN_07_VendorSelectionRAE" camunda:resultVariable="raeDecision" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_PenTest_DMN07</bpmn:incoming>
       <bpmn:outgoing>Flow_DMN07_LegalMSA</bpmn:outgoing>
     </bpmn:businessRuleTask>
-
-    <!-- Legal MSA/DPA Review -->
     <bpmn:userTask id="Task_LegalMSADPAReview" name="Legal MSA/DPA Review&#10;(Legal KB Clause&#10;Validation)" camunda:candidateGroups="legal-compliance">
       <bpmn:incoming>Flow_DMN07_LegalMSA</bpmn:incoming>
       <bpmn:outgoing>Flow_LegalMSA_ContractNeg</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- SLA Timer on Legal Review -->
     <bpmn:boundaryEvent id="Timer_LegalReviewSLA" attachedToRef="Task_LegalMSADPAReview" cancelActivity="false">
       <bpmn:outgoing>Flow_LegalReviewSLAEscalate</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerDef_LegalReview">
         <bpmn:timeDuration>P5D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-
-    <!-- Contract Negotiation -->
     <bpmn:userTask id="Task_ContractNegotiation" name="Contract Negotiation&#10;(MSA, SLA, Right to Audit,&#10;Step-in Rights)" camunda:candidateGroups="procurement">
       <bpmn:incoming>Flow_LegalMSA_ContractNeg</bpmn:incoming>
       <bpmn:outgoing>Flow_ContractNeg_DMN08</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- DMN-08: Funding Confirmation -->
     <bpmn:businessRuleTask id="Task_DMN08_FundingConfirmation" name="DMN-08: Funding&#10;Confirmation" camunda:decisionRef="DMN_08_FundingConfirmation" camunda:resultVariable="fundingStatus" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_ContractNeg_DMN08</bpmn:incoming>
       <bpmn:outgoing>Flow_DMN08_Gateway</bpmn:outgoing>
     </bpmn:businessRuleTask>
-
-    <!-- Gateway: Funding Confirmed? -->
     <bpmn:exclusiveGateway id="Gateway_FundingConfirmed" name="Funding&#10;Confirmed?" default="Flow_FundingConfirmed">
       <bpmn:incoming>Flow_DMN08_Gateway</bpmn:incoming>
       <bpmn:outgoing>Flow_FundingNotConfirmed</bpmn:outgoing>
       <bpmn:outgoing>Flow_FundingConfirmed</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-
-    <!-- Executive Vendor Approval -->
     <bpmn:userTask id="Task_ExecutiveVendorApproval" name="Executive Vendor&#10;Approval (Tier 1 Critical&#10;Activity OCC Sign-Off)" camunda:candidateGroups="sla-governance-board">
       <bpmn:incoming>Flow_FundingConfirmed</bpmn:incoming>
       <bpmn:outgoing>Flow_ExecutiveApproval_ContractExec</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- SLA Timer on Executive Approval -->
     <bpmn:boundaryEvent id="Timer_ExecutiveApprovalSLA" attachedToRef="Task_ExecutiveVendorApproval" cancelActivity="false">
       <bpmn:outgoing>Flow_ExecApprovalSLAEscalate</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerDef_ExecutiveApproval">
         <bpmn:timeDuration>P3D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-
-    <!-- Contract Execution -->
     <bpmn:userTask id="Task_ContractExecution" name="Contract Execution&#10;(MSA, DPA, SLAs Signed)" camunda:candidateGroups="legal-compliance">
       <bpmn:incoming>Flow_ExecutiveApproval_ContractExec</bpmn:incoming>
       <bpmn:outgoing>Flow_ContractExec_ControlsImpl</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Controls Implementation -->
     <bpmn:userTask id="Task_ControlsImplementation" name="Controls Implementation&#10;(Evidence Collection&#10;Configured)" camunda:candidateGroups="information-security">
       <bpmn:incoming>Flow_ContractExec_ControlsImpl</bpmn:incoming>
       <bpmn:outgoing>Flow_ControlsImpl_TechIntegration</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Technical Integration -->
     <bpmn:userTask id="Task_TechnicalIntegration" name="Technical Integration&#10;(API, SSO, Network&#10;Segmentation)" camunda:candidateGroups="it-architecture">
       <bpmn:incoming>Flow_ControlsImpl_TechIntegration</bpmn:incoming>
       <bpmn:outgoing>Flow_TechIntegration_SBOM</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- SBOM Vendor Registration -->
     <bpmn:serviceTask id="Task_SBOMVendorRegistration" name="SBOM Vendor Registration&#10;(P0 Registry Update)" camunda:type="external" camunda:topic="sbom-vendor-registration">
       <bpmn:incoming>Flow_TechIntegration_SBOM</bpmn:incoming>
       <bpmn:outgoing>Flow_SBOM_ComplianceControls</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- Compliance Controls Config -->
     <bpmn:serviceTask id="Task_ComplianceControlsConfig" name="Compliance Controls&#10;Configuration (Control&#10;Mapping)" camunda:type="external" camunda:topic="compliance-controls">
       <bpmn:incoming>Flow_SBOM_ComplianceControls</bpmn:incoming>
       <bpmn:outgoing>Flow_ComplianceControls_VendorReg</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- Vendor Register Entry -->
     <bpmn:serviceTask id="Task_VendorRegisterEntry" name="Vendor Register Entry&#10;(OCC TPRM Register&#10;Updated)" camunda:type="external" camunda:topic="vendor-register">
       <bpmn:incoming>Flow_ComplianceControls_VendorReg</bpmn:incoming>
       <bpmn:outgoing>Flow_VendorReg_Enablement</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- Vendor Enablement -->
     <bpmn:userTask id="Task_VendorEnablement" name="Vendor Enablement&#10;(Onboarding, Training,&#10;API Key Provisioning)" camunda:candidateGroups="business-owner">
       <bpmn:incoming>Flow_VendorReg_Enablement</bpmn:incoming>
       <bpmn:outgoing>Flow_Enablement_GoLive</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Go-Live Validation -->
     <bpmn:userTask id="Task_GoLiveValidation" name="Go-Live Validation&#10;(Production Readiness&#10;Confirmed)" camunda:candidateGroups="business-owner">
       <bpmn:incoming>Flow_Enablement_GoLive</bpmn:incoming>
       <bpmn:outgoing>Flow_GoLive_OngoingMonitoring</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Ongoing Monitoring Setup -->
     <bpmn:serviceTask id="Task_OngoingMonitoringSetup" name="Ongoing Monitoring&#10;Setup (Automated&#10;Evidence Collection)" camunda:type="external" camunda:topic="monitoring-setup">
       <bpmn:incoming>Flow_GoLive_OngoingMonitoring</bpmn:incoming>
       <bpmn:outgoing>Flow_OngoingMonitoring_DMN14</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- DMN-14: TPRM Monitoring Frequency -->
     <bpmn:businessRuleTask id="Task_DMN14_MonitoringFreq" name="DMN-14: TPRM Monitoring&#10;Frequency Calibration" camunda:decisionRef="DMN_14_TPRMMonitoringFreq" camunda:resultVariable="monitoringFrequency" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_OngoingMonitoring_DMN14</bpmn:incoming>
       <bpmn:outgoing>Flow_DMN14_Reassessment</bpmn:outgoing>
     </bpmn:businessRuleTask>
-
-    <!-- Periodic Reassessment -->
     <bpmn:userTask id="Task_PeriodicReassessment" name="Periodic Vendor&#10;Reassessment (Risk-Tiered&#10;Cadence)" camunda:candidateGroups="vendor-management">
       <bpmn:incoming>Flow_DMN14_Reassessment</bpmn:incoming>
       <bpmn:outgoing>Flow_Reassessment_Gateway</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- SLA Timer on Reassessment -->
     <bpmn:boundaryEvent id="Timer_ReassessmentSLA" attachedToRef="Task_PeriodicReassessment" cancelActivity="false">
       <bpmn:outgoing>Flow_ReassessmentSLAEscalate</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerDef_Reassessment">
         <bpmn:timeDuration>P10D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-
-    <!-- Gateway: Reassessment Outcome -->
     <bpmn:exclusiveGateway id="Gateway_ReassessmentOutcome" name="Reassessment&#10;Outcome?" default="Flow_ContinueMonitoring">
       <bpmn:incoming>Flow_Reassessment_Gateway</bpmn:incoming>
       <bpmn:outgoing>Flow_ContinueMonitoring</bpmn:outgoing>
       <bpmn:outgoing>Flow_TerminateVendor</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-
-    <!-- Phase Transition -->
     <bpmn:userTask id="Task_PhaseTransitionP5B" name="Phase 5B Quality Gate&#10;+ Ongoing Monitoring Active" camunda:candidateGroups="sla-governance-board">
       <bpmn:incoming>Flow_ContinueMonitoring</bpmn:incoming>
       <bpmn:outgoing>Flow_PhaseTransition_End</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- End Events -->
     <bpmn:endEvent id="EndEvent_Phase5BComplete" name="Phase 5B Complete&#10;(Vendor Active,&#10;Monitoring Live)">
       <bpmn:incoming>Flow_PhaseTransition_End</bpmn:incoming>
     </bpmn:endEvent>
@@ -302,8 +236,6 @@
     <bpmn:endEvent id="EndEvent_ReassessmentSLAEscalated" name="Reassessment&#10;SLA Escalated">
       <bpmn:incoming>Flow_ReassessmentSLAEscalate</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- Text Annotations -->
     <bpmn:textAnnotation id="Annotation_P5B_OCC">
       <bpmn:text>OCC 2023-17: Full TPRM lifecycle - vendor risk tiering (DMN-06), RAE (DMN-07), funding confirmation (DMN-08), monitoring frequency (DMN-14). Critical activity designation triggers OCC notification. Right to Audit in all MSAs.</bpmn:text>
     </bpmn:textAnnotation>
@@ -313,8 +245,6 @@
       <bpmn:text>DORA: Vendor operational resilience assessment. BCBS d577: Concentration risk tracked in vendor register. GDPR/CCPA: DPA mandatory for data processing vendors. SR 11-7: AI vendor model governance separate from TPRM track.</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_P5B_DORA" sourceRef="Task_OngoingMonitoringSetup" targetRef="Annotation_P5B_DORA" />
-
-    <!-- Sequence Flows -->
     <bpmn:sequenceFlow id="Flow_Start_RFP" sourceRef="StartEvent_Phase5BInitiated" targetRef="Task_RFPConstruction" />
     <bpmn:sequenceFlow id="Flow_RFP_SourcingEvent" sourceRef="Task_RFPConstruction" targetRef="Task_SourcingEvent" />
     <bpmn:sequenceFlow id="Flow_SourcingEvent_VendorEval" sourceRef="Task_SourcingEvent" targetRef="Task_VendorEvaluation" />
@@ -362,8 +292,6 @@
       <bpmndi:BPMNShape id="Participant_Phase5B_di" bpmnElement="Participant_Phase5B" isHorizontal="true">
         <dc:Bounds x="155" y="47" width="3400" height="1240" />
       </bpmndi:BPMNShape>
-
-      <!-- Swim Lanes -->
       <bpmndi:BPMNShape id="Lane_GB_P5B_di" bpmnElement="Lane_GB_P5B" isHorizontal="true">
         <dc:Bounds x="185" y="47" width="3370" height="160" />
       </bpmndi:BPMNShape>
@@ -385,257 +313,171 @@
       <bpmndi:BPMNShape id="Lane_VM_P5B_di" bpmnElement="Lane_VM_P5B" isHorizontal="true">
         <dc:Bounds x="185" y="1007" width="3370" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Start Event (BO) -->
       <bpmndi:BPMNShape id="StartEvent_Phase5BInitiated_di" bpmnElement="StartEvent_Phase5BInitiated">
         <dc:Bounds x="247" y="269" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="220" y="312" width="90" height="53" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- RFP Construction (Procurement) x=330 -->
       <bpmndi:BPMNShape id="Task_RFPConstruction_di" bpmnElement="Task_RFPConstruction">
         <dc:Bounds x="330" y="547" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Timer on RFP -->
       <bpmndi:BPMNShape id="Timer_RFPConstructionSLA_di" bpmnElement="Timer_RFPConstructionSLA">
         <dc:Bounds x="382" y="609" width="36" height="36" />
       </bpmndi:BPMNShape>
-
-      <!-- End RFP SLA Escalated (Procurement) -->
       <bpmndi:BPMNShape id="EndEvent_RFPSLAEscalated_di" bpmnElement="EndEvent_RFPSLAEscalated">
         <dc:Bounds x="382" y="487" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="358" y="456" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Sourcing Event (Procurement) x=520 -->
       <bpmndi:BPMNShape id="Task_SourcingEvent_di" bpmnElement="Task_SourcingEvent">
         <dc:Bounds x="520" y="547" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Timer on Sourcing Event -->
       <bpmndi:BPMNShape id="Timer_SourcingEventSLA_di" bpmnElement="Timer_SourcingEventSLA">
         <dc:Bounds x="572" y="609" width="36" height="36" />
       </bpmndi:BPMNShape>
-
-      <!-- End Sourcing Event SLA (Procurement) -->
       <bpmndi:BPMNShape id="EndEvent_SourcingEventSLAEscalated_di" bpmnElement="EndEvent_SourcingEventSLAEscalated">
         <dc:Bounds x="572" y="487" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="548" y="456" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Vendor Evaluation (Procurement) x=710 -->
       <bpmndi:BPMNShape id="Task_VendorEvaluation_di" bpmnElement="Task_VendorEvaluation">
         <dc:Bounds x="710" y="547" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- DMN-06 Vendor Risk Tier (IS) x=900 -->
       <bpmndi:BPMNShape id="Task_DMN06_VendorRiskTier_di" bpmnElement="Task_DMN06_VendorRiskTier">
         <dc:Bounds x="900" y="867" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Security Due Diligence (IS) x=1090 -->
       <bpmndi:BPMNShape id="Task_SecurityDueDiligence_di" bpmnElement="Task_SecurityDueDiligence">
         <dc:Bounds x="1090" y="867" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Timer on Security DD -->
       <bpmndi:BPMNShape id="Timer_SecurityDDSLA_di" bpmnElement="Timer_SecurityDDSLA">
         <dc:Bounds x="1142" y="929" width="36" height="36" />
       </bpmndi:BPMNShape>
-
-      <!-- End Security DD SLA (IS) -->
       <bpmndi:BPMNShape id="EndEvent_SecurityDDSLAEscalated_di" bpmnElement="EndEvent_SecurityDDSLAEscalated">
         <dc:Bounds x="1142" y="827" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1118" y="796" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Pen Test Review (IS) x=1280 -->
       <bpmndi:BPMNShape id="Task_PenTestReview_di" bpmnElement="Task_PenTestReview">
         <dc:Bounds x="1280" y="867" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- DMN-07 Vendor Selection RAE (Procurement) x=1470 -->
       <bpmndi:BPMNShape id="Task_DMN07_VendorSelectionRAE_di" bpmnElement="Task_DMN07_VendorSelectionRAE">
         <dc:Bounds x="1470" y="547" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Legal MSA/DPA Review (LC) x=1660 -->
       <bpmndi:BPMNShape id="Task_LegalMSADPAReview_di" bpmnElement="Task_LegalMSADPAReview">
         <dc:Bounds x="1660" y="707" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Timer on Legal Review -->
       <bpmndi:BPMNShape id="Timer_LegalReviewSLA_di" bpmnElement="Timer_LegalReviewSLA">
         <dc:Bounds x="1712" y="769" width="36" height="36" />
       </bpmndi:BPMNShape>
-
-      <!-- End Legal SLA (LC) -->
       <bpmndi:BPMNShape id="EndEvent_LegalSLAEscalated_di" bpmnElement="EndEvent_LegalSLAEscalated">
         <dc:Bounds x="1712" y="647" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1688" y="616" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Contract Negotiation (Procurement) x=1850 -->
       <bpmndi:BPMNShape id="Task_ContractNegotiation_di" bpmnElement="Task_ContractNegotiation">
         <dc:Bounds x="1850" y="547" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- DMN-08 Funding Confirmation (Procurement) x=2040 -->
       <bpmndi:BPMNShape id="Task_DMN08_FundingConfirmation_di" bpmnElement="Task_DMN08_FundingConfirmation">
         <dc:Bounds x="2040" y="547" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Gateway Funding Confirmed (Procurement) x=2230 -->
       <bpmndi:BPMNShape id="Gateway_FundingConfirmed_di" bpmnElement="Gateway_FundingConfirmed" isMarkerVisible="true">
         <dc:Bounds x="2225" y="562" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="2208" y="619" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- End Funding Not Confirmed (Procurement) -->
       <bpmndi:BPMNShape id="EndEvent_FundingNotConfirmed_di" bpmnElement="EndEvent_FundingNotConfirmed">
         <dc:Bounds x="2227" y="487" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="2203" y="456" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Executive Vendor Approval (GB) x=2330 -->
       <bpmndi:BPMNShape id="Task_ExecutiveVendorApproval_di" bpmnElement="Task_ExecutiveVendorApproval">
         <dc:Bounds x="2330" y="87" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Timer on Executive Approval -->
       <bpmndi:BPMNShape id="Timer_ExecutiveApprovalSLA_di" bpmnElement="Timer_ExecutiveApprovalSLA">
         <dc:Bounds x="2382" y="149" width="36" height="36" />
       </bpmndi:BPMNShape>
-
-      <!-- End Exec Approval SLA (GB) -->
       <bpmndi:BPMNShape id="EndEvent_ExecApprovalSLAEscalated_di" bpmnElement="EndEvent_ExecApprovalSLAEscalated">
         <dc:Bounds x="2382" y="52" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="2358" y="20" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Contract Execution (LC) x=2520 -->
       <bpmndi:BPMNShape id="Task_ContractExecution_di" bpmnElement="Task_ContractExecution">
         <dc:Bounds x="2520" y="707" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Controls Implementation (IS) x=2710 -->
       <bpmndi:BPMNShape id="Task_ControlsImplementation_di" bpmnElement="Task_ControlsImplementation">
         <dc:Bounds x="2710" y="867" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Technical Integration (ITA) x=2900 -->
       <bpmndi:BPMNShape id="Task_TechnicalIntegration_di" bpmnElement="Task_TechnicalIntegration">
         <dc:Bounds x="2900" y="387" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- SBOM Vendor Registration (ITA) x=3090 -->
       <bpmndi:BPMNShape id="Task_SBOMVendorRegistration_di" bpmnElement="Task_SBOMVendorRegistration">
         <dc:Bounds x="3090" y="387" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Compliance Controls Config (LC) x=3090 y=707 -->
       <bpmndi:BPMNShape id="Task_ComplianceControlsConfig_di" bpmnElement="Task_ComplianceControlsConfig">
         <dc:Bounds x="3090" y="707" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Vendor Register Entry (VM) x=3090 y=1027 -->
       <bpmndi:BPMNShape id="Task_VendorRegisterEntry_di" bpmnElement="Task_VendorRegisterEntry">
         <dc:Bounds x="3090" y="1027" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Vendor Enablement (BO) x=3280 -->
       <bpmndi:BPMNShape id="Task_VendorEnablement_di" bpmnElement="Task_VendorEnablement">
         <dc:Bounds x="3280" y="247" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Go-Live Validation (BO) x=3280 y=367+40=407 -->
       <bpmndi:BPMNShape id="Task_GoLiveValidation_di" bpmnElement="Task_GoLiveValidation">
         <dc:Bounds x="3280" y="407" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Ongoing Monitoring Setup (VM) x=3280 y=1027 -->
       <bpmndi:BPMNShape id="Task_OngoingMonitoringSetup_di" bpmnElement="Task_OngoingMonitoringSetup">
         <dc:Bounds x="3280" y="1027" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- DMN-14 Monitoring Freq (VM) x=3470 -->
       <bpmndi:BPMNShape id="Task_DMN14_MonitoringFreq_di" bpmnElement="Task_DMN14_MonitoringFreq">
         <dc:Bounds x="3470" y="1027" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Periodic Reassessment (VM) x=3470 y=1147 -->
       <bpmndi:BPMNShape id="Task_PeriodicReassessment_di" bpmnElement="Task_PeriodicReassessment">
         <dc:Bounds x="3470" y="1147" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Timer on Reassessment -->
       <bpmndi:BPMNShape id="Timer_ReassessmentSLA_di" bpmnElement="Timer_ReassessmentSLA">
         <dc:Bounds x="3522" y="1209" width="36" height="36" />
       </bpmndi:BPMNShape>
-
-      <!-- End Reassessment SLA -->
       <bpmndi:BPMNShape id="EndEvent_ReassessmentSLAEscalated_di" bpmnElement="EndEvent_ReassessmentSLAEscalated">
         <dc:Bounds x="3522" y="1107" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="3498" y="1076" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Gateway Reassessment Outcome (VM) x=3660 -->
       <bpmndi:BPMNShape id="Gateway_ReassessmentOutcome_di" bpmnElement="Gateway_ReassessmentOutcome" isMarkerVisible="true">
         <dc:Bounds x="3655" y="1162" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="3638" y="1219" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Phase Transition (GB) x=3660 y=87 -->
       <bpmndi:BPMNShape id="Task_PhaseTransitionP5B_di" bpmnElement="Task_PhaseTransitionP5B">
         <dc:Bounds x="3760" y="87" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- End Phase 5B Complete (GB) x=3950 -->
       <bpmndi:BPMNShape id="EndEvent_Phase5BComplete_di" bpmnElement="EndEvent_Phase5BComplete">
         <dc:Bounds x="3952" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="3928" y="145" width="84" height="53" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- End Vendor Terminated (GB) x=3760 y=47+52=99 -->
       <bpmndi:BPMNShape id="EndEvent_VendorTerminated_di" bpmnElement="EndEvent_VendorTerminated">
         <dc:Bounds x="3762" y="52" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="3738" y="20" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Annotations -->
       <bpmndi:BPMNShape id="Annotation_P5B_OCC_di" bpmnElement="Annotation_P5B_OCC">
         <dc:Bounds x="200" y="1290" width="1000" height="55" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Annotation_P5B_DORA_di" bpmnElement="Annotation_P5B_DORA">
         <dc:Bounds x="1250" y="1290" width="1000" height="55" />
       </bpmndi:BPMNShape>
-
-      <!-- Sequence Flow Edges -->
       <bpmndi:BPMNEdge id="Flow_Start_RFP_di" bpmnElement="Flow_Start_RFP">
         <di:waypoint x="265" y="287" />
         <di:waypoint x="265" y="587" />

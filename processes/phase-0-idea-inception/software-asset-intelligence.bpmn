@@ -50,125 +50,85 @@
         <bpmn:flowNodeRef>Task_RegistryConsolidation</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-
-    <!-- Start Event -->
     <bpmn:startEvent id="StartEvent_RegistryInitialized" name="Registry&#10;Initialized">
       <bpmn:outgoing>Flow_Start_CMDB</bpmn:outgoing>
     </bpmn:startEvent>
-
-    <!-- CMDB Sync -->
     <bpmn:serviceTask id="Task_CMDBSync" name="Sync CMDB&#10;(Applications &amp; Services)" camunda:type="external" camunda:topic="cmdb-sync">
       <bpmn:incoming>Flow_Start_CMDB</bpmn:incoming>
       <bpmn:outgoing>Flow_CMDB_SAM</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- SAM Tool Sync -->
     <bpmn:serviceTask id="Task_SAMToolSync" name="Sync SAM Tool&#10;(License Entitlements)" camunda:type="external" camunda:topic="sam-sync">
       <bpmn:incoming>Flow_CMDB_SAM</bpmn:incoming>
       <bpmn:outgoing>Flow_SAM_Contract</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- Contract Repository -->
     <bpmn:serviceTask id="Task_ContractRepository" name="Sync Contract&#10;Repository (MSAs/SaaS)" camunda:type="external" camunda:topic="contract-sync">
       <bpmn:incoming>Flow_SAM_Contract</bpmn:incoming>
       <bpmn:outgoing>Flow_Contract_SBOM</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- SBOM Generation -->
     <bpmn:serviceTask id="Task_SBOMGeneration" name="Generate SBOM&#10;(SPDX/CycloneDX)" camunda:type="external" camunda:topic="sbom-generation">
       <bpmn:incoming>Flow_Contract_SBOM</bpmn:incoming>
       <bpmn:outgoing>Flow_SBOM_OpenSource</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- Open Source Registry -->
     <bpmn:serviceTask id="Task_OpenSourceRegistry" name="Update Open Source&#10;Registry" camunda:type="external" camunda:topic="oss-registry">
       <bpmn:incoming>Flow_SBOM_OpenSource</bpmn:incoming>
       <bpmn:outgoing>Flow_OpenSource_Retired</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- Retired Asset Register -->
     <bpmn:serviceTask id="Task_RetiredAssetRegister" name="Sync Retired Asset&#10;Register" camunda:type="external" camunda:topic="retired-assets">
       <bpmn:incoming>Flow_OpenSource_Retired</bpmn:incoming>
       <bpmn:outgoing>Flow_Retired_ShadowIT</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- Shadow IT Triage -->
     <bpmn:serviceTask id="Task_ShadowITTriage" name="Shadow IT Detection&#10;(SSO + Spend Analytics)" camunda:type="external" camunda:topic="shadow-it-detection">
       <bpmn:incoming>Flow_Retired_ShadowIT</bpmn:incoming>
       <bpmn:outgoing>Flow_ShadowIT_Gateway</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- Gateway: Shadow IT Found? -->
     <bpmn:exclusiveGateway id="Gateway_ShadowITFound" name="Shadow IT&#10;Detected?" default="Flow_NoShadowIT">
       <bpmn:incoming>Flow_ShadowIT_Gateway</bpmn:incoming>
       <bpmn:outgoing>Flow_ShadowITYes</bpmn:outgoing>
       <bpmn:outgoing>Flow_NoShadowIT</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-
-    <!-- Shadow IT Workflow -->
     <bpmn:userTask id="Task_ShadowITWorkflow" name="Initiate Shadow IT&#10;Intake Workflow" camunda:candidateGroups="information-security">
       <bpmn:incoming>Flow_ShadowITYes</bpmn:incoming>
       <bpmn:outgoing>Flow_ShadowIT_Merge</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- License Utilization Alert -->
     <bpmn:serviceTask id="Task_LicenseUtilizationAlert" name="License Utilization&#10;Monitoring (&lt;40% Alert)" camunda:type="external" camunda:topic="license-monitoring">
       <bpmn:incoming>Flow_NoShadowIT</bpmn:incoming>
       <bpmn:incoming>Flow_ShadowIT_Merge</bpmn:incoming>
       <bpmn:outgoing>Flow_License_Gateway</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- Gateway: Low Utilization? -->
     <bpmn:exclusiveGateway id="Gateway_LowUtilization" name="Low Utilization&#10;(&lt;40%)?" default="Flow_NoLowUtil">
       <bpmn:incoming>Flow_License_Gateway</bpmn:incoming>
       <bpmn:outgoing>Flow_LowUtilYes</bpmn:outgoing>
       <bpmn:outgoing>Flow_NoLowUtil</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-
-    <!-- Reuse Recommendation -->
     <bpmn:userTask id="Task_ReuseRecommendation" name="Generate Reuse&#10;Recommendation Workflow" camunda:candidateGroups="vendor-management">
       <bpmn:incoming>Flow_LowUtilYes</bpmn:incoming>
       <bpmn:outgoing>Flow_Reuse_Consolidate</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Registry Consolidation -->
     <bpmn:serviceTask id="Task_RegistryConsolidation" name="Consolidate Registry&#10;(Delta Alerts)" camunda:type="external" camunda:topic="registry-consolidation">
       <bpmn:incoming>Flow_NoLowUtil</bpmn:incoming>
       <bpmn:incoming>Flow_Reuse_Consolidate</bpmn:incoming>
       <bpmn:outgoing>Flow_Consolidation_Audit</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- Quarterly Audit -->
     <bpmn:userTask id="Task_QuarterlyAudit" name="Quarterly Registry&#10;Reconciliation Audit" camunda:candidateGroups="sla-governance-board">
       <bpmn:incoming>Flow_Consolidation_Audit</bpmn:incoming>
       <bpmn:outgoing>Flow_Audit_IntakeQuery</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- SLA Boundary Timer on Quarterly Audit -->
     <bpmn:boundaryEvent id="Timer_QuarterlyAuditSLA" attachedToRef="Task_QuarterlyAudit" cancelActivity="false">
       <bpmn:outgoing>Flow_AuditSLAEscalate</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerDef_QuarterlyAudit">
         <bpmn:timeDuration>P5D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-
-    <!-- Escalation End Event for overdue audit -->
     <bpmn:endEvent id="EndEvent_AuditEscalated" name="Audit SLA&#10;Escalated">
       <bpmn:incoming>Flow_AuditSLAEscalate</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- Intake Query Interface -->
     <bpmn:serviceTask id="Task_IntakeQueryInterface" name="Registry Query API&#10;(Ready for Intake Bot)" camunda:type="external" camunda:topic="registry-query">
       <bpmn:incoming>Flow_Audit_IntakeQuery</bpmn:incoming>
       <bpmn:outgoing>Flow_Query_End</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- End Event -->
     <bpmn:endEvent id="EndEvent_RegistryReady" name="Registry Ready&#10;for Intake">
       <bpmn:incoming>Flow_Query_End</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- Text Annotations -->
     <bpmn:textAnnotation id="Annotation_P0_Regs">
       <bpmn:text>OCC 2023-17: Software Asset Registry required for TPRM. ISO/IEC 19770 ITAM. SOX: License audit trail required. GDPR/CCPA: Data residency tracked in registry.</bpmn:text>
     </bpmn:textAnnotation>
@@ -178,8 +138,6 @@
       <bpmn:text>SLA: Registry refresh within 24h of production change; new contract entries within 48h of signature. Quarterly audit P5D SLA enforced via boundary timer.</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_P0_SLA" sourceRef="Task_QuarterlyAudit" targetRef="Annotation_P0_SLA" />
-
-    <!-- Sequence Flows -->
     <bpmn:sequenceFlow id="Flow_Start_CMDB" sourceRef="StartEvent_RegistryInitialized" targetRef="Task_CMDBSync" />
     <bpmn:sequenceFlow id="Flow_CMDB_SAM" sourceRef="Task_CMDBSync" targetRef="Task_SAMToolSync" />
     <bpmn:sequenceFlow id="Flow_SAM_Contract" sourceRef="Task_SAMToolSync" targetRef="Task_ContractRepository" />
@@ -212,8 +170,6 @@
       <bpmndi:BPMNShape id="Participant_Phase0_di" bpmnElement="Participant_Phase0" isHorizontal="true">
         <dc:Bounds x="155" y="47" width="2350" height="1240" />
       </bpmndi:BPMNShape>
-
-      <!-- Swim Lanes (7 lanes x 160px each = 1120px, starting at y=47) -->
       <bpmndi:BPMNShape id="Lane_GB_P0_di" bpmnElement="Lane_GB_P0" isHorizontal="true">
         <dc:Bounds x="185" y="47" width="2320" height="160" />
       </bpmndi:BPMNShape>
@@ -235,126 +191,84 @@
       <bpmndi:BPMNShape id="Lane_VM_P0_di" bpmnElement="Lane_VM_P0" isHorizontal="true">
         <dc:Bounds x="185" y="1007" width="2320" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Start Event in Business Owner lane (y=207+62=269) -->
       <bpmndi:BPMNShape id="StartEvent_RegistryInitialized_di" bpmnElement="StartEvent_RegistryInitialized">
         <dc:Bounds x="247" y="269" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="229" y="312" width="72" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Task_CMDBSync in IT Architecture lane (y=367+40=407) x=340 -->
       <bpmndi:BPMNShape id="Task_CMDBSync_di" bpmnElement="Task_CMDBSync">
         <dc:Bounds x="330" y="387" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Task_SAMToolSync in Procurement lane (y=527+40=567) x=520 -->
       <bpmndi:BPMNShape id="Task_SAMToolSync_di" bpmnElement="Task_SAMToolSync">
         <dc:Bounds x="520" y="547" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Task_ContractRepository in Procurement lane x=710 -->
       <bpmndi:BPMNShape id="Task_ContractRepository_di" bpmnElement="Task_ContractRepository">
         <dc:Bounds x="710" y="547" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Task_SBOMGeneration in IT Architecture lane x=900 -->
       <bpmndi:BPMNShape id="Task_SBOMGeneration_di" bpmnElement="Task_SBOMGeneration">
         <dc:Bounds x="900" y="387" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Task_OpenSourceRegistry in Legal & Compliance lane (y=687+40=727) x=1090 -->
       <bpmndi:BPMNShape id="Task_OpenSourceRegistry_di" bpmnElement="Task_OpenSourceRegistry">
         <dc:Bounds x="1090" y="707" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Task_RetiredAssetRegister in Legal & Compliance lane x=1280 -->
       <bpmndi:BPMNShape id="Task_RetiredAssetRegister_di" bpmnElement="Task_RetiredAssetRegister">
         <dc:Bounds x="1280" y="707" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Task_ShadowITTriage in Information Security lane (y=847+40=887) x=1470 -->
       <bpmndi:BPMNShape id="Task_ShadowITTriage_di" bpmnElement="Task_ShadowITTriage">
         <dc:Bounds x="1470" y="867" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Gateway_ShadowITFound x=1660 -->
       <bpmndi:BPMNShape id="Gateway_ShadowITFound_di" bpmnElement="Gateway_ShadowITFound" isMarkerVisible="true">
         <dc:Bounds x="1655" y="882" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1638" y="939" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Task_ShadowITWorkflow x=1760 -->
       <bpmndi:BPMNShape id="Task_ShadowITWorkflow_di" bpmnElement="Task_ShadowITWorkflow">
         <dc:Bounds x="1760" y="867" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Task_LicenseUtilizationAlert in Vendor Management lane (y=1007+40=1047) x=1470 -->
       <bpmndi:BPMNShape id="Task_LicenseUtilizationAlert_di" bpmnElement="Task_LicenseUtilizationAlert">
         <dc:Bounds x="1470" y="1027" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Gateway_LowUtilization x=1660 -->
       <bpmndi:BPMNShape id="Gateway_LowUtilization_di" bpmnElement="Gateway_LowUtilization" isMarkerVisible="true">
         <dc:Bounds x="1655" y="1042" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1638" y="1099" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Task_ReuseRecommendation x=1760 -->
       <bpmndi:BPMNShape id="Task_ReuseRecommendation_di" bpmnElement="Task_ReuseRecommendation">
         <dc:Bounds x="1760" y="1027" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Task_RegistryConsolidation x=1960 -->
       <bpmndi:BPMNShape id="Task_RegistryConsolidation_di" bpmnElement="Task_RegistryConsolidation">
         <dc:Bounds x="1960" y="1027" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Task_QuarterlyAudit in Governance Board lane (y=47+40=87) x=1960 -->
       <bpmndi:BPMNShape id="Task_QuarterlyAudit_di" bpmnElement="Task_QuarterlyAudit">
         <dc:Bounds x="1960" y="87" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- Timer Boundary on Quarterly Audit -->
       <bpmndi:BPMNShape id="Timer_QuarterlyAuditSLA_di" bpmnElement="Timer_QuarterlyAuditSLA">
         <dc:Bounds x="2012" y="149" width="36" height="36" />
       </bpmndi:BPMNShape>
-
-      <!-- EndEvent_AuditEscalated -->
       <bpmndi:BPMNShape id="EndEvent_AuditEscalated_di" bpmnElement="EndEvent_AuditEscalated">
         <dc:Bounds x="2152" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="2133" y="145" width="74" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Task_IntakeQueryInterface in Business Owner lane x=2160 -->
       <bpmndi:BPMNShape id="Task_IntakeQueryInterface_di" bpmnElement="Task_IntakeQueryInterface">
         <dc:Bounds x="2160" y="247" width="140" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- EndEvent_RegistryReady x=2360 -->
       <bpmndi:BPMNShape id="EndEvent_RegistryReady_di" bpmnElement="EndEvent_RegistryReady">
         <dc:Bounds x="2352" y="269" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="2328" y="312" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Annotations (below participant) -->
       <bpmndi:BPMNShape id="Annotation_P0_Regs_di" bpmnElement="Annotation_P0_Regs">
         <dc:Bounds x="200" y="1175" width="700" height="55" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Annotation_P0_SLA_di" bpmnElement="Annotation_P0_SLA">
         <dc:Bounds x="950" y="1175" width="700" height="55" />
       </bpmndi:BPMNShape>
-
-      <!-- Sequence Flow Edges -->
       <bpmndi:BPMNEdge id="Flow_Start_CMDB_di" bpmnElement="Flow_Start_CMDB">
         <di:waypoint x="265" y="287" />
         <di:waypoint x="265" y="427" />

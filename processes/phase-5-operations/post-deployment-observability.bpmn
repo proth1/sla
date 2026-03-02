@@ -73,14 +73,10 @@
         <bpmn:flowNodeRef>EndEvent_SLAMonitorSLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-
-    <!-- Start Event -->
     <bpmn:startEvent id="StartEvent_GoLiveSignal" name="Go-Live Signal Received">
       <bpmn:outgoing>Flow_GoLiveToObsConfig</bpmn:outgoing>
       <bpmn:signalEventDefinition signalRef="Signal_GoLiveComplete" />
     </bpmn:startEvent>
-
-    <!-- IT Architecture: Observability Configuration -->
     <bpmn:businessRuleTask id="DMN_ObservabilityTier"
                            name="Determine Observability Tier"
                            camunda:decisionRef="DMN_16_ObservabilityTier"
@@ -103,8 +99,6 @@
       <bpmn:incoming>Flow_ObsConfigToPerf</bpmn:incoming>
       <bpmn:outgoing>Flow_PerfToSecurity</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Information Security: Security Posture -->
     <bpmn:userTask id="Task_SecurityPosture"
                    name="Validate Security Posture"
                    camunda:candidateGroups="information-security">
@@ -143,8 +137,6 @@
       <bpmn:incoming>Flow_PenTestToIncident</bpmn:incoming>
       <bpmn:outgoing>Flow_IncidentToRegRep</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Legal & Compliance: Regulatory Reporting -->
     <bpmn:userTask id="Task_RegulatoryReporting"
                    name="Regulatory Reporting"
                    camunda:candidateGroups="legal-compliance">
@@ -176,8 +168,6 @@
       <bpmn:incoming>Flow_CompGateFail</bpmn:incoming>
       <bpmn:errorEventDefinition errorRef="Error_ComplianceHold" />
     </bpmn:endEvent>
-
-    <!-- Procurement: Vendor & Contract Monitoring -->
     <bpmn:userTask id="Task_VendorSLAMonitoring"
                    name="Monitor Vendor SLA Performance"
                    camunda:candidateGroups="procurement">
@@ -198,8 +188,6 @@
       <bpmn:incoming>Flow_InvoiceToContComp</bpmn:incoming>
       <bpmn:outgoing>Flow_ContCompToScorecard</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Vendor Management: Scorecard & SLA Reporting -->
     <bpmn:userTask id="Task_VendorScorecard"
                    name="Update Vendor Scorecard"
                    camunda:candidateGroups="vendor-management">
@@ -241,8 +229,6 @@
     <bpmn:endEvent id="EndEvent_SLABreachEscalated" name="SLA Breach Escalated to Governance">
       <bpmn:incoming>Flow_SLABreach</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- Governance Board: Escalation Review -->
     <bpmn:exclusiveGateway id="Gateway_SLABreachResponse" name="Breach Response Action">
       <bpmn:incoming>Flow_SLAPass</bpmn:incoming>
       <bpmn:outgoing>Flow_BreachToEscReview</bpmn:outgoing>
@@ -255,8 +241,6 @@
       <bpmn:incoming>Flow_BreachToEscReview</bpmn:incoming>
       <bpmn:outgoing>Flow_EscReviewToBOKPI</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Business Owner: KPI, Adoption, Benefits -->
     <bpmn:userTask id="Task_BusinessKPIReview"
                    name="Business KPI Review"
                    camunda:candidateGroups="business-owner">
@@ -285,8 +269,6 @@
       <bpmn:incoming>Flow_BenefitsToChangeReq</bpmn:incoming>
       <bpmn:outgoing>Flow_ChangeReqToArchDrift</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- IT Architecture: Drift & Tech Debt -->
     <bpmn:userTask id="Task_ArchitecturalDriftReview"
                    name="Architectural Drift Review"
                    camunda:candidateGroups="it-architecture">
@@ -300,8 +282,6 @@
       <bpmn:incoming>Flow_ArchDriftToTechDebt</bpmn:incoming>
       <bpmn:outgoing>Flow_TechDebtToExecDash</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Governance Board: Executive Dashboard & Phase Transition -->
     <bpmn:userTask id="Task_ExecutiveDashboard"
                    name="Executive Governance Dashboard Update"
                    camunda:candidateGroups="sla-governance-board">
@@ -320,8 +300,6 @@
       <bpmn:incoming>Flow_PhaseTransToEnd</bpmn:incoming>
       <bpmn:signalEventDefinition signalRef="Signal_P5Complete" />
     </bpmn:endEvent>
-
-    <!-- Sequence Flows -->
     <bpmn:sequenceFlow id="Flow_GoLiveToObsConfig" sourceRef="StartEvent_GoLiveSignal" targetRef="DMN_ObservabilityTier" />
     <bpmn:sequenceFlow id="Flow_ObsTierToConfig" sourceRef="DMN_ObservabilityTier" targetRef="Task_ObservabilityConfig" />
     <bpmn:sequenceFlow id="Flow_ObsConfigToPerf" sourceRef="Task_ObservabilityConfig" targetRef="Task_PerformanceBaselining" />
@@ -373,8 +351,6 @@
     <bpmn:sequenceFlow id="Flow_TechDebtToExecDash" sourceRef="Task_TechDebtAssessment" targetRef="Task_ExecutiveDashboard" />
     <bpmn:sequenceFlow id="Flow_ExecDashToPhaseTransition" sourceRef="Task_ExecutiveDashboard" targetRef="Task_PhaseTransitionP6" />
     <bpmn:sequenceFlow id="Flow_PhaseTransToEnd" sourceRef="Task_PhaseTransitionP6" targetRef="EndEvent_P5Complete" />
-
-    <!-- Text Annotations -->
     <bpmn:textAnnotation id="Annotation_Regulatory">
       <bpmn:text>Regulatory: OCC 2023-17 §IV (ongoing monitoring), DORA Art.25-26 (ICT risk monitoring), SOX §404 (internal controls), GDPR Art.32 (security of processing). Annual pen test required. Quarterly compliance attestation.</bpmn:text>
     </bpmn:textAnnotation>
@@ -384,12 +360,8 @@
       <bpmn:text>SLA Governance: Vendor SLA thresholds defined in contract. SLA breach triggers governance escalation within 48 hours. Monthly performance dashboards mandatory. Quarterly governance board review.</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_SLA" sourceRef="Task_SLAPerformanceReport" targetRef="Annotation_SLA" />
-
-    <!-- Error References -->
     <bpmn:error id="Error_SecurityHold" name="Security Hold" errorCode="SEC_HOLD" />
     <bpmn:error id="Error_ComplianceHold" name="Compliance Hold" errorCode="COMP_HOLD" />
-
-    <!-- Signal References -->
     <bpmn:signal id="Signal_GoLiveComplete" name="GoLiveComplete" />
     <bpmn:signal id="Signal_P5Complete" name="P5Complete" />
 
@@ -397,547 +369,362 @@
 
   <bpmndi:BPMNDiagram id="BPMNDiagram_PostDeployObs">
     <bpmndi:BPMNPlane id="BPMNPlane_PostDeployObs" bpmnElement="Collab_PostDeployObs">
-
-      <!-- Participant (width=3700 to fit end event at x=3636) -->
       <bpmndi:BPMNShape id="Shape_Participant_PostDeployObs" bpmnElement="Participant_PostDeployObs" isHorizontal="true">
-        <dc:Bounds x="0" y="0" width="3700" height="1120" />
+        <dc:Bounds x="155" y="47" width="3700" height="1240" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Governance Board (y=0, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_GB" bpmnElement="Lane_GB" isHorizontal="true">
-        <dc:Bounds x="30" y="0" width="3670" height="160" />
+        <dc:Bounds x="185" y="47" width="3670" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Business Owner (y=160, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_BO" bpmnElement="Lane_BO" isHorizontal="true">
-        <dc:Bounds x="30" y="160" width="3670" height="160" />
+        <dc:Bounds x="185" y="207" width="3670" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: IT Architecture (y=320, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_ITA" bpmnElement="Lane_ITA" isHorizontal="true">
-        <dc:Bounds x="30" y="320" width="3670" height="160" />
+        <dc:Bounds x="185" y="367" width="3670" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Procurement (y=480, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_Proc" bpmnElement="Lane_Proc" isHorizontal="true">
-        <dc:Bounds x="30" y="480" width="3670" height="160" />
+        <dc:Bounds x="185" y="527" width="3670" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Legal & Compliance (y=640, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_LC" bpmnElement="Lane_LC" isHorizontal="true">
-        <dc:Bounds x="30" y="640" width="3670" height="160" />
+        <dc:Bounds x="185" y="687" width="3670" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Information Security (y=800, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_IS" bpmnElement="Lane_IS" isHorizontal="true">
-        <dc:Bounds x="30" y="800" width="3670" height="160" />
+        <dc:Bounds x="185" y="847" width="3670" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Vendor Management (y=960, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_VM" bpmnElement="Lane_VM" isHorizontal="true">
-        <dc:Bounds x="30" y="960" width="3670" height="160" />
+        <dc:Bounds x="185" y="1007" width="3670" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- =================== SHAPES =================== -->
-
-      <!-- GB Lane: Start Event at x=100, y=62 -->
       <bpmndi:BPMNShape id="Shape_StartEvent_GoLiveSignal" bpmnElement="StartEvent_GoLiveSignal">
-        <dc:Bounds x="100" y="62" width="36" height="36" />
+        <dc:Bounds x="255" y="109" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="74" y="105" width="88" height="27" />
+          <dc:Bounds x="229" y="152" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- ITA Lane: DMN Observability Tier at x=200, y=362 -->
       <bpmndi:BPMNShape id="Shape_DMN_ObservabilityTier" bpmnElement="DMN_ObservabilityTier">
-        <dc:Bounds x="200" y="362" width="100" height="80" />
+        <dc:Bounds x="355" y="409" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- ITA Lane: Observability Config at x=360, y=362 -->
       <bpmndi:BPMNShape id="Shape_Task_ObservabilityConfig" bpmnElement="Task_ObservabilityConfig">
-        <dc:Bounds x="360" y="362" width="100" height="80" />
+        <dc:Bounds x="515" y="409" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- ITA Lane: Performance Baselining at x=520, y=362 -->
       <bpmndi:BPMNShape id="Shape_Task_PerformanceBaselining" bpmnElement="Task_PerformanceBaselining">
-        <dc:Bounds x="520" y="362" width="100" height="80" />
+        <dc:Bounds x="675" y="409" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Security Posture at x=680, y=842 -->
       <bpmndi:BPMNShape id="Shape_Task_SecurityPosture" bpmnElement="Task_SecurityPosture">
-        <dc:Bounds x="680" y="842" width="100" height="80" />
+        <dc:Bounds x="835" y="889" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Vulnerability Scan at x=840, y=842 -->
       <bpmndi:BPMNShape id="Shape_Task_VulnerabilityScan" bpmnElement="Task_VulnerabilityScan">
-        <dc:Bounds x="840" y="842" width="100" height="80" />
+        <dc:Bounds x="995" y="889" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Security Gate at x=1000, y=857 -->
       <bpmndi:BPMNShape id="Shape_Gateway_SecurityGate" bpmnElement="Gateway_SecurityGate" isMarkerVisible="true">
-        <dc:Bounds x="1000" y="857" width="50" height="50" />
+        <dc:Bounds x="1155" y="904" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="984" y="914" width="82" height="14" />
+          <dc:Bounds x="1139" y="961" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Security Hold End at x=1000, y=960 — placed in VM lane intentionally? No, place in IS lane -->
-      <!-- IS lane is y=800 to y=960; EndEvent at x=1000, y=940 (within IS lane top=800, so y=940 is valid) -->
       <bpmndi:BPMNShape id="Shape_EndEvent_SecurityHold" bpmnElement="EndEvent_SecurityHold">
-        <dc:Bounds x="1000" y="940" width="36" height="36" />
+        <dc:Bounds x="1155" y="987" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="968" y="983" width="100" height="27" />
+          <dc:Bounds x="1123" y="1030" width="100" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Pen Test Scheduling at x=1120, y=842 -->
       <bpmndi:BPMNShape id="Shape_Task_PenTestScheduling" bpmnElement="Task_PenTestScheduling">
-        <dc:Bounds x="1120" y="842" width="100" height="80" />
+        <dc:Bounds x="1275" y="889" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Incident Response Readiness at x=1280, y=842 -->
       <bpmndi:BPMNShape id="Shape_Task_IncidentResponseReadiness" bpmnElement="Task_IncidentResponseReadiness">
-        <dc:Bounds x="1280" y="842" width="100" height="80" />
+        <dc:Bounds x="1435" y="889" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Regulatory Reporting at x=1440, y=682 -->
       <bpmndi:BPMNShape id="Shape_Task_RegulatoryReporting" bpmnElement="Task_RegulatoryReporting">
-        <dc:Bounds x="1440" y="682" width="100" height="80" />
+        <dc:Bounds x="1595" y="729" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Audit Log Review at x=1600, y=682 -->
       <bpmndi:BPMNShape id="Shape_Task_AuditLogReview" bpmnElement="Task_AuditLogReview">
-        <dc:Bounds x="1600" y="682" width="100" height="80" />
+        <dc:Bounds x="1755" y="729" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Data Retention Enforcement at x=1760, y=682 -->
       <bpmndi:BPMNShape id="Shape_Task_DataRetentionEnforcement" bpmnElement="Task_DataRetentionEnforcement">
-        <dc:Bounds x="1760" y="682" width="100" height="80" />
+        <dc:Bounds x="1915" y="729" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Compliance Gate at x=1920, y=697 -->
       <bpmndi:BPMNShape id="Shape_Gateway_ComplianceGate" bpmnElement="Gateway_ComplianceGate" isMarkerVisible="true">
-        <dc:Bounds x="1920" y="697" width="50" height="50" />
+        <dc:Bounds x="2075" y="744" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1904" y="754" width="82" height="14" />
+          <dc:Bounds x="2059" y="801" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Compliance Hold End at x=1920, y=800 — boundary of LC lane (y=640 to y=800), so y=800 is at lane bottom edge. Put at y=780 -->
       <bpmndi:BPMNShape id="Shape_EndEvent_ComplianceHold" bpmnElement="EndEvent_ComplianceHold">
-        <dc:Bounds x="1920" y="780" width="36" height="36" />
+        <dc:Bounds x="2075" y="827" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1893" y="823" width="90" height="14" />
+          <dc:Bounds x="2048" y="870" width="90" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Proc Lane: Vendor SLA Monitoring at x=2040, y=522 -->
       <bpmndi:BPMNShape id="Shape_Task_VendorSLAMonitoring" bpmnElement="Task_VendorSLAMonitoring">
-        <dc:Bounds x="2040" y="522" width="100" height="80" />
+        <dc:Bounds x="2195" y="569" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- Proc Lane: Invoice Reconciliation at x=2200, y=522 -->
       <bpmndi:BPMNShape id="Shape_Task_InvoiceReconciliation" bpmnElement="Task_InvoiceReconciliation">
-        <dc:Bounds x="2200" y="522" width="100" height="80" />
+        <dc:Bounds x="2355" y="569" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- Proc Lane: Contract Compliance Check at x=2360, y=522 -->
       <bpmndi:BPMNShape id="Shape_Task_ContractComplianceCheck" bpmnElement="Task_ContractComplianceCheck">
-        <dc:Bounds x="2360" y="522" width="100" height="80" />
+        <dc:Bounds x="2515" y="569" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: Vendor Scorecard at x=2520, y=1002 -->
       <bpmndi:BPMNShape id="Shape_Task_VendorScorecard" bpmnElement="Task_VendorScorecard">
-        <dc:Bounds x="2520" y="1002" width="100" height="80" />
+        <dc:Bounds x="2675" y="1049" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: Service Review Meeting at x=2680, y=1002 -->
       <bpmndi:BPMNShape id="Shape_Task_ServiceReviewMeeting" bpmnElement="Task_ServiceReviewMeeting">
-        <dc:Bounds x="2680" y="1002" width="100" height="80" />
+        <dc:Bounds x="2835" y="1049" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: Timer boundary on SRM at x=2730, y=980 -->
       <bpmndi:BPMNShape id="Shape_Timer_SLAMonitorSLA" bpmnElement="Timer_SLAMonitorSLA">
-        <dc:Bounds x="2730" y="980" width="36" height="36" />
+        <dc:Bounds x="2867" y="1111" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2759" y="1010" width="68" height="14" />
+          <dc:Bounds x="2896" y="1141" width="68" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: SRM SLA Escalated End at x=2840, y=975 -->
       <bpmndi:BPMNShape id="Shape_EndEvent_SLAMonitorSLAEscalated" bpmnElement="EndEvent_SLAMonitorSLAEscalated">
-        <dc:Bounds x="2840" y="975" width="36" height="36" />
+        <dc:Bounds x="2995" y="1022" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2814" y="1018" width="88" height="27" />
+          <dc:Bounds x="2969" y="1065" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: SLA Performance Report at x=2840, y="1002" — this overlaps EndEvent_SLAMonitorSLAEscalated -->
-      <!-- Shift SLA Performance Report to x=2840, y=1042 — wait that overlaps too. Let's use x=2960, y=1002 -->
       <bpmndi:BPMNShape id="Shape_Task_SLAPerformanceReport" bpmnElement="Task_SLAPerformanceReport">
-        <dc:Bounds x="2960" y="1002" width="100" height="80" />
+        <dc:Bounds x="3115" y="1049" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: SLA Status Gateway at x=3120, y=1017 -->
       <bpmndi:BPMNShape id="Shape_Gateway_SLAStatusGateway" bpmnElement="Gateway_SLAStatusGateway" isMarkerVisible="true">
-        <dc:Bounds x="3120" y="1017" width="50" height="50" />
+        <dc:Bounds x="3275" y="1064" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3104" y="1074" width="82" height="14" />
+          <dc:Bounds x="3259" y="1121" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: SLA Breach End - outside participant, need to place inside VM lane (y=960 to y=1120) -->
-      <!-- Place at x=3120, y=1096 — within VM lane bounds -->
-      <!-- Actually need x wider since gateway is at 3120. Use x=3120 but y offset -->
-      <!-- SLA Breach path goes right to far end; instead go down from gateway -->
-      <!-- Actually let's put EndEvent_SLABreachEscalated at x=3040, y=1096 (below gateway, still in VM lane) -->
-      <!-- No, gateway is at 3120. Let's put escalated end at x=3200, y=1096 but participant width=3200 is end. -->
-      <!-- Let's expand participant to 3400. Actually original is 3200. Place at x=3040, y=1096 -->
       <bpmndi:BPMNShape id="Shape_EndEvent_SLABreachEscalated" bpmnElement="EndEvent_SLABreachEscalated">
-        <dc:Bounds x="3040" y="1096" width="36" height="36" />
+        <dc:Bounds x="3195" y="1143" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3010" y="1139" width="96" height="40" />
+          <dc:Bounds x="3165" y="1186" width="96" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: SLA Breach Response Gateway at x=2840, y=62 -->
       <bpmndi:BPMNShape id="Shape_Gateway_SLABreachResponse" bpmnElement="Gateway_SLABreachResponse" isMarkerVisible="true">
-        <dc:Bounds x="2840" y="62" width="50" height="50" />
+        <dc:Bounds x="2995" y="109" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2820" y="119" width="90" height="27" />
+          <dc:Bounds x="2975" y="166" width="90" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: Escalation Review at x=2680, y=62 -->
       <bpmndi:BPMNShape id="Shape_Task_EscalationReview" bpmnElement="Task_EscalationReview">
-        <dc:Bounds x="2680" y="62" width="100" height="80" />
+        <dc:Bounds x="2835" y="109" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- BO Lane: Business KPI Review at x=2520, y=202 -->
       <bpmndi:BPMNShape id="Shape_Task_BusinessKPIReview" bpmnElement="Task_BusinessKPIReview">
-        <dc:Bounds x="2520" y="202" width="100" height="80" />
+        <dc:Bounds x="2675" y="249" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- BO Lane: User Adoption Tracking at x=2680, y=202 -->
       <bpmndi:BPMNShape id="Shape_Task_UserAdoptionTracking" bpmnElement="Task_UserAdoptionTracking">
-        <dc:Bounds x="2680" y="202" width="100" height="80" />
+        <dc:Bounds x="2835" y="249" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- BO Lane: Benefits Realization at x=2840, y=202 -->
       <bpmndi:BPMNShape id="Shape_Task_BenefitsRealization" bpmnElement="Task_BenefitsRealization">
-        <dc:Bounds x="2840" y="202" width="100" height="80" />
+        <dc:Bounds x="2995" y="249" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- BO Lane: Change Request Review at x=3000, y=202 -->
       <bpmndi:BPMNShape id="Shape_Task_ChangeRequestReview" bpmnElement="Task_ChangeRequestReview">
-        <dc:Bounds x="3000" y="202" width="100" height="80" />
+        <dc:Bounds x="3155" y="249" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- ITA Lane: Architectural Drift Review at x=3000, y=362 -->
       <bpmndi:BPMNShape id="Shape_Task_ArchitecturalDriftReview" bpmnElement="Task_ArchitecturalDriftReview">
-        <dc:Bounds x="3000" y="362" width="100" height="80" />
+        <dc:Bounds x="3155" y="409" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- ITA Lane: Technical Debt Assessment at x=3160, y=362 — need participant wider, expand to 3400 -->
-      <!-- But participant already set to 3200. Place at x=3120, y=362 — overlaps? Not if prev is 3000+100=3100 -->
-      <!-- 3000+100=3100, so 3120 is safe with gap -->
       <bpmndi:BPMNShape id="Shape_Task_TechDebtAssessment" bpmnElement="Task_TechDebtAssessment">
-        <dc:Bounds x="3120" y="362" width="100" height="80" />
+        <dc:Bounds x="3315" y="409" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: Executive Dashboard — need x further right. But participant is 3200 wide. -->
-      <!-- 3120+100=3220 which is beyond 3200. Need to expand participant. Let's move earlier tasks left or expand. -->
-      <!-- Expand participant to 3500, lanes to 3470. -->
-      <!-- Actually let's reorganize. Move TechDebt to x=3100 and ExecutiveDashboard to x=3260, PhaseTransition to 3420 -->
-      <!-- But that requires x>3500 for end event. Let's instead collapse some tasks. -->
-      <!-- Better: Keep overall layout, just expand participant to 3600. -->
-
-      <!-- GB Lane: Executive Dashboard at x=3280, y=62 -->
       <bpmndi:BPMNShape id="Shape_Task_ExecutiveDashboard" bpmnElement="Task_ExecutiveDashboard">
-        <dc:Bounds x="3280" y="62" width="100" height="80" />
+        <dc:Bounds x="3435" y="109" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: Phase Transition P6 at x=3440, y=62 -->
       <bpmndi:BPMNShape id="Shape_Task_PhaseTransitionP6" bpmnElement="Task_PhaseTransitionP6">
-        <dc:Bounds x="3440" y="62" width="100" height="80" />
+        <dc:Bounds x="3595" y="109" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: End Event P5 Complete at x=3600, y=80 -->
       <bpmndi:BPMNShape id="Shape_EndEvent_P5Complete" bpmnElement="EndEvent_P5Complete">
-        <dc:Bounds x="3600" y="80" width="36" height="36" />
+        <dc:Bounds x="3755" y="127" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3574" y="123" width="88" height="40" />
+          <dc:Bounds x="3729" y="170" width="88" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Text Annotations (below participant, participant height 1120 so annotations at y=1180) -->
       <bpmndi:BPMNShape id="Shape_Annotation_Regulatory" bpmnElement="Annotation_Regulatory">
-        <dc:Bounds x="1340" y="1170" width="500" height="80" />
+        <dc:Bounds x="1495" y="1217" width="500" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Shape_Annotation_SLA" bpmnElement="Annotation_SLA">
-        <dc:Bounds x="2700" y="1170" width="500" height="80" />
+        <dc:Bounds x="2855" y="1217" width="500" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- =================== EDGES =================== -->
-
-      <!-- Flow: Start → DMN ObservabilityTier (cross-lane GB→ITA) -->
       <bpmndi:BPMNEdge id="Edge_Flow_GoLiveToObsConfig" bpmnElement="Flow_GoLiveToObsConfig">
-        <di:waypoint x="118" y="80" />
-        <di:waypoint x="118" y="402" />
-        <di:waypoint x="200" y="402" />
+        <di:waypoint x="273" y="127" />
+        <di:waypoint x="273" y="449" />
+        <di:waypoint x="355" y="449" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: DMN → ObsConfig -->
       <bpmndi:BPMNEdge id="Edge_Flow_ObsTierToConfig" bpmnElement="Flow_ObsTierToConfig">
-        <di:waypoint x="300" y="402" />
-        <di:waypoint x="360" y="402" />
+        <di:waypoint x="495" y="449" />
+        <di:waypoint x="515" y="449" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: ObsConfig → PerfBaselining -->
       <bpmndi:BPMNEdge id="Edge_Flow_ObsConfigToPerf" bpmnElement="Flow_ObsConfigToPerf">
-        <di:waypoint x="460" y="402" />
-        <di:waypoint x="520" y="402" />
+        <di:waypoint x="655" y="449" />
+        <di:waypoint x="675" y="449" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: PerfBaselining → SecurityPosture (cross-lane ITA→IS) -->
       <bpmndi:BPMNEdge id="Edge_Flow_PerfToSecurity" bpmnElement="Flow_PerfToSecurity">
-        <di:waypoint x="570" y="442" />
-        <di:waypoint x="570" y="882" />
-        <di:waypoint x="680" y="882" />
+        <di:waypoint x="745" y="489" />
+        <di:waypoint x="745" y="929" />
+        <di:waypoint x="835" y="929" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: SecurityPosture → VulnerabilityScan -->
       <bpmndi:BPMNEdge id="Edge_Flow_SecPostureToVuln" bpmnElement="Flow_SecPostureToVuln">
-        <di:waypoint x="780" y="882" />
-        <di:waypoint x="840" y="882" />
+        <di:waypoint x="975" y="929" />
+        <di:waypoint x="995" y="929" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: VulnerabilityScan → SecurityGate -->
       <bpmndi:BPMNEdge id="Edge_Flow_VulnToSecGate" bpmnElement="Flow_VulnToSecGate">
-        <di:waypoint x="940" y="882" />
-        <di:waypoint x="1000" y="882" />
+        <di:waypoint x="1135" y="929" />
+        <di:waypoint x="1155" y="929" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: SecurityGate → SecurityHold (down) -->
       <bpmndi:BPMNEdge id="Edge_Flow_SecGateFail" bpmnElement="Flow_SecGateFail">
-        <di:waypoint x="1025" y="907" />
-        <di:waypoint x="1025" y="940" />
+        <di:waypoint x="1180" y="954" />
+        <di:waypoint x="1180" y="987" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: SecurityGate → PenTestScheduling (right) -->
       <bpmndi:BPMNEdge id="Edge_Flow_SecGatePass" bpmnElement="Flow_SecGatePass">
-        <di:waypoint x="1050" y="882" />
-        <di:waypoint x="1120" y="882" />
+        <di:waypoint x="1205" y="929" />
+        <di:waypoint x="1275" y="929" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: PenTest → IncidentResponse -->
       <bpmndi:BPMNEdge id="Edge_Flow_PenTestToIncident" bpmnElement="Flow_PenTestToIncident">
-        <di:waypoint x="1220" y="882" />
-        <di:waypoint x="1280" y="882" />
+        <di:waypoint x="1415" y="929" />
+        <di:waypoint x="1435" y="929" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: IncidentResponse → RegulatoryReporting (cross-lane IS→LC) -->
       <bpmndi:BPMNEdge id="Edge_Flow_IncidentToRegRep" bpmnElement="Flow_IncidentToRegRep">
-        <di:waypoint x="1380" y="882" />
-        <di:waypoint x="1440" y="882" />
-        <di:waypoint x="1440" y="762" />
+        <di:waypoint x="1575" y="929" />
+        <di:waypoint x="1595" y="929" />
+        <di:waypoint x="1595" y="809" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: RegulatoryReporting → AuditLogReview -->
       <bpmndi:BPMNEdge id="Edge_Flow_RegRepToAudit" bpmnElement="Flow_RegRepToAudit">
-        <di:waypoint x="1540" y="722" />
-        <di:waypoint x="1600" y="722" />
+        <di:waypoint x="1735" y="769" />
+        <di:waypoint x="1755" y="769" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: AuditLogReview → DataRetentionEnforcement -->
       <bpmndi:BPMNEdge id="Edge_Flow_AuditToDataRet" bpmnElement="Flow_AuditToDataRet">
-        <di:waypoint x="1700" y="722" />
-        <di:waypoint x="1760" y="722" />
+        <di:waypoint x="1895" y="769" />
+        <di:waypoint x="1915" y="769" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: DataRetentionEnforcement → ComplianceGate -->
       <bpmndi:BPMNEdge id="Edge_Flow_DataRetToCompGate" bpmnElement="Flow_DataRetToCompGate">
-        <di:waypoint x="1860" y="722" />
-        <di:waypoint x="1920" y="722" />
+        <di:waypoint x="2055" y="769" />
+        <di:waypoint x="2075" y="769" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: ComplianceGate → ComplianceHold (down) -->
       <bpmndi:BPMNEdge id="Edge_Flow_CompGateFail" bpmnElement="Flow_CompGateFail">
-        <di:waypoint x="1945" y="747" />
-        <di:waypoint x="1945" y="780" />
+        <di:waypoint x="2100" y="794" />
+        <di:waypoint x="2100" y="827" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: ComplianceGate → VendorSLAMonitoring (cross-lane LC→Proc, right+up) -->
       <bpmndi:BPMNEdge id="Edge_Flow_CompGatePass" bpmnElement="Flow_CompGatePass">
-        <di:waypoint x="1970" y="722" />
-        <di:waypoint x="2040" y="722" />
-        <di:waypoint x="2040" y="602" />
+        <di:waypoint x="2125" y="769" />
+        <di:waypoint x="2195" y="769" />
+        <di:waypoint x="2195" y="649" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: VendorSLAMonitoring → InvoiceReconciliation -->
       <bpmndi:BPMNEdge id="Edge_Flow_VendorSLAToInvoice" bpmnElement="Flow_VendorSLAToInvoice">
-        <di:waypoint x="2140" y="562" />
-        <di:waypoint x="2200" y="562" />
+        <di:waypoint x="2335" y="609" />
+        <di:waypoint x="2355" y="609" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: InvoiceReconciliation → ContractComplianceCheck -->
       <bpmndi:BPMNEdge id="Edge_Flow_InvoiceToContComp" bpmnElement="Flow_InvoiceToContComp">
-        <di:waypoint x="2300" y="562" />
-        <di:waypoint x="2360" y="562" />
+        <di:waypoint x="2495" y="609" />
+        <di:waypoint x="2515" y="609" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: ContractComplianceCheck → VendorScorecard (cross-lane Proc→VM) -->
       <bpmndi:BPMNEdge id="Edge_Flow_ContCompToScorecard" bpmnElement="Flow_ContCompToScorecard">
-        <di:waypoint x="2460" y="562" />
-        <di:waypoint x="2520" y="562" />
-        <di:waypoint x="2520" y="1002" />
+        <di:waypoint x="2655" y="609" />
+        <di:waypoint x="2675" y="609" />
+        <di:waypoint x="2675" y="1049" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: VendorScorecard → ServiceReviewMeeting -->
       <bpmndi:BPMNEdge id="Edge_Flow_ScorecardToSRM" bpmnElement="Flow_ScorecardToSRM">
-        <di:waypoint x="2620" y="1042" />
-        <di:waypoint x="2680" y="1042" />
+        <di:waypoint x="2815" y="1089" />
+        <di:waypoint x="2835" y="1089" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: Timer → EndEvent SRM Escalated -->
       <bpmndi:BPMNEdge id="Edge_Flow_SLAMonitorTimer" bpmnElement="Flow_SLAMonitorTimer">
-        <di:waypoint x="2766" y="998" />
-        <di:waypoint x="2840" y="998" />
-        <di:waypoint x="2840" y="993" />
+        <di:waypoint x="2903" y="1129" />
+        <di:waypoint x="2995" y="1129" />
+        <di:waypoint x="2995" y="1058" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: ServiceReviewMeeting → SLAPerformanceReport -->
       <bpmndi:BPMNEdge id="Edge_Flow_SRMToSLAReport" bpmnElement="Flow_SRMToSLAReport">
-        <di:waypoint x="2780" y="1042" />
-        <di:waypoint x="2960" y="1042" />
+        <di:waypoint x="2975" y="1089" />
+        <di:waypoint x="3115" y="1089" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: SLAPerformanceReport → SLAStatusGateway -->
       <bpmndi:BPMNEdge id="Edge_Flow_SLAReportToGateway" bpmnElement="Flow_SLAReportToGateway">
-        <di:waypoint x="3060" y="1042" />
-        <di:waypoint x="3120" y="1042" />
+        <di:waypoint x="3255" y="1089" />
+        <di:waypoint x="3275" y="1089" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: SLAStatusGateway → SLABreachEscalated (down) -->
       <bpmndi:BPMNEdge id="Edge_Flow_SLABreach" bpmnElement="Flow_SLABreach">
-        <di:waypoint x="3145" y="1067" />
-        <di:waypoint x="3145" y="1096" />
-        <di:waypoint x="3076" y="1096" />
+        <di:waypoint x="3300" y="1114" />
+        <di:waypoint x="3300" y="1143" />
+        <di:waypoint x="3231" y="1143" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: SLAStatusGateway → SLABreachResponse (cross-lane VM→GB, up) -->
       <bpmndi:BPMNEdge id="Edge_Flow_SLAPass" bpmnElement="Flow_SLAPass">
-        <di:waypoint x="3145" y="1017" />
-        <di:waypoint x="3145" y="87" />
-        <di:waypoint x="2890" y="87" />
+        <di:waypoint x="3300" y="1064" />
+        <di:waypoint x="3300" y="134" />
+        <di:waypoint x="3065" y="134" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: SLABreachResponse → EscalationReview -->
       <bpmndi:BPMNEdge id="Edge_Flow_BreachToEscReview" bpmnElement="Flow_BreachToEscReview">
-        <di:waypoint x="2840" y="87" />
-        <di:waypoint x="2780" y="87" />
+        <di:waypoint x="2995" y="134" />
+        <di:waypoint x="2975" y="134" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: SLABreachResponse → BusinessKPIReview (cross-lane GB→BO, down) -->
       <bpmndi:BPMNEdge id="Edge_Flow_BreachToBOKPI" bpmnElement="Flow_BreachToBOKPI">
-        <di:waypoint x="2865" y="112" />
-        <di:waypoint x="2865" y="242" />
-        <di:waypoint x="2620" y="242" />
+        <di:waypoint x="3020" y="159" />
+        <di:waypoint x="3020" y="289" />
+        <di:waypoint x="2815" y="289" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: EscalationReview → BusinessKPIReview (cross-lane GB→BO) -->
       <bpmndi:BPMNEdge id="Edge_Flow_EscReviewToBOKPI" bpmnElement="Flow_EscReviewToBOKPI">
-        <di:waypoint x="2730" y="142" />
-        <di:waypoint x="2570" y="142" />
-        <di:waypoint x="2570" y="202" />
+        <di:waypoint x="2905" y="189" />
+        <di:waypoint x="2745" y="189" />
+        <di:waypoint x="2745" y="249" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: BusinessKPIReview → UserAdoptionTracking -->
       <bpmndi:BPMNEdge id="Edge_Flow_BOKPIToAdoption" bpmnElement="Flow_BOKPIToAdoption">
-        <di:waypoint x="2620" y="242" />
-        <di:waypoint x="2680" y="242" />
+        <di:waypoint x="2815" y="289" />
+        <di:waypoint x="2835" y="289" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: UserAdoptionTracking → BenefitsRealization -->
       <bpmndi:BPMNEdge id="Edge_Flow_AdoptionToBenefits" bpmnElement="Flow_AdoptionToBenefits">
-        <di:waypoint x="2780" y="242" />
-        <di:waypoint x="2840" y="242" />
+        <di:waypoint x="2975" y="289" />
+        <di:waypoint x="2995" y="289" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: BenefitsRealization → ChangeRequestReview -->
       <bpmndi:BPMNEdge id="Edge_Flow_BenefitsToChangeReq" bpmnElement="Flow_BenefitsToChangeReq">
-        <di:waypoint x="2940" y="242" />
-        <di:waypoint x="3000" y="242" />
+        <di:waypoint x="3135" y="289" />
+        <di:waypoint x="3155" y="289" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: ChangeRequestReview → ArchitecturalDriftReview (cross-lane BO→ITA) -->
       <bpmndi:BPMNEdge id="Edge_Flow_ChangeReqToArchDrift" bpmnElement="Flow_ChangeReqToArchDrift">
-        <di:waypoint x="3050" y="282" />
-        <di:waypoint x="3050" y="362" />
+        <di:waypoint x="3225" y="329" />
+        <di:waypoint x="3225" y="409" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: ArchitecturalDriftReview → TechDebtAssessment -->
       <bpmndi:BPMNEdge id="Edge_Flow_ArchDriftToTechDebt" bpmnElement="Flow_ArchDriftToTechDebt">
-        <di:waypoint x="3100" y="402" />
-        <di:waypoint x="3120" y="402" />
+        <di:waypoint x="3295" y="449" />
+        <di:waypoint x="3315" y="449" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: TechDebtAssessment → ExecutiveDashboard (cross-lane ITA→GB) -->
       <bpmndi:BPMNEdge id="Edge_Flow_TechDebtToExecDash" bpmnElement="Flow_TechDebtToExecDash">
-        <di:waypoint x="3220" y="402" />
-        <di:waypoint x="3330" y="402" />
-        <di:waypoint x="3330" y="142" />
+        <di:waypoint x="3455" y="449" />
+        <di:waypoint x="3505" y="449" />
+        <di:waypoint x="3505" y="189" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: ExecutiveDashboard → PhaseTransitionP6 -->
       <bpmndi:BPMNEdge id="Edge_Flow_ExecDashToPhaseTransition" bpmnElement="Flow_ExecDashToPhaseTransition">
-        <di:waypoint x="3380" y="102" />
-        <di:waypoint x="3440" y="102" />
+        <di:waypoint x="3575" y="149" />
+        <di:waypoint x="3595" y="149" />
       </bpmndi:BPMNEdge>
-
-      <!-- Flow: PhaseTransitionP6 → EndEvent_P5Complete -->
       <bpmndi:BPMNEdge id="Edge_Flow_PhaseTransToEnd" bpmnElement="Flow_PhaseTransToEnd">
-        <di:waypoint x="3540" y="102" />
-        <di:waypoint x="3600" y="98" />
+        <di:waypoint x="3735" y="149" />
+        <di:waypoint x="3755" y="145" />
       </bpmndi:BPMNEdge>
-
-      <!-- Association: Regulatory annotation -->
       <bpmndi:BPMNEdge id="Edge_Assoc_Regulatory" bpmnElement="Assoc_Regulatory">
-        <di:waypoint x="1490" y="762" />
-        <di:waypoint x="1490" y="1170" />
+        <di:waypoint x="1665" y="809" />
+        <di:waypoint x="1665" y="1217" />
       </bpmndi:BPMNEdge>
-
-      <!-- Association: SLA annotation -->
       <bpmndi:BPMNEdge id="Edge_Assoc_SLA" bpmnElement="Assoc_SLA">
-        <di:waypoint x="3010" y="1082" />
-        <di:waypoint x="3010" y="1170" />
-        <di:waypoint x="2950" y="1170" />
+        <di:waypoint x="3185" y="1129" />
+        <di:waypoint x="3185" y="1217" />
+        <di:waypoint x="3105" y="1217" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>

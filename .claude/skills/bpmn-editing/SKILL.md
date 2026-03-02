@@ -73,10 +73,10 @@ Let Camunda Modeler format the definitions element. Don't manually format with m
 
 | Element | Width | Height |
 |---------|-------|--------|
-| Task | 100 | 80 |
+| Task | 140 | 80 |
 | Gateway | 50 | 50 |
 | Event | 36 | 36 |
-| Collapsed Sub-Process | 100 | 80 |
+| Collapsed Sub-Process | 140 | 80 |
 
 ### 5. Timer Boundary Event Pattern
 
