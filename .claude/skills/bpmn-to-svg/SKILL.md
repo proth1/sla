@@ -70,10 +70,10 @@ await Write({ file_path: outputPath, content: svg });
 ## Example
 
 ```bash
-# Render the SLA governance process
-/bpmn-to-svg processes/phase-0/sla-intake.bpmn
+# Render the SLA governance master process
+/bpmn-to-svg processes/master/sla-governance-master.bpmn
 
-# Output: SVG saved to docs/images/sla-intake.svg
+# Output: SVG saved to docs/images/sla-governance-master.svg
 ```
 
 ## Embedding in HTML Presentations
@@ -82,18 +82,13 @@ After generating the SVG, embed it in the HTML presentation:
 
 ```html
 <!-- Simple image embed -->
-<img src="images/sla-intake.svg"
-     alt="SLA Intake BPMN Process"
+<img src="images/sla-governance-master.svg"
+     alt="SLA Governance Master BPMN Process"
      style="width: 100%; height: auto; min-width: 800px;">
 
 <!-- In a scrollable container -->
 <div style="background: #f8fafc; border-radius: 12px; padding: 1rem; overflow-x: auto;">
-    <img src="images/sla-intake.svg" alt="BPMN Process">
-</div>
-
-<!-- In a modal popup -->
-<div id="bpmn-modal" style="display: none; position: fixed; ...">
-    <img src="images/sla-intake.svg" alt="BPMN Process">
+    <img src="images/sla-governance-master.svg" alt="BPMN Process">
 </div>
 ```
 
@@ -105,7 +100,9 @@ The bpmn-js renderer produces high-quality SVG with proper BPMN 2.0 notation:
 |---------|--------|
 | Service Task | Gear icons |
 | User Task | Person icon |
+| Business Rule Task | Table icon |
 | Exclusive Gateway | Diamond with X |
+| Parallel Gateway | Diamond with + |
 | Timer Boundary Event | Clock icon with duration |
 | Escalation End Event | Arrow symbol |
 | Sequence Flow | Arrows with arrowheads |
