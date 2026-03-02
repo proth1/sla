@@ -1,0 +1,1173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_AIGovernance" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.42.0">
+  <bpmn:process id="AIGovernanceProcess" name="AI Governance Process" isExecutable="true" camunda:historyTimeToLive="10">
+    <bpmn:startEvent id="Start_AIGovernance" name="Start AI Governance Process" camunda:formHandlerClass="org.softcannery.camunda.FormioStartFormHandler" camunda:formKey="embedded:app:formio.html">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;governance_initiation&#34;, true)}" event="start" />
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="AI_Governance_Start" />
+          <camunda:property name="formio.outputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.file" value="AI_Governance_Start.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_to_initital_classification</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_StartEvent">
+        <bpmn:targetRef>DataStore_AIGovernance</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:startEvent>
+    <bpmn:dataStoreReference id="DataStore_AIGovernance" name="Use Case Data" />
+    <bpmn:exclusiveGateway id="Gateway_RiskClassification" name="Risk&#10; Classification ?">
+      <bpmn:incoming>Flow_0lpelg6</bpmn:incoming>
+      <bpmn:outgoing>Flow_unacceptable_risk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_high_risk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_limited_risk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_minimal_risk</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_UnacceptableRisk" name="Rejected as&#10;Unacceptable Risk">
+      <bpmn:incoming>Flow_unacceptable_risk</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_TeamDecision" name="Governance Team Decision ?">
+      <bpmn:incoming>Flow_0vqb86j</bpmn:incoming>
+      <bpmn:outgoing>Flow_team_approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_team_rejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_RejectedProject" name="Use Case Rejected">
+      <bpmn:incoming>Flow_team_rejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_ControlsImplementation" name="Controls Implementation" camunda:formKey="embedded:app:formio.html" camunda:assignee="implementation_team">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_ControlsImplementation" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_ControlsImplementation" />
+          <camunda:property name="formio.file" value="AI_Controls_Implementation.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_ControlsImplementation">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_team_approved</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qgtyes</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_to_initital_classification" sourceRef="Start_AIGovernance" targetRef="Task_AIUseCaseAssessment" />
+    <bpmn:sequenceFlow id="Flow_unacceptable_risk" name="Unacceptable Risk" sourceRef="Gateway_RiskClassification" targetRef="EndEvent_UnacceptableRisk">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_InitialRiskClassification.data.riskClassification == "Unacceptable"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_high_risk" name="High Risk" sourceRef="Gateway_RiskClassification" targetRef="Event_0yytcky">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_InitialRiskClassification.data.riskClassification == "High"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_limited_risk" name="Limited Risk" sourceRef="Gateway_RiskClassification" targetRef="Event_01ufa05">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_InitialRiskClassification.data.riskClassification == "Limited"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_minimal_risk" name="Minimal Risk" sourceRef="Gateway_RiskClassification" targetRef="Event_0ihinvy">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_InitialRiskClassification.data.riskClassification == "Minimal"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_team_approved" name="Approved" sourceRef="Gateway_TeamDecision" targetRef="Task_ControlsImplementation">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_GovernanceTeamReview.data.approvalDecision == "Approved"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_team_rejected" name="Rejected" sourceRef="Gateway_TeamDecision" targetRef="EndEvent_RejectedProject">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_GovernanceTeamReview.data.approvalDecision == "Rejected"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:subProcess id="Activity_0z3fg5j" name="Minimal Risk Review Process" triggeredByEvent="true">
+      <bpmn:startEvent id="Event_1o5z2in" name="Minimal Risk Review">
+        <bpmn:outgoing>Flow_0y2tegg</bpmn:outgoing>
+        <bpmn:escalationEventDefinition id="EscalationEventDefinition_1mn70rc" escalationRef="Escalation_24b0tk1" />
+      </bpmn:startEvent>
+      <bpmn:userTask id="Task_StandardApproval" name="Standard Approval" camunda:formKey="embedded:app:formio.html" camunda:assignee="approval_manager">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="formio.variable" value="Task_StandardApproval" />
+            <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+            <camunda:property name="formio.outputDataSource" value="Task_StandardApproval" />
+            <camunda:property name="formio.file" value="AI_Standard_Approval.formio" />
+            <camunda:property name="formio.form" />
+          </camunda:properties>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="Task_StandardApproval">${formio.AIGovernanceData.json}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0y2tegg</bpmn:incoming>
+        <bpmn:outgoing>Flow_to_standard_decision</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:exclusiveGateway id="Gateway_StandardDecision" name="Approved ?">
+        <bpmn:incoming>Flow_to_standard_decision</bpmn:incoming>
+        <bpmn:outgoing>Flow_standard_approved</bpmn:outgoing>
+        <bpmn:outgoing>Flow_1cf4nld</bpmn:outgoing>
+        <bpmn:outgoing>Flow_0rz2vw6</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:endEvent id="Event_1ih5s7p" name="Idea Rejected">
+        <bpmn:incoming>Flow_1cf4nld</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:endEvent id="Event_00eqxxv" name="Idea Approved">
+        <bpmn:incoming>Flow_standard_approved</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_to_standard_decision" sourceRef="Task_StandardApproval" targetRef="Gateway_StandardDecision" />
+      <bpmn:sequenceFlow id="Flow_standard_approved" name="Approved" sourceRef="Gateway_StandardDecision" targetRef="Event_00eqxxv">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_StandardApproval.data.approvalDecision == "Approved"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_1cf4nld" name="Rejected" sourceRef="Gateway_StandardDecision" targetRef="Event_1ih5s7p">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_StandardApproval.data.approvalDecision == "Rejected"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_0y2tegg" sourceRef="Event_1o5z2in" targetRef="Task_StandardApproval" />
+      <bpmn:sequenceFlow id="Flow_0rz2vw6" sourceRef="Gateway_StandardDecision" targetRef="Event_1y5tqfx" />
+      <bpmn:endEvent id="Event_1y5tqfx" name="Idea Escalated to Limited Risk">
+        <bpmn:incoming>Flow_0rz2vw6</bpmn:incoming>
+        <bpmn:escalationEventDefinition id="EscalationEventDefinition_12dvh8k" escalationRef="Escalation_0k3bged" />
+      </bpmn:endEvent>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="Activity_0ogspoa" name="Limited Risk Review Process" triggeredByEvent="true">
+      <bpmn:startEvent id="Event_0gj0di4" name="Limited Risk Review">
+        <bpmn:outgoing>Flow_0806meb</bpmn:outgoing>
+        <bpmn:escalationEventDefinition id="EscalationEventDefinition_1mqind9" escalationRef="Escalation_0k3bged" />
+      </bpmn:startEvent>
+      <bpmn:exclusiveGateway id="Gateway_1gmh4xc" name="Approved ?">
+        <bpmn:incoming>Flow_0jiu5um</bpmn:incoming>
+        <bpmn:outgoing>Flow_07cga6m</bpmn:outgoing>
+        <bpmn:outgoing>Flow_18fpj0q</bpmn:outgoing>
+        <bpmn:outgoing>Flow_0kwyj4p</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:endEvent id="Event_07l6m5m" name="Idea Approved">
+        <bpmn:incoming>Flow_07cga6m</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:endEvent id="Event_0res79i" name="Idea Rejected">
+        <bpmn:incoming>Flow_18fpj0q</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0806meb" sourceRef="Event_0gj0di4" targetRef="Task_GovernanceTeamReview" />
+      <bpmn:sequenceFlow id="Flow_07cga6m" name="Approved" sourceRef="Gateway_1gmh4xc" targetRef="Event_07l6m5m">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_StandardApproval.data.approvalDecision == "Approved"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_18fpj0q" name="Rejected" sourceRef="Gateway_1gmh4xc" targetRef="Event_0res79i">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_StandardApproval.data.approvalDecision == "Rejected"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_0kwyj4p" sourceRef="Gateway_1gmh4xc" targetRef="Event_0svwwlb" />
+      <bpmn:userTask id="Task_GovernanceTeamReview" name="Governance Team Approval" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_team">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="formio.variable" value="Task_GovernanceTeamReview" />
+            <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+            <camunda:property name="formio.outputDataSource" value="Task_GovernanceTeamReview" />
+            <camunda:property name="formio.file" value="AI_Governance_Team_Review.formio" />
+            <camunda:property name="formio.form" />
+          </camunda:properties>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="Task_GovernanceTeamReview">${formio.AIGovernanceData.json}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0806meb</bpmn:incoming>
+        <bpmn:outgoing>Flow_0jiu5um</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="Flow_0jiu5um" sourceRef="Task_GovernanceTeamReview" targetRef="Gateway_1gmh4xc" />
+      <bpmn:endEvent id="Event_0svwwlb" name="Idea Escalated to High Risk Review">
+        <bpmn:incoming>Flow_0kwyj4p</bpmn:incoming>
+        <bpmn:escalationEventDefinition id="EscalationEventDefinition_1g0igfk" escalationRef="Escalation_2f5ol35" />
+      </bpmn:endEvent>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="Activity_0jjccez" name="High Risk Review Process" triggeredByEvent="true">
+      <bpmn:startEvent id="Event_1j4gdm3" name="High Risk&#10;Review">
+        <bpmn:outgoing>Flow_0ewbwx5</bpmn:outgoing>
+        <bpmn:escalationEventDefinition id="EscalationEventDefinition_0x6vlaj" escalationRef="Escalation_2f5ol35" />
+      </bpmn:startEvent>
+      <bpmn:userTask id="Task_GovernanceAdvisoryBoardReview" name="Governance Advisory Board Approval" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_board">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="formio.variable" value="Task_GovernanceAdvisoryBoardReview" />
+            <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+            <camunda:property name="formio.outputDataSource" value="Task_GovernanceAdvisoryBoardReview" />
+            <camunda:property name="formio.file" value="AI_Governance_Board_Review.formio" />
+            <camunda:property name="formio.form" />
+          </camunda:properties>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="Task_GovernanceAdvisoryBoardReview">${formio.AIGovernanceData.json}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0ewbwx5</bpmn:incoming>
+        <bpmn:outgoing>Flow_to_board_decision</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:exclusiveGateway id="Gateway_BoardDecision" name="Aprpoved ?">
+        <bpmn:incoming>Flow_to_board_decision</bpmn:incoming>
+        <bpmn:outgoing>Flow_board_approved</bpmn:outgoing>
+        <bpmn:outgoing>Flow_board_rejected</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:endEvent id="Event_1set5z6" name="Idea Rejected">
+        <bpmn:incoming>Flow_board_rejected</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:endEvent id="Event_0sphqiv" name="Idea Approved">
+        <bpmn:incoming>Flow_board_approved</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_to_board_decision" sourceRef="Task_GovernanceAdvisoryBoardReview" targetRef="Gateway_BoardDecision" />
+      <bpmn:sequenceFlow id="Flow_board_approved" name="Approved" sourceRef="Gateway_BoardDecision" targetRef="Event_0sphqiv">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_GovernanceAdvisoryBoardReview.data.approvalDecision == "Approved"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_board_rejected" name="Rejected" sourceRef="Gateway_BoardDecision" targetRef="Event_1set5z6">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_GovernanceAdvisoryBoardReview.data.approvalDecision == "Rejected"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_0ewbwx5" sourceRef="Event_1j4gdm3" targetRef="Task_GovernanceAdvisoryBoardReview" />
+    </bpmn:subProcess>
+    <bpmn:intermediateThrowEvent id="Event_0yytcky" name="Run the High Risk Review Process">
+      <bpmn:incoming>Flow_high_risk</bpmn:incoming>
+      <bpmn:outgoing>Flow_0wvju4w</bpmn:outgoing>
+      <bpmn:escalationEventDefinition id="EscalationEventDefinition_0op2snr" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateThrowEvent id="Event_01ufa05" name="Run the Limited Risk Review Process">
+      <bpmn:incoming>Flow_limited_risk</bpmn:incoming>
+      <bpmn:outgoing>Flow_1v46see</bpmn:outgoing>
+      <bpmn:escalationEventDefinition id="EscalationEventDefinition_0wiu69u" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateThrowEvent id="Event_0ihinvy" name="Run the Minimal Risk Review Process">
+      <bpmn:incoming>Flow_minimal_risk</bpmn:incoming>
+      <bpmn:outgoing>Flow_1iy7po6</bpmn:outgoing>
+      <bpmn:escalationEventDefinition id="EscalationEventDefinition_0z9rs6s" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:exclusiveGateway id="Gateway_0q3l9kh">
+      <bpmn:incoming>Flow_0wvju4w</bpmn:incoming>
+      <bpmn:incoming>Flow_1v46see</bpmn:incoming>
+      <bpmn:incoming>Flow_1iy7po6</bpmn:incoming>
+      <bpmn:outgoing>Flow_1fgxfco</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0wvju4w" sourceRef="Event_0yytcky" targetRef="Gateway_0q3l9kh" />
+    <bpmn:sequenceFlow id="Flow_1v46see" sourceRef="Event_01ufa05" targetRef="Gateway_0q3l9kh" />
+    <bpmn:sequenceFlow id="Flow_1iy7po6" sourceRef="Event_0ihinvy" targetRef="Gateway_0q3l9kh" />
+    <bpmn:subProcess id="Activity_021kbsm">
+      <bpmn:incoming>Flow_1fgxfco</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vqb86j</bpmn:outgoing>
+      <bpmn:startEvent id="Event_1d4253q">
+        <bpmn:outgoing>Flow_03po89a</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:intermediateCatchEvent id="Event_1kwhtzo" name="Wait for Decision">
+        <bpmn:incoming>Flow_03po89a</bpmn:incoming>
+        <bpmn:outgoing>Flow_1ar2qlt</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_1gj2aqs" />
+      </bpmn:intermediateCatchEvent>
+      <bpmn:endEvent id="Event_0hosfwf">
+        <bpmn:incoming>Flow_1ar2qlt</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1ar2qlt" sourceRef="Event_1kwhtzo" targetRef="Event_0hosfwf" />
+      <bpmn:sequenceFlow id="Flow_03po89a" sourceRef="Event_1d4253q" targetRef="Event_1kwhtzo" />
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_1fgxfco" sourceRef="Gateway_0q3l9kh" targetRef="Activity_021kbsm" />
+    <bpmn:boundaryEvent id="Event_142k49d" name="SLA Time&#10;Interval" cancelActivity="false" attachedToRef="Activity_021kbsm">
+      <bpmn:outgoing>Flow_0hhfzin</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0q42hn1" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_0hhfzin" sourceRef="Event_142k49d" targetRef="Event_167vflm" />
+    <bpmn:endEvent id="Event_167vflm" name="Send Reminder">
+      <bpmn:incoming>Flow_0hhfzin</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_126xgmg" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0vqb86j" sourceRef="Activity_021kbsm" targetRef="Gateway_TeamDecision" />
+    <bpmn:userTask id="Task_InitialRiskAssessment" name="Intake and Initial Risk Assessment" camunda:formKey="embedded:app:formio.html" camunda:assignee="risk_analyst">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_InitialRiskAssessment" />
+          <camunda:property name="formio.inputDataSource" value="AICaseData" />
+          <camunda:property name="formio.outputDataSource" value="Task_InitialRiskAssessment" />
+          <camunda:property name="formio.file" value="AI_Risk_Initial_Assessment.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_InitialRiskAssessment">${formio.AICaseData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1n7zkcd</bpmn:incoming>
+      <bpmn:outgoing>Flow_0lpelg6</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0lpelg6" sourceRef="Task_InitialRiskAssessment" targetRef="Gateway_RiskClassification" />
+    <bpmn:userTask id="Task_DesignReview" name="Planning and Design Review" camunda:formKey="embedded:app:formio.html" camunda:assignee="design_reviewer">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_DesignReview" />
+          <camunda:property name="formio.inputDataSource" value="AICaseData" />
+          <camunda:property name="formio.outputDataSource" value="Task_DesignReview" />
+          <camunda:property name="formio.file" value="AI_Risk_Design_Review.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_DesignReview">${formio.AICaseData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_148jog5</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_development_review</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_DevelopmentReview" name="Development Process Assessment" camunda:formKey="embedded:app:formio.html" camunda:assignee="dev_reviewer">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_DevelopmentReview" />
+          <camunda:property name="formio.inputDataSource" value="AICaseData" />
+          <camunda:property name="formio.outputDataSource" value="Task_DevelopmentReview" />
+          <camunda:property name="formio.file" value="AI_Risk_Development_Review.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_DevelopmentReview">${formio.AICaseData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_development_review</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_testing_validation</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_TestingValidation" name="Testing and Validation" camunda:formKey="embedded:app:formio.html" camunda:assignee="test_validator">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_TestingValidation" />
+          <camunda:property name="formio.inputDataSource" value="AICaseData" />
+          <camunda:property name="formio.outputDataSource" value="Task_TestingValidation" />
+          <camunda:property name="formio.file" value="AI_Risk_Testing_Validation.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_TestingValidation">${formio.AICaseData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_testing_validation</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_predeployment</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_PreDeployment" name="Pre-Deployment Review&#10;(Go / No Go)" camunda:formKey="embedded:app:formio.html" camunda:assignee="deployment_reviewer">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_PreDeployment" />
+          <camunda:property name="formio.inputDataSource" value="AICaseData" />
+          <camunda:property name="formio.outputDataSource" value="Task_PreDeployment" />
+          <camunda:property name="formio.file" value="AI_Risk_PreDeployment_Review.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_PreDeployment">${formio.AICaseData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_predeployment</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_decision</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_00c3b3l" name="Deployment Decision ?">
+      <bpmn:incoming>Flow_to_decision</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_production</bpmn:outgoing>
+      <bpmn:outgoing>Flow_to_redesign</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0e71da3</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gateway_0bu51v0">
+      <bpmn:incoming>Flow_to_redesign</bpmn:incoming>
+      <bpmn:incoming>Flow_1qgtyes</bpmn:incoming>
+      <bpmn:outgoing>Flow_148jog5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_148jog5" sourceRef="Gateway_0bu51v0" targetRef="Task_DesignReview" />
+    <bpmn:sequenceFlow id="Flow_to_development_review" sourceRef="Task_DesignReview" targetRef="Task_DevelopmentReview" />
+    <bpmn:sequenceFlow id="Flow_to_testing_validation" sourceRef="Task_DevelopmentReview" targetRef="Task_TestingValidation" />
+    <bpmn:sequenceFlow id="Flow_to_predeployment" sourceRef="Task_TestingValidation" targetRef="Task_PreDeployment" />
+    <bpmn:sequenceFlow id="Flow_to_decision" sourceRef="Task_PreDeployment" targetRef="Gateway_00c3b3l" />
+    <bpmn:sequenceFlow id="Flow_to_production" name="Approved" sourceRef="Gateway_00c3b3l" targetRef="Event_1v15eji">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_PreDeployment.data.deploymentDecision == "Approved"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_to_redesign" name="Rejected" sourceRef="Gateway_00c3b3l" targetRef="Gateway_0bu51v0">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_PreDeployment.data.deploymentDecision == "Rejected"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateThrowEvent id="Event_1v15eji" name="Use Case in Production">
+      <bpmn:incoming>Flow_to_production</bpmn:incoming>
+      <bpmn:outgoing>Flow_0aiz46c</bpmn:outgoing>
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_1qgtyes" sourceRef="Task_ControlsImplementation" targetRef="Gateway_0bu51v0" />
+    <bpmn:endEvent id="Event_1027u93" name="Use Case Rejected">
+      <bpmn:incoming>Flow_0e71da3</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0e71da3" sourceRef="Gateway_00c3b3l" targetRef="Event_1027u93" />
+    <bpmn:endEvent id="Event_0y6ctlj" name="Use Case&#10;Retired">
+      <bpmn:incoming>Flow_1ueiv3b</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:subProcess id="Activity_1b3kuuy">
+      <bpmn:incoming>Flow_0aiz46c</bpmn:incoming>
+      <bpmn:multiInstanceLoopCharacteristics isSequential="true">
+        <bpmn:loopCardinality xsi:type="bpmn:tFormalExpression">10000000</bpmn:loopCardinality>
+        <bpmn:completionCondition xsi:type="bpmn:tFormalExpression">${!shouldContinue}</bpmn:completionCondition>
+      </bpmn:multiInstanceLoopCharacteristics>
+      <bpmn:startEvent id="Event_1ir3a6f">
+        <bpmn:outgoing>Flow_12t45wn</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:intermediateCatchEvent id="Event_0hbz22a" name="Once Per Week">
+        <bpmn:incoming>Flow_0tk0cbc</bpmn:incoming>
+        <bpmn:outgoing>Flow_0grevys</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_1nvh9xr">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT10M</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:intermediateCatchEvent>
+      <bpmn:intermediateCatchEvent id="StartOnDemandMessage" name="Trigger Review on Demand">
+        <bpmn:documentation>This message is fired to start an instance of the CBRE Horizons Forecast Agent</bpmn:documentation>
+        <bpmn:incoming>Flow_1wvrtz4</bpmn:incoming>
+        <bpmn:outgoing>Flow_09u8hgt</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_05q4h5z" />
+      </bpmn:intermediateCatchEvent>
+      <bpmn:endEvent id="Event_1f23qk1">
+        <bpmn:incoming>Flow_0y1a5th</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:eventBasedGateway id="Gateway_06uidho">
+        <bpmn:incoming>Flow_0zj0dt1</bpmn:incoming>
+        <bpmn:outgoing>Flow_0tk0cbc</bpmn:outgoing>
+        <bpmn:outgoing>Flow_1wvrtz4</bpmn:outgoing>
+      </bpmn:eventBasedGateway>
+      <bpmn:exclusiveGateway id="Gateway_0cfyv4t">
+        <bpmn:incoming>Flow_0grevys</bpmn:incoming>
+        <bpmn:incoming>Flow_09u8hgt</bpmn:incoming>
+        <bpmn:outgoing>Flow_0y1a5th</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_12t45wn" sourceRef="Event_1ir3a6f" targetRef="Task_ProductionMonitoring" />
+      <bpmn:sequenceFlow id="Flow_0tk0cbc" sourceRef="Gateway_06uidho" targetRef="Event_0hbz22a" />
+      <bpmn:sequenceFlow id="Flow_0grevys" sourceRef="Event_0hbz22a" targetRef="Gateway_0cfyv4t" />
+      <bpmn:sequenceFlow id="Flow_1wvrtz4" sourceRef="Gateway_06uidho" targetRef="StartOnDemandMessage" />
+      <bpmn:sequenceFlow id="Flow_09u8hgt" sourceRef="StartOnDemandMessage" targetRef="Gateway_0cfyv4t" />
+      <bpmn:sequenceFlow id="Flow_0y1a5th" sourceRef="Gateway_0cfyv4t" targetRef="Event_1f23qk1" />
+      <bpmn:userTask id="Task_ProductionMonitoring" name="Production Operation and Monitoring" camunda:formKey="embedded:app:formio.html" camunda:assignee="ops_monitor">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="formio.variable" value="Task_ProductionMonitoring" />
+            <camunda:property name="formio.inputDataSource" value="AICaseData" />
+            <camunda:property name="formio.outputDataSource" value="Task_ProductionMonitoring" />
+            <camunda:property name="formio.file" value="AI_Risk_Production_Monitoring.formio" />
+            <camunda:property name="formio.form" />
+          </camunda:properties>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="Task_ProductionMonitoring">${formio.AICaseData.json}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_12t45wn</bpmn:incoming>
+        <bpmn:outgoing>Flow_0gtbe77</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="Flow_0gtbe77" sourceRef="Task_ProductionMonitoring" targetRef="Gateway_1l6xtqa" />
+      <bpmn:sequenceFlow id="Flow_system_retirement" name="Retire" sourceRef="Gateway_1l6xtqa" targetRef="Task_Decommissioning">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_ContinuousMonitoring.data.retirementDecision == "Retire"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:exclusiveGateway id="Gateway_1l6xtqa" name="What&#39;s&#10;Next ?">
+        <bpmn:incoming>Flow_0gtbe77</bpmn:incoming>
+        <bpmn:outgoing>Flow_0aa2iid</bpmn:outgoing>
+        <bpmn:outgoing>Flow_1qqbtxx</bpmn:outgoing>
+        <bpmn:outgoing>Flow_system_retirement</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_0aa2iid" name="Continue" sourceRef="Gateway_1l6xtqa" targetRef="Task_ContinuousImprovement" />
+      <bpmn:userTask id="Task_ContinuousImprovement" name="Continuous Improvement" camunda:formKey="embedded:app:formio.html" camunda:assignee="improvement_analyst">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="formio.variable" value="Task_ContinuousImprovement" />
+            <camunda:property name="formio.inputDataSource" value="AICaseData" />
+            <camunda:property name="formio.outputDataSource" value="Task_ContinuousImprovement" />
+            <camunda:property name="formio.file" value="AI_Risk_Continuous_Improvement.formio" />
+            <camunda:property name="formio.form" />
+          </camunda:properties>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="Task_ContinuousImprovement">${formio.AICaseData.json}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0aa2iid</bpmn:incoming>
+        <bpmn:outgoing>Flow_138mvas</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_ChangeManagement" name="Change Management" camunda:formKey="embedded:app:formio.html" camunda:assignee="change_manager">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="formio.variable" value="Task_ChangeManagement" />
+            <camunda:property name="formio.inputDataSource" value="AICaseData" />
+            <camunda:property name="formio.outputDataSource" value="Task_ChangeManagement" />
+            <camunda:property name="formio.file" value="AI_Risk_Change_Management.formio" />
+            <camunda:property name="formio.form" />
+          </camunda:properties>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="Task_ChangeManagement">${formio.AICaseData.json}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_1qqbtxx</bpmn:incoming>
+        <bpmn:outgoing>Flow_1i7uyif</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="Flow_138mvas" sourceRef="Task_ContinuousImprovement" targetRef="Gateway_1lqrk7x" />
+      <bpmn:sequenceFlow id="Flow_1qqbtxx" name="Change" sourceRef="Gateway_1l6xtqa" targetRef="Task_ChangeManagement" />
+      <bpmn:exclusiveGateway id="Gateway_1lqrk7x">
+        <bpmn:incoming>Flow_138mvas</bpmn:incoming>
+        <bpmn:incoming>Flow_1i7uyif</bpmn:incoming>
+        <bpmn:outgoing>Flow_0zj0dt1</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_0zj0dt1" sourceRef="Gateway_1lqrk7x" targetRef="Gateway_06uidho" />
+      <bpmn:sequenceFlow id="Flow_1i7uyif" sourceRef="Task_ChangeManagement" targetRef="Gateway_1lqrk7x" />
+      <bpmn:sequenceFlow id="Flow_0ktb4da" sourceRef="Task_Decommissioning" targetRef="Event_0hxix0s" />
+      <bpmn:userTask id="Task_Decommissioning" name="Decommission Plan" camunda:formKey="embedded:app:formio.html" camunda:assignee="decommission_planner">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="formio.variable" value="Task_Decommissioning" />
+            <camunda:property name="formio.inputDataSource" value="AICaseData" />
+            <camunda:property name="formio.outputDataSource" value="Task_Decommissioning" />
+            <camunda:property name="formio.file" value="AI_Risk_Decommissioning_Plan.formio" />
+            <camunda:property name="formio.form" />
+          </camunda:properties>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="Task_Decommissioning">${formio.AICaseData.json}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_system_retirement</bpmn:incoming>
+        <bpmn:outgoing>Flow_0ktb4da</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:endEvent id="Event_0hxix0s" name="Retired" camunda:asyncBefore="true" camunda:asyncAfter="true">
+        <bpmn:incoming>Flow_0ktb4da</bpmn:incoming>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_0hcrtke" messageRef="Message_2b1ohm4" />
+      </bpmn:endEvent>
+    </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Event_1urda69" name="Retired" attachedToRef="Activity_1b3kuuy">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;shouldContinue&#34;, false)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_1ueiv3b</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_08isp4p" messageRef="Message_2b1ohm4" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1ueiv3b" sourceRef="Event_1urda69" targetRef="Event_0y6ctlj" />
+    <bpmn:endEvent id="Event_1e5k7zt" name="Use Case&#10;Killed">
+      <bpmn:incoming>Flow_1584g2d</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1584g2d" sourceRef="Event_036kbxo" targetRef="Event_1e5k7zt" />
+    <bpmn:boundaryEvent id="Event_036kbxo" name="Kill Switch" attachedToRef="Activity_1b3kuuy">
+      <bpmn:outgoing>Flow_1584g2d</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0qr4bne" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_0aiz46c" sourceRef="Event_1v15eji" targetRef="Activity_1b3kuuy" />
+    <bpmn:userTask id="Task_AIUseCaseAssessment" name="AI Use Case Value Assessment" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_manager">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_AIUseCaseAssessment" />
+          <camunda:property name="formio.file" value="AI_Use_Case_Assessment.formio" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_initital_classification</bpmn:incoming>
+      <bpmn:outgoing>Flow_1n7zkcd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1n7zkcd" sourceRef="Task_AIUseCaseAssessment" targetRef="Task_InitialRiskAssessment" />
+  </bpmn:process>
+  <bpmn:escalation id="Escalation_2f5ol35" name="HIGH_RISK" escalationCode="HIGH_RISK" />
+  <bpmn:escalation id="Escalation_0k3bged" name="LIMITED_RISK" escalationCode="LIMITED_RISK" />
+  <bpmn:escalation id="Escalation_24b0tk1" name="MINIMAL_RISK" escalationCode="MINIMAL_RISK" />
+  <bpmn:error id="Error_0ig9fip" name="AGENT_ERROR" />
+  <bpmn:message id="Message_2b1ohm4" name="USE_CASE_RETIRED" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_AIGovernance">
+    <bpmndi:BPMNPlane id="BPMNPlane_AIGovernance" bpmnElement="AIGovernanceProcess">
+      <bpmndi:BPMNShape id="Start_AIGovernance_di" bpmnElement="Start_AIGovernance">
+        <dc:Bounds x="172" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="160" y="112" width="60" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStore_AIGovernance_di" bpmnElement="DataStore_AIGovernance">
+        <dc:Bounds x="165" y="255" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="154" y="312" width="75" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_RiskClassification_di" bpmnElement="Gateway_RiskClassification" isMarkerVisible="true">
+        <dc:Bounds x="535" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="521" y="118" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_UnacceptableRisk_di" bpmnElement="EndEvent_UnacceptableRisk">
+        <dc:Bounds x="682" y="462" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="667" y="505" width="68" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_TeamDecision_di" bpmnElement="Gateway_TeamDecision" isMarkerVisible="true">
+        <dc:Bounds x="1205" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1185" y="118" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_RejectedProject_di" bpmnElement="EndEvent_RejectedProject">
+        <dc:Bounds x="1362" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1356" y="293" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ControlsImplementation_di" bpmnElement="Task_ControlsImplementation">
+        <dc:Bounds x="1330" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1v2nu9a_di" bpmnElement="Activity_0z3fg5j" isExpanded="true">
+        <dc:Bounds x="375" y="580" width="480" height="300" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1kczys1_di" bpmnElement="Event_1o5z2in">
+        <dc:Bounds x="410" y="662" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="397" y="705" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_StandardApproval_di" bpmnElement="Task_StandardApproval">
+        <dc:Bounds x="490" y="640" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_StandardDecision_di" bpmnElement="Gateway_StandardDecision" isMarkerVisible="true">
+        <dc:Bounds x="635" y="655" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="631" y="633" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ih5s7p_di" bpmnElement="Event_1ih5s7p">
+        <dc:Bounds x="782" y="732" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="767" y="775" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_00eqxxv_di" bpmnElement="Event_00eqxxv">
+        <dc:Bounds x="782" y="662" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="765" y="705" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_12lc3d1_di" bpmnElement="Event_1y5tqfx">
+        <dc:Bounds x="782" y="802" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="758" y="845" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_to_standard_decision_di" bpmnElement="Flow_to_standard_decision">
+        <di:waypoint x="590" y="680" />
+        <di:waypoint x="635" y="680" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_standard_approved_di" bpmnElement="Flow_standard_approved">
+        <di:waypoint x="685" y="680" />
+        <di:waypoint x="782" y="680" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="694" y="663" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1cf4nld_di" bpmnElement="Flow_1cf4nld">
+        <di:waypoint x="660" y="705" />
+        <di:waypoint x="660" y="750" />
+        <di:waypoint x="782" y="750" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="696" y="731" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0y2tegg_di" bpmnElement="Flow_0y2tegg">
+        <di:waypoint x="446" y="680" />
+        <di:waypoint x="490" y="680" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rz2vw6_di" bpmnElement="Flow_0rz2vw6">
+        <di:waypoint x="660" y="705" />
+        <di:waypoint x="660" y="820" />
+        <di:waypoint x="782" y="820" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BPMNShape_04a9kbz" bpmnElement="Activity_0ogspoa" isExpanded="true">
+        <dc:Bounds x="375" y="900" width="480" height="300" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_05qv947" bpmnElement="Event_0gj0di4">
+        <dc:Bounds x="415" y="982" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="404" y="1025" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_107h643" bpmnElement="Gateway_1gmh4xc" isMarkerVisible="true">
+        <dc:Bounds x="635" y="975" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="631" y="953" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_16p7q5b" bpmnElement="Event_07l6m5m">
+        <dc:Bounds x="782" y="982" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="765" y="1025" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0lsojzf" bpmnElement="Event_0res79i">
+        <dc:Bounds x="782" y="1052" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="767" y="1095" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GovernanceTeamReview_di" bpmnElement="Task_GovernanceTeamReview">
+        <dc:Bounds x="490" y="960" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0rsfyfu_di" bpmnElement="Event_0svwwlb">
+        <dc:Bounds x="782" y="1122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="757" y="1165" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_1bi9720" bpmnElement="Flow_0806meb">
+        <di:waypoint x="451" y="1000" />
+        <di:waypoint x="490" y="1000" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1jtf8ur" bpmnElement="Flow_07cga6m">
+        <di:waypoint x="685" y="1000" />
+        <di:waypoint x="782" y="1000" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="694" y="983" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1pxatgk" bpmnElement="Flow_18fpj0q">
+        <di:waypoint x="660" y="1025" />
+        <di:waypoint x="660" y="1070" />
+        <di:waypoint x="782" y="1070" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="696" y="1051" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_130od7g" bpmnElement="Flow_0kwyj4p">
+        <di:waypoint x="660" y="1025" />
+        <di:waypoint x="660" y="1140" />
+        <di:waypoint x="782" y="1140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jiu5um_di" bpmnElement="Flow_0jiu5um">
+        <di:waypoint x="590" y="1000" />
+        <di:waypoint x="635" y="1000" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BPMNShape_1nayqdl" bpmnElement="Activity_0jjccez" isExpanded="true">
+        <dc:Bounds x="375" y="1220" width="480" height="240" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_18xi0se" bpmnElement="Event_1j4gdm3">
+        <dc:Bounds x="415" y="1302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="410" y="1345" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GovernanceAdvisoryBoardReview_di" bpmnElement="Task_GovernanceAdvisoryBoardReview">
+        <dc:Bounds x="490" y="1280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_BoardDecision_di" bpmnElement="Gateway_BoardDecision" isMarkerVisible="true">
+        <dc:Bounds x="625" y="1295" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="621" y="1263" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1set5z6_di" bpmnElement="Event_1set5z6">
+        <dc:Bounds x="772" y="1382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="756" y="1425" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0sphqiv_di" bpmnElement="Event_0sphqiv">
+        <dc:Bounds x="772" y="1302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="755" y="1345" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_to_board_decision_di" bpmnElement="Flow_to_board_decision">
+        <di:waypoint x="590" y="1320" />
+        <di:waypoint x="625" y="1320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_board_approved_di" bpmnElement="Flow_board_approved">
+        <di:waypoint x="675" y="1320" />
+        <di:waypoint x="772" y="1320" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="699" y="1302" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_board_rejected_di" bpmnElement="Flow_board_rejected">
+        <di:waypoint x="650" y="1345" />
+        <di:waypoint x="650" y="1400" />
+        <di:waypoint x="772" y="1400" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="700" y="1383" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ewbwx5_di" bpmnElement="Flow_0ewbwx5">
+        <di:waypoint x="451" y="1320" />
+        <di:waypoint x="490" y="1320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1k65wqk_di" bpmnElement="Event_0yytcky">
+        <dc:Bounds x="682" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="668" y="205" width="65" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0k5n8o1_di" bpmnElement="Event_01ufa05">
+        <dc:Bounds x="682" y="262" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="661" y="305" width="78" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ib5tsw_di" bpmnElement="Event_0ihinvy">
+        <dc:Bounds x="682" y="362" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="660" y="405" width="80" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0q3l9kh_di" bpmnElement="Gateway_0q3l9kh" isMarkerVisible="true">
+        <dc:Bounds x="805" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_021kbsm_di" bpmnElement="Activity_021kbsm" isExpanded="true">
+        <dc:Bounds x="900" y="120" width="240" height="120" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1d4253q_di" bpmnElement="Event_1d4253q">
+        <dc:Bounds x="920" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1p9nt9g_di" bpmnElement="Event_1kwhtzo">
+        <dc:Bounds x="1002" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="979" y="205" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0hosfwf_di" bpmnElement="Event_0hosfwf">
+        <dc:Bounds x="1082" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ar2qlt_di" bpmnElement="Flow_1ar2qlt">
+        <di:waypoint x="1038" y="180" />
+        <di:waypoint x="1082" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03po89a_di" bpmnElement="Flow_03po89a">
+        <di:waypoint x="956" y="180" />
+        <di:waypoint x="1002" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_16tw7t0_di" bpmnElement="Event_167vflm">
+        <dc:Bounds x="1212" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1192" y="345" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InitialRiskAssessment_di" bpmnElement="Task_InitialRiskAssessment">
+        <dc:Bounds x="375" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DesignReview_di" bpmnElement="Task_DesignReview">
+        <dc:Bounds x="1570" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DevelopmentReview_di" bpmnElement="Task_DevelopmentReview">
+        <dc:Bounds x="1720" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_TestingValidation_di" bpmnElement="Task_TestingValidation">
+        <dc:Bounds x="1870" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PreDeployment_di" bpmnElement="Task_PreDeployment">
+        <dc:Bounds x="2020" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1r4d9gv" bpmnElement="Gateway_00c3b3l" isMarkerVisible="true">
+        <dc:Bounds x="2175" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2171" y="125" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0bu51v0_di" bpmnElement="Gateway_0bu51v0" isMarkerVisible="true">
+        <dc:Bounds x="1475" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1v15eji_di" bpmnElement="Event_1v15eji">
+        <dc:Bounds x="2312" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2301" y="205" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1027u93_di" bpmnElement="Event_1027u93">
+        <dc:Bounds x="2312" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2306" y="285" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0y6ctlj_di" bpmnElement="Event_0y6ctlj">
+        <dc:Bounds x="3632" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3625" y="284.5" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1b3kuuy_di" bpmnElement="Activity_1b3kuuy" isExpanded="true">
+        <dc:Bounds x="2400" y="50" width="1150" height="420" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ir3a6f_di" bpmnElement="Event_1ir3a6f">
+        <dc:Bounds x="2420" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0hbz22a_di" bpmnElement="Event_0hbz22a">
+        <dc:Bounds x="3238" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3218" y="205" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1n876q1_di" bpmnElement="StartOnDemandMessage">
+        <dc:Bounds x="3238" y="72" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3220" y="116" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0fgbsd5" bpmnElement="Event_1f23qk1">
+        <dc:Bounds x="3462" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3791" y="955" width="78" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1ozgnhr_di" bpmnElement="Gateway_06uidho">
+        <dc:Bounds x="3116" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0cfyv4t_di" bpmnElement="Gateway_0cfyv4t" isMarkerVisible="true">
+        <dc:Bounds x="3346" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0aq4b3j" bpmnElement="Task_ProductionMonitoring">
+        <dc:Bounds x="2528" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1l6xtqa_di" bpmnElement="Gateway_1l6xtqa" isMarkerVisible="true">
+        <dc:Bounds x="2700" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2709" y="125" width="34" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ContinuousImprovement_di" bpmnElement="Task_ContinuousImprovement">
+        <dc:Bounds x="2840" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ChangeManagement_di" bpmnElement="Task_ChangeManagement">
+        <dc:Bounds x="2840" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1lqrk7x_di" bpmnElement="Gateway_1lqrk7x" isMarkerVisible="true">
+        <dc:Bounds x="2994" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Decommissioning_di" bpmnElement="Task_Decommissioning">
+        <dc:Bounds x="2840" y="340" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1djd06l_di" bpmnElement="Event_0hxix0s">
+        <dc:Bounds x="3001" y="362" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3001" y="405" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_12t45wn_di" bpmnElement="Flow_12t45wn">
+        <di:waypoint x="2456" y="180" />
+        <di:waypoint x="2528" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0tk0cbc_di" bpmnElement="Flow_0tk0cbc">
+        <di:waypoint x="3166" y="180" />
+        <di:waypoint x="3238" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0grevys_di" bpmnElement="Flow_0grevys">
+        <di:waypoint x="3274" y="180" />
+        <di:waypoint x="3346" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wvrtz4_di" bpmnElement="Flow_1wvrtz4">
+        <di:waypoint x="3141" y="155" />
+        <di:waypoint x="3141" y="90" />
+        <di:waypoint x="3238" y="90" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09u8hgt_di" bpmnElement="Flow_09u8hgt">
+        <di:waypoint x="3274" y="90" />
+        <di:waypoint x="3371" y="90" />
+        <di:waypoint x="3371" y="155" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0y1a5th_di" bpmnElement="Flow_0y1a5th">
+        <di:waypoint x="3396" y="180" />
+        <di:waypoint x="3462" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gtbe77_di" bpmnElement="Flow_0gtbe77">
+        <di:waypoint x="2628" y="180" />
+        <di:waypoint x="2700" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_system_retirement_di" bpmnElement="Flow_system_retirement">
+        <di:waypoint x="2725" y="205" />
+        <di:waypoint x="2725" y="380" />
+        <di:waypoint x="2840" y="380" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2761" y="363" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0aa2iid_di" bpmnElement="Flow_0aa2iid">
+        <di:waypoint x="2750" y="180" />
+        <di:waypoint x="2840" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2753" y="163" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_138mvas_di" bpmnElement="Flow_138mvas">
+        <di:waypoint x="2940" y="180" />
+        <di:waypoint x="2994" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qqbtxx_di" bpmnElement="Flow_1qqbtxx">
+        <di:waypoint x="2725" y="205" />
+        <di:waypoint x="2725" y="280" />
+        <di:waypoint x="2840" y="280" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2756" y="263" width="39" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zj0dt1_di" bpmnElement="Flow_0zj0dt1">
+        <di:waypoint x="3044" y="180" />
+        <di:waypoint x="3116" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i7uyif_di" bpmnElement="Flow_1i7uyif">
+        <di:waypoint x="2940" y="280" />
+        <di:waypoint x="3019" y="280" />
+        <di:waypoint x="3019" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ktb4da_di" bpmnElement="Flow_0ktb4da">
+        <di:waypoint x="2940" y="380" />
+        <di:waypoint x="3001" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1e5k7zt_di" bpmnElement="Event_1e5k7zt">
+        <dc:Bounds x="3632" y="362" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3626" y="405" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_085onzh_di" bpmnElement="Task_AIUseCaseAssessment">
+        <dc:Bounds x="240" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1kx54ce_di" bpmnElement="Event_036kbxo">
+        <dc:Bounds x="3532" y="362" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3554" y="405" width="51" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1jkb1uc_di" bpmnElement="Event_1urda69">
+        <dc:Bounds x="3532" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3555" y="285" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_14jiaen_di" bpmnElement="Event_142k49d">
+        <dc:Bounds x="1122" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1146" y="266" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_StartEvent_di" bpmnElement="DataOutputAssociation_StartEvent">
+        <di:waypoint x="190" y="198" />
+        <di:waypoint x="190" y="255" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_initital_classification_di" bpmnElement="Flow_to_initital_classification">
+        <di:waypoint x="208" y="180" />
+        <di:waypoint x="240" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_unacceptable_risk_di" bpmnElement="Flow_unacceptable_risk">
+        <di:waypoint x="560" y="205" />
+        <di:waypoint x="560" y="480" />
+        <di:waypoint x="682" y="480" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="583" y="446" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_high_risk_di" bpmnElement="Flow_high_risk">
+        <di:waypoint x="585" y="180" />
+        <di:waypoint x="682" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="599" y="162" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_limited_risk_di" bpmnElement="Flow_limited_risk">
+        <di:waypoint x="560" y="205" />
+        <di:waypoint x="560" y="280" />
+        <di:waypoint x="682" y="280" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="592" y="263" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_minimal_risk_di" bpmnElement="Flow_minimal_risk">
+        <di:waypoint x="560" y="205" />
+        <di:waypoint x="560" y="380" />
+        <di:waypoint x="682" y="380" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="591" y="353" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_team_approved_di" bpmnElement="Flow_team_approved">
+        <di:waypoint x="1255" y="180" />
+        <di:waypoint x="1330" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1256" y="153" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_team_rejected_di" bpmnElement="Flow_team_rejected">
+        <di:waypoint x="1230" y="205" />
+        <di:waypoint x="1230" y="260" />
+        <di:waypoint x="1362" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1258" y="233" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0wvju4w_di" bpmnElement="Flow_0wvju4w">
+        <di:waypoint x="718" y="180" />
+        <di:waypoint x="805" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1v46see_di" bpmnElement="Flow_1v46see">
+        <di:waypoint x="718" y="280" />
+        <di:waypoint x="830" y="280" />
+        <di:waypoint x="830" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1iy7po6_di" bpmnElement="Flow_1iy7po6">
+        <di:waypoint x="718" y="380" />
+        <di:waypoint x="830" y="380" />
+        <di:waypoint x="830" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1fgxfco_di" bpmnElement="Flow_1fgxfco">
+        <di:waypoint x="855" y="180" />
+        <di:waypoint x="900" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hhfzin_di" bpmnElement="Flow_0hhfzin">
+        <di:waypoint x="1140" y="258" />
+        <di:waypoint x="1140" y="320" />
+        <di:waypoint x="1212" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vqb86j_di" bpmnElement="Flow_0vqb86j">
+        <di:waypoint x="1140" y="180" />
+        <di:waypoint x="1205" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lpelg6_di" bpmnElement="Flow_0lpelg6">
+        <di:waypoint x="475" y="180" />
+        <di:waypoint x="535" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_148jog5_di" bpmnElement="Flow_148jog5">
+        <di:waypoint x="1525" y="180" />
+        <di:waypoint x="1570" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_development_review_di" bpmnElement="Flow_to_development_review">
+        <di:waypoint x="1670" y="180" />
+        <di:waypoint x="1720" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_testing_validation_di" bpmnElement="Flow_to_testing_validation">
+        <di:waypoint x="1820" y="180" />
+        <di:waypoint x="1870" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_predeployment_di" bpmnElement="Flow_to_predeployment">
+        <di:waypoint x="1970" y="180" />
+        <di:waypoint x="2020" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_decision_di" bpmnElement="Flow_to_decision">
+        <di:waypoint x="2120" y="180" />
+        <di:waypoint x="2175" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_production_di" bpmnElement="Flow_to_production">
+        <di:waypoint x="2225" y="180" />
+        <di:waypoint x="2312" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2238" y="162" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_redesign_di" bpmnElement="Flow_to_redesign">
+        <di:waypoint x="2190" y="195" />
+        <di:waypoint x="2190" y="260" />
+        <di:waypoint x="1500" y="260" />
+        <di:waypoint x="1500" y="205" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2138" y="243" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qgtyes_di" bpmnElement="Flow_1qgtyes">
+        <di:waypoint x="1430" y="180" />
+        <di:waypoint x="1475" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0e71da3_di" bpmnElement="Flow_0e71da3">
+        <di:waypoint x="2200" y="205" />
+        <di:waypoint x="2200" y="260" />
+        <di:waypoint x="2312" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ueiv3b_di" bpmnElement="Flow_1ueiv3b">
+        <di:waypoint x="3568" y="260" />
+        <di:waypoint x="3632" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1584g2d_di" bpmnElement="Flow_1584g2d">
+        <di:waypoint x="3568" y="380" />
+        <di:waypoint x="3632" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0aiz46c_di" bpmnElement="Flow_0aiz46c">
+        <di:waypoint x="2348" y="180" />
+        <di:waypoint x="2400" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1n7zkcd_di" bpmnElement="Flow_1n7zkcd">
+        <di:waypoint x="340" y="180" />
+        <di:waypoint x="375" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Phase3"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.42.0">
+
+  <bpmn:collaboration id="Collaboration_Phase3">
+    <bpmn:participant id="Participant_Phase3" name="Phase 3: Product Management Review, Enrichment &amp; Portfolio Governance" processRef="Process_ProductManagementReview" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_ProductManagementReview" name="Phase 3: Product Management Review" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_Phase3">
+      <bpmn:lane id="Lane_GB_P3" name="Governance Board">
+        <bpmn:flowNodeRef>Task_EarlyComplianceValidation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PhaseTransitionP3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase3Complete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BO_P3" name="Business Owner">
+        <bpmn:flowNodeRef>StartEvent_Phase3Initiated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PRDValidation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_BusinessCaseEnrichment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_StakeholderAlignment</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ITA_P3" name="IT Architecture">
+        <bpmn:flowNodeRef>Task_TechnicalFitReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IntegrationAssessment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ArchitectureDecision</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Proc_P3" name="Procurement">
+        <bpmn:flowNodeRef>Task_DMN02_Completeness</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_InformationComplete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_LC_P3" name="Legal &amp; Compliance">
+        <bpmn:flowNodeRef>Task_RegulatoryDeepDive</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ContractRequirementsFraming</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IS_P3" name="Information Security">
+        <bpmn:flowNodeRef>Task_DataClassificationDeepDive</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SecurityPostureAssessment</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_VM_P3" name="Vendor Management">
+        <bpmn:flowNodeRef>Task_DMN03_DuplicateMerge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_DuplicateDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_MergeWithExisting</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_KnowledgeStagingUpdate</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_Phase3Initiated" name="Phase 2 Routing&#10;Assigned">
+      <bpmn:outgoing>Flow_Start_PRDValidation</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- PRD Validation -->
+    <bpmn:userTask id="Task_PRDValidation" name="Product Owner PRD&#10;Validation + Completeness&#10;Review" camunda:candidateGroups="business-owner">
+      <bpmn:incoming>Flow_Start_PRDValidation</bpmn:incoming>
+      <bpmn:outgoing>Flow_PRD_Completeness</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on PRD Validation -->
+    <bpmn:boundaryEvent id="Timer_PRDValidationSLA" attachedToRef="Task_PRDValidation" cancelActivity="false">
+      <bpmn:outgoing>Flow_PRDSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_PRDValidation">
+        <bpmn:timeDuration>P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- DMN-02: Information Completeness -->
+    <bpmn:businessRuleTask id="Task_DMN02_Completeness" name="DMN-02: Information&#10;Completeness Gate" camunda:decisionRef="DMN_02_InformationCompleteness" camunda:resultVariable="completenessStatus" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_PRD_Completeness</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMN02_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Gateway: Information Complete? -->
+    <bpmn:exclusiveGateway id="Gateway_InformationComplete" name="Information&#10;Complete?" default="Flow_ReturnForInfo">
+      <bpmn:incoming>Flow_DMN02_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReturnForInfo</bpmn:outgoing>
+      <bpmn:outgoing>Flow_InfoComplete</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- DMN-03: Duplicate Merge Reuse -->
+    <bpmn:businessRuleTask id="Task_DMN03_DuplicateMerge" name="DMN-03: Duplicate/Merge&#10;Reuse Assessment" camunda:decisionRef="DMN_03_DuplicateMergeReuse" camunda:resultVariable="duplicateDecision" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_InfoComplete</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMN03_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Gateway: Duplicate Decision -->
+    <bpmn:exclusiveGateway id="Gateway_DuplicateDecision" name="Duplicate/Merge&#10;Decision?" default="Flow_ProceedDistinct">
+      <bpmn:incoming>Flow_DMN03_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_MergeWithExisting</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ProceedDistinct</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Merge with Existing Initiative -->
+    <bpmn:userTask id="Task_MergeWithExisting" name="Merge with Existing&#10;Initiative (Requestor&#10;Notified)" camunda:candidateGroups="vendor-management">
+      <bpmn:incoming>Flow_MergeWithExisting</bpmn:incoming>
+      <bpmn:outgoing>Flow_Merge_Technical</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Technical Fit Review -->
+    <bpmn:userTask id="Task_TechnicalFitReview" name="Technical Fit Review&#10;(Architecture Standards)" camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_ProceedDistinct</bpmn:incoming>
+      <bpmn:incoming>Flow_Merge_Technical</bpmn:incoming>
+      <bpmn:outgoing>Flow_TechnicalFit_Integration</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on Technical Fit Review -->
+    <bpmn:boundaryEvent id="Timer_TechnicalReviewSLA" attachedToRef="Task_TechnicalFitReview" cancelActivity="false">
+      <bpmn:outgoing>Flow_TechSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_TechnicalReview">
+        <bpmn:timeDuration>P3D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- Integration Assessment -->
+    <bpmn:userTask id="Task_IntegrationAssessment" name="Integration Assessment&#10;(CMDB Lookup, API Review)" camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_TechnicalFit_Integration</bpmn:incoming>
+      <bpmn:outgoing>Flow_Integration_RegDeep</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Regulatory Deep Dive -->
+    <bpmn:serviceTask id="Task_RegulatoryDeepDive" name="Regulatory Deep Dive&#10;(DA Agent - Reg KB&#10;Structured Retrieval)" camunda:type="external" camunda:topic="regulatory-deep-dive">
+      <bpmn:incoming>Flow_Integration_RegDeep</bpmn:incoming>
+      <bpmn:outgoing>Flow_RegDeep_ContractReq</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Contract Requirements Framing -->
+    <bpmn:userTask id="Task_ContractRequirementsFraming" name="Contract Requirements&#10;Framing (Legal KB)" camunda:candidateGroups="legal-compliance">
+      <bpmn:incoming>Flow_RegDeep_ContractReq</bpmn:incoming>
+      <bpmn:outgoing>Flow_ContractReq_DataClass</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Data Classification Deep Dive -->
+    <bpmn:serviceTask id="Task_DataClassificationDeepDive" name="Data Classification&#10;Deep Dive (PII/NPI/GDPR&#10;DPA Framing)" camunda:type="external" camunda:topic="data-classification-deep">
+      <bpmn:incoming>Flow_ContractReq_DataClass</bpmn:incoming>
+      <bpmn:outgoing>Flow_DataClass_Security</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Security Posture Assessment -->
+    <bpmn:userTask id="Task_SecurityPostureAssessment" name="Security Posture&#10;Preliminary Assessment" camunda:candidateGroups="information-security">
+      <bpmn:incoming>Flow_DataClass_Security</bpmn:incoming>
+      <bpmn:outgoing>Flow_Security_EarlyCompliance</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Early Compliance Validation -->
+    <bpmn:userTask id="Task_EarlyComplianceValidation" name="Early Compliance&#10;Validation (Shift-Left)" camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_Security_EarlyCompliance</bpmn:incoming>
+      <bpmn:outgoing>Flow_EarlyCompliance_BusinessCase</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Business Case Enrichment -->
+    <bpmn:userTask id="Task_BusinessCaseEnrichment" name="Business Case&#10;Enrichment + ROI Model" camunda:candidateGroups="business-owner">
+      <bpmn:incoming>Flow_EarlyCompliance_BusinessCase</bpmn:incoming>
+      <bpmn:outgoing>Flow_BusinessCase_Stakeholder</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Stakeholder Alignment -->
+    <bpmn:userTask id="Task_StakeholderAlignment" name="Stakeholder Alignment&#10;+ SME Reviews" camunda:candidateGroups="business-owner">
+      <bpmn:incoming>Flow_BusinessCase_Stakeholder</bpmn:incoming>
+      <bpmn:outgoing>Flow_Stakeholder_Architecture</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Architecture Decision -->
+    <bpmn:userTask id="Task_ArchitectureDecision" name="Architecture Decision&#10;Record (ADR) + Sign-Off" camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_Stakeholder_Architecture</bpmn:incoming>
+      <bpmn:outgoing>Flow_Architecture_KnowledgeStage</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Knowledge Staging Update -->
+    <bpmn:serviceTask id="Task_KnowledgeStagingUpdate" name="Knowledge Staging&#10;Agent Update (Deterministic&#10;KB)" camunda:type="external" camunda:topic="knowledge-staging">
+      <bpmn:incoming>Flow_Architecture_KnowledgeStage</bpmn:incoming>
+      <bpmn:outgoing>Flow_KnowledgeStage_PhaseTransition</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Phase Transition -->
+    <bpmn:userTask id="Task_PhaseTransitionP3" name="Phase 3 Quality Gate&#10;+ Portfolio Entry" camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_KnowledgeStage_PhaseTransition</bpmn:incoming>
+      <bpmn:outgoing>Flow_PhaseTransition_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on Phase Transition -->
+    <bpmn:boundaryEvent id="Timer_Phase3QualityGate" attachedToRef="Task_PhaseTransitionP3" cancelActivity="false">
+      <bpmn:outgoing>Flow_P3QGEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_P3QualityGate">
+        <bpmn:timeDuration>P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- End Events -->
+    <bpmn:endEvent id="EndEvent_Phase3Complete" name="Phase 3 Complete&#10;(Proceed to Portfolio&#10;Prioritization)">
+      <bpmn:incoming>Flow_PhaseTransition_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_PRDSLAEscalated" name="PRD SLA Escalated">
+      <bpmn:incoming>Flow_PRDSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_TechSLAEscalated" name="Tech Review SLA&#10;Escalated">
+      <bpmn:incoming>Flow_TechSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_P3QGEscalated" name="Phase 3 QG SLA&#10;Escalated">
+      <bpmn:incoming>Flow_P3QGEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Text Annotations -->
+    <bpmn:textAnnotation id="Annotation_P3_Regs">
+      <bpmn:text>OCC 2023-17: Early compliance shift-left. DMN-02 enforces information completeness before downstream work. DMN-03 prevents duplicate initiatives (cost avoidance). GDPR/CCPA: DPA framing at Phase 3.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P3_Regs" sourceRef="Task_EarlyComplianceValidation" targetRef="Annotation_P3_Regs" />
+
+    <bpmn:textAnnotation id="Annotation_P3_SOX">
+      <bpmn:text>SOX: Architecture Decision Record (ADR) is mandatory audit artifact. SR 11-7: Data classification triggers model risk governance path. DORA: Integration assessment includes operational resilience review.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P3_SOX" sourceRef="Task_ArchitectureDecision" targetRef="Annotation_P3_SOX" />
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_Start_PRDValidation" sourceRef="StartEvent_Phase3Initiated" targetRef="Task_PRDValidation" />
+    <bpmn:sequenceFlow id="Flow_PRD_Completeness" sourceRef="Task_PRDValidation" targetRef="Task_DMN02_Completeness" />
+    <bpmn:sequenceFlow id="Flow_DMN02_Gateway" sourceRef="Task_DMN02_Completeness" targetRef="Gateway_InformationComplete" />
+    <bpmn:sequenceFlow id="Flow_ReturnForInfo" name="Incomplete" sourceRef="Gateway_InformationComplete" targetRef="Task_PRDValidation" />
+    <bpmn:sequenceFlow id="Flow_InfoComplete" name="Complete" sourceRef="Gateway_InformationComplete" targetRef="Task_DMN03_DuplicateMerge">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${completenessStatus == 'COMPLETE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_DMN03_Gateway" sourceRef="Task_DMN03_DuplicateMerge" targetRef="Gateway_DuplicateDecision" />
+    <bpmn:sequenceFlow id="Flow_MergeWithExisting" name="Merge" sourceRef="Gateway_DuplicateDecision" targetRef="Task_MergeWithExisting">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${duplicateDecision == 'MERGE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_ProceedDistinct" name="Distinct" sourceRef="Gateway_DuplicateDecision" targetRef="Task_TechnicalFitReview" />
+    <bpmn:sequenceFlow id="Flow_Merge_Technical" sourceRef="Task_MergeWithExisting" targetRef="Task_TechnicalFitReview" />
+    <bpmn:sequenceFlow id="Flow_TechnicalFit_Integration" sourceRef="Task_TechnicalFitReview" targetRef="Task_IntegrationAssessment" />
+    <bpmn:sequenceFlow id="Flow_Integration_RegDeep" sourceRef="Task_IntegrationAssessment" targetRef="Task_RegulatoryDeepDive" />
+    <bpmn:sequenceFlow id="Flow_RegDeep_ContractReq" sourceRef="Task_RegulatoryDeepDive" targetRef="Task_ContractRequirementsFraming" />
+    <bpmn:sequenceFlow id="Flow_ContractReq_DataClass" sourceRef="Task_ContractRequirementsFraming" targetRef="Task_DataClassificationDeepDive" />
+    <bpmn:sequenceFlow id="Flow_DataClass_Security" sourceRef="Task_DataClassificationDeepDive" targetRef="Task_SecurityPostureAssessment" />
+    <bpmn:sequenceFlow id="Flow_Security_EarlyCompliance" sourceRef="Task_SecurityPostureAssessment" targetRef="Task_EarlyComplianceValidation" />
+    <bpmn:sequenceFlow id="Flow_EarlyCompliance_BusinessCase" sourceRef="Task_EarlyComplianceValidation" targetRef="Task_BusinessCaseEnrichment" />
+    <bpmn:sequenceFlow id="Flow_BusinessCase_Stakeholder" sourceRef="Task_BusinessCaseEnrichment" targetRef="Task_StakeholderAlignment" />
+    <bpmn:sequenceFlow id="Flow_Stakeholder_Architecture" sourceRef="Task_StakeholderAlignment" targetRef="Task_ArchitectureDecision" />
+    <bpmn:sequenceFlow id="Flow_Architecture_KnowledgeStage" sourceRef="Task_ArchitectureDecision" targetRef="Task_KnowledgeStagingUpdate" />
+    <bpmn:sequenceFlow id="Flow_KnowledgeStage_PhaseTransition" sourceRef="Task_KnowledgeStagingUpdate" targetRef="Task_PhaseTransitionP3" />
+    <bpmn:sequenceFlow id="Flow_PhaseTransition_End" sourceRef="Task_PhaseTransitionP3" targetRef="EndEvent_Phase3Complete" />
+    <bpmn:sequenceFlow id="Flow_PRDSLAEscalate" sourceRef="Timer_PRDValidationSLA" targetRef="EndEvent_PRDSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_TechSLAEscalate" sourceRef="Timer_TechnicalReviewSLA" targetRef="EndEvent_TechSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_P3QGEscalate" sourceRef="Timer_Phase3QualityGate" targetRef="EndEvent_P3QGEscalated" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Phase3">
+    <bpmndi:BPMNPlane id="BPMNPlane_Phase3" bpmnElement="Collaboration_Phase3">
+
+      <bpmndi:BPMNShape id="Participant_Phase3_di" bpmnElement="Participant_Phase3" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="2700" height="1240" />
+      </bpmndi:BPMNShape>
+
+      <!-- Swim Lanes -->
+      <bpmndi:BPMNShape id="Lane_GB_P3_di" bpmnElement="Lane_GB_P3" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="2670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BO_P3_di" bpmnElement="Lane_BO_P3" isHorizontal="true">
+        <dc:Bounds x="185" y="207" width="2670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ITA_P3_di" bpmnElement="Lane_ITA_P3" isHorizontal="true">
+        <dc:Bounds x="185" y="367" width="2670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Proc_P3_di" bpmnElement="Lane_Proc_P3" isHorizontal="true">
+        <dc:Bounds x="185" y="527" width="2670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_LC_P3_di" bpmnElement="Lane_LC_P3" isHorizontal="true">
+        <dc:Bounds x="185" y="687" width="2670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_IS_P3_di" bpmnElement="Lane_IS_P3" isHorizontal="true">
+        <dc:Bounds x="185" y="847" width="2670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_VM_P3_di" bpmnElement="Lane_VM_P3" isHorizontal="true">
+        <dc:Bounds x="185" y="1007" width="2670" height="160" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start Event (BO) -->
+      <bpmndi:BPMNShape id="StartEvent_Phase3Initiated_di" bpmnElement="StartEvent_Phase3Initiated">
+        <dc:Bounds x="247" y="269" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="225" y="312" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- PRD Validation (BO) x=330 -->
+      <bpmndi:BPMNShape id="Task_PRDValidation_di" bpmnElement="Task_PRDValidation">
+        <dc:Bounds x="330" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer on PRD Validation -->
+      <bpmndi:BPMNShape id="Timer_PRDValidationSLA_di" bpmnElement="Timer_PRDValidationSLA">
+        <dc:Bounds x="382" y="309" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End PRD SLA Escalated -->
+      <bpmndi:BPMNShape id="EndEvent_PRDSLAEscalated_di" bpmnElement="EndEvent_PRDSLAEscalated">
+        <dc:Bounds x="382" y="207" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="358" y="178" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-02 Completeness (Procurement) x=520 -->
+      <bpmndi:BPMNShape id="Task_DMN02_Completeness_di" bpmnElement="Task_DMN02_Completeness">
+        <dc:Bounds x="520" y="547" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Information Complete (Procurement) x=710 -->
+      <bpmndi:BPMNShape id="Gateway_InformationComplete_di" bpmnElement="Gateway_InformationComplete" isMarkerVisible="true">
+        <dc:Bounds x="705" y="562" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="688" y="619" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-03 Duplicate Merge (VM) x=800 -->
+      <bpmndi:BPMNShape id="Task_DMN03_DuplicateMerge_di" bpmnElement="Task_DMN03_DuplicateMerge">
+        <dc:Bounds x="800" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Duplicate Decision (VM) x=990 -->
+      <bpmndi:BPMNShape id="Gateway_DuplicateDecision_di" bpmnElement="Gateway_DuplicateDecision" isMarkerVisible="true">
+        <dc:Bounds x="985" y="1042" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="968" y="1099" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Merge With Existing (VM) x=1090 -->
+      <bpmndi:BPMNShape id="Task_MergeWithExisting_di" bpmnElement="Task_MergeWithExisting">
+        <dc:Bounds x="1090" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Technical Fit Review (ITA) x=1280 -->
+      <bpmndi:BPMNShape id="Task_TechnicalFitReview_di" bpmnElement="Task_TechnicalFitReview">
+        <dc:Bounds x="1280" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer on Technical Review -->
+      <bpmndi:BPMNShape id="Timer_TechnicalReviewSLA_di" bpmnElement="Timer_TechnicalReviewSLA">
+        <dc:Bounds x="1332" y="449" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Tech SLA Escalated (ITA) -->
+      <bpmndi:BPMNShape id="EndEvent_TechSLAEscalated_di" bpmnElement="EndEvent_TechSLAEscalated">
+        <dc:Bounds x="1332" y="351" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1308" y="320" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Integration Assessment (ITA) x=1470 -->
+      <bpmndi:BPMNShape id="Task_IntegrationAssessment_di" bpmnElement="Task_IntegrationAssessment">
+        <dc:Bounds x="1470" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Regulatory Deep Dive (LC) x=1660 -->
+      <bpmndi:BPMNShape id="Task_RegulatoryDeepDive_di" bpmnElement="Task_RegulatoryDeepDive">
+        <dc:Bounds x="1660" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Contract Requirements Framing (LC) x=1850 -->
+      <bpmndi:BPMNShape id="Task_ContractRequirementsFraming_di" bpmnElement="Task_ContractRequirementsFraming">
+        <dc:Bounds x="1850" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Data Classification Deep Dive (IS) x=2040 -->
+      <bpmndi:BPMNShape id="Task_DataClassificationDeepDive_di" bpmnElement="Task_DataClassificationDeepDive">
+        <dc:Bounds x="2040" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Security Posture Assessment (IS) x=2230 -->
+      <bpmndi:BPMNShape id="Task_SecurityPostureAssessment_di" bpmnElement="Task_SecurityPostureAssessment">
+        <dc:Bounds x="2230" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Early Compliance Validation (GB) x=2420 -->
+      <bpmndi:BPMNShape id="Task_EarlyComplianceValidation_di" bpmnElement="Task_EarlyComplianceValidation">
+        <dc:Bounds x="2420" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Business Case Enrichment (BO) x=2420 -->
+      <bpmndi:BPMNShape id="Task_BusinessCaseEnrichment_di" bpmnElement="Task_BusinessCaseEnrichment">
+        <dc:Bounds x="2420" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Stakeholder Alignment (BO) x=2420 y=367+40 -->
+      <bpmndi:BPMNShape id="Task_StakeholderAlignment_di" bpmnElement="Task_StakeholderAlignment">
+        <dc:Bounds x="2420" y="407" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Architecture Decision (ITA) x=2420 y=467 -->
+      <bpmndi:BPMNShape id="Task_ArchitectureDecision_di" bpmnElement="Task_ArchitectureDecision">
+        <dc:Bounds x="2420" y="487" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Knowledge Staging Update (VM) x=2420 -->
+      <bpmndi:BPMNShape id="Task_KnowledgeStagingUpdate_di" bpmnElement="Task_KnowledgeStagingUpdate">
+        <dc:Bounds x="2420" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase Transition (GB) x=2610 -->
+      <bpmndi:BPMNShape id="Task_PhaseTransitionP3_di" bpmnElement="Task_PhaseTransitionP3">
+        <dc:Bounds x="2610" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer on Phase Transition -->
+      <bpmndi:BPMNShape id="Timer_Phase3QualityGate_di" bpmnElement="Timer_Phase3QualityGate">
+        <dc:Bounds x="2662" y="149" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Phase 3 Complete (GB) x=2800 -->
+      <bpmndi:BPMNShape id="EndEvent_Phase3Complete_di" bpmnElement="EndEvent_Phase3Complete">
+        <dc:Bounds x="2802" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2778" y="145" width="84" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- End P3 QG Escalated (GB) -->
+      <bpmndi:BPMNShape id="EndEvent_P3QGEscalated_di" bpmnElement="EndEvent_P3QGEscalated">
+        <dc:Bounds x="2662" y="52" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2638" y="20" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Annotations -->
+      <bpmndi:BPMNShape id="Annotation_P3_Regs_di" bpmnElement="Annotation_P3_Regs">
+        <dc:Bounds x="200" y="1175" width="800" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annotation_P3_SOX_di" bpmnElement="Annotation_P3_SOX">
+        <dc:Bounds x="1050" y="1175" width="800" height="55" />
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="Flow_Start_PRDValidation_di" bpmnElement="Flow_Start_PRDValidation">
+        <di:waypoint x="283" y="287" />
+        <di:waypoint x="330" y="287" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PRD_Completeness_di" bpmnElement="Flow_PRD_Completeness">
+        <di:waypoint x="470" y="287" />
+        <di:waypoint x="495" y="287" />
+        <di:waypoint x="495" y="587" />
+        <di:waypoint x="520" y="587" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DMN02_Gateway_di" bpmnElement="Flow_DMN02_Gateway">
+        <di:waypoint x="660" y="587" />
+        <di:waypoint x="705" y="587" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ReturnForInfo_di" bpmnElement="Flow_ReturnForInfo">
+        <di:waypoint x="730" y="612" />
+        <di:waypoint x="730" y="650" />
+        <di:waypoint x="400" y="650" />
+        <di:waypoint x="400" y="327" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="558" y="632" width="55" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_InfoComplete_di" bpmnElement="Flow_InfoComplete">
+        <di:waypoint x="730" y="562" />
+        <di:waypoint x="730" y="1067" />
+        <di:waypoint x="800" y="1067" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="738" y="807" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DMN03_Gateway_di" bpmnElement="Flow_DMN03_Gateway">
+        <di:waypoint x="940" y="1067" />
+        <di:waypoint x="985" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_MergeWithExisting_di" bpmnElement="Flow_MergeWithExisting">
+        <di:waypoint x="1035" y="1067" />
+        <di:waypoint x="1090" y="1067" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1043" y="1049" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ProceedDistinct_di" bpmnElement="Flow_ProceedDistinct">
+        <di:waypoint x="1010" y="1042" />
+        <di:waypoint x="1010" y="980" />
+        <di:waypoint x="1350" y="980" />
+        <di:waypoint x="1350" y="467" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1168" y="962" width="34" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Merge_Technical_di" bpmnElement="Flow_Merge_Technical">
+        <di:waypoint x="1230" y="1067" />
+        <di:waypoint x="1350" y="1067" />
+        <di:waypoint x="1350" y="467" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_TechnicalFit_Integration_di" bpmnElement="Flow_TechnicalFit_Integration">
+        <di:waypoint x="1420" y="427" />
+        <di:waypoint x="1470" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Integration_RegDeep_di" bpmnElement="Flow_Integration_RegDeep">
+        <di:waypoint x="1610" y="427" />
+        <di:waypoint x="1730" y="427" />
+        <di:waypoint x="1730" y="707" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_RegDeep_ContractReq_di" bpmnElement="Flow_RegDeep_ContractReq">
+        <di:waypoint x="1800" y="747" />
+        <di:waypoint x="1850" y="747" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ContractReq_DataClass_di" bpmnElement="Flow_ContractReq_DataClass">
+        <di:waypoint x="1990" y="747" />
+        <di:waypoint x="2015" y="747" />
+        <di:waypoint x="2015" y="907" />
+        <di:waypoint x="2040" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DataClass_Security_di" bpmnElement="Flow_DataClass_Security">
+        <di:waypoint x="2180" y="907" />
+        <di:waypoint x="2230" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Security_EarlyCompliance_di" bpmnElement="Flow_Security_EarlyCompliance">
+        <di:waypoint x="2300" y="867" />
+        <di:waypoint x="2300" y="127" />
+        <di:waypoint x="2420" y="127" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_EarlyCompliance_BusinessCase_di" bpmnElement="Flow_EarlyCompliance_BusinessCase">
+        <di:waypoint x="2490" y="167" />
+        <di:waypoint x="2490" y="247" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_BusinessCase_Stakeholder_di" bpmnElement="Flow_BusinessCase_Stakeholder">
+        <di:waypoint x="2490" y="327" />
+        <di:waypoint x="2490" y="407" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Stakeholder_Architecture_di" bpmnElement="Flow_Stakeholder_Architecture">
+        <di:waypoint x="2490" y="487" />
+        <di:waypoint x="2490" y="527" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Architecture_KnowledgeStage_di" bpmnElement="Flow_Architecture_KnowledgeStage">
+        <di:waypoint x="2490" y="567" />
+        <di:waypoint x="2490" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_KnowledgeStage_PhaseTransition_di" bpmnElement="Flow_KnowledgeStage_PhaseTransition">
+        <di:waypoint x="2560" y="1067" />
+        <di:waypoint x="2580" y="1067" />
+        <di:waypoint x="2580" y="127" />
+        <di:waypoint x="2610" y="127" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PhaseTransition_End_di" bpmnElement="Flow_PhaseTransition_End">
+        <di:waypoint x="2750" y="127" />
+        <di:waypoint x="2802" y="120" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PRDSLAEscalate_di" bpmnElement="Flow_PRDSLAEscalate">
+        <di:waypoint x="400" y="309" />
+        <di:waypoint x="400" y="243" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_TechSLAEscalate_di" bpmnElement="Flow_TechSLAEscalate">
+        <di:waypoint x="1350" y="449" />
+        <di:waypoint x="1350" y="387" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P3QGEscalate_di" bpmnElement="Flow_P3QGEscalate">
+        <di:waypoint x="2680" y="149" />
+        <di:waypoint x="2680" y="88" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P3_Regs_di" bpmnElement="Assoc_P3_Regs">
+        <di:waypoint x="2490" y="167" />
+        <di:waypoint x="600" y="1175" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P3_SOX_di" bpmnElement="Assoc_P3_SOX">
+        <di:waypoint x="2490" y="567" />
+        <di:waypoint x="1450" y="1175" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

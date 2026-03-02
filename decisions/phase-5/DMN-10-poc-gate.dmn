@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d10_DMN_10_PoCGate"
+             name="DMN-10: Proof of Concept Gate"
+             namespace="http://sla.governance.example.com/dmn/phase5a">
+
+  <!--
+    DMN-10: Proof of Concept Gate
+    Phase: 5A (Product Development Life Cycle - Build Pathway, Step 6)
+    Hit Policy: UNIQUE
+    Regulatory: SR 11-7, OCC 2023-17
+    Task Type: Human-in-the-Loop (H) with standardized evaluation rubric
+    Description: PoC evaluation gate using standardized rubric. Architecture and
+                 CyberSec sign-off required for data-sensitive builds. Outcome determines
+                 whether to proceed to requirement refinement or iterate.
+  -->
+
+  <decision id="DMN10PoCGate" name="Proof of Concept Gate">
+    <decisionTable id="d10_dt_poc_gate" hitPolicy="UNIQUE">
+
+      <input id="d10_in_poc_rubric_score" label="PoC Rubric Score (0-100)">
+        <inputExpression id="d10_ie_rubric_score" typeRef="integer">
+          <text>pocRubricScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="d10_in_arch_signoff" label="Architecture Sign-off Received?">
+        <inputExpression id="d10_ie_arch" typeRef="boolean">
+          <text>architectureSignOffReceived</text>
+        </inputExpression>
+      </input>
+
+      <input id="d10_in_cybersec_signoff" label="CyberSec Sign-off Received (if data-sensitive)?">
+        <inputExpression id="d10_ie_cybersec" typeRef="string">
+          <text>cyberSecSignOff</text>
+        </inputExpression>
+        <inputValues id="d10_iv_cybersec">
+          <text>"Received","NotRequired","Pending","Rejected"</text>
+        </inputValues>
+      </input>
+
+      <input id="d10_in_functional_coverage" label="Functional Coverage Met?">
+        <inputExpression id="d10_ie_functional" typeRef="string">
+          <text>functionalCoverage</text>
+        </inputExpression>
+        <inputValues id="d10_iv_functional">
+          <text>"Full","Partial","Insufficient"</text>
+        </inputValues>
+      </input>
+
+      <output id="d10_out_decision" label="PoC Gate Decision" typeRef="string" />
+      <output id="d10_out_action" label="Required Action" typeRef="string" />
+      <output id="d10_out_conditions" label="Conditions/Findings" typeRef="string" />
+      <output id="d10_out_next_step" label="Next Step" typeRef="string" />
+
+      <!-- Rule 1: CyberSec rejected → hold regardless of score -->
+      <rule id="d10_r01_cybersec_rejected">
+        <description>CyberSec sign-off rejected - cannot proceed until security findings remediated</description>
+        <inputEntry id="d10_ie1_r01"><text>-</text></inputEntry>
+        <inputEntry id="d10_ie2_r01"><text>-</text></inputEntry>
+        <inputEntry id="d10_ie3_r01"><text>"Rejected"</text></inputEntry>
+        <inputEntry id="d10_ie4_r01"><text>-</text></inputEntry>
+        <outputEntry id="d10_oe1_r01"><text>"HOLD-SECURITY"</text></outputEntry>
+        <outputEntry id="d10_oe2_r01"><text>"CyberSec findings must be remediated before PoC can proceed; Security team provides remediation requirements within 5 business days"</text></outputEntry>
+        <outputEntry id="d10_oe3_r01"><text>"Security remediation required; revised PoC security design submitted for re-review"</text></outputEntry>
+        <outputEntry id="d10_oe4_r01"><text>"Security Remediation and Re-submission"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: High score, arch signed off, security clear, full coverage → PROCEED -->
+      <rule id="d10_r02_proceed">
+        <description>PoC fully successful - proceed to requirement refinement</description>
+        <inputEntry id="d10_ie1_r02"><text>&gt;= 75</text></inputEntry>
+        <inputEntry id="d10_ie2_r02"><text>true</text></inputEntry>
+        <inputEntry id="d10_ie3_r02"><text>"Received","NotRequired"</text></inputEntry>
+        <inputEntry id="d10_ie4_r02"><text>"Full"</text></inputEntry>
+        <outputEntry id="d10_oe1_r02"><text>"PROCEED"</text></outputEntry>
+        <outputEntry id="d10_oe2_r02"><text>"PoC approved; proceed to requirement refinement with PoC learnings integrated into PRD and user stories"</text></outputEntry>
+        <outputEntry id="d10_oe3_r02"><text>"PoC results logged to AI Governance KB; decision audit trail updated with rubric score and sign-offs"</text></outputEntry>
+        <outputEntry id="d10_oe4_r02"><text>"Step 7: Requirement Refinement"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Good score but partial coverage → PROCEED-WITH-GAPS -->
+      <rule id="d10_r03_proceed_gaps">
+        <description>PoC substantially successful with partial coverage - proceed with documented gap plan</description>
+        <inputEntry id="d10_ie1_r03"><text>&gt;= 75</text></inputEntry>
+        <inputEntry id="d10_ie2_r03"><text>true</text></inputEntry>
+        <inputEntry id="d10_ie3_r03"><text>"Received","NotRequired"</text></inputEntry>
+        <inputEntry id="d10_ie4_r03"><text>"Partial"</text></inputEntry>
+        <outputEntry id="d10_oe1_r03"><text>"PROCEED-WITH-CONDITIONS"</text></outputEntry>
+        <outputEntry id="d10_oe2_r03"><text>"PoC approved with conditions; coverage gaps documented as acceptance criteria in refined PRD; Product Owner confirms gap-fill plan"</text></outputEntry>
+        <outputEntry id="d10_oe3_r03"><text>"Coverage gap remediation plan required before UAT; logged as risk register entry"</text></outputEntry>
+        <outputEntry id="d10_oe4_r03"><text>"Step 7: Requirement Refinement with Gap Plan"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Medium score → REFINE-AND-RETRY -->
+      <rule id="d10_r04_refine_retry">
+        <description>PoC partially successful - refine approach and retry</description>
+        <inputEntry id="d10_ie1_r04"><text>[50..74]</text></inputEntry>
+        <inputEntry id="d10_ie2_r04"><text>-</text></inputEntry>
+        <inputEntry id="d10_ie3_r04"><text>"Received","NotRequired","Pending"</text></inputEntry>
+        <inputEntry id="d10_ie4_r04"><text>"Partial","Insufficient"</text></inputEntry>
+        <outputEntry id="d10_oe1_r04"><text>"REFINE-AND-RETRY"</text></outputEntry>
+        <outputEntry id="d10_oe2_r04"><text>"PoC requires refinement; failure areas documented; revised PoC scope agreed with Enterprise Architect; second attempt authorized within 15 business days"</text></outputEntry>
+        <outputEntry id="d10_oe3_r04"><text>"Specific rubric failure areas as mandatory improvement targets for PoC iteration"</text></outputEntry>
+        <outputEntry id="d10_oe4_r04"><text>"PoC Iteration 2 with Revised Approach"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: Architecture not signed off → HOLD-ARCH -->
+      <rule id="d10_r05_arch_hold">
+        <description>Architecture sign-off pending - hold for architecture review completion</description>
+        <inputEntry id="d10_ie1_r05"><text>&gt;= 50</text></inputEntry>
+        <inputEntry id="d10_ie2_r05"><text>false</text></inputEntry>
+        <inputEntry id="d10_ie3_r05"><text>"Received","NotRequired"</text></inputEntry>
+        <inputEntry id="d10_ie4_r05"><text>-</text></inputEntry>
+        <outputEntry id="d10_oe1_r05"><text>"HOLD-ARCHITECTURE"</text></outputEntry>
+        <outputEntry id="d10_oe2_r05"><text>"Architecture review pending; Enterprise Architect provides sign-off or conditions within 5 business days"</text></outputEntry>
+        <outputEntry id="d10_oe3_r05"><text>"Architecture review findings as binding design constraints for full implementation"</text></outputEntry>
+        <outputEntry id="d10_oe4_r05"><text>"Architecture Review Completion"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: Low score → REJECT -->
+      <rule id="d10_r06_reject">
+        <description>PoC failed with insufficient rubric score - reject and reassess approach</description>
+        <inputEntry id="d10_ie1_r06"><text>&lt; 50</text></inputEntry>
+        <inputEntry id="d10_ie2_r06"><text>-</text></inputEntry>
+        <inputEntry id="d10_ie3_r06"><text>-</text></inputEntry>
+        <inputEntry id="d10_ie4_r06"><text>"Insufficient"</text></inputEntry>
+        <outputEntry id="d10_oe1_r06"><text>"REJECT"</text></outputEntry>
+        <outputEntry id="d10_oe2_r06"><text>"PoC rejected; fundamental approach requires reassessment; Portfolio Council notified; Build vs Buy decision revisited"</text></outputEntry>
+        <outputEntry id="d10_oe3_r06"><text>"PoC failure rationale logged; lessons captured in AI Governance KB; Build pathway may be reconsidered"</text></outputEntry>
+        <outputEntry id="d10_oe4_r06"><text>"Portfolio Council Re-evaluation (DMN-05 revisit)"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d10_diagram_DMN10">
+      <dmndi:DMNShape id="d10_shape_DMN10" dmnElementRef="DMN10PoCGate">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

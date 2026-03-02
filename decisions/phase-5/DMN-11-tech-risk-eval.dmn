@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d11_DMN_11_TechRiskEval"
+             name="DMN-11: Technology and Risk Evaluation Gate"
+             namespace="http://sla.governance.example.com/dmn/phase5a">
+
+  <!--
+    DMN-11: Technology and Risk Evaluation Gate
+    Phase: 5A (Product Development Life Cycle - Build Pathway, Step 8)
+    Hit Policy: ANY (all conditions must pass for UAT to proceed)
+    Regulatory: SR 11-7, OCC 2023-17, GDPR/CCPA, DORA
+    Task Type: Human-in-the-Loop (H) with Deterministic Agent-Enabled (DA) support
+    Description: Multi-domain evaluation gate. AI Governance Checklist required for
+                 AI-enabled builds. Agent analysis supports but human decides.
+                 Any failing condition blocks UAT and routes to domain-specific hold.
+  -->
+
+  <decision id="DMN11TechRiskEval" name="Technology and Risk Evaluation Gate">
+    <decisionTable id="d11_dt_tech_risk" hitPolicy="ANY">
+
+      <input id="d11_in_completeness" label="PRD and Requirements Completeness">
+        <inputExpression id="d11_ie_completeness" typeRef="string">
+          <text>requirementsCompleteness</text>
+        </inputExpression>
+        <inputValues id="d11_iv_completeness">
+          <text>"Pass","Fail"</text>
+        </inputValues>
+      </input>
+
+      <input id="d11_in_ai_gov_checklist" label="AI Governance Checklist Status">
+        <inputExpression id="d11_ie_ai_gov" typeRef="string">
+          <text>aiGovernanceChecklist</text>
+        </inputExpression>
+        <inputValues id="d11_iv_ai_gov">
+          <text>"Approved","NotRequired","Pending","Rejected"</text>
+        </inputValues>
+      </input>
+
+      <input id="d11_in_arch_signoff" label="Architecture Sign-off?">
+        <inputExpression id="d11_ie_arch" typeRef="boolean">
+          <text>architectureSignOff</text>
+        </inputExpression>
+      </input>
+
+      <input id="d11_in_cybersec_clear" label="CyberSec Clearance?">
+        <inputExpression id="d11_ie_cybersec" typeRef="boolean">
+          <text>cyberSecClearance</text>
+        </inputExpression>
+      </input>
+
+      <input id="d11_in_compliance_clear" label="Compliance Governance Clearance?">
+        <inputExpression id="d11_ie_compliance" typeRef="boolean">
+          <text>complianceClearance</text>
+        </inputExpression>
+      </input>
+
+      <output id="d11_out_decision" label="Tech/Risk Gate Decision" typeRef="string" />
+      <output id="d11_out_blocking_domain" label="Blocking Domain" typeRef="string" />
+      <output id="d11_out_action" label="Required Action" typeRef="string" />
+      <output id="d11_out_sla_days" label="Resolution SLA (Days)" typeRef="integer" />
+
+      <!-- Rule 1: All conditions pass → PROCEED to UAT -->
+      <rule id="d11_r01_all_pass">
+        <description>All evaluation criteria met - proceed to UAT</description>
+        <inputEntry id="d11_ie1_r01"><text>"Pass"</text></inputEntry>
+        <inputEntry id="d11_ie2_r01"><text>"Approved","NotRequired"</text></inputEntry>
+        <inputEntry id="d11_ie3_r01"><text>true</text></inputEntry>
+        <inputEntry id="d11_ie4_r01"><text>true</text></inputEntry>
+        <inputEntry id="d11_ie5_r01"><text>true</text></inputEntry>
+        <outputEntry id="d11_oe1_r01"><text>"PROCEED-UAT"</text></outputEntry>
+        <outputEntry id="d11_oe2_r01"><text>"None"</text></outputEntry>
+        <outputEntry id="d11_oe3_r01"><text>"UAT plan activated; stakeholder invitations issued; acceptance criteria confirmed"</text></outputEntry>
+        <outputEntry id="d11_oe4_r01"><text>0</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: Requirements fail → RETURN to refinement -->
+      <rule id="d11_r02_requirements_fail">
+        <description>Requirements completeness fails - return to Product Owner for refinement</description>
+        <inputEntry id="d11_ie1_r02"><text>"Fail"</text></inputEntry>
+        <inputEntry id="d11_ie2_r02"><text>-</text></inputEntry>
+        <inputEntry id="d11_ie3_r02"><text>-</text></inputEntry>
+        <inputEntry id="d11_ie4_r02"><text>-</text></inputEntry>
+        <inputEntry id="d11_ie5_r02"><text>-</text></inputEntry>
+        <outputEntry id="d11_oe1_r02"><text>"RETURN-REFINEMENT"</text></outputEntry>
+        <outputEntry id="d11_oe2_r02"><text>"Requirements"</text></outputEntry>
+        <outputEntry id="d11_oe3_r02"><text>"Gaps identified and logged; Product Owner notified; return to Step 7 requirement refinement"</text></outputEntry>
+        <outputEntry id="d11_oe4_r02"><text>5</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: AI Gov checklist pending/rejected → HOLD for AI Governance -->
+      <rule id="d11_r03_ai_gov_hold">
+        <description>AI Governance checklist not complete or rejected - hold for AI governance remediation</description>
+        <inputEntry id="d11_ie1_r03"><text>"Pass"</text></inputEntry>
+        <inputEntry id="d11_ie2_r03"><text>"Pending","Rejected"</text></inputEntry>
+        <inputEntry id="d11_ie3_r03"><text>-</text></inputEntry>
+        <inputEntry id="d11_ie4_r03"><text>-</text></inputEntry>
+        <inputEntry id="d11_ie5_r03"><text>-</text></inputEntry>
+        <outputEntry id="d11_oe1_r03"><text>"HOLD-AI-GOV"</text></outputEntry>
+        <outputEntry id="d11_oe2_r03"><text>"AIGovernance"</text></outputEntry>
+        <outputEntry id="d11_oe3_r03"><text>"AI Governance checklist items identified; remediation within 10 business days; SR 11-7 compliance required before UAT"</text></outputEntry>
+        <outputEntry id="d11_oe4_r03"><text>10</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Architecture not signed off → HOLD for Architecture -->
+      <rule id="d11_r04_arch_hold">
+        <description>Architecture sign-off not received - hold for architecture review completion</description>
+        <inputEntry id="d11_ie1_r04"><text>"Pass"</text></inputEntry>
+        <inputEntry id="d11_ie2_r04"><text>"Approved","NotRequired"</text></inputEntry>
+        <inputEntry id="d11_ie3_r04"><text>false</text></inputEntry>
+        <inputEntry id="d11_ie4_r04"><text>-</text></inputEntry>
+        <inputEntry id="d11_ie5_r04"><text>-</text></inputEntry>
+        <outputEntry id="d11_oe1_r04"><text>"HOLD-SECURITY"</text></outputEntry>
+        <outputEntry id="d11_oe2_r04"><text>"Architecture"</text></outputEntry>
+        <outputEntry id="d11_oe3_r04"><text>"CyberSec findings to be remediated; re-assessment scheduled; design must address all security control gaps"</text></outputEntry>
+        <outputEntry id="d11_oe4_r04"><text>7</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: CyberSec not cleared → HOLD for Security -->
+      <rule id="d11_r05_cybersec_hold">
+        <description>CyberSec clearance not received - hold for security remediation</description>
+        <inputEntry id="d11_ie1_r05"><text>"Pass"</text></inputEntry>
+        <inputEntry id="d11_ie2_r05"><text>"Approved","NotRequired"</text></inputEntry>
+        <inputEntry id="d11_ie3_r05"><text>true</text></inputEntry>
+        <inputEntry id="d11_ie4_r05"><text>false</text></inputEntry>
+        <inputEntry id="d11_ie5_r05"><text>-</text></inputEntry>
+        <outputEntry id="d11_oe1_r05"><text>"HOLD-SECURITY"</text></outputEntry>
+        <outputEntry id="d11_oe2_r05"><text>"CyberSecurity"</text></outputEntry>
+        <outputEntry id="d11_oe3_r05"><text>"CyberSec findings remediated; re-assessment scheduled; all critical and high vulnerabilities resolved before UAT"</text></outputEntry>
+        <outputEntry id="d11_oe4_r05"><text>10</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: Compliance not cleared → HOLD for Compliance -->
+      <rule id="d11_r06_compliance_hold">
+        <description>Compliance Governance clearance not received - hold for compliance resolution</description>
+        <inputEntry id="d11_ie1_r06"><text>"Pass"</text></inputEntry>
+        <inputEntry id="d11_ie2_r06"><text>"Approved","NotRequired"</text></inputEntry>
+        <inputEntry id="d11_ie3_r06"><text>true</text></inputEntry>
+        <inputEntry id="d11_ie4_r06"><text>true</text></inputEntry>
+        <inputEntry id="d11_ie5_r06"><text>false</text></inputEntry>
+        <outputEntry id="d11_oe1_r06"><text>"HOLD-COMPLIANCE"</text></outputEntry>
+        <outputEntry id="d11_oe2_r06"><text>"Compliance"</text></outputEntry>
+        <outputEntry id="d11_oe3_r06"><text>"Compliance Governance engaged; regulatory control gaps resolved; compliance clearance obtained before UAT authorization"</text></outputEntry>
+        <outputEntry id="d11_oe4_r06"><text>7</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d11_diagram_DMN11">
+      <dmndi:DMNShape id="d11_shape_DMN11" dmnElementRef="DMN11TechRiskEval">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

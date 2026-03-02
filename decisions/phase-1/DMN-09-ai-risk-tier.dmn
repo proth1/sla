@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d09_DMN_09_AIRiskTier"
+             name="DMN-09: AI Risk Tier Classification"
+             namespace="http://sla.governance.example.com/dmn/phase1">
+
+  <!--
+    DMN-09: AI Risk Tier Classification
+    Phase: 1 (Conversational AI Intake and Concurrent Risk Classification)
+    Hit Policy: PRIORITY (highest-risk tier takes precedence)
+    Regulatory: SR 11-7, NIST AI RMF 1.0, EU AI Act, OCC 2023-17
+    Task Type: Automated (A)
+    Description: Concurrent AI risk classification during intake. Fires in parallel with
+                 Capability Reuse Gate. Assigns SR 11-7 model risk tier based on
+                 decision materiality, credit/capital impact, model complexity, and data sensitivity.
+                 Tier 1 = High MRM; Tier 2 = Moderate; Tier 3 = Low; NotAI = Not Applicable.
+  -->
+
+  <decision id="DMN09AIRiskTier" name="AI Risk Tier Classification">
+    <decisionTable id="d09_dt_ai_risk_tier" hitPolicy="PRIORITY">
+
+      <input id="d09_in_ai_enabled" label="AI/ML Enabled?">
+        <inputExpression id="d09_ie_ai_enabled" typeRef="boolean">
+          <text>aiEnabled</text>
+        </inputExpression>
+      </input>
+
+      <input id="d09_in_decision_materiality" label="Decision Materiality">
+        <inputExpression id="d09_ie_materiality" typeRef="string">
+          <text>decisionMateriality</text>
+        </inputExpression>
+        <inputValues id="d09_iv_materiality">
+          <text>"CreditUnderwriting","RegulatoryCapital","FraudDecisioning","ConsumerCompliance","OperationalDecision","ProductivityTool","NotApplicable"</text>
+        </inputValues>
+      </input>
+
+      <input id="d09_in_credit_capital_impact" label="Credit or Capital Impact?">
+        <inputExpression id="d09_ie_credit_capital" typeRef="boolean">
+          <text>creditOrCapitalImpact</text>
+        </inputExpression>
+      </input>
+
+      <input id="d09_in_model_complexity" label="Model Complexity">
+        <inputExpression id="d09_ie_complexity" typeRef="string">
+          <text>modelComplexity</text>
+        </inputExpression>
+        <inputValues id="d09_iv_complexity">
+          <text>"HighComplexDeepLearning","ModerateMLModel","LowRulesBased","NotApplicable"</text>
+        </inputValues>
+      </input>
+
+      <input id="d09_in_data_sensitivity" label="Data Sensitivity">
+        <inputExpression id="d09_ie_data_sens" typeRef="string">
+          <text>dataSensitivity</text>
+        </inputExpression>
+        <inputValues id="d09_iv_data_sens">
+          <text>"HighPIINPI","ModerateConfidential","LowPublic"</text>
+        </inputValues>
+      </input>
+
+      <output id="d09_out_ai_tier" label="AI Risk Tier (SR 11-7)" typeRef="string" />
+      <output id="d09_out_tier_description" label="Tier Description" typeRef="string" />
+      <output id="d09_out_validation_required" label="Independent Validation Required?" typeRef="boolean" />
+      <output id="d09_out_exec_sponsor_required" label="Executive Sponsor Sign-off Required?" typeRef="boolean" />
+      <output id="d09_out_governance_path" label="Governance Path" typeRef="string" />
+
+      <!-- Priority 0 (highest): Not an AI system → Not Applicable -->
+      <rule id="d09_r00_not_ai">
+        <description>Not an AI/ML system - tier not applicable</description>
+        <inputEntry id="d09_ie1_r00"><text>false</text></inputEntry>
+        <inputEntry id="d09_ie2_r00"><text>-</text></inputEntry>
+        <inputEntry id="d09_ie3_r00"><text>-</text></inputEntry>
+        <inputEntry id="d09_ie4_r00"><text>-</text></inputEntry>
+        <inputEntry id="d09_ie5_r00"><text>-</text></inputEntry>
+        <outputEntry id="d09_oe1_r00"><text>"NotAI"</text></outputEntry>
+        <outputEntry id="d09_oe2_r00"><text>"Not an AI/ML system - standard governance pathway; no model risk management requirements"</text></outputEntry>
+        <outputEntry id="d09_oe3_r00"><text>false</text></outputEntry>
+        <outputEntry id="d09_oe4_r00"><text>false</text></outputEntry>
+        <outputEntry id="d09_oe5_r00"><text>"StandardGovernance"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 1 (highest AI risk): Credit underwriting or regulatory capital model → Tier 1 -->
+      <rule id="d09_r01_tier1_credit">
+        <description>AI model used in credit underwriting or regulatory capital calculation - Tier 1 Critical</description>
+        <inputEntry id="d09_ie1_r01"><text>true</text></inputEntry>
+        <inputEntry id="d09_ie2_r01"><text>"CreditUnderwriting","RegulatoryCapital"</text></inputEntry>
+        <inputEntry id="d09_ie3_r01"><text>true</text></inputEntry>
+        <inputEntry id="d09_ie4_r01"><text>-</text></inputEntry>
+        <inputEntry id="d09_ie5_r01"><text>-</text></inputEntry>
+        <outputEntry id="d09_oe1_r01"><text>"Tier1-HighMRM"</text></outputEntry>
+        <outputEntry id="d09_oe2_r01"><text>"Tier 1 High MRM (SR 11-7): model outputs materially influence credit underwriting or regulatory capital; mandatory independent validation, MRM Committee approval, Board reporting"</text></outputEntry>
+        <outputEntry id="d09_oe3_r01"><text>true</text></outputEntry>
+        <outputEntry id="d09_oe4_r01"><text>true</text></outputEntry>
+        <outputEntry id="d09_oe5_r01"><text>"FullAIGovernance-ExecSponsor-MRMCommittee"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 2: Fraud decisioning or consumer compliance → Tier 1 -->
+      <rule id="d09_r02_tier1_fraud">
+        <description>AI model in fraud decisioning or consumer-facing compliance - Tier 1 Critical</description>
+        <inputEntry id="d09_ie1_r02"><text>true</text></inputEntry>
+        <inputEntry id="d09_ie2_r02"><text>"FraudDecisioning","ConsumerCompliance"</text></inputEntry>
+        <inputEntry id="d09_ie3_r02"><text>-</text></inputEntry>
+        <inputEntry id="d09_ie4_r02"><text>"HighComplexDeepLearning","ModerateMLModel"</text></inputEntry>
+        <inputEntry id="d09_ie5_r02"><text>"HighPIINPI"</text></inputEntry>
+        <outputEntry id="d09_oe1_r02"><text>"Tier1-HighMRM"</text></outputEntry>
+        <outputEntry id="d09_oe2_r02"><text>"Tier 1 High MRM (SR 11-7): consumer-facing compliance or fraud decisioning with high data sensitivity; FCRA/Regulation B reason codes required; disparate impact analysis mandatory"</text></outputEntry>
+        <outputEntry id="d09_oe3_r02"><text>true</text></outputEntry>
+        <outputEntry id="d09_oe4_r02"><text>true</text></outputEntry>
+        <outputEntry id="d09_oe5_r02"><text>"FullAIGovernance-ExecSponsor-MRMCommittee"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 3: Operational decision with complex model and high data sensitivity → Tier 2 -->
+      <rule id="d09_r03_tier2_operational">
+        <description>Operational decision model with high complexity and sensitive data - Tier 2 Moderate MRM</description>
+        <inputEntry id="d09_ie1_r03"><text>true</text></inputEntry>
+        <inputEntry id="d09_ie2_r03"><text>"OperationalDecision"</text></inputEntry>
+        <inputEntry id="d09_ie3_r03"><text>false</text></inputEntry>
+        <inputEntry id="d09_ie4_r03"><text>"HighComplexDeepLearning","ModerateMLModel"</text></inputEntry>
+        <inputEntry id="d09_ie5_r03"><text>"HighPIINPI","ModerateConfidential"</text></inputEntry>
+        <outputEntry id="d09_oe1_r03"><text>"Tier2-ModerateMRM"</text></outputEntry>
+        <outputEntry id="d09_oe2_r03"><text>"Tier 2 Moderate MRM (SR 11-7): material operational impact; independent validation recommended; exception-based human review required"</text></outputEntry>
+        <outputEntry id="d09_oe3_r03"><text>false</text></outputEntry>
+        <outputEntry id="d09_oe4_r03"><text>false</text></outputEntry>
+        <outputEntry id="d09_oe5_r03"><text>"EnhancedAIGovernance-MRMReview"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 4: Moderate ML model, operational use → Tier 2 -->
+      <rule id="d09_r04_tier2_ml">
+        <description>Moderate ML model with operational impact but no credit/capital influence - Tier 2</description>
+        <inputEntry id="d09_ie1_r04"><text>true</text></inputEntry>
+        <inputEntry id="d09_ie2_r04"><text>"OperationalDecision"</text></inputEntry>
+        <inputEntry id="d09_ie3_r04"><text>false</text></inputEntry>
+        <inputEntry id="d09_ie4_r04"><text>"ModerateMLModel"</text></inputEntry>
+        <inputEntry id="d09_ie5_r04"><text>-</text></inputEntry>
+        <outputEntry id="d09_oe1_r04"><text>"Tier2-ModerateMRM"</text></outputEntry>
+        <outputEntry id="d09_oe2_r04"><text>"Tier 2 Moderate MRM: moderate ML model with operational decision scope; bias testing required; periodic monitoring"</text></outputEntry>
+        <outputEntry id="d09_oe3_r04"><text>false</text></outputEntry>
+        <outputEntry id="d09_oe4_r04"><text>false</text></outputEntry>
+        <outputEntry id="d09_oe5_r04"><text>"EnhancedAIGovernance-MRMReview"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 5: Productivity tool, rules-based, low complexity → Tier 3 -->
+      <rule id="d09_r05_tier3_productivity">
+        <description>Productivity/automation tool with no model risk exposure - Tier 3 Low MRM</description>
+        <inputEntry id="d09_ie1_r05"><text>true</text></inputEntry>
+        <inputEntry id="d09_ie2_r05"><text>"ProductivityTool"</text></inputEntry>
+        <inputEntry id="d09_ie3_r05"><text>false</text></inputEntry>
+        <inputEntry id="d09_ie4_r05"><text>"LowRulesBased","NotApplicable"</text></inputEntry>
+        <inputEntry id="d09_ie5_r05"><text>-</text></inputEntry>
+        <outputEntry id="d09_oe1_r05"><text>"Tier3-LowMRM"</text></outputEntry>
+        <outputEntry id="d09_oe2_r05"><text>"Tier 3 Low MRM: automation/productivity tool with no model risk exposure; standard governance; lightweight monitoring"</text></outputEntry>
+        <outputEntry id="d09_oe3_r05"><text>false</text></outputEntry>
+        <outputEntry id="d09_oe4_r05"><text>false</text></outputEntry>
+        <outputEntry id="d09_oe5_r05"><text>"StandardAIGovernance"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d09_diagram_DMN09">
+      <dmndi:DMNShape id="d09_shape_DMN09" dmnElementRef="DMN09AIRiskTier">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

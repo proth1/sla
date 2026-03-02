@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Phase4"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.42.0">
+
+  <bpmn:collaboration id="Collaboration_Phase4">
+    <bpmn:participant id="Participant_Phase4" name="Phase 4: Portfolio Prioritization, Go/No-Go &amp; Buy vs Build" processRef="Process_PortfolioPrioritization" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_PortfolioPrioritization" name="Phase 4: Portfolio Prioritization, Go/No-Go, and Buy vs Build" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_Phase4">
+      <bpmn:lane id="Lane_GB_P4" name="Governance Board">
+        <bpmn:flowNodeRef>Task_PortfolioCouncilReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DMN04_GoNoGo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_GoNoGo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ExecutiveSponsorSignOff</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PhaseTransitionP4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase4Complete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_GoNoGoRejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BO_P4" name="Business Owner">
+        <bpmn:flowNodeRef>StartEvent_Phase4Initiated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_GovernancePackageAssembly</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DecisionDocumentation</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ITA_P4" name="IT Architecture">
+        <bpmn:flowNodeRef>Task_StrategicAlignmentScoring</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CapacityPlanningReview</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Proc_P4" name="Procurement">
+        <bpmn:flowNodeRef>Task_DMN05_BuyVsBuild</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_BuyOrBuild</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_VendorSourceStrategy</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_BuildPlanInit</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_LC_P4" name="Legal &amp; Compliance">
+        <bpmn:flowNodeRef>Task_ComplianceGateP4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ComplianceGate</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IS_P4" name="Information Security">
+        <bpmn:flowNodeRef>Task_FinancialImpactModel</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RiskAcceptanceDecision</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_VM_P4" name="Vendor Management">
+        <bpmn:flowNodeRef>Task_PortfolioPrioritizationScore</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SequencingDecision</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_Phase4Initiated" name="Phase 3 Complete&#10;(Portfolio Entry)">
+      <bpmn:outgoing>Flow_Start_GovPackage</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Governance Package Assembly -->
+    <bpmn:serviceTask id="Task_GovernancePackageAssembly" name="Governance Package&#10;Assembly (DMN Outputs,&#10;Risk Scores, ADR)" camunda:type="external" camunda:topic="governance-package">
+      <bpmn:incoming>Flow_Start_GovPackage</bpmn:incoming>
+      <bpmn:outgoing>Flow_GovPackage_StrategicAlign</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Strategic Alignment Scoring -->
+    <bpmn:serviceTask id="Task_StrategicAlignmentScoring" name="Strategic Alignment&#10;Scoring (Enterprise&#10;Strategy Pillars)" camunda:type="external" camunda:topic="strategic-scoring">
+      <bpmn:incoming>Flow_GovPackage_StrategicAlign</bpmn:incoming>
+      <bpmn:outgoing>Flow_StrategicAlign_FinancialModel</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Financial Impact Model -->
+    <bpmn:serviceTask id="Task_FinancialImpactModel" name="Financial Impact&#10;Modeling (TCO, ROI,&#10;Payback Period)" camunda:type="external" camunda:topic="financial-modeling">
+      <bpmn:incoming>Flow_StrategicAlign_FinancialModel</bpmn:incoming>
+      <bpmn:outgoing>Flow_FinancialModel_PortfolioScore</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Portfolio Prioritization Score -->
+    <bpmn:serviceTask id="Task_PortfolioPrioritizationScore" name="Portfolio Prioritization&#10;Score (Weighted Matrix)" camunda:type="external" camunda:topic="portfolio-scoring">
+      <bpmn:incoming>Flow_FinancialModel_PortfolioScore</bpmn:incoming>
+      <bpmn:outgoing>Flow_PortfolioScore_CouncilReview</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Portfolio Council Review -->
+    <bpmn:userTask id="Task_PortfolioCouncilReview" name="Portfolio Governance&#10;Council Review (Cross-Functional)" camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_PortfolioScore_CouncilReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_CouncilReview_DMN04</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on Council Review -->
+    <bpmn:boundaryEvent id="Timer_CouncilReviewSLA" attachedToRef="Task_PortfolioCouncilReview" cancelActivity="false">
+      <bpmn:outgoing>Flow_CouncilSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_CouncilReview">
+        <bpmn:timeDuration>P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- DMN-04: Go/No-Go Viability -->
+    <bpmn:businessRuleTask id="Task_DMN04_GoNoGo" name="DMN-04: Go/No-Go&#10;Viability Decision" camunda:decisionRef="DMN_04_GoNoGoViability" camunda:resultVariable="goNoGoDecision" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_CouncilReview_DMN04</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMN04_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Gateway: Go/No-Go -->
+    <bpmn:exclusiveGateway id="Gateway_GoNoGo" name="Go / No-Go?" default="Flow_GoDecision">
+      <bpmn:incoming>Flow_DMN04_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_NoGoDecision</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GoDecision</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- No-Go End -->
+    <bpmn:endEvent id="EndEvent_GoNoGoRejected" name="Go/No-Go Rejected&#10;(Initiative Closed)">
+      <bpmn:incoming>Flow_NoGoDecision</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Compliance Gate -->
+    <bpmn:serviceTask id="Task_ComplianceGateP4" name="Compliance Gate&#10;(Regulatory Requirements&#10;Validation)" camunda:type="external" camunda:topic="compliance-gate">
+      <bpmn:incoming>Flow_GoDecision</bpmn:incoming>
+      <bpmn:outgoing>Flow_ComplianceGate_Gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Gateway: Compliance Gate -->
+    <bpmn:exclusiveGateway id="Gateway_ComplianceGate" name="Compliance&#10;Gate Passed?" default="Flow_CompliancePass">
+      <bpmn:incoming>Flow_ComplianceGate_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_ComplianceFail</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CompliancePass</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Risk Acceptance Decision -->
+    <bpmn:userTask id="Task_RiskAcceptanceDecision" name="Risk Acceptance&#10;Decision (Override with&#10;Documented Rationale)" camunda:candidateGroups="information-security">
+      <bpmn:incoming>Flow_ComplianceFail</bpmn:incoming>
+      <bpmn:outgoing>Flow_RiskAccept_DMN05</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- DMN-05: Buy vs Build -->
+    <bpmn:businessRuleTask id="Task_DMN05_BuyVsBuild" name="DMN-05: Buy vs Build&#10;Decision" camunda:decisionRef="DMN_05_BuyVsBuild" camunda:resultVariable="buyOrBuildDecision" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_CompliancePass</bpmn:incoming>
+      <bpmn:incoming>Flow_RiskAccept_DMN05</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMN05_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Gateway: Buy or Build -->
+    <bpmn:exclusiveGateway id="Gateway_BuyOrBuild" name="Buy or Build?" default="Flow_BuyPath">
+      <bpmn:incoming>Flow_DMN05_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_BuyPath</bpmn:outgoing>
+      <bpmn:outgoing>Flow_BuildPath</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Vendor Sourcing Strategy (Buy Path) -->
+    <bpmn:userTask id="Task_VendorSourceStrategy" name="Vendor Sourcing&#10;Strategy (RFP or Direct)" camunda:candidateGroups="procurement">
+      <bpmn:incoming>Flow_BuyPath</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorSource_Executive</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Build Plan Init (Build Path) -->
+    <bpmn:userTask id="Task_BuildPlanInit" name="Build Plan Initialization&#10;(Resource + Sprint Planning)" camunda:candidateGroups="procurement">
+      <bpmn:incoming>Flow_BuildPath</bpmn:incoming>
+      <bpmn:outgoing>Flow_BuildPlan_Executive</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Capacity Planning Review -->
+    <bpmn:userTask id="Task_CapacityPlanningReview" name="Capacity Planning&#10;+ Roadmap Integration" camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_VendorSource_Executive</bpmn:incoming>
+      <bpmn:incoming>Flow_BuildPlan_Executive</bpmn:incoming>
+      <bpmn:outgoing>Flow_Capacity_ExecutiveSignOff</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Executive Sponsor Sign-Off (Tier 1 AI / Critical Vendors) -->
+    <bpmn:userTask id="Task_ExecutiveSponsorSignOff" name="Executive Sponsor&#10;Sign-Off (Tier 1 AI/Critical&#10;Vendor per OCC)" camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_Capacity_ExecutiveSignOff</bpmn:incoming>
+      <bpmn:outgoing>Flow_ExecutiveSignOff_Sequencing</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on Executive Sign-Off -->
+    <bpmn:boundaryEvent id="Timer_ExecutiveSignOffSLA" attachedToRef="Task_ExecutiveSponsorSignOff" cancelActivity="false">
+      <bpmn:outgoing>Flow_ExecSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_ExecutiveSignOff">
+        <bpmn:timeDuration>P3D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- Sequencing Decision -->
+    <bpmn:userTask id="Task_SequencingDecision" name="Portfolio Sequencing&#10;Decision (Prioritization)" camunda:candidateGroups="vendor-management">
+      <bpmn:incoming>Flow_ExecutiveSignOff_Sequencing</bpmn:incoming>
+      <bpmn:outgoing>Flow_Sequencing_DecisionDoc</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Decision Documentation -->
+    <bpmn:serviceTask id="Task_DecisionDocumentation" name="Decision Documentation&#10;(Audit Trail, Override&#10;Rationale)" camunda:type="external" camunda:topic="decision-documentation">
+      <bpmn:incoming>Flow_Sequencing_DecisionDoc</bpmn:incoming>
+      <bpmn:outgoing>Flow_DecisionDoc_PhaseTransition</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Phase Transition -->
+    <bpmn:userTask id="Task_PhaseTransitionP4" name="Phase 4 Quality Gate&#10;+ Budget Release" camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_DecisionDoc_PhaseTransition</bpmn:incoming>
+      <bpmn:outgoing>Flow_PhaseTransition_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on Phase Transition -->
+    <bpmn:boundaryEvent id="Timer_Phase4QualityGate" attachedToRef="Task_PhaseTransitionP4" cancelActivity="false">
+      <bpmn:outgoing>Flow_P4QGEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_P4QualityGate">
+        <bpmn:timeDuration>P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- End Events -->
+    <bpmn:endEvent id="EndEvent_Phase4Complete" name="Phase 4 Complete&#10;(Budget Released)">
+      <bpmn:incoming>Flow_PhaseTransition_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_CouncilSLAEscalated" name="Council Review&#10;SLA Escalated">
+      <bpmn:incoming>Flow_CouncilSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_ExecSLAEscalated" name="Executive Sign-Off&#10;SLA Escalated">
+      <bpmn:incoming>Flow_ExecSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_P4QGEscalated" name="Phase 4 QG SLA&#10;Escalated">
+      <bpmn:incoming>Flow_P4QGEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Annotations -->
+    <bpmn:textAnnotation id="Annotation_P4_DMN">
+      <bpmn:text>DMN-04 (GoNoGoViability): Portfolio Council retains human override authority. DMN-05 (BuyVsBuild): Deterministic routing with logged rationale. OCC 2023-17: Executive sign-off required for Tier 1 critical activities.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P4_DMN" sourceRef="Task_DMN04_GoNoGo" targetRef="Annotation_P4_DMN" />
+
+    <bpmn:textAnnotation id="Annotation_P4_SOX">
+      <bpmn:text>SOX: Budget release requires documented approval trail. FINRA 4511: All governance decisions logged. EU AI Act: Tier 1 AI systems require executive sponsor. DORA: Capacity planning includes operational resilience assessment.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P4_SOX" sourceRef="Task_DecisionDocumentation" targetRef="Annotation_P4_SOX" />
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_Start_GovPackage" sourceRef="StartEvent_Phase4Initiated" targetRef="Task_GovernancePackageAssembly" />
+    <bpmn:sequenceFlow id="Flow_GovPackage_StrategicAlign" sourceRef="Task_GovernancePackageAssembly" targetRef="Task_StrategicAlignmentScoring" />
+    <bpmn:sequenceFlow id="Flow_StrategicAlign_FinancialModel" sourceRef="Task_StrategicAlignmentScoring" targetRef="Task_FinancialImpactModel" />
+    <bpmn:sequenceFlow id="Flow_FinancialModel_PortfolioScore" sourceRef="Task_FinancialImpactModel" targetRef="Task_PortfolioPrioritizationScore" />
+    <bpmn:sequenceFlow id="Flow_PortfolioScore_CouncilReview" sourceRef="Task_PortfolioPrioritizationScore" targetRef="Task_PortfolioCouncilReview" />
+    <bpmn:sequenceFlow id="Flow_CouncilReview_DMN04" sourceRef="Task_PortfolioCouncilReview" targetRef="Task_DMN04_GoNoGo" />
+    <bpmn:sequenceFlow id="Flow_DMN04_Gateway" sourceRef="Task_DMN04_GoNoGo" targetRef="Gateway_GoNoGo" />
+    <bpmn:sequenceFlow id="Flow_NoGoDecision" name="No-Go" sourceRef="Gateway_GoNoGo" targetRef="EndEvent_GoNoGoRejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${goNoGoDecision == 'NO_GO'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_GoDecision" name="Go" sourceRef="Gateway_GoNoGo" targetRef="Task_ComplianceGateP4" />
+    <bpmn:sequenceFlow id="Flow_ComplianceGate_Gateway" sourceRef="Task_ComplianceGateP4" targetRef="Gateway_ComplianceGate" />
+    <bpmn:sequenceFlow id="Flow_ComplianceFail" name="Fail" sourceRef="Gateway_ComplianceGate" targetRef="Task_RiskAcceptanceDecision">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${complianceGateFailed == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_CompliancePass" name="Pass" sourceRef="Gateway_ComplianceGate" targetRef="Task_DMN05_BuyVsBuild" />
+    <bpmn:sequenceFlow id="Flow_RiskAccept_DMN05" sourceRef="Task_RiskAcceptanceDecision" targetRef="Task_DMN05_BuyVsBuild" />
+    <bpmn:sequenceFlow id="Flow_DMN05_Gateway" sourceRef="Task_DMN05_BuyVsBuild" targetRef="Gateway_BuyOrBuild" />
+    <bpmn:sequenceFlow id="Flow_BuyPath" name="Buy" sourceRef="Gateway_BuyOrBuild" targetRef="Task_VendorSourceStrategy" />
+    <bpmn:sequenceFlow id="Flow_BuildPath" name="Build" sourceRef="Gateway_BuyOrBuild" targetRef="Task_BuildPlanInit">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${buyOrBuildDecision == 'BUILD'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_VendorSource_Executive" sourceRef="Task_VendorSourceStrategy" targetRef="Task_CapacityPlanningReview" />
+    <bpmn:sequenceFlow id="Flow_BuildPlan_Executive" sourceRef="Task_BuildPlanInit" targetRef="Task_CapacityPlanningReview" />
+    <bpmn:sequenceFlow id="Flow_Capacity_ExecutiveSignOff" sourceRef="Task_CapacityPlanningReview" targetRef="Task_ExecutiveSponsorSignOff" />
+    <bpmn:sequenceFlow id="Flow_ExecutiveSignOff_Sequencing" sourceRef="Task_ExecutiveSponsorSignOff" targetRef="Task_SequencingDecision" />
+    <bpmn:sequenceFlow id="Flow_Sequencing_DecisionDoc" sourceRef="Task_SequencingDecision" targetRef="Task_DecisionDocumentation" />
+    <bpmn:sequenceFlow id="Flow_DecisionDoc_PhaseTransition" sourceRef="Task_DecisionDocumentation" targetRef="Task_PhaseTransitionP4" />
+    <bpmn:sequenceFlow id="Flow_PhaseTransition_End" sourceRef="Task_PhaseTransitionP4" targetRef="EndEvent_Phase4Complete" />
+    <bpmn:sequenceFlow id="Flow_CouncilSLAEscalate" sourceRef="Timer_CouncilReviewSLA" targetRef="EndEvent_CouncilSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_ExecSLAEscalate" sourceRef="Timer_ExecutiveSignOffSLA" targetRef="EndEvent_ExecSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_P4QGEscalate" sourceRef="Timer_Phase4QualityGate" targetRef="EndEvent_P4QGEscalated" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Phase4">
+    <bpmndi:BPMNPlane id="BPMNPlane_Phase4" bpmnElement="Collaboration_Phase4">
+
+      <bpmndi:BPMNShape id="Participant_Phase4_di" bpmnElement="Participant_Phase4" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="2800" height="1240" />
+      </bpmndi:BPMNShape>
+
+      <!-- Swim Lanes -->
+      <bpmndi:BPMNShape id="Lane_GB_P4_di" bpmnElement="Lane_GB_P4" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="2770" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BO_P4_di" bpmnElement="Lane_BO_P4" isHorizontal="true">
+        <dc:Bounds x="185" y="207" width="2770" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ITA_P4_di" bpmnElement="Lane_ITA_P4" isHorizontal="true">
+        <dc:Bounds x="185" y="367" width="2770" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Proc_P4_di" bpmnElement="Lane_Proc_P4" isHorizontal="true">
+        <dc:Bounds x="185" y="527" width="2770" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_LC_P4_di" bpmnElement="Lane_LC_P4" isHorizontal="true">
+        <dc:Bounds x="185" y="687" width="2770" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_IS_P4_di" bpmnElement="Lane_IS_P4" isHorizontal="true">
+        <dc:Bounds x="185" y="847" width="2770" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_VM_P4_di" bpmnElement="Lane_VM_P4" isHorizontal="true">
+        <dc:Bounds x="185" y="1007" width="2770" height="160" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start Event (BO) x=247 -->
+      <bpmndi:BPMNShape id="StartEvent_Phase4Initiated_di" bpmnElement="StartEvent_Phase4Initiated">
+        <dc:Bounds x="247" y="269" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="225" y="312" width="80" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Governance Package Assembly (BO) x=330 -->
+      <bpmndi:BPMNShape id="Task_GovernancePackageAssembly_di" bpmnElement="Task_GovernancePackageAssembly">
+        <dc:Bounds x="330" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Strategic Alignment (ITA) x=520 -->
+      <bpmndi:BPMNShape id="Task_StrategicAlignmentScoring_di" bpmnElement="Task_StrategicAlignmentScoring">
+        <dc:Bounds x="520" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Financial Impact (IS) x=710 -->
+      <bpmndi:BPMNShape id="Task_FinancialImpactModel_di" bpmnElement="Task_FinancialImpactModel">
+        <dc:Bounds x="710" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Portfolio Prioritization (VM) x=900 -->
+      <bpmndi:BPMNShape id="Task_PortfolioPrioritizationScore_di" bpmnElement="Task_PortfolioPrioritizationScore">
+        <dc:Bounds x="900" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Portfolio Council Review (GB) x=1090 -->
+      <bpmndi:BPMNShape id="Task_PortfolioCouncilReview_di" bpmnElement="Task_PortfolioCouncilReview">
+        <dc:Bounds x="1090" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer on Council Review -->
+      <bpmndi:BPMNShape id="Timer_CouncilReviewSLA_di" bpmnElement="Timer_CouncilReviewSLA">
+        <dc:Bounds x="1142" y="149" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Council SLA Escalated (GB) -->
+      <bpmndi:BPMNShape id="EndEvent_CouncilSLAEscalated_di" bpmnElement="EndEvent_CouncilSLAEscalated">
+        <dc:Bounds x="1142" y="52" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1118" y="20" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-04 Go/No-Go (GB) x=1280 -->
+      <bpmndi:BPMNShape id="Task_DMN04_GoNoGo_di" bpmnElement="Task_DMN04_GoNoGo">
+        <dc:Bounds x="1280" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Go/No-Go (GB) x=1470 -->
+      <bpmndi:BPMNShape id="Gateway_GoNoGo_di" bpmnElement="Gateway_GoNoGo" isMarkerVisible="true">
+        <dc:Bounds x="1465" y="102" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1452" y="159" width="76" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- End Go/No-Go Rejected (GB) x=1570 -->
+      <bpmndi:BPMNShape id="EndEvent_GoNoGoRejected_di" bpmnElement="EndEvent_GoNoGoRejected">
+        <dc:Bounds x="1572" y="52" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1548" y="20" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Compliance Gate (LC) x=1570 -->
+      <bpmndi:BPMNShape id="Task_ComplianceGateP4_di" bpmnElement="Task_ComplianceGateP4">
+        <dc:Bounds x="1570" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Compliance Gate (LC) x=1760 -->
+      <bpmndi:BPMNShape id="Gateway_ComplianceGate_di" bpmnElement="Gateway_ComplianceGate" isMarkerVisible="true">
+        <dc:Bounds x="1755" y="722" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1738" y="779" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Risk Acceptance Decision (IS) x=1850 -->
+      <bpmndi:BPMNShape id="Task_RiskAcceptanceDecision_di" bpmnElement="Task_RiskAcceptanceDecision">
+        <dc:Bounds x="1850" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-05 Buy vs Build (Procurement) x=2040 -->
+      <bpmndi:BPMNShape id="Task_DMN05_BuyVsBuild_di" bpmnElement="Task_DMN05_BuyVsBuild">
+        <dc:Bounds x="2040" y="547" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Buy or Build (Procurement) x=2230 -->
+      <bpmndi:BPMNShape id="Gateway_BuyOrBuild_di" bpmnElement="Gateway_BuyOrBuild" isMarkerVisible="true">
+        <dc:Bounds x="2225" y="562" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2208" y="619" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Vendor Source Strategy (Procurement) x=2330 -->
+      <bpmndi:BPMNShape id="Task_VendorSourceStrategy_di" bpmnElement="Task_VendorSourceStrategy">
+        <dc:Bounds x="2330" y="547" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Build Plan Init (Procurement) x=2330 y=647 -->
+      <bpmndi:BPMNShape id="Task_BuildPlanInit_di" bpmnElement="Task_BuildPlanInit">
+        <dc:Bounds x="2330" y="647" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Capacity Planning Review (ITA) x=2520 -->
+      <bpmndi:BPMNShape id="Task_CapacityPlanningReview_di" bpmnElement="Task_CapacityPlanningReview">
+        <dc:Bounds x="2520" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Executive Sponsor Sign-Off (GB) x=2520 -->
+      <bpmndi:BPMNShape id="Task_ExecutiveSponsorSignOff_di" bpmnElement="Task_ExecutiveSponsorSignOff">
+        <dc:Bounds x="2520" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer on Executive Sign-Off -->
+      <bpmndi:BPMNShape id="Timer_ExecutiveSignOffSLA_di" bpmnElement="Timer_ExecutiveSignOffSLA">
+        <dc:Bounds x="2572" y="149" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Exec SLA Escalated (GB) -->
+      <bpmndi:BPMNShape id="EndEvent_ExecSLAEscalated_di" bpmnElement="EndEvent_ExecSLAEscalated">
+        <dc:Bounds x="2572" y="52" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2548" y="20" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequencing Decision (VM) x=2520 -->
+      <bpmndi:BPMNShape id="Task_SequencingDecision_di" bpmnElement="Task_SequencingDecision">
+        <dc:Bounds x="2520" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Decision Documentation (BO) x=2700 -->
+      <bpmndi:BPMNShape id="Task_DecisionDocumentation_di" bpmnElement="Task_DecisionDocumentation">
+        <dc:Bounds x="2700" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase Transition (GB) x=2700 -->
+      <bpmndi:BPMNShape id="Task_PhaseTransitionP4_di" bpmnElement="Task_PhaseTransitionP4">
+        <dc:Bounds x="2700" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer on Phase Transition -->
+      <bpmndi:BPMNShape id="Timer_Phase4QualityGate_di" bpmnElement="Timer_Phase4QualityGate">
+        <dc:Bounds x="2752" y="149" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Phase 4 Complete (GB) x=2890 -->
+      <bpmndi:BPMNShape id="EndEvent_Phase4Complete_di" bpmnElement="EndEvent_Phase4Complete">
+        <dc:Bounds x="2892" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2870" y="145" width="80" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- End P4 QG Escalated (GB) -->
+      <bpmndi:BPMNShape id="EndEvent_P4QGEscalated_di" bpmnElement="EndEvent_P4QGEscalated">
+        <dc:Bounds x="2752" y="52" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2728" y="20" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Annotations -->
+      <bpmndi:BPMNShape id="Annotation_P4_DMN_di" bpmnElement="Annotation_P4_DMN">
+        <dc:Bounds x="200" y="1175" width="800" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annotation_P4_SOX_di" bpmnElement="Annotation_P4_SOX">
+        <dc:Bounds x="1050" y="1175" width="800" height="55" />
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="Flow_Start_GovPackage_di" bpmnElement="Flow_Start_GovPackage">
+        <di:waypoint x="283" y="287" />
+        <di:waypoint x="330" y="287" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_GovPackage_StrategicAlign_di" bpmnElement="Flow_GovPackage_StrategicAlign">
+        <di:waypoint x="470" y="287" />
+        <di:waypoint x="495" y="287" />
+        <di:waypoint x="495" y="427" />
+        <di:waypoint x="520" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_StrategicAlign_FinancialModel_di" bpmnElement="Flow_StrategicAlign_FinancialModel">
+        <di:waypoint x="660" y="427" />
+        <di:waypoint x="685" y="427" />
+        <di:waypoint x="685" y="907" />
+        <di:waypoint x="710" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_FinancialModel_PortfolioScore_di" bpmnElement="Flow_FinancialModel_PortfolioScore">
+        <di:waypoint x="850" y="907" />
+        <di:waypoint x="875" y="907" />
+        <di:waypoint x="875" y="1067" />
+        <di:waypoint x="900" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PortfolioScore_CouncilReview_di" bpmnElement="Flow_PortfolioScore_CouncilReview">
+        <di:waypoint x="1040" y="1067" />
+        <di:waypoint x="1160" y="1067" />
+        <di:waypoint x="1160" y="167" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_CouncilReview_DMN04_di" bpmnElement="Flow_CouncilReview_DMN04">
+        <di:waypoint x="1230" y="127" />
+        <di:waypoint x="1280" y="127" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DMN04_Gateway_di" bpmnElement="Flow_DMN04_Gateway">
+        <di:waypoint x="1420" y="127" />
+        <di:waypoint x="1465" y="127" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_NoGoDecision_di" bpmnElement="Flow_NoGoDecision">
+        <di:waypoint x="1490" y="102" />
+        <di:waypoint x="1490" y="70" />
+        <di:waypoint x="1572" y="70" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1498" y="82" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_GoDecision_di" bpmnElement="Flow_GoDecision">
+        <di:waypoint x="1515" y="127" />
+        <di:waypoint x="1640" y="127" />
+        <di:waypoint x="1640" y="707" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1565" y="109" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ComplianceGate_Gateway_di" bpmnElement="Flow_ComplianceGate_Gateway">
+        <di:waypoint x="1710" y="747" />
+        <di:waypoint x="1755" y="747" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ComplianceFail_di" bpmnElement="Flow_ComplianceFail">
+        <di:waypoint x="1780" y="772" />
+        <di:waypoint x="1780" y="907" />
+        <di:waypoint x="1850" y="907" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1788" y="837" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_CompliancePass_di" bpmnElement="Flow_CompliancePass">
+        <di:waypoint x="1805" y="747" />
+        <di:waypoint x="1920" y="747" />
+        <di:waypoint x="1920" y="587" />
+        <di:waypoint x="2040" y="587" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1843" y="729" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_RiskAccept_DMN05_di" bpmnElement="Flow_RiskAccept_DMN05">
+        <di:waypoint x="1990" y="907" />
+        <di:waypoint x="2015" y="907" />
+        <di:waypoint x="2015" y="587" />
+        <di:waypoint x="2040" y="587" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DMN05_Gateway_di" bpmnElement="Flow_DMN05_Gateway">
+        <di:waypoint x="2180" y="587" />
+        <di:waypoint x="2225" y="587" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_BuyPath_di" bpmnElement="Flow_BuyPath">
+        <di:waypoint x="2275" y="587" />
+        <di:waypoint x="2330" y="587" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2293" y="569" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_BuildPath_di" bpmnElement="Flow_BuildPath">
+        <di:waypoint x="2250" y="612" />
+        <di:waypoint x="2250" y="687" />
+        <di:waypoint x="2330" y="687" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2258" y="642" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_VendorSource_Executive_di" bpmnElement="Flow_VendorSource_Executive">
+        <di:waypoint x="2470" y="587" />
+        <di:waypoint x="2590" y="587" />
+        <di:waypoint x="2590" y="467" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_BuildPlan_Executive_di" bpmnElement="Flow_BuildPlan_Executive">
+        <di:waypoint x="2470" y="687" />
+        <di:waypoint x="2590" y="687" />
+        <di:waypoint x="2590" y="467" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Capacity_ExecutiveSignOff_di" bpmnElement="Flow_Capacity_ExecutiveSignOff">
+        <di:waypoint x="2590" y="387" />
+        <di:waypoint x="2590" y="167" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ExecutiveSignOff_Sequencing_di" bpmnElement="Flow_ExecutiveSignOff_Sequencing">
+        <di:waypoint x="2590" y="167" />
+        <di:waypoint x="2590" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Sequencing_DecisionDoc_di" bpmnElement="Flow_Sequencing_DecisionDoc">
+        <di:waypoint x="2660" y="1067" />
+        <di:waypoint x="2770" y="1067" />
+        <di:waypoint x="2770" y="327" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DecisionDoc_PhaseTransition_di" bpmnElement="Flow_DecisionDoc_PhaseTransition">
+        <di:waypoint x="2770" y="247" />
+        <di:waypoint x="2770" y="167" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PhaseTransition_End_di" bpmnElement="Flow_PhaseTransition_End">
+        <di:waypoint x="2840" y="127" />
+        <di:waypoint x="2892" y="120" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_CouncilSLAEscalate_di" bpmnElement="Flow_CouncilSLAEscalate">
+        <di:waypoint x="1160" y="149" />
+        <di:waypoint x="1160" y="88" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ExecSLAEscalate_di" bpmnElement="Flow_ExecSLAEscalate">
+        <di:waypoint x="2590" y="149" />
+        <di:waypoint x="2590" y="88" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P4QGEscalate_di" bpmnElement="Flow_P4QGEscalate">
+        <di:waypoint x="2770" y="149" />
+        <di:waypoint x="2770" y="88" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P4_DMN_di" bpmnElement="Assoc_P4_DMN">
+        <di:waypoint x="1350" y="167" />
+        <di:waypoint x="600" y="1175" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P4_SOX_di" bpmnElement="Assoc_P4_SOX">
+        <di:waypoint x="2770" y="327" />
+        <di:waypoint x="1450" y="1175" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

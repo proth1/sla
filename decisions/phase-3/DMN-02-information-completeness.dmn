@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d02_DMN_02_InformationCompleteness"
+             name="DMN-02: Information Completeness Gate"
+             namespace="http://sla.governance.example.com/dmn/phase3">
+
+  <!--
+    DMN-02: Information Completeness Gate
+    Phase: 3 (Product Management Review and Portfolio Governance)
+    Hit Policy: ANY (all conditions must be satisfied for Proceed to fire)
+    Regulatory: OCC 2023-17, GDPR/CCPA
+    Task Type: Automated (A)
+    Description: All conditions must be satisfied for the request to proceed to portfolio.
+                 SLA clock pauses while awaiting requestor response on any gap.
+  -->
+
+  <decision id="DMN02InformationCompleteness" name="Information Completeness Gate">
+    <decisionTable id="d02_dt_info_completeness" hitPolicy="ANY">
+
+      <input id="d02_in_value_quantified" label="Business Value Quantified?">
+        <inputExpression id="d02_ie_value" typeRef="boolean">
+          <text>businessValueQuantified</text>
+        </inputExpression>
+      </input>
+
+      <input id="d02_in_data_classified" label="Data Classification Complete?">
+        <inputExpression id="d02_ie_data_class" typeRef="boolean">
+          <text>dataClassificationComplete</text>
+        </inputExpression>
+      </input>
+
+      <input id="d02_in_integration_list" label="Integration List Provided?">
+        <inputExpression id="d02_ie_integration" typeRef="boolean">
+          <text>integrationListProvided</text>
+        </inputExpression>
+      </input>
+
+      <input id="d02_in_reg_flags" label="Regulatory Flags Assessed?">
+        <inputExpression id="d02_ie_reg_flags" typeRef="boolean">
+          <text>regulatoryFlagsAssessed</text>
+        </inputExpression>
+      </input>
+
+      <input id="d02_in_po_approved" label="Product Owner PRD Approved?">
+        <inputExpression id="d02_ie_po_approved" typeRef="boolean">
+          <text>productOwnerApproved</text>
+        </inputExpression>
+      </input>
+
+      <output id="d02_out_decision" label="Completeness Decision" typeRef="string" />
+      <output id="d02_out_action" label="Required Action" typeRef="string" />
+      <output id="d02_out_gap_domain" label="Gap Domain" typeRef="string" />
+      <output id="d02_out_sla_pause" label="Pause SLA Clock?" typeRef="boolean" />
+
+      <!-- Rule 1: All fields complete → proceed to portfolio -->
+      <rule id="d02_r01_all_complete">
+        <description>All completeness criteria satisfied - proceed to portfolio entry</description>
+        <inputEntry id="d02_ie1_r01"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie2_r01"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie3_r01"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie4_r01"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie5_r01"><text>true</text></inputEntry>
+        <outputEntry id="d02_oe1_r01"><text>"PROCEED"</text></outputEntry>
+        <outputEntry id="d02_oe2_r01"><text>"Route to portfolio; Epic created in Jira/ADO"</text></outputEntry>
+        <outputEntry id="d02_oe3_r01"><text>"None"</text></outputEntry>
+        <outputEntry id="d02_oe4_r01"><text>false</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: Business value not quantified → return to requestor -->
+      <rule id="d02_r02_no_value">
+        <description>Business value not quantified - return to requestor via bot</description>
+        <inputEntry id="d02_ie1_r02"><text>false</text></inputEntry>
+        <inputEntry id="d02_ie2_r02"><text>-</text></inputEntry>
+        <inputEntry id="d02_ie3_r02"><text>-</text></inputEntry>
+        <inputEntry id="d02_ie4_r02"><text>-</text></inputEntry>
+        <inputEntry id="d02_ie5_r02"><text>-</text></inputEntry>
+        <outputEntry id="d02_oe1_r02"><text>"RETURN"</text></outputEntry>
+        <outputEntry id="d02_oe2_r02"><text>"Bot sends targeted follow-up to requestor; SLA paused; gap logged to audit trail"</text></outputEntry>
+        <outputEntry id="d02_oe3_r02"><text>"BusinessValue"</text></outputEntry>
+        <outputEntry id="d02_oe4_r02"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Data not classified → escalate to Compliance Governance -->
+      <rule id="d02_r03_no_data_class">
+        <description>Data classification missing - escalate to Compliance Governance</description>
+        <inputEntry id="d02_ie1_r03"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie2_r03"><text>false</text></inputEntry>
+        <inputEntry id="d02_ie3_r03"><text>-</text></inputEntry>
+        <inputEntry id="d02_ie4_r03"><text>-</text></inputEntry>
+        <inputEntry id="d02_ie5_r03"><text>-</text></inputEntry>
+        <outputEntry id="d02_oe1_r03"><text>"RETURN-ESCALATE"</text></outputEntry>
+        <outputEntry id="d02_oe2_r03"><text>"Compliance Governance notified; data classification workshop within 3 business days"</text></outputEntry>
+        <outputEntry id="d02_oe3_r03"><text>"DataClassification"</text></outputEntry>
+        <outputEntry id="d02_oe4_r03"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Integration list missing → route to Architecture review -->
+      <rule id="d02_r04_no_integration">
+        <description>Integration list not provided - route to Architecture review</description>
+        <inputEntry id="d02_ie1_r04"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie2_r04"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie3_r04"><text>false</text></inputEntry>
+        <inputEntry id="d02_ie4_r04"><text>-</text></inputEntry>
+        <inputEntry id="d02_ie5_r04"><text>-</text></inputEntry>
+        <outputEntry id="d02_oe1_r04"><text>"RETURN-ARCH-REVIEW"</text></outputEntry>
+        <outputEntry id="d02_oe2_r04"><text>"Enterprise Architect consulted on integration scope; re-submission required before portfolio entry"</text></outputEntry>
+        <outputEntry id="d02_oe3_r04"><text>"IntegrationScope"</text></outputEntry>
+        <outputEntry id="d02_oe4_r04"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: Regulatory flags not assessed → route to Compliance -->
+      <rule id="d02_r05_no_reg_flags">
+        <description>Regulatory flags not assessed - route to Compliance Governance</description>
+        <inputEntry id="d02_ie1_r05"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie2_r05"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie3_r05"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie4_r05"><text>false</text></inputEntry>
+        <inputEntry id="d02_ie5_r05"><text>-</text></inputEntry>
+        <outputEntry id="d02_oe1_r05"><text>"RETURN-COMPLIANCE"</text></outputEntry>
+        <outputEntry id="d02_oe2_r05"><text>"Compliance Governance engagement required; regulatory mapping to be completed within 2 business days"</text></outputEntry>
+        <outputEntry id="d02_oe3_r05"><text>"RegulatoryFlags"</text></outputEntry>
+        <outputEntry id="d02_oe4_r05"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: PO not yet approved → hold for PO review -->
+      <rule id="d02_r06_po_pending">
+        <description>Product Owner PRD approval pending - hold for review</description>
+        <inputEntry id="d02_ie1_r06"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie2_r06"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie3_r06"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie4_r06"><text>true</text></inputEntry>
+        <inputEntry id="d02_ie5_r06"><text>false</text></inputEntry>
+        <outputEntry id="d02_oe1_r06"><text>"HOLD-PO-REVIEW"</text></outputEntry>
+        <outputEntry id="d02_oe2_r06"><text>"PRD queued for Product Owner review; 2-day SLA for approval or revision request"</text></outputEntry>
+        <outputEntry id="d02_oe3_r06"><text>"ProductOwnerApproval"</text></outputEntry>
+        <outputEntry id="d02_oe4_r06"><text>true</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d02_diagram_DMN02">
+      <dmndi:DMNShape id="d02_shape_DMN02" dmnElementRef="DMN02InformationCompleteness">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

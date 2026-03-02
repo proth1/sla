@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d07_DMN_07_VendorSelectionRAE"
+             name="DMN-07: Vendor Selection and RAE Gate"
+             namespace="http://sla.governance.example.com/dmn/phase5b">
+
+  <!--
+    DMN-07: Vendor Selection and RAE Gate
+    Phase: 5B (TPRM-Integrated Procurement - Stage 4)
+    Hit Policy: UNIQUE
+    Regulatory: OCC 2023-17, SR 11-7
+    Task Type: Human-in-the-Loop (H) for evaluation; Automated (A) for DMN gate
+    Description: Sourcing event and vendor selection gate after RFP and pilot evaluation.
+                 Risk Assessment Evaluation (RAE) findings and AI Governance status determine outcome.
+  -->
+
+  <decision id="DMN07VendorSelectionRAE" name="Vendor Selection and RAE Gate">
+    <decisionTable id="d07_dt_vendor_selection" hitPolicy="UNIQUE">
+
+      <input id="d07_in_vendor_count" label="Vendors Responded to RFP">
+        <inputExpression id="d07_ie_vendor_count" typeRef="string">
+          <text>vendorsResponded</text>
+        </inputExpression>
+        <inputValues id="d07_iv_vendor_count">
+          <text>"OneOrMore","None"</text>
+        </inputValues>
+      </input>
+
+      <input id="d07_in_pilot_outcome" label="Pilot/PoC Outcome">
+        <inputExpression id="d07_ie_pilot" typeRef="string">
+          <text>pilotOutcome</text>
+        </inputExpression>
+        <inputValues id="d07_iv_pilot">
+          <text>"Pass","Fail","NotRequired"</text>
+        </inputValues>
+      </input>
+
+      <input id="d07_in_rae_findings" label="RAE Findings Severity">
+        <inputExpression id="d07_ie_rae" typeRef="string">
+          <text>raeFindings</text>
+        </inputExpression>
+        <inputValues id="d07_iv_rae">
+          <text>"None","Minor","Moderate","Critical"</text>
+        </inputValues>
+      </input>
+
+      <input id="d07_in_ai_gov_status" label="AI Governance Status">
+        <inputExpression id="d07_ie_ai_gov" typeRef="string">
+          <text>aiGovernanceStatus</text>
+        </inputExpression>
+        <inputValues id="d07_iv_ai_gov">
+          <text>"Approved","Pending","NotRequired","Rejected"</text>
+        </inputValues>
+      </input>
+
+      <output id="d07_out_decision" label="Selection Decision" typeRef="string" />
+      <output id="d07_out_action" label="Required Action" typeRef="string" />
+      <output id="d07_out_conditions" label="Binding Conditions" typeRef="string" />
+      <output id="d07_out_next_step" label="Next Step" typeRef="string" />
+
+      <!-- Rule 1: No vendors responded → rethink sourcing strategy -->
+      <rule id="d07_r01_no_vendors">
+        <description>No vendors responded to RFP - sole-source or Build pivot required</description>
+        <inputEntry id="d07_ie1_r01"><text>"None"</text></inputEntry>
+        <inputEntry id="d07_ie2_r01"><text>-</text></inputEntry>
+        <inputEntry id="d07_ie3_r01"><text>-</text></inputEntry>
+        <inputEntry id="d07_ie4_r01"><text>-</text></inputEntry>
+        <outputEntry id="d07_oe1_r01"><text>"RETHINK"</text></outputEntry>
+        <outputEntry id="d07_oe2_r01"><text>"Sole-source evaluation or Build pivot escalated to Portfolio Council; root cause of no-response documented"</text></outputEntry>
+        <outputEntry id="d07_oe3_r01"><text>"None - re-scoping required"</text></outputEntry>
+        <outputEntry id="d07_oe4_r01"><text>"Portfolio Council Decision Gate"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: Pilot failed → restart with re-scoped RFP -->
+      <rule id="d07_r02_pilot_fail">
+        <description>Pilot evaluation failed - restart RFP process or expand vendor pool</description>
+        <inputEntry id="d07_ie1_r02"><text>"OneOrMore"</text></inputEntry>
+        <inputEntry id="d07_ie2_r02"><text>"Fail"</text></inputEntry>
+        <inputEntry id="d07_ie3_r02"><text>-</text></inputEntry>
+        <inputEntry id="d07_ie4_r02"><text>-</text></inputEntry>
+        <outputEntry id="d07_oe1_r02"><text>"RESTART"</text></outputEntry>
+        <outputEntry id="d07_oe2_r02"><text>"Re-scope RFP or expand vendor pool; pilot failure root cause documented; lessons logged to Vendor Intelligence KB"</text></outputEntry>
+        <outputEntry id="d07_oe3_r02"><text>"Pilot failure criteria documented as binding next-RFP requirements"</text></outputEntry>
+        <outputEntry id="d07_oe4_r02"><text>"RFP Re-scope"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Critical RAE findings → NO-GO regardless of pilot -->
+      <rule id="d07_r03_critical_rae">
+        <description>Critical RAE findings - no-go; explore Build pivot or alternative sourcing</description>
+        <inputEntry id="d07_ie1_r03"><text>"OneOrMore"</text></inputEntry>
+        <inputEntry id="d07_ie2_r03"><text>-</text></inputEntry>
+        <inputEntry id="d07_ie3_r03"><text>"Critical"</text></inputEntry>
+        <inputEntry id="d07_ie4_r03"><text>-</text></inputEntry>
+        <outputEntry id="d07_oe1_r03"><text>"NO-GO"</text></outputEntry>
+        <outputEntry id="d07_oe2_r03"><text>"Close with documented rationale; critical RAE findings preclude vendor engagement; explore Build pivot or alternative sourcing"</text></outputEntry>
+        <outputEntry id="d07_oe3_r03"><text>"Critical findings logged to Vendor Intelligence KB; vendor blacklist evaluation"</text></outputEntry>
+        <outputEntry id="d07_oe4_r03"><text>"Portfolio Council Build/Alternative Review"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Moderate RAE findings → conditional proceed with binding obligations -->
+      <rule id="d07_r04_moderate_rae_conditional">
+        <description>Pilot passed, moderate RAE findings - conditional proceed with binding contract obligations</description>
+        <inputEntry id="d07_ie1_r04"><text>"OneOrMore"</text></inputEntry>
+        <inputEntry id="d07_ie2_r04"><text>"Pass","NotRequired"</text></inputEntry>
+        <inputEntry id="d07_ie3_r04"><text>"Moderate"</text></inputEntry>
+        <inputEntry id="d07_ie4_r04"><text>"Approved","NotRequired"</text></inputEntry>
+        <outputEntry id="d07_oe1_r04"><text>"CONDITIONAL"</text></outputEntry>
+        <outputEntry id="d07_oe2_r04"><text>"Contract negotiation begins; RAE findings converted to binding contract obligations; re-RAE scheduled post-signature within 90 days"</text></outputEntry>
+        <outputEntry id="d07_oe3_r04"><text>"Remediation schedule embedded in MSA; SLA penalties for non-resolution"</text></outputEntry>
+        <outputEntry id="d07_oe4_r04"><text>"Contract Negotiation with RAE Conditions"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: AI Gov rejected → no-go or hold -->
+      <rule id="d07_r05_ai_gov_rejected">
+        <description>AI Governance rejected - cannot proceed until AI governance approved</description>
+        <inputEntry id="d07_ie1_r05"><text>"OneOrMore"</text></inputEntry>
+        <inputEntry id="d07_ie2_r05"><text>"Pass","NotRequired"</text></inputEntry>
+        <inputEntry id="d07_ie3_r05"><text>"None","Minor"</text></inputEntry>
+        <inputEntry id="d07_ie4_r05"><text>"Rejected"</text></inputEntry>
+        <outputEntry id="d07_oe1_r05"><text>"HOLD-AI-GOV"</text></outputEntry>
+        <outputEntry id="d07_oe2_r05"><text>"AI Governance review escalated; remediation plan required within 15 business days; vendor notified of hold"</text></outputEntry>
+        <outputEntry id="d07_oe3_r05"><text>"AI governance deficiencies as contract prerequisites"</text></outputEntry>
+        <outputEntry id="d07_oe4_r05"><text>"AI Governance Remediation"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: Clean bill - proceed to contract negotiation and TPRM onboarding -->
+      <rule id="d07_r06_proceed_clean">
+        <description>Pilot passed, no/minor findings, AI governance approved - full proceed</description>
+        <inputEntry id="d07_ie1_r06"><text>"OneOrMore"</text></inputEntry>
+        <inputEntry id="d07_ie2_r06"><text>"Pass","NotRequired"</text></inputEntry>
+        <inputEntry id="d07_ie3_r06"><text>"None","Minor"</text></inputEntry>
+        <inputEntry id="d07_ie4_r06"><text>"Approved","NotRequired"</text></inputEntry>
+        <outputEntry id="d07_oe1_r06"><text>"PROCEED"</text></outputEntry>
+        <outputEntry id="d07_oe2_r06"><text>"Contract negotiation initiated; TPRM onboarding activated; vendor registered in TPRM Vendor Register"</text></outputEntry>
+        <outputEntry id="d07_oe3_r06"><text>"Minor findings as standard contract obligations if applicable"</text></outputEntry>
+        <outputEntry id="d07_oe4_r06"><text>"Contracting and Funding (DMN-08)"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d07_diagram_DMN07">
+      <dmndi:DMNShape id="d07_shape_DMN07" dmnElementRef="DMN07VendorSelectionRAE">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

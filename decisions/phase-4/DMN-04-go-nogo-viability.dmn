@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d04_DMN_04_GoNoGoViability"
+             name="DMN-04: Go/No-Go Viability"
+             namespace="http://sla.governance.example.com/dmn/phase4">
+
+  <!--
+    DMN-04: Go/No-Go Viability
+    Phase: 4 (Portfolio Prioritization, Go/No-Go, and Strategic Alignment)
+    Hit Policy: PRIORITY (single veto condition overrides all positive signals)
+    Regulatory: OCC 2023-17, SOX, SR 11-7
+    Task Type: Human-in-the-Loop (H); Council retains override authority
+    Description: Portfolio Governance Council decision gate. A single veto condition
+                 overrides all positive signals. All overrides logged with reviewer role
+                 and rationale (minimum 50 characters).
+  -->
+
+  <decision id="DMN04GoNoGoViability" name="Go/No-Go Viability">
+    <decisionTable id="d04_dt_go_nogo" hitPolicy="PRIORITY">
+
+      <input id="d04_in_composite_score" label="Composite Score (0-100)">
+        <inputExpression id="d04_ie_score" typeRef="integer">
+          <text>compositeScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="d04_in_strategic_alignment" label="Strategic Alignment">
+        <inputExpression id="d04_ie_strategic" typeRef="string">
+          <text>strategicAlignment</text>
+        </inputExpression>
+        <inputValues id="d04_iv_strategic">
+          <text>"High","Medium","Low"</text>
+        </inputValues>
+      </input>
+
+      <input id="d04_in_regulatory_risk" label="Regulatory Risk Status">
+        <inputExpression id="d04_ie_reg_risk" typeRef="string">
+          <text>regulatoryRiskStatus</text>
+        </inputExpression>
+        <inputValues id="d04_iv_reg_risk">
+          <text>"Compliant","NonCompliant","PendingReview"</text>
+        </inputValues>
+      </input>
+
+      <input id="d04_in_budget_available" label="Budget Available?">
+        <inputExpression id="d04_ie_budget" typeRef="boolean">
+          <text>budgetAvailable</text>
+        </inputExpression>
+      </input>
+
+      <input id="d04_in_resources_available" label="Resources Available?">
+        <inputExpression id="d04_ie_resources" typeRef="boolean">
+          <text>resourcesAvailable</text>
+        </inputExpression>
+      </input>
+
+      <output id="d04_out_decision" label="Go/No-Go Decision" typeRef="string" />
+      <output id="d04_out_priority" label="Priority Level" typeRef="string" />
+      <output id="d04_out_action" label="Required Action" typeRef="string" />
+      <output id="d04_out_review_body" label="Review Body" typeRef="string" />
+
+      <!-- Priority 1 (highest): Regulatory non-compliance is an absolute veto -->
+      <rule id="d04_r01_reg_hold" annotation="VETO: Regulatory non-compliance blocks all positive signals">
+        <description>Any regulatory non-compliance - absolute veto regardless of score or budget</description>
+        <inputEntry id="d04_ie1_r01"><text>-</text></inputEntry>
+        <inputEntry id="d04_ie2_r01"><text>-</text></inputEntry>
+        <inputEntry id="d04_ie3_r01"><text>"NonCompliant"</text></inputEntry>
+        <inputEntry id="d04_ie4_r01"><text>-</text></inputEntry>
+        <inputEntry id="d04_ie5_r01"><text>-</text></inputEntry>
+        <outputEntry id="d04_oe1_r01"><text>"NO-GO-REG-HOLD"</text></outputEntry>
+        <outputEntry id="d04_oe2_r01"><text>"Blocked"</text></outputEntry>
+        <outputEntry id="d04_oe3_r01"><text>"Risk and Compliance notified; held pending resolution within 30 business days; re-evaluation required before any portfolio entry"</text></outputEntry>
+        <outputEntry id="d04_oe4_r01"><text>"Risk and Compliance Governance"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 2: No budget - veto unless budget cycle resolved -->
+      <rule id="d04_r02_no_budget" annotation="VETO: No budget authorization blocks entry">
+        <description>Budget not available - defer to next budget planning cycle</description>
+        <inputEntry id="d04_ie1_r02"><text>-</text></inputEntry>
+        <inputEntry id="d04_ie2_r02"><text>-</text></inputEntry>
+        <inputEntry id="d04_ie3_r02"><text>"Compliant","PendingReview"</text></inputEntry>
+        <inputEntry id="d04_ie4_r02"><text>false</text></inputEntry>
+        <inputEntry id="d04_ie5_r02"><text>-</text></inputEntry>
+        <outputEntry id="d04_oe1_r02"><text>"NO-GO-BUDGET"</text></outputEntry>
+        <outputEntry id="d04_oe2_r02"><text>"Blocked-Budget"</text></outputEntry>
+        <outputEntry id="d04_oe3_r02"><text>"Re-evaluated in next budget planning cycle; Finance Controller engaged; requestor notified with rationale"</text></outputEntry>
+        <outputEntry id="d04_oe4_r02"><text>"Portfolio Governance Council, Finance"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 3: Low score → outright rejection -->
+      <rule id="d04_r03_low_score_reject">
+        <description>Composite score below 40 - reject with documented rationale</description>
+        <inputEntry id="d04_ie1_r03"><text>&lt; 40</text></inputEntry>
+        <inputEntry id="d04_ie2_r03"><text>-</text></inputEntry>
+        <inputEntry id="d04_ie3_r03"><text>"Compliant","PendingReview"</text></inputEntry>
+        <inputEntry id="d04_ie4_r03"><text>-</text></inputEntry>
+        <inputEntry id="d04_ie5_r03"><text>-</text></inputEntry>
+        <outputEntry id="d04_oe1_r03"><text>"NO-GO-REJECT"</text></outputEntry>
+        <outputEntry id="d04_oe2_r03"><text>"Rejected"</text></outputEntry>
+        <outputEntry id="d04_oe3_r03"><text>"Close with documented rationale; requestor notified; low strategic value and risk-adjusted score insufficient"</text></outputEntry>
+        <outputEntry id="d04_oe4_r03"><text>"Portfolio Governance Council"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 4: Medium score → defer 90 days -->
+      <rule id="d04_r04_defer">
+        <description>Composite score 40-59 - defer 90 days for re-evaluation</description>
+        <inputEntry id="d04_ie1_r04"><text>[40..59]</text></inputEntry>
+        <inputEntry id="d04_ie2_r04"><text>-</text></inputEntry>
+        <inputEntry id="d04_ie3_r04"><text>"Compliant","PendingReview"</text></inputEntry>
+        <inputEntry id="d04_ie4_r04"><text>-</text></inputEntry>
+        <inputEntry id="d04_ie5_r04"><text>-</text></inputEntry>
+        <outputEntry id="d04_oe1_r04"><text>"DEFER"</text></outputEntry>
+        <outputEntry id="d04_oe2_r04"><text>"Parked"</text></outputEntry>
+        <outputEntry id="d04_oe3_r04"><text>"Park 90 days; auto re-evaluate at next planning cycle; capacity forecast updated"</text></outputEntry>
+        <outputEntry id="d04_oe4_r04"><text>"Portfolio Governance Council"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 5: Good score, resources unavailable → conditional GO -->
+      <rule id="d04_r05_go_conditional">
+        <description>Score 60-79, budget available but resources constrained - conditional GO</description>
+        <inputEntry id="d04_ie1_r05"><text>[60..79]</text></inputEntry>
+        <inputEntry id="d04_ie2_r05"><text>-</text></inputEntry>
+        <inputEntry id="d04_ie3_r05"><text>"Compliant"</text></inputEntry>
+        <inputEntry id="d04_ie4_r05"><text>true</text></inputEntry>
+        <inputEntry id="d04_ie5_r05"><text>false</text></inputEntry>
+        <outputEntry id="d04_oe1_r05"><text>"GO-CONDITIONAL"</text></outputEntry>
+        <outputEntry id="d04_oe2_r05"><text>"Conditional"</text></outputEntry>
+        <outputEntry id="d04_oe3_r05"><text>"Enter backlog; resource dependency logged; capacity forecast updated; commencement pending resource availability"</text></outputEntry>
+        <outputEntry id="d04_oe4_r05"><text>"Portfolio Governance Council, Program Management"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 6: Good score, all resources → standard GO -->
+      <rule id="d04_r06_go_standard">
+        <description>Score 60-79, compliant, budget and resources available - standard GO</description>
+        <inputEntry id="d04_ie1_r06"><text>[60..79]</text></inputEntry>
+        <inputEntry id="d04_ie2_r06"><text>"Medium","High"</text></inputEntry>
+        <inputEntry id="d04_ie3_r06"><text>"Compliant"</text></inputEntry>
+        <inputEntry id="d04_ie4_r06"><text>true</text></inputEntry>
+        <inputEntry id="d04_ie5_r06"><text>true</text></inputEntry>
+        <outputEntry id="d04_oe1_r06"><text>"GO-STANDARD"</text></outputEntry>
+        <outputEntry id="d04_oe2_r06"><text>"Standard"</text></outputEntry>
+        <outputEntry id="d04_oe3_r06"><text>"Enter backlog at standard priority; next available sprint; PMO notified for resource assignment"</text></outputEntry>
+        <outputEntry id="d04_oe4_r06"><text>"Portfolio Governance Council"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 7: High score, high alignment → priority GO -->
+      <rule id="d04_r07_go_priority">
+        <description>Score >=80, high strategic alignment, compliant, fully resourced - priority GO</description>
+        <inputEntry id="d04_ie1_r07"><text>&gt;= 80</text></inputEntry>
+        <inputEntry id="d04_ie2_r07"><text>"High"</text></inputEntry>
+        <inputEntry id="d04_ie3_r07"><text>"Compliant"</text></inputEntry>
+        <inputEntry id="d04_ie4_r07"><text>true</text></inputEntry>
+        <inputEntry id="d04_ie5_r07"><text>true</text></inputEntry>
+        <outputEntry id="d04_oe1_r07"><text>"GO-PRIORITY"</text></outputEntry>
+        <outputEntry id="d04_oe2_r07"><text>"Priority"</text></outputEntry>
+        <outputEntry id="d04_oe3_r07"><text>"Fast-lane into backlog; accelerated sprint planning; PMO notified; executive visibility dashboard updated"</text></outputEntry>
+        <outputEntry id="d04_oe4_r07"><text>"Portfolio Governance Council"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d04_diagram_DMN04">
+      <dmndi:DMNShape id="d04_shape_DMN04" dmnElementRef="DMN04GoNoGoViability">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

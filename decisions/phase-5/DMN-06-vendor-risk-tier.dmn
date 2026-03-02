@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d06_DMN_06_VendorRiskTier"
+             name="DMN-06: Vendor Risk Tier Assignment"
+             namespace="http://sla.governance.example.com/dmn/phase5b">
+
+  <!--
+    DMN-06: Vendor Risk Tier Assignment
+    Phase: 5B (TPRM-Integrated Procurement - Stage 1)
+    Hit Policy: PRIORITY (highest-risk tier assignment takes precedence)
+    Regulatory: OCC 2023-17, DORA, BCBS d577, GDPR/CCPA
+    Task Type: Automated (A) for initial tiering; Human-in-the-Loop (H) for override
+    Description: Assigns vendor risk tier (1-4) proportionate to actual risk factors.
+                 Tier determines TPRM intensity, monitoring cadence, and due diligence depth.
+                 Aligned to OCC 2023-17 critical activity designation.
+  -->
+
+  <decision id="DMN06VendorRiskTier" name="Vendor Risk Tier Assignment">
+    <decisionTable id="d06_dt_vendor_risk_tier" hitPolicy="PRIORITY">
+
+      <input id="d06_in_critical_activity" label="Critical Activity Designation (OCC 2023-17)?">
+        <inputExpression id="d06_ie_critical" typeRef="boolean">
+          <text>criticalActivityDesignation</text>
+        </inputExpression>
+      </input>
+
+      <input id="d06_in_data_sensitivity" label="Data Sensitivity">
+        <inputExpression id="d06_ie_data_sens" typeRef="string">
+          <text>dataSensitivity</text>
+        </inputExpression>
+        <inputValues id="d06_iv_data_sens">
+          <text>"HighPIINPI","ModerateConfidential","LowPublic"</text>
+        </inputValues>
+      </input>
+
+      <input id="d06_in_concentration" label="Concentration Risk">
+        <inputExpression id="d06_ie_concentration" typeRef="string">
+          <text>concentrationRisk</text>
+        </inputExpression>
+        <inputValues id="d06_iv_concentration">
+          <text>"High","Medium","Low","None"</text>
+        </inputValues>
+      </input>
+
+      <input id="d06_in_financial_stability" label="Vendor Financial Stability">
+        <inputExpression id="d06_ie_financial" typeRef="string">
+          <text>vendorFinancialStability</text>
+        </inputExpression>
+        <inputValues id="d06_iv_financial">
+          <text>"StableStrong","Stable","AtRisk"</text>
+        </inputValues>
+      </input>
+
+      <input id="d06_in_regulatory_exposure" label="Regulatory Exposure">
+        <inputExpression id="d06_ie_reg_exposure" typeRef="string">
+          <text>regulatoryExposure</text>
+        </inputExpression>
+        <inputValues id="d06_iv_reg_exposure">
+          <text>"High","Medium","Low","None"</text>
+        </inputValues>
+      </input>
+
+      <output id="d06_out_tier" label="Vendor Risk Tier" typeRef="string" />
+      <output id="d06_out_tprm_intensity" label="TPRM Intensity" typeRef="string" />
+      <output id="d06_out_monitoring_cadence" label="Monitoring Cadence" typeRef="string" />
+      <output id="d06_out_due_diligence" label="Due Diligence Depth" typeRef="string" />
+
+      <!-- Priority 1: Critical activity + high PII + high concentration → Tier 1 Critical (highest priority) -->
+      <rule id="d06_r01_tier1_critical_max">
+        <description>Critical activity, high PII/NPI, high concentration risk - Tier 1 Critical maximum intensity</description>
+        <inputEntry id="d06_ie1_r01"><text>true</text></inputEntry>
+        <inputEntry id="d06_ie2_r01"><text>"HighPIINPI"</text></inputEntry>
+        <inputEntry id="d06_ie3_r01"><text>"High"</text></inputEntry>
+        <inputEntry id="d06_ie4_r01"><text>-</text></inputEntry>
+        <inputEntry id="d06_ie5_r01"><text>"High"</text></inputEntry>
+        <outputEntry id="d06_oe1_r01"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="d06_oe2_r01"><text>"Full lifecycle; executive sponsor approval required; onsite audit rights; quarterly monitoring"</text></outputEntry>
+        <outputEntry id="d06_oe3_r01"><text>"Monthly SLA review; quarterly security assessment; quarterly regulatory attestation"</text></outputEntry>
+        <outputEntry id="d06_oe4_r01"><text>"Full: financial, operational, security, BCP, regulatory, AI, fourth-party, data privacy"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 2: Critical activity + high PII + medium concentration → Tier 1 Critical -->
+      <rule id="d06_r02_tier1_critical">
+        <description>Critical activity, high PII/NPI, medium concentration - Tier 1 Critical semi-annual monitoring</description>
+        <inputEntry id="d06_ie1_r02"><text>true</text></inputEntry>
+        <inputEntry id="d06_ie2_r02"><text>"HighPIINPI"</text></inputEntry>
+        <inputEntry id="d06_ie3_r02"><text>"Medium","Low"</text></inputEntry>
+        <inputEntry id="d06_ie4_r02"><text>"Stable","StableStrong"</text></inputEntry>
+        <inputEntry id="d06_ie5_r02"><text>"Medium","High"</text></inputEntry>
+        <outputEntry id="d06_oe1_r02"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="d06_oe2_r02"><text>"Full lifecycle; executive sponsor approval required; semi-annual monitoring"</text></outputEntry>
+        <outputEntry id="d06_oe3_r02"><text>"Semi-annual SLA review; semi-annual security scan; annual detailed security assessment"</text></outputEntry>
+        <outputEntry id="d06_oe4_r02"><text>"Full: financial, operational, security, BCP, regulatory, fourth-party"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 3: Non-critical + high PII → Tier 2 Elevated -->
+      <rule id="d06_r03_tier2_elevated">
+        <description>Non-critical activity with high PII data - Tier 2 Elevated enhanced due diligence</description>
+        <inputEntry id="d06_ie1_r03"><text>false</text></inputEntry>
+        <inputEntry id="d06_ie2_r03"><text>"HighPIINPI"</text></inputEntry>
+        <inputEntry id="d06_ie3_r03"><text>"Low","None"</text></inputEntry>
+        <inputEntry id="d06_ie4_r03"><text>"Stable","StableStrong"</text></inputEntry>
+        <inputEntry id="d06_ie5_r03"><text>"Medium","Low"</text></inputEntry>
+        <outputEntry id="d06_oe1_r03"><text>"Tier2-Elevated"</text></outputEntry>
+        <outputEntry id="d06_oe2_r03"><text>"Enhanced due diligence; SOC 2 Type II required; annual monitoring"</text></outputEntry>
+        <outputEntry id="d06_oe3_r03"><text>"Quarterly SLA review; semi-annual security scan; annual full reassessment"</text></outputEntry>
+        <outputEntry id="d06_oe4_r03"><text>"Enhanced: security, financial, operational, BCP, AI assessment if applicable"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 4: Non-critical + moderate data → Tier 3 Standard -->
+      <rule id="d06_r04_tier3_standard">
+        <description>Non-critical, moderate data sensitivity, stable financials - Tier 3 Standard</description>
+        <inputEntry id="d06_ie1_r04"><text>false</text></inputEntry>
+        <inputEntry id="d06_ie2_r04"><text>"ModerateConfidential"</text></inputEntry>
+        <inputEntry id="d06_ie3_r04"><text>"Low","None"</text></inputEntry>
+        <inputEntry id="d06_ie4_r04"><text>"Stable","StableStrong"</text></inputEntry>
+        <inputEntry id="d06_ie5_r04"><text>"Low","None"</text></inputEntry>
+        <outputEntry id="d06_oe1_r04"><text>"Tier3-Standard"</text></outputEntry>
+        <outputEntry id="d06_oe2_r04"><text>"Standard due diligence; annual review; SOC 2 Type II or equivalent"</text></outputEntry>
+        <outputEntry id="d06_oe3_r04"><text>"Semi-annual SLA review; annual security questionnaire; annual financial review"</text></outputEntry>
+        <outputEntry id="d06_oe4_r04"><text>"Standard: security questionnaire, financial review, compliance attestation"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 5: Non-critical + low data → Tier 4 Low -->
+      <rule id="d06_r05_tier4_low">
+        <description>Non-critical, low/public data, no concentration risk - Tier 4 Low abbreviated</description>
+        <inputEntry id="d06_ie1_r05"><text>false</text></inputEntry>
+        <inputEntry id="d06_ie2_r05"><text>"LowPublic"</text></inputEntry>
+        <inputEntry id="d06_ie3_r05"><text>"None"</text></inputEntry>
+        <inputEntry id="d06_ie4_r05"><text>-</text></inputEntry>
+        <inputEntry id="d06_ie5_r05"><text>"None","Low"</text></inputEntry>
+        <outputEntry id="d06_oe1_r05"><text>"Tier4-Low"</text></outputEntry>
+        <outputEntry id="d06_oe2_r05"><text>"Abbreviated due diligence; biennial review; attestation-based assessment"</text></outputEntry>
+        <outputEntry id="d06_oe3_r05"><text>"Annual SLA review; biennial security attestation; trigger-based financial review"</text></outputEntry>
+        <outputEntry id="d06_oe4_r05"><text>"Abbreviated: self-attestation, standard questionnaire only"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d06_diagram_DMN06">
+      <dmndi:DMNShape id="d06_shape_DMN06" dmnElementRef="DMN06VendorRiskTier">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

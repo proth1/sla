@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d14_DMN_14_TPRMMonitoringFreq"
+             name="DMN-14: TPRM Monitoring Frequency"
+             namespace="http://sla.governance.example.com/dmn/phase6">
+
+  <!--
+    DMN-14: TPRM Monitoring Frequency
+    Phase: 5B → Ongoing (Phase 6 continuous monitoring)
+    Hit Policy: UNIQUE
+    Regulatory: OCC 2023-17, DORA, BCBS d577, FINRA, SEC
+    Task Type: Automated (A) for trigger and scanning; Human-in-the-Loop (H) for reviews
+    Description: Determines per-activity monitoring cadence for ongoing vendor oversight.
+                 Calibrated to vendor risk tier, contract value, service criticality,
+                 and prior assessment outcomes. Per OCC 2023-17 Stage 6 requirements.
+  -->
+
+  <decision id="DMN14TPRMMonitoringFreq" name="TPRM Monitoring Frequency">
+    <decisionTable id="d14_dt_tprm_monitoring" hitPolicy="UNIQUE">
+
+      <input id="d14_in_vendor_tier" label="Vendor Risk Tier">
+        <inputExpression id="d14_ie_vendor_tier" typeRef="string">
+          <text>vendorRiskTier</text>
+        </inputExpression>
+        <inputValues id="d14_iv_vendor_tier">
+          <text>"Tier1-Critical","Tier2-Elevated","Tier3-Standard","Tier4-Low"</text>
+        </inputValues>
+      </input>
+
+      <input id="d14_in_contract_value" label="Annual Contract Value">
+        <inputExpression id="d14_ie_contract_value" typeRef="string">
+          <text>annualContractValue</text>
+        </inputExpression>
+        <inputValues id="d14_iv_contract_value">
+          <text>"HighAbove1M","MediumAbove100K","LowBelow100K"</text>
+        </inputValues>
+      </input>
+
+      <input id="d14_in_service_criticality" label="Service Criticality">
+        <inputExpression id="d14_ie_criticality" typeRef="string">
+          <text>serviceCriticality</text>
+        </inputExpression>
+        <inputValues id="d14_iv_criticality">
+          <text>"CriticalActivity","HighOperational","StandardOperational","LowAncillary"</text>
+        </inputValues>
+      </input>
+
+      <input id="d14_in_prior_outcomes" label="Prior Assessment Outcomes">
+        <inputExpression id="d14_ie_prior" typeRef="string">
+          <text>priorAssessmentOutcomes</text>
+        </inputExpression>
+        <inputValues id="d14_iv_prior">
+          <text>"Clean","MinorFindings","ModerateFindings","CriticalFindings"</text>
+        </inputValues>
+      </input>
+
+      <output id="d14_out_sla_perf_review" label="SLA/Performance Review Cadence" typeRef="string" />
+      <output id="d14_out_security_review" label="Security Re-assessment Cadence" typeRef="string" />
+      <output id="d14_out_financial_review" label="Financial Stability Review Cadence" typeRef="string" />
+      <output id="d14_out_reg_compliance" label="Regulatory Compliance Check Cadence" typeRef="string" />
+      <output id="d14_out_automated_scanning" label="Automated Risk Scanning" typeRef="string" />
+      <output id="d14_out_full_reassessment" label="Full Reassessment Trigger" typeRef="string" />
+
+      <!-- Rule 1: Tier 1 Critical + critical activity + any prior findings → Maximum frequency -->
+      <rule id="d14_r01_tier1_maximum">
+        <description>Tier 1 critical vendor with critical activity designation - maximum monitoring intensity</description>
+        <inputEntry id="d14_ie1_r01"><text>"Tier1-Critical"</text></inputEntry>
+        <inputEntry id="d14_ie2_r01"><text>"HighAbove1M"</text></inputEntry>
+        <inputEntry id="d14_ie3_r01"><text>"CriticalActivity"</text></inputEntry>
+        <inputEntry id="d14_ie4_r01"><text>-</text></inputEntry>
+        <outputEntry id="d14_oe1_r01"><text>"Monthly; executive dashboard; KPI scorecard"</text></outputEntry>
+        <outputEntry id="d14_oe2_r01"><text>"Quarterly automated scan; annual detailed onsite audit; 30-day advance notice for sub-contractor changes"</text></outputEntry>
+        <outputEntry id="d14_oe3_r01"><text>"Quarterly: credit watch plus earnings review"</text></outputEntry>
+        <outputEntry id="d14_oe4_r01"><text>"Quarterly attestation plus annual regulatory compliance audit"</text></outputEntry>
+        <outputEntry id="d14_oe5_r01"><text>"Continuous: OFAC, adverse news, dark web, financial stability signals, cyber ratings"</text></outputEntry>
+        <outputEntry id="d14_oe6_r01"><text>"Annual full reassessment; event-triggered within 72 hours; breach notification required"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: Tier 1 Critical with prior critical findings → escalated frequency -->
+      <rule id="d14_r02_tier1_critical_findings">
+        <description>Tier 1 vendor with prior critical RAE findings - escalated monitoring with enhanced oversight</description>
+        <inputEntry id="d14_ie1_r02"><text>"Tier1-Critical"</text></inputEntry>
+        <inputEntry id="d14_ie2_r02"><text>-</text></inputEntry>
+        <inputEntry id="d14_ie3_r02"><text>-</text></inputEntry>
+        <inputEntry id="d14_ie4_r02"><text>"CriticalFindings"</text></inputEntry>
+        <outputEntry id="d14_oe1_r02"><text>"Monthly; enhanced scorecards; executive notification on any SLA breach"</text></outputEntry>
+        <outputEntry id="d14_oe2_r02"><text>"Monthly automated scan; semi-annual onsite; immediate notification protocol active"</text></outputEntry>
+        <outputEntry id="d14_oe3_r02"><text>"Monthly: credit watch plus financial ratios"</text></outputEntry>
+        <outputEntry id="d14_oe4_r02"><text>"Monthly attestation; 30-day remediation tracking"</text></outputEntry>
+        <outputEntry id="d14_oe5_r02"><text>"Continuous with enhanced alert thresholds; weekly summary to TPRM team"</text></outputEntry>
+        <outputEntry id="d14_oe6_r02"><text>"Semi-annual full reassessment; any adverse trigger within 24 hours"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Tier 2 Elevated + high operational criticality → Enhanced semi-annual -->
+      <rule id="d14_r03_tier2_elevated">
+        <description>Tier 2 elevated vendor with high operational role - enhanced semi-annual monitoring</description>
+        <inputEntry id="d14_ie1_r03"><text>"Tier2-Elevated"</text></inputEntry>
+        <inputEntry id="d14_ie2_r03"><text>"HighAbove1M","MediumAbove100K"</text></inputEntry>
+        <inputEntry id="d14_ie3_r03"><text>"HighOperational","CriticalActivity"</text></inputEntry>
+        <inputEntry id="d14_ie4_r03"><text>"Clean","MinorFindings"</text></inputEntry>
+        <outputEntry id="d14_oe1_r03"><text>"Quarterly; automated dashboard; annual executive review"</text></outputEntry>
+        <outputEntry id="d14_oe2_r03"><text>"Semi-annual automated scan; annual detailed SOC 2 Type II review; 60-day AI model change notice"</text></outputEntry>
+        <outputEntry id="d14_oe3_r03"><text>"Semi-annual: financial statement review"</text></outputEntry>
+        <outputEntry id="d14_oe4_r03"><text>"Annual attestation plus periodic spot checks"</text></outputEntry>
+        <outputEntry id="d14_oe5_r03"><text>"Continuous: sanctions screening plus adverse news"</text></outputEntry>
+        <outputEntry id="d14_oe6_r03"><text>"Annual full reassessment; event-triggered within 5 business days"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Tier 2 with moderate/critical prior findings → increased frequency -->
+      <rule id="d14_r04_tier2_moderate_findings">
+        <description>Tier 2 vendor with moderate or critical prior findings - increased monitoring frequency</description>
+        <inputEntry id="d14_ie1_r04"><text>"Tier2-Elevated"</text></inputEntry>
+        <inputEntry id="d14_ie2_r04"><text>-</text></inputEntry>
+        <inputEntry id="d14_ie3_r04"><text>-</text></inputEntry>
+        <inputEntry id="d14_ie4_r04"><text>"ModerateFindings","CriticalFindings"</text></inputEntry>
+        <outputEntry id="d14_oe1_r04"><text>"Monthly until remediation complete; then quarterly"</text></outputEntry>
+        <outputEntry id="d14_oe2_r04"><text>"Quarterly scan; semi-annual detailed; enhanced until findings closed"</text></outputEntry>
+        <outputEntry id="d14_oe3_r04"><text>"Quarterly during remediation; semi-annual thereafter"</text></outputEntry>
+        <outputEntry id="d14_oe4_r04"><text>"Quarterly attestation with remediation evidence required"</text></outputEntry>
+        <outputEntry id="d14_oe5_r04"><text>"Continuous with elevated alert thresholds"</text></outputEntry>
+        <outputEntry id="d14_oe6_r04"><text>"Semi-annual until clean; then annual"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: Tier 3 Standard + standard operational → Annual standard -->
+      <rule id="d14_r05_tier3_standard">
+        <description>Tier 3 standard vendor with standard operational role - annual standard monitoring</description>
+        <inputEntry id="d14_ie1_r05"><text>"Tier3-Standard"</text></inputEntry>
+        <inputEntry id="d14_ie2_r05"><text>-</text></inputEntry>
+        <inputEntry id="d14_ie3_r05"><text>"StandardOperational","HighOperational"</text></inputEntry>
+        <inputEntry id="d14_ie4_r05"><text>"Clean","MinorFindings"</text></inputEntry>
+        <outputEntry id="d14_oe1_r05"><text>"Semi-annual; automated SLA scorecard"</text></outputEntry>
+        <outputEntry id="d14_oe2_r05"><text>"Annual security questionnaire; SOC 2 Type II or equivalent"</text></outputEntry>
+        <outputEntry id="d14_oe3_r05"><text>"Annual: financial review"</text></outputEntry>
+        <outputEntry id="d14_oe4_r05"><text>"Annual regulatory compliance attestation"</text></outputEntry>
+        <outputEntry id="d14_oe5_r05"><text>"Quarterly: sanctions screening plus adverse news"</text></outputEntry>
+        <outputEntry id="d14_oe6_r05"><text>"Annual full reassessment; 10-business-day event-triggered review"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: Tier 4 Low + ancillary/low criticality → Biennial minimal -->
+      <rule id="d14_r06_tier4_low">
+        <description>Tier 4 low risk vendor with ancillary or low service criticality - biennial minimal monitoring</description>
+        <inputEntry id="d14_ie1_r06"><text>"Tier4-Low"</text></inputEntry>
+        <inputEntry id="d14_ie2_r06"><text>"LowBelow100K","MediumAbove100K"</text></inputEntry>
+        <inputEntry id="d14_ie3_r06"><text>"LowAncillary","StandardOperational"</text></inputEntry>
+        <inputEntry id="d14_ie4_r06"><text>"Clean","MinorFindings"</text></inputEntry>
+        <outputEntry id="d14_oe1_r06"><text>"Annual; self-service portal review"</text></outputEntry>
+        <outputEntry id="d14_oe2_r06"><text>"Biennial: attestation-based only; no onsite required"</text></outputEntry>
+        <outputEntry id="d14_oe3_r06"><text>"Trigger-based only: adverse event or contract renewal"</text></outputEntry>
+        <outputEntry id="d14_oe4_r06"><text>"Biennial: attestation only"</text></outputEntry>
+        <outputEntry id="d14_oe5_r06"><text>"Annual: sanctions screening only"</text></outputEntry>
+        <outputEntry id="d14_oe6_r06"><text>"Biennial; event-triggered within 15 business days"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d14_diagram_DMN14">
+      <dmndi:DMNShape id="d14_shape_DMN14" dmnElementRef="DMN14TPRMMonitoringFreq">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

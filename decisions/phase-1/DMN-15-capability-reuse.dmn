@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d15_DMN_15_CapabilityReuse"
+             name="DMN-15: Capability Reuse Gate"
+             namespace="http://sla.governance.example.com/dmn/phase1">
+
+  <!--
+    DMN-15: Capability Reuse Gate
+    Phase: 1 (Mandatory gate fires before any downstream design or build activity)
+    Hit Policy: UNIQUE
+    Regulatory: OCC 2023-17 (capability reuse before net-new spend)
+    Task Type: Automated (A) for registry query and redirect; Human-in-the-Loop (H) for assessment
+    Description: Mandatory capability reuse evaluation that fires automatically after Intake Bot
+                 collects sufficient capability definition data. Queries the Software Registry
+                 using semantic similarity scoring. Decision rationale is logged to audit trail.
+                 Core Design Principle: Capability Reuse Before Net-New Build.
+  -->
+
+  <decision id="DMN15CapabilityReuse" name="Capability Reuse Gate">
+    <decisionTable id="d15_dt_capability_reuse" hitPolicy="UNIQUE">
+
+      <input id="d15_in_registry_match" label="Software Registry Semantic Match Score (%)">
+        <inputExpression id="d15_ie_registry_match" typeRef="string">
+          <text>registrySemanticMatchScore</text>
+        </inputExpression>
+        <inputValues id="d15_iv_registry_match">
+          <text>"Above90","Between70And90","Below70","RetiredMatch","NoMatch"</text>
+        </inputValues>
+      </input>
+
+      <input id="d15_in_functional_fit" label="Functional Fit Assessment">
+        <inputExpression id="d15_ie_functional_fit" typeRef="string">
+          <text>functionalFitAssessment</text>
+        </inputExpression>
+        <inputValues id="d15_iv_functional_fit">
+          <text>"Full","Partial","None","NotAssessed"</text>
+        </inputValues>
+      </input>
+
+      <input id="d15_in_license_available" label="License/Capacity Available?">
+        <inputExpression id="d15_ie_license" typeRef="string">
+          <text>licenseCapacityStatus</text>
+        </inputExpression>
+        <inputValues id="d15_iv_license">
+          <text>"Available","Unavailable","NotApplicable"</text>
+        </inputValues>
+      </input>
+
+      <input id="d15_in_retired_match" label="Retired/Decommissioned Asset Match?">
+        <inputExpression id="d15_ie_retired" typeRef="boolean">
+          <text>retiredAssetMatch</text>
+        </inputExpression>
+      </input>
+
+      <output id="d15_out_decision" label="Reuse Gate Decision" typeRef="string" />
+      <output id="d15_out_task_type" label="Task Type" typeRef="string" />
+      <output id="d15_out_action" label="Required Action" typeRef="string" />
+      <output id="d15_out_sla_days" label="Resolution SLA (Days)" typeRef="integer" />
+      <output id="d15_out_audit_note" label="Audit Trail Note" typeRef="string" />
+
+      <!-- Rule 1: Retired asset match → surface rationale and proceed as new with logged rationale -->
+      <rule id="d15_r01_retired_surface">
+        <description>Retired or decommissioned asset match detected - surface rationale and proceed as new</description>
+        <inputEntry id="d15_ie1_r01"><text>-</text></inputEntry>
+        <inputEntry id="d15_ie2_r01"><text>-</text></inputEntry>
+        <inputEntry id="d15_ie3_r01"><text>-</text></inputEntry>
+        <inputEntry id="d15_ie4_r01"><text>true</text></inputEntry>
+        <outputEntry id="d15_oe1_r01"><text>"SURFACE-RATIONALE"</text></outputEntry>
+        <outputEntry id="d15_oe2_r01"><text>"DeterministicAgent"</text></outputEntry>
+        <outputEntry id="d15_oe3_r01"><text>"Decommission rationale surfaced from Retired Asset Register and included in intake record; proceed as new with rationale logged; requestor informed of prior decommission"</text></outputEntry>
+        <outputEntry id="d15_oe4_r01"><text>1</text></outputEntry>
+        <outputEntry id="d15_oe5_r01"><text>"Retired asset match: decommission_rationale_id surfaced; proceed_as_new=true; rationale_logged=true"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: High registry match + full functional fit + license available → REUSE-REDIRECT -->
+      <rule id="d15_r02_reuse_redirect">
+        <description>Registry match >90%, full functional fit, license available - redirect to ITSM</description>
+        <inputEntry id="d15_ie1_r02"><text>"Above90"</text></inputEntry>
+        <inputEntry id="d15_ie2_r02"><text>"Full"</text></inputEntry>
+        <inputEntry id="d15_ie3_r02"><text>"Available"</text></inputEntry>
+        <inputEntry id="d15_ie4_r02"><text>false</text></inputEntry>
+        <outputEntry id="d15_oe1_r02"><text>"REUSE-REDIRECT"</text></outputEntry>
+        <outputEntry id="d15_oe2_r02"><text>"Automated"</text></outputEntry>
+        <outputEntry id="d15_oe3_r02"><text>"Redirect to ITSM service catalog for self-service fulfillment; close intake record; no further governance required; cost avoidance logged"</text></outputEntry>
+        <outputEntry id="d15_oe4_r02"><text>1</text></outputEntry>
+        <outputEntry id="d15_oe5_r02"><text>"Reuse decision: redirect; registry_match_score>90; functional_fit=Full; license_available=true; cost_avoidance_realized=true"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Partial registry match + available license → REUSE-ASSESSMENT -->
+      <rule id="d15_r03_reuse_assessment">
+        <description>Registry match 70-90%, partial fit, license available - schedule structured reuse assessment</description>
+        <inputEntry id="d15_ie1_r03"><text>"Between70And90"</text></inputEntry>
+        <inputEntry id="d15_ie2_r03"><text>"Partial","Full"</text></inputEntry>
+        <inputEntry id="d15_ie3_r03"><text>"Available"</text></inputEntry>
+        <inputEntry id="d15_ie4_r03"><text>false</text></inputEntry>
+        <outputEntry id="d15_oe1_r03"><text>"REUSE-ASSESSMENT"</text></outputEntry>
+        <outputEntry id="d15_oe2_r03"><text>"Human-in-Loop"</text></outputEntry>
+        <outputEntry id="d15_oe3_r03"><text>"Schedule structured reuse assessment within 5 business days; Product Owner and requestor evaluate capability gap; if gap unfillable, proceed as new with logged rationale"</text></outputEntry>
+        <outputEntry id="d15_oe4_r03"><text>5</text></outputEntry>
+        <outputEntry id="d15_oe5_r03"><text>"Reuse assessment scheduled: registry_match_score=70-90; license_available=true; gap_fill_evaluation_required=true"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Partial registry match + license unavailable → EVALUATE-EXPANSION -->
+      <rule id="d15_r04_evaluate_expansion">
+        <description>Registry match 70-90% but license/capacity unavailable - evaluate license expansion</description>
+        <inputEntry id="d15_ie1_r04"><text>"Between70And90"</text></inputEntry>
+        <inputEntry id="d15_ie2_r04"><text>"Partial","Full"</text></inputEntry>
+        <inputEntry id="d15_ie3_r04"><text>"Unavailable"</text></inputEntry>
+        <inputEntry id="d15_ie4_r04"><text>false</text></inputEntry>
+        <outputEntry id="d15_oe1_r04"><text>"EVALUATE-EXPANSION"</text></outputEntry>
+        <outputEntry id="d15_oe2_r04"><text>"Human-in-Loop"</text></outputEntry>
+        <outputEntry id="d15_oe3_r04"><text>"Procurement evaluates license expansion cost vs. net-new procurement; Software Asset Manager engaged; 7-day evaluation window; TCO comparison presented to Portfolio Council"</text></outputEntry>
+        <outputEntry id="d15_oe4_r04"><text>7</text></outputEntry>
+        <outputEntry id="d15_oe5_r04"><text>"License expansion evaluation: existing_asset_id identified; expansion_vs_new_tco_analysis required; procurement_engagement=true"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: High registry match + license unavailable → EVALUATE-EXPANSION (high confidence) -->
+      <rule id="d15_r05_high_match_no_license">
+        <description>Registry match >90% but license unavailable - high priority expansion evaluation</description>
+        <inputEntry id="d15_ie1_r05"><text>"Above90"</text></inputEntry>
+        <inputEntry id="d15_ie2_r05"><text>-</text></inputEntry>
+        <inputEntry id="d15_ie3_r05"><text>"Unavailable"</text></inputEntry>
+        <inputEntry id="d15_ie4_r05"><text>false</text></inputEntry>
+        <outputEntry id="d15_oe1_r05"><text>"EVALUATE-EXPANSION"</text></outputEntry>
+        <outputEntry id="d15_oe2_r05"><text>"Human-in-Loop"</text></outputEntry>
+        <outputEntry id="d15_oe3_r05"><text>"Strong match identified but license capacity exhausted; high-priority expansion evaluation within 3 business days; likely cost-effective vs net-new procurement"</text></outputEntry>
+        <outputEntry id="d15_oe4_r05"><text>3</text></outputEntry>
+        <outputEntry id="d15_oe5_r05"><text>"High-confidence license expansion: registry_match_score>90; license_unavailable=true; high_priority_expansion_evaluation=true"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: Low registry match + no retired match → PROCEED-AS-NEW -->
+      <rule id="d15_r06_proceed_new">
+        <description>No significant registry match and no retired asset - proceed as new request</description>
+        <inputEntry id="d15_ie1_r06"><text>"Below70","NoMatch"</text></inputEntry>
+        <inputEntry id="d15_ie2_r06"><text>-</text></inputEntry>
+        <inputEntry id="d15_ie3_r06"><text>-</text></inputEntry>
+        <inputEntry id="d15_ie4_r06"><text>false</text></inputEntry>
+        <outputEntry id="d15_oe1_r06"><text>"PROCEED-AS-NEW"</text></outputEntry>
+        <outputEntry id="d15_oe2_r06"><text>"Automated"</text></outputEntry>
+        <outputEntry id="d15_oe3_r06"><text>"No reuse opportunity identified; proceed to concurrent AI risk classification and routing; reuse gate negative result logged to decision audit trail"</text></outputEntry>
+        <outputEntry id="d15_oe4_r06"><text>1</text></outputEntry>
+        <outputEntry id="d15_oe5_r06"><text>"No reuse opportunity: registry_match_score&lt;70; no_retired_match; proceed_as_new=true; reuse_gate_negative_logged=true"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d15_diagram_DMN15">
+      <dmndi:DMNShape id="d15_shape_DMN15" dmnElementRef="DMN15CapabilityReuse">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

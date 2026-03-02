@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_SLAMaster"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.42.0">
+
+  <bpmn:collaboration id="Collaboration_Master">
+    <bpmn:participant id="Participant_Master" name="SLA Governance Master Workflow" processRef="Process_SLAMaster" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_SLAMaster" name="SLA Governance Master Workflow" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_Master">
+      <bpmn:lane id="Lane_GovernanceBoard" name="Governance Board">
+        <bpmn:flowNodeRef>StartEvent_RequestReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_GovernanceComplete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BusinessOwner" name="Business Owner">
+        <bpmn:flowNodeRef>CallActivity_Phase1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ITArchitecture" name="IT Architecture">
+        <bpmn:flowNodeRef>CallActivity_Phase5A</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_BuildOrBuy</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Procurement" name="Procurement">
+        <bpmn:flowNodeRef>CallActivity_Phase5B</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_LegalCompliance" name="Legal &amp; Compliance">
+        <bpmn:flowNodeRef>CallActivity_Phase3</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_InformationSecurity" name="Information Security">
+        <bpmn:flowNodeRef>CallActivity_Phase0</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_VendorManagement" name="Vendor Management">
+        <bpmn:flowNodeRef>CallActivity_Phase6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_AssetRetired</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- Phase 0: Continuous Software Asset Intelligence (background) -->
+    <bpmn:callActivity id="CallActivity_Phase0" name="Phase 0: Software Asset Intelligence" calledElement="Process_SoftwareAssetIntelligence">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Start_P0</bpmn:incoming>
+      <bpmn:outgoing>Flow_P0_P1</bpmn:outgoing>
+    </bpmn:callActivity>
+
+    <!-- Phase 1: Intake, Risk Classification, Capability Reuse Gate -->
+    <bpmn:callActivity id="CallActivity_Phase1" name="Phase 1: Intake &amp; Risk Classification" calledElement="Process_IntakeRiskClassification">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_P0_P1</bpmn:incoming>
+      <bpmn:outgoing>Flow_P1_P2</bpmn:outgoing>
+    </bpmn:callActivity>
+
+    <!-- Phase 2: AI Routing Engine and Pathway Assignment -->
+    <bpmn:callActivity id="CallActivity_Phase2" name="Phase 2: Routing Engine &amp; Scoring" calledElement="Process_RoutingEngineScoring">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_P1_P2</bpmn:incoming>
+      <bpmn:outgoing>Flow_P2_P3</bpmn:outgoing>
+    </bpmn:callActivity>
+
+    <!-- Phase 3: Product Management Review, Enrichment, Portfolio Governance -->
+    <bpmn:callActivity id="CallActivity_Phase3" name="Phase 3: Product Management Review" calledElement="Process_ProductManagementReview">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_P2_P3</bpmn:incoming>
+      <bpmn:outgoing>Flow_P3_P4</bpmn:outgoing>
+    </bpmn:callActivity>
+
+    <!-- Phase 4: Portfolio Prioritization, Go/No-Go, Buy vs Build -->
+    <bpmn:callActivity id="CallActivity_Phase4" name="Phase 4: Go/No-Go &amp; Buy vs Build" calledElement="Process_PortfolioPrioritization">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_P3_P4</bpmn:incoming>
+      <bpmn:outgoing>Flow_P4_Gateway</bpmn:outgoing>
+    </bpmn:callActivity>
+
+    <!-- Gateway: Build or Buy decision -->
+    <bpmn:exclusiveGateway id="Gateway_BuildOrBuy" name="Pathway?" default="Flow_Gateway_Build">
+      <bpmn:incoming>Flow_P4_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Gateway_Build</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Gateway_Buy</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Phase 5A: PDLC Build Pathway -->
+    <bpmn:callActivity id="CallActivity_Phase5A" name="Phase 5A: PDLC Build Pathway" calledElement="Process_PDLCBuildPathway">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Gateway_Build</bpmn:incoming>
+      <bpmn:outgoing>Flow_P5A_P6</bpmn:outgoing>
+    </bpmn:callActivity>
+
+    <!-- Phase 5B: TPRM Buy Pathway -->
+    <bpmn:callActivity id="CallActivity_Phase5B" name="Phase 5B: TPRM Buy Pathway" calledElement="Process_TPRMBuyPathway">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Gateway_Buy</bpmn:incoming>
+      <bpmn:outgoing>Flow_P5B_P6</bpmn:outgoing>
+    </bpmn:callActivity>
+
+    <!-- Join gateway after Phase 5A/5B -->
+    <bpmn:exclusiveGateway id="Gateway_PostImplementation" name="Implementation Complete">
+      <bpmn:incoming>Flow_P5A_P6</bpmn:incoming>
+      <bpmn:incoming>Flow_P5B_P6</bpmn:incoming>
+      <bpmn:outgoing>Flow_PostImpl_P6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Phase 6: Post-Deployment Observability -->
+    <bpmn:callActivity id="CallActivity_Phase6" name="Phase 6: Observability &amp; Monitoring" calledElement="Process_PostDeploymentObservability">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_PostImpl_P6</bpmn:incoming>
+      <bpmn:outgoing>Flow_P6_Retire</bpmn:outgoing>
+    </bpmn:callActivity>
+
+    <!-- Start and End Events -->
+    <bpmn:startEvent id="StartEvent_RequestReceived" name="Software Request&#10;Received">
+      <bpmn:outgoing>Flow_Start_P0</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:endEvent id="EndEvent_GovernanceComplete" name="Governance&#10;Complete">
+      <bpmn:incoming>Flow_Complete</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_AssetRetired" name="Asset&#10;Retired">
+      <bpmn:incoming>Flow_P6_Retire</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Intermediate: Complete signal -->
+    <bpmn:intermediateThrowEvent id="Event_GovernanceApproved" name="Governance&#10;Approved">
+      <bpmn:incoming>Flow_GovernanceApproved</bpmn:incoming>
+      <bpmn:outgoing>Flow_Complete</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalDef_GovernanceApproved" signalRef="Signal_GovernanceApproved" />
+    </bpmn:intermediateThrowEvent>
+
+    <!-- Text Annotations: Regulatory alignment -->
+    <bpmn:textAnnotation id="Annotation_Regulatory">
+      <bpmn:text>Regulatory Alignment: OCC Bulletin 2023-17 | SR 11-7 MRM | NIST AI RMF 1.0 | ISO/IEC 27001:2022 | BCBS d577 | GDPR/CCPA | EU AI Act | DORA | SOX | FINRA | SEC</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Regulatory" sourceRef="CallActivity_Phase2" targetRef="Annotation_Regulatory" />
+
+    <bpmn:textAnnotation id="Annotation_DMN">
+      <bpmn:text>DMN Tables: DMN_01_AIRoutingPathway | DMN_09_AIRiskTier | DMN_13_FastTrackEligibility | DMN_04_GoNoGoViability | DMN_05_BuyVsBuild | DMN_14_TPRMMonitoringFreq</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_DMN" sourceRef="CallActivity_Phase4" targetRef="Annotation_DMN" />
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_Start_P0" sourceRef="StartEvent_RequestReceived" targetRef="CallActivity_Phase0" />
+    <bpmn:sequenceFlow id="Flow_P0_P1" sourceRef="CallActivity_Phase0" targetRef="CallActivity_Phase1" />
+    <bpmn:sequenceFlow id="Flow_P1_P2" sourceRef="CallActivity_Phase1" targetRef="CallActivity_Phase2" />
+    <bpmn:sequenceFlow id="Flow_P2_P3" sourceRef="CallActivity_Phase2" targetRef="CallActivity_Phase3" />
+    <bpmn:sequenceFlow id="Flow_P3_P4" sourceRef="CallActivity_Phase3" targetRef="CallActivity_Phase4" />
+    <bpmn:sequenceFlow id="Flow_P4_Gateway" sourceRef="CallActivity_Phase4" targetRef="Gateway_BuildOrBuy" />
+    <bpmn:sequenceFlow id="Flow_Gateway_Build" name="Build" sourceRef="Gateway_BuildOrBuy" targetRef="CallActivity_Phase5A">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'BUILD'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Gateway_Buy" name="Buy" sourceRef="Gateway_BuildOrBuy" targetRef="CallActivity_Phase5B">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'BUY'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_P5A_P6" sourceRef="CallActivity_Phase5A" targetRef="Gateway_PostImplementation" />
+    <bpmn:sequenceFlow id="Flow_P5B_P6" sourceRef="CallActivity_Phase5B" targetRef="Gateway_PostImplementation" />
+    <bpmn:sequenceFlow id="Flow_PostImpl_P6" sourceRef="Gateway_PostImplementation" targetRef="CallActivity_Phase6" />
+    <bpmn:sequenceFlow id="Flow_P6_Retire" sourceRef="CallActivity_Phase6" targetRef="EndEvent_AssetRetired" />
+    <bpmn:sequenceFlow id="Flow_GovernanceApproved" sourceRef="CallActivity_Phase4" targetRef="Event_GovernanceApproved" />
+    <bpmn:sequenceFlow id="Flow_Complete" sourceRef="Event_GovernanceApproved" targetRef="EndEvent_GovernanceComplete" />
+
+  </bpmn:process>
+
+  <!-- Signal definition -->
+  <bpmn:signal id="Signal_GovernanceApproved" name="GovernanceApproved" />
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Master">
+    <bpmndi:BPMNPlane id="BPMNPlane_Master" bpmnElement="Collaboration_Master">
+
+      <!-- Participant (outer container) -->
+      <bpmndi:BPMNShape id="Participant_Master_di" bpmnElement="Participant_Master" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="2200" height="1240" />
+      </bpmndi:BPMNShape>
+
+      <!-- Swim Lanes -->
+      <bpmndi:BPMNShape id="Lane_GovernanceBoard_di" bpmnElement="Lane_GovernanceBoard" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="2170" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BusinessOwner_di" bpmnElement="Lane_BusinessOwner" isHorizontal="true">
+        <dc:Bounds x="185" y="207" width="2170" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ITArchitecture_di" bpmnElement="Lane_ITArchitecture" isHorizontal="true">
+        <dc:Bounds x="185" y="367" width="2170" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Procurement_di" bpmnElement="Lane_Procurement" isHorizontal="true">
+        <dc:Bounds x="185" y="527" width="2170" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_LegalCompliance_di" bpmnElement="Lane_LegalCompliance" isHorizontal="true">
+        <dc:Bounds x="185" y="687" width="2170" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_InformationSecurity_di" bpmnElement="Lane_InformationSecurity" isHorizontal="true">
+        <dc:Bounds x="185" y="847" width="2170" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_VendorManagement_di" bpmnElement="Lane_VendorManagement" isHorizontal="true">
+        <dc:Bounds x="185" y="1007" width="2170" height="160" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start Event -->
+      <bpmndi:BPMNShape id="StartEvent_RequestReceived_di" bpmnElement="StartEvent_RequestReceived">
+        <dc:Bounds x="247" y="109" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="229" y="152" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 0 Call Activity -->
+      <bpmndi:BPMNShape id="CallActivity_Phase0_di" bpmnElement="CallActivity_Phase0">
+        <dc:Bounds x="340" y="907" width="160" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 1 Call Activity -->
+      <bpmndi:BPMNShape id="CallActivity_Phase1_di" bpmnElement="CallActivity_Phase1">
+        <dc:Bounds x="560" y="247" width="160" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 2 Call Activity -->
+      <bpmndi:BPMNShape id="CallActivity_Phase2_di" bpmnElement="CallActivity_Phase2">
+        <dc:Bounds x="780" y="87" width="160" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 3 Call Activity -->
+      <bpmndi:BPMNShape id="CallActivity_Phase3_di" bpmnElement="CallActivity_Phase3">
+        <dc:Bounds x="1000" y="747" width="160" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 4 Call Activity -->
+      <bpmndi:BPMNShape id="CallActivity_Phase4_di" bpmnElement="CallActivity_Phase4">
+        <dc:Bounds x="1220" y="87" width="160" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Build or Buy -->
+      <bpmndi:BPMNShape id="Gateway_BuildOrBuy_di" bpmnElement="Gateway_BuildOrBuy" isMarkerVisible="true">
+        <dc:Bounds x="1455" y="402" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1449" y="459" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 5A Call Activity -->
+      <bpmndi:BPMNShape id="CallActivity_Phase5A_di" bpmnElement="CallActivity_Phase5A">
+        <dc:Bounds x="1580" y="387" width="160" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 5B Call Activity -->
+      <bpmndi:BPMNShape id="CallActivity_Phase5B_di" bpmnElement="CallActivity_Phase5B">
+        <dc:Bounds x="1580" y="547" width="160" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Post Implementation -->
+      <bpmndi:BPMNShape id="Gateway_PostImplementation_di" bpmnElement="Gateway_PostImplementation" isMarkerVisible="true">
+        <dc:Bounds x="1815" y="402" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 6 Call Activity -->
+      <bpmndi:BPMNShape id="CallActivity_Phase6_di" bpmnElement="CallActivity_Phase6">
+        <dc:Bounds x="1930" y="1047" width="160" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Event Governance Complete -->
+      <bpmndi:BPMNShape id="EndEvent_GovernanceComplete_di" bpmnElement="EndEvent_GovernanceComplete">
+        <dc:Bounds x="2062" y="109" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2038" y="152" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- End Event Asset Retired -->
+      <bpmndi:BPMNShape id="EndEvent_AssetRetired_di" bpmnElement="EndEvent_AssetRetired">
+        <dc:Bounds x="2162" y="1069" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2148" y="1112" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Intermediate Event -->
+      <bpmndi:BPMNShape id="Event_GovernanceApproved_di" bpmnElement="Event_GovernanceApproved">
+        <dc:Bounds x="1992" y="109" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1968" y="152" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Annotations -->
+      <bpmndi:BPMNShape id="Annotation_Regulatory_di" bpmnElement="Annotation_Regulatory">
+        <dc:Bounds x="230" y="1175" width="900" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annotation_DMN_di" bpmnElement="Annotation_DMN">
+        <dc:Bounds x="1160" y="1175" width="600" height="55" />
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="Flow_Start_P0_di" bpmnElement="Flow_Start_P0">
+        <di:waypoint x="265" y="127" />
+        <di:waypoint x="265" y="927" />
+        <di:waypoint x="340" y="947" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P0_P1_di" bpmnElement="Flow_P0_P1">
+        <di:waypoint x="500" y="947" />
+        <di:waypoint x="530" y="947" />
+        <di:waypoint x="530" y="287" />
+        <di:waypoint x="560" y="287" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P1_P2_di" bpmnElement="Flow_P1_P2">
+        <di:waypoint x="720" y="287" />
+        <di:waypoint x="750" y="287" />
+        <di:waypoint x="750" y="127" />
+        <di:waypoint x="780" y="127" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P2_P3_di" bpmnElement="Flow_P2_P3">
+        <di:waypoint x="940" y="127" />
+        <di:waypoint x="970" y="127" />
+        <di:waypoint x="970" y="787" />
+        <di:waypoint x="1000" y="787" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P3_P4_di" bpmnElement="Flow_P3_P4">
+        <di:waypoint x="1160" y="787" />
+        <di:waypoint x="1190" y="787" />
+        <di:waypoint x="1190" y="127" />
+        <di:waypoint x="1220" y="127" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P4_Gateway_di" bpmnElement="Flow_P4_Gateway">
+        <di:waypoint x="1380" y="127" />
+        <di:waypoint x="1480" y="127" />
+        <di:waypoint x="1480" y="402" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Gateway_Build_di" bpmnElement="Flow_Gateway_Build">
+        <di:waypoint x="1505" y="427" />
+        <di:waypoint x="1580" y="427" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1528" y="409" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Gateway_Buy_di" bpmnElement="Flow_Gateway_Buy">
+        <di:waypoint x="1480" y="452" />
+        <di:waypoint x="1480" y="587" />
+        <di:waypoint x="1580" y="587" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1488" y="507" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P5A_P6_di" bpmnElement="Flow_P5A_P6">
+        <di:waypoint x="1740" y="427" />
+        <di:waypoint x="1815" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P5B_P6_di" bpmnElement="Flow_P5B_P6">
+        <di:waypoint x="1740" y="587" />
+        <di:waypoint x="1840" y="587" />
+        <di:waypoint x="1840" y="452" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PostImpl_P6_di" bpmnElement="Flow_PostImpl_P6">
+        <di:waypoint x="1865" y="427" />
+        <di:waypoint x="1895" y="427" />
+        <di:waypoint x="1895" y="1087" />
+        <di:waypoint x="1930" y="1087" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P6_Retire_di" bpmnElement="Flow_P6_Retire">
+        <di:waypoint x="2090" y="1087" />
+        <di:waypoint x="2162" y="1087" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_GovernanceApproved_di" bpmnElement="Flow_GovernanceApproved">
+        <di:waypoint x="1380" y="127" />
+        <di:waypoint x="1992" y="127" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Complete_di" bpmnElement="Flow_Complete">
+        <di:waypoint x="2028" y="127" />
+        <di:waypoint x="2062" y="127" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_Regulatory_di" bpmnElement="Assoc_Regulatory">
+        <di:waypoint x="860" y="167" />
+        <di:waypoint x="860" y="1175" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_DMN_di" bpmnElement="Assoc_DMN">
+        <di:waypoint x="1300" y="167" />
+        <di:waypoint x="1300" y="1175" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

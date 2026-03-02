@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Phase0"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.42.0">
+
+  <bpmn:collaboration id="Collaboration_Phase0">
+    <bpmn:participant id="Participant_Phase0" name="Phase 0: Software Asset Intelligence" processRef="Process_SoftwareAssetIntelligence" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_SoftwareAssetIntelligence" name="Phase 0: Software Asset Intelligence" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_Phase0">
+      <bpmn:lane id="Lane_GB_P0" name="Governance Board">
+        <bpmn:flowNodeRef>Task_QuarterlyAudit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_AuditEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BO_P0" name="Business Owner">
+        <bpmn:flowNodeRef>StartEvent_RegistryInitialized</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IntakeQueryInterface</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_RegistryReady</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ITA_P0" name="IT Architecture">
+        <bpmn:flowNodeRef>Task_CMDBSync</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SBOMGeneration</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Proc_P0" name="Procurement">
+        <bpmn:flowNodeRef>Task_SAMToolSync</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ContractRepository</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_LC_P0" name="Legal &amp; Compliance">
+        <bpmn:flowNodeRef>Task_OpenSourceRegistry</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RetiredAssetRegister</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IS_P0" name="Information Security">
+        <bpmn:flowNodeRef>Task_ShadowITTriage</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ShadowITFound</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ShadowITWorkflow</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_VM_P0" name="Vendor Management">
+        <bpmn:flowNodeRef>Task_LicenseUtilizationAlert</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_LowUtilization</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ReuseRecommendation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RegistryConsolidation</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_RegistryInitialized" name="Registry&#10;Initialized">
+      <bpmn:outgoing>Flow_Start_CMDB</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- CMDB Sync -->
+    <bpmn:serviceTask id="Task_CMDBSync" name="Sync CMDB&#10;(Applications &amp; Services)" camunda:type="external" camunda:topic="cmdb-sync">
+      <bpmn:incoming>Flow_Start_CMDB</bpmn:incoming>
+      <bpmn:outgoing>Flow_CMDB_SAM</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- SAM Tool Sync -->
+    <bpmn:serviceTask id="Task_SAMToolSync" name="Sync SAM Tool&#10;(License Entitlements)" camunda:type="external" camunda:topic="sam-sync">
+      <bpmn:incoming>Flow_CMDB_SAM</bpmn:incoming>
+      <bpmn:outgoing>Flow_SAM_Contract</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Contract Repository -->
+    <bpmn:serviceTask id="Task_ContractRepository" name="Sync Contract&#10;Repository (MSAs/SaaS)" camunda:type="external" camunda:topic="contract-sync">
+      <bpmn:incoming>Flow_SAM_Contract</bpmn:incoming>
+      <bpmn:outgoing>Flow_Contract_SBOM</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- SBOM Generation -->
+    <bpmn:serviceTask id="Task_SBOMGeneration" name="Generate SBOM&#10;(SPDX/CycloneDX)" camunda:type="external" camunda:topic="sbom-generation">
+      <bpmn:incoming>Flow_Contract_SBOM</bpmn:incoming>
+      <bpmn:outgoing>Flow_SBOM_OpenSource</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Open Source Registry -->
+    <bpmn:serviceTask id="Task_OpenSourceRegistry" name="Update Open Source&#10;Registry" camunda:type="external" camunda:topic="oss-registry">
+      <bpmn:incoming>Flow_SBOM_OpenSource</bpmn:incoming>
+      <bpmn:outgoing>Flow_OpenSource_Retired</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Retired Asset Register -->
+    <bpmn:serviceTask id="Task_RetiredAssetRegister" name="Sync Retired Asset&#10;Register" camunda:type="external" camunda:topic="retired-assets">
+      <bpmn:incoming>Flow_OpenSource_Retired</bpmn:incoming>
+      <bpmn:outgoing>Flow_Retired_ShadowIT</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Shadow IT Triage -->
+    <bpmn:serviceTask id="Task_ShadowITTriage" name="Shadow IT Detection&#10;(SSO + Spend Analytics)" camunda:type="external" camunda:topic="shadow-it-detection">
+      <bpmn:incoming>Flow_Retired_ShadowIT</bpmn:incoming>
+      <bpmn:outgoing>Flow_ShadowIT_Gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Gateway: Shadow IT Found? -->
+    <bpmn:exclusiveGateway id="Gateway_ShadowITFound" name="Shadow IT&#10;Detected?" default="Flow_NoShadowIT">
+      <bpmn:incoming>Flow_ShadowIT_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_ShadowITYes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_NoShadowIT</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Shadow IT Workflow -->
+    <bpmn:userTask id="Task_ShadowITWorkflow" name="Initiate Shadow IT&#10;Intake Workflow" camunda:candidateGroups="information-security">
+      <bpmn:incoming>Flow_ShadowITYes</bpmn:incoming>
+      <bpmn:outgoing>Flow_ShadowIT_Merge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- License Utilization Alert -->
+    <bpmn:serviceTask id="Task_LicenseUtilizationAlert" name="License Utilization&#10;Monitoring (&lt;40% Alert)" camunda:type="external" camunda:topic="license-monitoring">
+      <bpmn:incoming>Flow_NoShadowIT</bpmn:incoming>
+      <bpmn:incoming>Flow_ShadowIT_Merge</bpmn:incoming>
+      <bpmn:outgoing>Flow_License_Gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Gateway: Low Utilization? -->
+    <bpmn:exclusiveGateway id="Gateway_LowUtilization" name="Low Utilization&#10;(&lt;40%)?" default="Flow_NoLowUtil">
+      <bpmn:incoming>Flow_License_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_LowUtilYes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_NoLowUtil</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Reuse Recommendation -->
+    <bpmn:userTask id="Task_ReuseRecommendation" name="Generate Reuse&#10;Recommendation Workflow" camunda:candidateGroups="vendor-management">
+      <bpmn:incoming>Flow_LowUtilYes</bpmn:incoming>
+      <bpmn:outgoing>Flow_Reuse_Consolidate</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Registry Consolidation -->
+    <bpmn:serviceTask id="Task_RegistryConsolidation" name="Consolidate Registry&#10;(Delta Alerts)" camunda:type="external" camunda:topic="registry-consolidation">
+      <bpmn:incoming>Flow_NoLowUtil</bpmn:incoming>
+      <bpmn:incoming>Flow_Reuse_Consolidate</bpmn:incoming>
+      <bpmn:outgoing>Flow_Consolidation_Audit</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Quarterly Audit -->
+    <bpmn:userTask id="Task_QuarterlyAudit" name="Quarterly Registry&#10;Reconciliation Audit" camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_Consolidation_Audit</bpmn:incoming>
+      <bpmn:outgoing>Flow_Audit_IntakeQuery</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Boundary Timer on Quarterly Audit -->
+    <bpmn:boundaryEvent id="Timer_QuarterlyAuditSLA" attachedToRef="Task_QuarterlyAudit" cancelActivity="false">
+      <bpmn:outgoing>Flow_AuditSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_QuarterlyAudit">
+        <bpmn:timeDuration>P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- Escalation End Event for overdue audit -->
+    <bpmn:endEvent id="EndEvent_AuditEscalated" name="Audit SLA&#10;Escalated">
+      <bpmn:incoming>Flow_AuditSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Intake Query Interface -->
+    <bpmn:serviceTask id="Task_IntakeQueryInterface" name="Registry Query API&#10;(Ready for Intake Bot)" camunda:type="external" camunda:topic="registry-query">
+      <bpmn:incoming>Flow_Audit_IntakeQuery</bpmn:incoming>
+      <bpmn:outgoing>Flow_Query_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- End Event -->
+    <bpmn:endEvent id="EndEvent_RegistryReady" name="Registry Ready&#10;for Intake">
+      <bpmn:incoming>Flow_Query_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Text Annotations -->
+    <bpmn:textAnnotation id="Annotation_P0_Regs">
+      <bpmn:text>OCC 2023-17: Software Asset Registry required for TPRM. ISO/IEC 19770 ITAM. SOX: License audit trail required. GDPR/CCPA: Data residency tracked in registry.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P0_Regs" sourceRef="Task_RegistryConsolidation" targetRef="Annotation_P0_Regs" />
+
+    <bpmn:textAnnotation id="Annotation_P0_SLA">
+      <bpmn:text>SLA: Registry refresh within 24h of production change; new contract entries within 48h of signature. Quarterly audit P5D SLA enforced via boundary timer.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P0_SLA" sourceRef="Task_QuarterlyAudit" targetRef="Annotation_P0_SLA" />
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_Start_CMDB" sourceRef="StartEvent_RegistryInitialized" targetRef="Task_CMDBSync" />
+    <bpmn:sequenceFlow id="Flow_CMDB_SAM" sourceRef="Task_CMDBSync" targetRef="Task_SAMToolSync" />
+    <bpmn:sequenceFlow id="Flow_SAM_Contract" sourceRef="Task_SAMToolSync" targetRef="Task_ContractRepository" />
+    <bpmn:sequenceFlow id="Flow_Contract_SBOM" sourceRef="Task_ContractRepository" targetRef="Task_SBOMGeneration" />
+    <bpmn:sequenceFlow id="Flow_SBOM_OpenSource" sourceRef="Task_SBOMGeneration" targetRef="Task_OpenSourceRegistry" />
+    <bpmn:sequenceFlow id="Flow_OpenSource_Retired" sourceRef="Task_OpenSourceRegistry" targetRef="Task_RetiredAssetRegister" />
+    <bpmn:sequenceFlow id="Flow_Retired_ShadowIT" sourceRef="Task_RetiredAssetRegister" targetRef="Task_ShadowITTriage" />
+    <bpmn:sequenceFlow id="Flow_ShadowIT_Gateway" sourceRef="Task_ShadowITTriage" targetRef="Gateway_ShadowITFound" />
+    <bpmn:sequenceFlow id="Flow_ShadowITYes" name="Yes" sourceRef="Gateway_ShadowITFound" targetRef="Task_ShadowITWorkflow">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${shadowITDetected == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_NoShadowIT" name="No" sourceRef="Gateway_ShadowITFound" targetRef="Task_LicenseUtilizationAlert" />
+    <bpmn:sequenceFlow id="Flow_ShadowIT_Merge" sourceRef="Task_ShadowITWorkflow" targetRef="Task_LicenseUtilizationAlert" />
+    <bpmn:sequenceFlow id="Flow_License_Gateway" sourceRef="Task_LicenseUtilizationAlert" targetRef="Gateway_LowUtilization" />
+    <bpmn:sequenceFlow id="Flow_LowUtilYes" name="Yes" sourceRef="Gateway_LowUtilization" targetRef="Task_ReuseRecommendation">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${utilizationBelow40 == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_NoLowUtil" name="No" sourceRef="Gateway_LowUtilization" targetRef="Task_RegistryConsolidation" />
+    <bpmn:sequenceFlow id="Flow_Reuse_Consolidate" sourceRef="Task_ReuseRecommendation" targetRef="Task_RegistryConsolidation" />
+    <bpmn:sequenceFlow id="Flow_Consolidation_Audit" sourceRef="Task_RegistryConsolidation" targetRef="Task_QuarterlyAudit" />
+    <bpmn:sequenceFlow id="Flow_Audit_IntakeQuery" sourceRef="Task_QuarterlyAudit" targetRef="Task_IntakeQueryInterface" />
+    <bpmn:sequenceFlow id="Flow_Query_End" sourceRef="Task_IntakeQueryInterface" targetRef="EndEvent_RegistryReady" />
+    <bpmn:sequenceFlow id="Flow_AuditSLAEscalate" sourceRef="Timer_QuarterlyAuditSLA" targetRef="EndEvent_AuditEscalated" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Phase0">
+    <bpmndi:BPMNPlane id="BPMNPlane_Phase0" bpmnElement="Collaboration_Phase0">
+
+      <bpmndi:BPMNShape id="Participant_Phase0_di" bpmnElement="Participant_Phase0" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="2350" height="1240" />
+      </bpmndi:BPMNShape>
+
+      <!-- Swim Lanes (7 lanes x 160px each = 1120px, starting at y=47) -->
+      <bpmndi:BPMNShape id="Lane_GB_P0_di" bpmnElement="Lane_GB_P0" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="2320" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BO_P0_di" bpmnElement="Lane_BO_P0" isHorizontal="true">
+        <dc:Bounds x="185" y="207" width="2320" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ITA_P0_di" bpmnElement="Lane_ITA_P0" isHorizontal="true">
+        <dc:Bounds x="185" y="367" width="2320" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Proc_P0_di" bpmnElement="Lane_Proc_P0" isHorizontal="true">
+        <dc:Bounds x="185" y="527" width="2320" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_LC_P0_di" bpmnElement="Lane_LC_P0" isHorizontal="true">
+        <dc:Bounds x="185" y="687" width="2320" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_IS_P0_di" bpmnElement="Lane_IS_P0" isHorizontal="true">
+        <dc:Bounds x="185" y="847" width="2320" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_VM_P0_di" bpmnElement="Lane_VM_P0" isHorizontal="true">
+        <dc:Bounds x="185" y="1007" width="2320" height="160" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start Event in Business Owner lane (y=207+62=269) -->
+      <bpmndi:BPMNShape id="StartEvent_RegistryInitialized_di" bpmnElement="StartEvent_RegistryInitialized">
+        <dc:Bounds x="247" y="269" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="229" y="312" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Task_CMDBSync in IT Architecture lane (y=367+40=407) x=340 -->
+      <bpmndi:BPMNShape id="Task_CMDBSync_di" bpmnElement="Task_CMDBSync">
+        <dc:Bounds x="330" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task_SAMToolSync in Procurement lane (y=527+40=567) x=520 -->
+      <bpmndi:BPMNShape id="Task_SAMToolSync_di" bpmnElement="Task_SAMToolSync">
+        <dc:Bounds x="520" y="547" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task_ContractRepository in Procurement lane x=710 -->
+      <bpmndi:BPMNShape id="Task_ContractRepository_di" bpmnElement="Task_ContractRepository">
+        <dc:Bounds x="710" y="547" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task_SBOMGeneration in IT Architecture lane x=900 -->
+      <bpmndi:BPMNShape id="Task_SBOMGeneration_di" bpmnElement="Task_SBOMGeneration">
+        <dc:Bounds x="900" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task_OpenSourceRegistry in Legal & Compliance lane (y=687+40=727) x=1090 -->
+      <bpmndi:BPMNShape id="Task_OpenSourceRegistry_di" bpmnElement="Task_OpenSourceRegistry">
+        <dc:Bounds x="1090" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task_RetiredAssetRegister in Legal & Compliance lane x=1280 -->
+      <bpmndi:BPMNShape id="Task_RetiredAssetRegister_di" bpmnElement="Task_RetiredAssetRegister">
+        <dc:Bounds x="1280" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task_ShadowITTriage in Information Security lane (y=847+40=887) x=1470 -->
+      <bpmndi:BPMNShape id="Task_ShadowITTriage_di" bpmnElement="Task_ShadowITTriage">
+        <dc:Bounds x="1470" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway_ShadowITFound x=1660 -->
+      <bpmndi:BPMNShape id="Gateway_ShadowITFound_di" bpmnElement="Gateway_ShadowITFound" isMarkerVisible="true">
+        <dc:Bounds x="1655" y="882" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1638" y="939" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Task_ShadowITWorkflow x=1760 -->
+      <bpmndi:BPMNShape id="Task_ShadowITWorkflow_di" bpmnElement="Task_ShadowITWorkflow">
+        <dc:Bounds x="1760" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task_LicenseUtilizationAlert in Vendor Management lane (y=1007+40=1047) x=1470 -->
+      <bpmndi:BPMNShape id="Task_LicenseUtilizationAlert_di" bpmnElement="Task_LicenseUtilizationAlert">
+        <dc:Bounds x="1470" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway_LowUtilization x=1660 -->
+      <bpmndi:BPMNShape id="Gateway_LowUtilization_di" bpmnElement="Gateway_LowUtilization" isMarkerVisible="true">
+        <dc:Bounds x="1655" y="1042" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1638" y="1099" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Task_ReuseRecommendation x=1760 -->
+      <bpmndi:BPMNShape id="Task_ReuseRecommendation_di" bpmnElement="Task_ReuseRecommendation">
+        <dc:Bounds x="1760" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task_RegistryConsolidation x=1960 -->
+      <bpmndi:BPMNShape id="Task_RegistryConsolidation_di" bpmnElement="Task_RegistryConsolidation">
+        <dc:Bounds x="1960" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task_QuarterlyAudit in Governance Board lane (y=47+40=87) x=1960 -->
+      <bpmndi:BPMNShape id="Task_QuarterlyAudit_di" bpmnElement="Task_QuarterlyAudit">
+        <dc:Bounds x="1960" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer Boundary on Quarterly Audit -->
+      <bpmndi:BPMNShape id="Timer_QuarterlyAuditSLA_di" bpmnElement="Timer_QuarterlyAuditSLA">
+        <dc:Bounds x="2012" y="149" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- EndEvent_AuditEscalated -->
+      <bpmndi:BPMNShape id="EndEvent_AuditEscalated_di" bpmnElement="EndEvent_AuditEscalated">
+        <dc:Bounds x="2152" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2133" y="145" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Task_IntakeQueryInterface in Business Owner lane x=2160 -->
+      <bpmndi:BPMNShape id="Task_IntakeQueryInterface_di" bpmnElement="Task_IntakeQueryInterface">
+        <dc:Bounds x="2160" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- EndEvent_RegistryReady x=2360 -->
+      <bpmndi:BPMNShape id="EndEvent_RegistryReady_di" bpmnElement="EndEvent_RegistryReady">
+        <dc:Bounds x="2352" y="269" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2328" y="312" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Annotations (below participant) -->
+      <bpmndi:BPMNShape id="Annotation_P0_Regs_di" bpmnElement="Annotation_P0_Regs">
+        <dc:Bounds x="200" y="1175" width="700" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annotation_P0_SLA_di" bpmnElement="Annotation_P0_SLA">
+        <dc:Bounds x="950" y="1175" width="700" height="55" />
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="Flow_Start_CMDB_di" bpmnElement="Flow_Start_CMDB">
+        <di:waypoint x="265" y="287" />
+        <di:waypoint x="265" y="427" />
+        <di:waypoint x="330" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_CMDB_SAM_di" bpmnElement="Flow_CMDB_SAM">
+        <di:waypoint x="470" y="427" />
+        <di:waypoint x="495" y="427" />
+        <di:waypoint x="495" y="587" />
+        <di:waypoint x="520" y="587" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SAM_Contract_di" bpmnElement="Flow_SAM_Contract">
+        <di:waypoint x="660" y="587" />
+        <di:waypoint x="710" y="587" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Contract_SBOM_di" bpmnElement="Flow_Contract_SBOM">
+        <di:waypoint x="850" y="587" />
+        <di:waypoint x="875" y="587" />
+        <di:waypoint x="875" y="427" />
+        <di:waypoint x="900" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SBOM_OpenSource_di" bpmnElement="Flow_SBOM_OpenSource">
+        <di:waypoint x="1040" y="427" />
+        <di:waypoint x="1065" y="427" />
+        <di:waypoint x="1065" y="747" />
+        <di:waypoint x="1090" y="747" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_OpenSource_Retired_di" bpmnElement="Flow_OpenSource_Retired">
+        <di:waypoint x="1230" y="747" />
+        <di:waypoint x="1280" y="747" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Retired_ShadowIT_di" bpmnElement="Flow_Retired_ShadowIT">
+        <di:waypoint x="1420" y="747" />
+        <di:waypoint x="1445" y="747" />
+        <di:waypoint x="1445" y="907" />
+        <di:waypoint x="1470" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ShadowIT_Gateway_di" bpmnElement="Flow_ShadowIT_Gateway">
+        <di:waypoint x="1610" y="907" />
+        <di:waypoint x="1655" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ShadowITYes_di" bpmnElement="Flow_ShadowITYes">
+        <di:waypoint x="1705" y="907" />
+        <di:waypoint x="1760" y="907" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1722" y="889" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_NoShadowIT_di" bpmnElement="Flow_NoShadowIT">
+        <di:waypoint x="1680" y="932" />
+        <di:waypoint x="1680" y="1067" />
+        <di:waypoint x="1470" y="1067" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1688" y="1007" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ShadowIT_Merge_di" bpmnElement="Flow_ShadowIT_Merge">
+        <di:waypoint x="1830" y="947" />
+        <di:waypoint x="1830" y="987" />
+        <di:waypoint x="1540" y="987" />
+        <di:waypoint x="1540" y="1027" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_License_Gateway_di" bpmnElement="Flow_License_Gateway">
+        <di:waypoint x="1610" y="1067" />
+        <di:waypoint x="1655" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_LowUtilYes_di" bpmnElement="Flow_LowUtilYes">
+        <di:waypoint x="1705" y="1067" />
+        <di:waypoint x="1760" y="1067" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1722" y="1049" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_NoLowUtil_di" bpmnElement="Flow_NoLowUtil">
+        <di:waypoint x="1680" y="1042" />
+        <di:waypoint x="1680" y="960" />
+        <di:waypoint x="2030" y="960" />
+        <di:waypoint x="2030" y="1027" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1838" y="942" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Reuse_Consolidate_di" bpmnElement="Flow_Reuse_Consolidate">
+        <di:waypoint x="1900" y="1067" />
+        <di:waypoint x="1960" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Consolidation_Audit_di" bpmnElement="Flow_Consolidation_Audit">
+        <di:waypoint x="2030" y="1027" />
+        <di:waypoint x="2030" y="167" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Audit_IntakeQuery_di" bpmnElement="Flow_Audit_IntakeQuery">
+        <di:waypoint x="2100" y="127" />
+        <di:waypoint x="2130" y="127" />
+        <di:waypoint x="2130" y="287" />
+        <di:waypoint x="2160" y="287" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Query_End_di" bpmnElement="Flow_Query_End">
+        <di:waypoint x="2300" y="287" />
+        <di:waypoint x="2352" y="287" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_AuditSLAEscalate_di" bpmnElement="Flow_AuditSLAEscalate">
+        <di:waypoint x="2030" y="149" />
+        <di:waypoint x="2030" y="120" />
+        <di:waypoint x="2152" y="120" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P0_Regs_di" bpmnElement="Assoc_P0_Regs">
+        <di:waypoint x="2030" y="1107" />
+        <di:waypoint x="550" y="1175" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P0_SLA_di" bpmnElement="Assoc_P0_SLA">
+        <di:waypoint x="2030" y="167" />
+        <di:waypoint x="1300" y="1175" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>
