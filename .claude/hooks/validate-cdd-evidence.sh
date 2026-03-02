@@ -18,10 +18,13 @@ PROJECT_DIR="$CLAUDE_PROJECT_DIR"
 REPO="proth1/sla"
 
 # Extract Jira issue key from branch name
+# Branches use SLM- prefix but Jira project key is SLA
 BRANCH=$(git -C "${PROJECT_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 JIRA_KEY=""
-if [[ "${BRANCH}" =~ ^feature/(SLM-[0-9]+) ]]; then
-    JIRA_KEY="${BASH_REMATCH[1]}"
+ISSUE_NUM=""
+if [[ "${BRANCH}" =~ ^feature/SLM-([0-9]+) ]]; then
+    ISSUE_NUM="${BASH_REMATCH[1]}"
+    JIRA_KEY="SLA-${ISSUE_NUM}"
 fi
 
 # If no Jira key found, skip validation (might be a hotfix branch)
@@ -29,15 +32,30 @@ if [[ -z "${JIRA_KEY}" ]]; then
     exit 0
 fi
 
-# Check if Jira credentials are available
-if [[ -z "${JIRA_EMAIL:-}" || -z "${JIRA_API_TOKEN:-}" ]]; then
-    exit 0
+# Resolve Jira credentials: prefer ~/.jira.d/config.yml (agentic-sdlc),
+# fall back to env vars
+JIRA_CONFIG="$HOME/.jira.d/config.yml"
+if [[ -f "${JIRA_CONFIG}" ]]; then
+    CFG_URL=$(grep '^endpoint:' "${JIRA_CONFIG}" | awk '{print $2}' | tr -d '[:space:]')
+    CFG_USER=$(grep '^user:' "${JIRA_CONFIG}" | awk '{print $2}' | tr -d '[:space:]')
+    CFG_PASS=$(grep '^password:' "${JIRA_CONFIG}" | awk '{print $2}' | tr -d '[:space:]')
+    if [[ -n "${CFG_URL}" && -n "${CFG_USER}" && -n "${CFG_PASS}" ]]; then
+        JIRA_URL="${CFG_URL}"
+        JIRA_AUTH="${CFG_USER}:${CFG_PASS}"
+    fi
 fi
 
-JIRA_URL="${JIRA_URL:-https://agentic-sdlc.atlassian.net}"
+# Fall back to env vars if config not available
+if [[ -z "${JIRA_AUTH:-}" ]]; then
+    if [[ -z "${JIRA_EMAIL:-}" || -z "${JIRA_API_TOKEN:-}" ]]; then
+        exit 0
+    fi
+    JIRA_URL="${JIRA_URL:-https://agentic-sdlc.atlassian.net}"
+    JIRA_AUTH="${JIRA_EMAIL}:${JIRA_API_TOKEN}"
+fi
 
 # Fetch Jira issue comments and look for CDD evidence markers
-COMMENTS=$(curl -s -u "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
+COMMENTS=$(curl -s -u "${JIRA_AUTH}" \
   "${JIRA_URL}/rest/api/3/issue/${JIRA_KEY}/comment" 2>/dev/null | \
   jq -r '.comments[].body.content[]?.content[]?.text // empty' 2>/dev/null || echo "")
 
