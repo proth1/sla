@@ -1,6 +1,6 @@
 ---
 name: bpmn-editing
-description: BMS GSC BPMN layout standards and visual best practices. Use when creating or editing BPMN files (*.bpmn), fixing layout issues, or working with Camunda process diagrams. Ensures proper element positioning, escalation patterns, and visual clarity.
+description: SLA Governance BPMN layout standards and visual best practices. Use when creating or editing BPMN files (*.bpmn), fixing layout issues, or working with Camunda process diagrams. Ensures proper element positioning, multi-lane routing, escalation patterns, and visual clarity.
 ---
 
 # BPMN Editing Skill
@@ -95,7 +95,15 @@ Use 170-180px vertical spacing between parallel branches for visual clarity.
 
 ### 7. Escalation Event Positioning
 
-Position escalation end events 50px below the triggering boundary event.
+Position escalation end events 50px below the triggering boundary event, 58px to the right:
+
+```xml
+<!-- Boundary event at x=316, y=272 -->
+<!-- Escalation end event at x=374, y=322 -->
+<bpmndi:BPMNShape id="EscalationEnd_di" bpmnElement="EscalationEnd">
+  <dc:Bounds x="374" y="322" width="36" height="36" />
+</bpmndi:BPMNShape>
+```
 
 ### 8. Collapsed Subprocess for Parallel Execution
 
@@ -103,10 +111,10 @@ Encapsulate parallel split/join patterns in **collapsed subprocesses** to keep t
 
 ```xml
 <!-- Main flow stays linear -->
-Start → Task A → [Collapsed Subprocess] → Task B → End
+Start -> Task A -> [Collapsed Subprocess] -> Task B -> End
 
 <!-- Inside subprocess: horizontal parallel layout -->
-Start → Split Gateway → Task1 → Task2 → Task3 → Join Gateway → End
+Start -> Split Gateway -> Task1 -> Task2 -> Task3 -> Join Gateway -> End
 ```
 
 **Horizontal layout within subprocess** (NOT vertical):
@@ -126,6 +134,55 @@ Parallel gateways should NOT have names when the context is clear:
 <bpmn:parallelGateway id="Gateway_Fork">
 ```
 
+### 10. DI Element Ordering
+
+Within the `BPMNDiagram` section, order elements as:
+1. **Container shapes** (process, participant, lanes)
+2. **Child shapes** (tasks, gateways, events) -- in process flow order
+3. **Child edges** (sequence flows) -- in source element order
+4. **Associations** (text annotation links)
+
+This ordering matches Camunda Modeler's output and minimizes diffs.
+
+### 11. Error Event Sub-Process Centering
+
+When a subprocess has an error event sub-process, center it within the parent subprocess:
+
+```xml
+<!-- Error event sub-process centered horizontally -->
+<!-- Parent subprocess: x=200, width=400 -->
+<!-- Error sub-process: x=200+(400-200)/2=300, centered within parent -->
+```
+
+### 12. Left-to-Right Flow Within Lanes (CRITICAL)
+
+**All sequence flows MUST move left-to-right** within their swim lane. No backward flows except explicit loops.
+
+```
+CORRECT:
+[Start] -> [Task A] -> [Gateway] -> [Task B] -> [End]
+
+WRONG (backward flow):
+[Task B] <- [Gateway] -> [Task A]
+```
+
+### 13. Cross-Lane Routing
+
+When flows cross between SLA governance swim lanes:
+- Use **vertical segments** to cross lane boundaries
+- Keep **horizontal segments** within a single lane
+- Never draw diagonal lines crossing 2+ lane boundaries
+
+### 14. Multi-Line Event Labels
+
+Use `&#10;` for compact event labels:
+
+```xml
+<bpmn:startEvent id="Start_Phase1" name="Start&#10;Assessment">
+```
+
+Renders as two lines, preventing label overflow.
+
 ## Quick Reference
 
 | Rule | Check |
@@ -136,16 +193,24 @@ Parallel gateways should NOT have names when the context is clear:
 | Timer has outgoing | Every `boundaryEvent` with timer has `<bpmn:outgoing>` |
 | No gateway names | Parallel gateways should not have `name=` attribute |
 | Subprocess has BPMNDiagram | Collapsed subprocesses need separate `<bpmndi:BPMNDiagram>` |
+| No backward flows | All sequence flow waypoints increase in X |
+| Timer labels RIGHT | Timer label x >= boundary event x + 44 |
 
-## Governance Requirement
+## Governance Requirements
 
-All governance BPMN models MUST include regulatory annotation text annotations (OCC 2023-17, SR 11-7, etc.) as applicable.
+All governance BPMN models MUST include:
+- Regulatory annotation text annotations (OCC 2023-17, SR 11-7, etc.) as applicable
+- Phase boundary patterns at process end (completion -> quality gate -> approval -> transition)
+- DMN references for business logic (not embedded conditions)
+- Valid candidateGroups from the 7 SLA governance lanes
 
 ## Related Rules
 
 Full standards documented in:
-- `.claude/context/bpmn/bpmn-modeling-standards.md` (comprehensive rule set)
+- `.claude/rules/bpmn-modeling-standards.md` (comprehensive rule set)
+- `.claude/rules/bpmn-visual-clarity.md` (visual layout rules)
+- `.claude/rules/bpmn-governance-standards.md` (swim lanes, regulatory, DMN)
 
 ## Version
 
-Patterns derived from `campaign-lifecycle.bpmn` and `launch-campaign.bpmn` corrections (2026-01-08).
+Patterns consolidated from ACMOS change management and SLA governance standards (2026-03-02).

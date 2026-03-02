@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>BPMN to SVG Renderer</title>
+  <script src="https://unpkg.com/bpmn-js@17.11.1/dist/bpmn-navigated-viewer.production.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #f8fafc;
+    }
+    #canvas {
+      height: 100%;
+      width: 100%;
+    }
+    #status {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+    }
+    #status.success { color: #10b981; }
+    #status.error { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <div id="status">Loading bpmn-js...</div>
+  <div id="canvas"></div>
+
+  <script>
+    const viewer = new BpmnJS({
+      container: '#canvas'
+    });
+
+    // Global function to render BPMN and export SVG
+    window.renderBPMN = async function(bpmnXml) {
+      const status = document.getElementById('status');
+
+      try {
+        status.textContent = 'Importing BPMN...';
+        status.className = '';
+
+        const result = await viewer.importXML(bpmnXml);
+
+        if (result.warnings && result.warnings.length) {
+          console.warn('Import warnings:', result.warnings);
+        }
+
+        // Fit to viewport with padding
+        const canvas = viewer.get('canvas');
+        canvas.zoom('fit-viewport', 'auto');
+
+        status.textContent = 'BPMN loaded successfully';
+        status.className = 'success';
+
+        return { success: true };
+      } catch (err) {
+        status.textContent = 'Error: ' + err.message;
+        status.className = 'error';
+        console.error('Error rendering BPMN:', err);
+        return { success: false, error: err.message };
+      }
+    };
+
+    // Export as SVG
+    window.exportSVG = async function() {
+      try {
+        const { svg } = await viewer.saveSVG();
+        return { success: true, svg: svg };
+      } catch (err) {
+        console.error('Error exporting SVG:', err);
+        return { success: false, error: err.message };
+      }
+    };
+
+    // Combined render and export
+    window.renderAndExport = async function(bpmnXml) {
+      const renderResult = await window.renderBPMN(bpmnXml);
+      if (!renderResult.success) {
+        return renderResult;
+      }
+
+      // Small delay to ensure rendering is complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      return await window.exportSVG();
+    };
+
+    // Signal ready
+    document.getElementById('status').textContent = 'Ready - awaiting BPMN input';
+  </script>
+</body>
+</html>
