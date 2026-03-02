@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d12_DMN_12_ObservabilityTier"
+             name="DMN-12: Observability Tier Assignment"
+             namespace="http://sla.governance.example.com/dmn/phase5a">
+
+  <!--
+    DMN-12: Observability Tier Assignment
+    Phase: 5A (Build) and Phase 6 (Post-Deployment Observability)
+    Hit Policy: PRIORITY (highest-risk tier assignment takes precedence)
+    Regulatory: SR 11-7, SEC Cybersecurity Disclosure Rule 2023, FINRA Rule 4511, SEC Rule 17a-4
+    Task Type: Automated (A) for assignment; Human-in-the-Loop (H) for escalation
+    Description: Assigns observability tier determining log schema, retention period,
+                 monitoring cadence, drift detection requirements, and alert thresholds.
+                 Designed in Phase 5A; activated at Go-to-Market.
+  -->
+
+  <decision id="DMN12ObservabilityTier" name="Observability Tier Assignment">
+    <decisionTable id="d12_dt_observability" hitPolicy="PRIORITY">
+
+      <input id="d12_in_ai_risk_tier" label="AI Risk Tier">
+        <inputExpression id="d12_ie_ai_tier" typeRef="string">
+          <text>aiRiskTier</text>
+        </inputExpression>
+        <inputValues id="d12_iv_ai_tier">
+          <text>"Tier1-HighMRM","Tier2-ModerateMRM","Tier3-LowMRM","NotAI"</text>
+        </inputValues>
+      </input>
+
+      <input id="d12_in_reg_classification" label="Regulatory Classification">
+        <inputExpression id="d12_ie_reg_class" typeRef="string">
+          <text>regulatoryClassification</text>
+        </inputExpression>
+        <inputValues id="d12_iv_reg_class">
+          <text>"CreditDecision","ComplianceDecision","OperationalDecision","InternalTool"</text>
+        </inputValues>
+      </input>
+
+      <input id="d12_in_decision_materiality" label="Decision Materiality Impact">
+        <inputExpression id="d12_ie_materiality" typeRef="string">
+          <text>decisionMaterialityImpact</text>
+        </inputExpression>
+        <inputValues id="d12_iv_materiality">
+          <text>"High","Medium","Low"</text>
+        </inputValues>
+      </input>
+
+      <input id="d12_in_user_population" label="User Population Scale">
+        <inputExpression id="d12_ie_user_pop" typeRef="string">
+          <text>userPopulationScale</text>
+        </inputExpression>
+        <inputValues id="d12_iv_user_pop">
+          <text>"LargeConsumerFacing","MediumMixed","SmallInternal"</text>
+        </inputValues>
+      </input>
+
+      <output id="d12_out_obs_tier" label="Observability Tier" typeRef="string" />
+      <output id="d12_out_log_schema" label="Log Schema Level" typeRef="string" />
+      <output id="d12_out_retention_years" label="Data Retention (Years)" typeRef="integer" />
+      <output id="d12_out_monitoring_cadence" label="Monitoring Cadence" typeRef="string" />
+      <output id="d12_out_drift_detection" label="Drift Detection Required?" typeRef="boolean" />
+      <output id="d12_out_alert_threshold" label="Alert Threshold" typeRef="string" />
+
+      <!-- Priority 1 (highest): Tier 1 AI + credit/compliance decision → OBS-A Full -->
+      <rule id="d12_r01_obs_a_tier1_credit">
+        <description>Tier 1 MRM AI with credit or compliance regulatory classification - maximum observability</description>
+        <inputEntry id="d12_ie1_r01"><text>"Tier1-HighMRM"</text></inputEntry>
+        <inputEntry id="d12_ie2_r01"><text>"CreditDecision","ComplianceDecision"</text></inputEntry>
+        <inputEntry id="d12_ie3_r01"><text>"High"</text></inputEntry>
+        <inputEntry id="d12_ie4_r01"><text>-</text></inputEntry>
+        <outputEntry id="d12_oe1_r01"><text>"OBS-A-Critical"</text></outputEntry>
+        <outputEntry id="d12_oe2_r01"><text>"Full schema: decision_id, request_id, input_hash, output, confidence, rule_id, knowledge_base_version, human_reviewer_role, timestamp_utc, session_id"</text></outputEntry>
+        <outputEntry id="d12_oe3_r01"><text>7</text></outputEntry>
+        <outputEntry id="d12_oe4_r01"><text>"Weekly drift detection; monthly bias testing; real-time anomaly alerts; quarterly accuracy back-testing"</text></outputEntry>
+        <outputEntry id="d12_oe5_r01"><text>true</text></outputEntry>
+        <outputEntry id="d12_oe6_r01"><text>"PSI>0.20 OR KS p&lt;0.05 OR output distribution shift >15% OR bias ratio outside 0.80-1.25"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 2: Tier 1 AI + large consumer-facing → OBS-A Full -->
+      <rule id="d12_r02_obs_a_tier1_consumer">
+        <description>Tier 1 MRM AI with large consumer-facing population - full observability</description>
+        <inputEntry id="d12_ie1_r02"><text>"Tier1-HighMRM"</text></inputEntry>
+        <inputEntry id="d12_ie2_r02"><text>-</text></inputEntry>
+        <inputEntry id="d12_ie3_r02"><text>-</text></inputEntry>
+        <inputEntry id="d12_ie4_r02"><text>"LargeConsumerFacing"</text></inputEntry>
+        <outputEntry id="d12_oe1_r02"><text>"OBS-A-Critical"</text></outputEntry>
+        <outputEntry id="d12_oe2_r02"><text>"Full schema: all mandatory fields including FCRA/Reg B reason codes, disparate impact metrics, model version, explainability scores"</text></outputEntry>
+        <outputEntry id="d12_oe3_r02"><text>7</text></outputEntry>
+        <outputEntry id="d12_oe4_r02"><text>"Weekly drift detection; quarterly bias testing; real-time performance alerts; annual independent validation trigger"</text></outputEntry>
+        <outputEntry id="d12_oe5_r02"><text>true</text></outputEntry>
+        <outputEntry id="d12_oe6_r02"><text>"PSI>0.20 OR output shift >15% OR bias ratio outside 0.80-1.25 OR accuracy degradation >10%"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 3: Tier 2 AI + operational decision + medium scale → OBS-B Enhanced -->
+      <rule id="d12_r03_obs_b_tier2_operational">
+        <description>Tier 2 MRM AI with operational decisions and medium user population - enhanced observability</description>
+        <inputEntry id="d12_ie1_r03"><text>"Tier2-ModerateMRM"</text></inputEntry>
+        <inputEntry id="d12_ie2_r03"><text>"OperationalDecision","ComplianceDecision"</text></inputEntry>
+        <inputEntry id="d12_ie3_r03"><text>"High","Medium"</text></inputEntry>
+        <inputEntry id="d12_ie4_r03"><text>"MediumMixed","LargeConsumerFacing"</text></inputEntry>
+        <outputEntry id="d12_oe1_r03"><text>"OBS-B-Enhanced"</text></outputEntry>
+        <outputEntry id="d12_oe2_r03"><text>"Enhanced schema: decision_id, input_hash, output, confidence, rule_id, timestamp_utc; exception-based human review logging"</text></outputEntry>
+        <outputEntry id="d12_oe3_r03"><text>7</text></outputEntry>
+        <outputEntry id="d12_oe4_r03"><text>"Bi-weekly drift detection; semi-annual bias review; weekly performance monitoring; quarterly accuracy check"</text></outputEntry>
+        <outputEntry id="d12_oe5_r03"><text>true</text></outputEntry>
+        <outputEntry id="d12_oe6_r03"><text>"PSI>0.25 OR output shift >20% OR accuracy degradation >15%"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 4: Tier 2 AI small internal → OBS-B Standard -->
+      <rule id="d12_r04_obs_b_tier2_small">
+        <description>Tier 2 MRM AI with small internal user population - standard enhanced observability</description>
+        <inputEntry id="d12_ie1_r04"><text>"Tier2-ModerateMRM"</text></inputEntry>
+        <inputEntry id="d12_ie2_r04"><text>-</text></inputEntry>
+        <inputEntry id="d12_ie3_r04"><text>-</text></inputEntry>
+        <inputEntry id="d12_ie4_r04"><text>"SmallInternal"</text></inputEntry>
+        <outputEntry id="d12_oe1_r04"><text>"OBS-B-Standard"</text></outputEntry>
+        <outputEntry id="d12_oe2_r04"><text>"Standard enhanced schema: decision_id, output, confidence, timestamp_utc; periodic sampling"</text></outputEntry>
+        <outputEntry id="d12_oe3_r04"><text>3</text></outputEntry>
+        <outputEntry id="d12_oe4_r04"><text>"Monthly drift detection; annual bias review; monthly performance monitoring"</text></outputEntry>
+        <outputEntry id="d12_oe5_r04"><text>true</text></outputEntry>
+        <outputEntry id="d12_oe6_r04"><text>"PSI>0.30 OR accuracy degradation >20%"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 5: Tier 3 AI or internal tool with medium impact → OBS-C Basic -->
+      <rule id="d12_r05_obs_c_tier3">
+        <description>Tier 3 low MRM AI or internal tool with medium impact - basic observability</description>
+        <inputEntry id="d12_ie1_r05"><text>"Tier3-LowMRM"</text></inputEntry>
+        <inputEntry id="d12_ie2_r05"><text>"OperationalDecision","InternalTool"</text></inputEntry>
+        <inputEntry id="d12_ie3_r05"><text>"Medium","Low"</text></inputEntry>
+        <inputEntry id="d12_ie4_r05"><text>-</text></inputEntry>
+        <outputEntry id="d12_oe1_r05"><text>"OBS-C-Basic"</text></outputEntry>
+        <outputEntry id="d12_oe2_r05"><text>"Basic schema: decision_id, output, timestamp_utc; aggregate performance logging"</text></outputEntry>
+        <outputEntry id="d12_oe3_r05"><text>3</text></outputEntry>
+        <outputEntry id="d12_oe4_r05"><text>"Quarterly performance review; annual drift assessment; threshold-based alerts only"</text></outputEntry>
+        <outputEntry id="d12_oe5_r05"><text>false</text></outputEntry>
+        <outputEntry id="d12_oe6_r05"><text>"Performance degradation >25% from baseline"</text></outputEntry>
+      </rule>
+
+      <!-- Priority 6 (lowest): Non-AI system → OBS-D Minimal -->
+      <rule id="d12_r06_obs_d_nonai">
+        <description>Non-AI system - minimal observability (standard audit logging)</description>
+        <inputEntry id="d12_ie1_r06"><text>"NotAI"</text></inputEntry>
+        <inputEntry id="d12_ie2_r06"><text>-</text></inputEntry>
+        <inputEntry id="d12_ie3_r06"><text>-</text></inputEntry>
+        <inputEntry id="d12_ie4_r06"><text>-</text></inputEntry>
+        <outputEntry id="d12_oe1_r06"><text>"OBS-D-Minimal"</text></outputEntry>
+        <outputEntry id="d12_oe2_r06"><text>"Minimal schema: standard application logs, access logs, error logs; no AI-specific telemetry"</text></outputEntry>
+        <outputEntry id="d12_oe3_r06"><text>3</text></outputEntry>
+        <outputEntry id="d12_oe4_r06"><text>"Standard application monitoring; incident-based review"</text></outputEntry>
+        <outputEntry id="d12_oe5_r06"><text>false</text></outputEntry>
+        <outputEntry id="d12_oe6_r06"><text>"Standard SLA breach thresholds"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d12_diagram_DMN12">
+      <dmndi:DMNShape id="d12_shape_DMN12" dmnElementRef="DMN12ObservabilityTier">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Phase5A"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.42.0">
+
+  <bpmn:collaboration id="Collaboration_Phase5A">
+    <bpmn:participant id="Participant_Phase5A" name="Phase 5A: PDLC Build Pathway" processRef="Process_PDLCBuildPathway" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_PDLCBuildPathway" name="Phase 5A: PDLC Build Pathway" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_Phase5A">
+      <bpmn:lane id="Lane_GB_P5A" name="Governance Board">
+        <bpmn:flowNodeRef>Task_AIGovernanceReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PhaseTransitionP5A</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase5AComplete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BO_P5A" name="Business Owner">
+        <bpmn:flowNodeRef>StartEvent_Phase5AInitiated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_UATSignOff</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_GoToMarketReadiness</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ITA_P5A" name="IT Architecture">
+        <bpmn:flowNodeRef>Task_HLDDDevelopment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DMN11_TechRiskEval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_TechRiskGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PoCDevelopment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DMN10_PoCGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_PoCGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DevelopmentExecution</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Proc_P5A" name="Procurement">
+        <bpmn:flowNodeRef>Task_SprintPlanning</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ResourceAllocation</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_LC_P5A" name="Legal &amp; Compliance">
+        <bpmn:flowNodeRef>Task_ComplianceCheckpointReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ComplianceValidation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_DeploymentDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_DeploymentRejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IS_P5A" name="Information Security">
+        <bpmn:flowNodeRef>Task_DMN12_ObservabilityTier</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ObservabilityDesign</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SecurityTesting</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_VM_P5A" name="Vendor Management">
+        <bpmn:flowNodeRef>Task_PreDeploymentPackage</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ProductionCutover</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_Phase5AInitiated" name="Build Pathway&#10;Initiated (Budget&#10;Released)">
+      <bpmn:outgoing>Flow_Start_HLDD</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- HLDD Development -->
+    <bpmn:userTask id="Task_HLDDDevelopment" name="HLDD Development&#10;(High-Level Design&#10;Document)" camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_Start_HLDD</bpmn:incoming>
+      <bpmn:outgoing>Flow_HLDD_TechRisk</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on HLDD -->
+    <bpmn:boundaryEvent id="Timer_HLDDReviewSLA" attachedToRef="Task_HLDDDevelopment" cancelActivity="false">
+      <bpmn:outgoing>Flow_HLDDSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_HLDDReview">
+        <bpmn:timeDuration>P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- DMN-11: Technical Risk Evaluation -->
+    <bpmn:businessRuleTask id="Task_DMN11_TechRiskEval" name="DMN-11: Technical Risk&#10;Evaluation" camunda:decisionRef="DMN_11_TechRiskEval" camunda:resultVariable="techRiskLevel" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_HLDD_TechRisk</bpmn:incoming>
+      <bpmn:outgoing>Flow_TechRisk_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Gateway: Tech Risk Gate -->
+    <bpmn:exclusiveGateway id="Gateway_TechRiskGate" name="Tech Risk&#10;Gate?" default="Flow_TechRiskAccepted">
+      <bpmn:incoming>Flow_TechRisk_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_TechRiskAccepted</bpmn:outgoing>
+      <bpmn:outgoing>Flow_TechRiskElevated</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- DMN-12: Observability Tier -->
+    <bpmn:businessRuleTask id="Task_DMN12_ObservabilityTier" name="DMN-12: Observability&#10;Tier Assignment" camunda:decisionRef="DMN_12_ObservabilityTier" camunda:resultVariable="observabilityTier" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_TechRiskAccepted</bpmn:incoming>
+      <bpmn:incoming>Flow_TechRiskElevated</bpmn:incoming>
+      <bpmn:outgoing>Flow_ObsTier_Design</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Observability Design -->
+    <bpmn:serviceTask id="Task_ObservabilityDesign" name="Observability Design&#10;(Telemetry, Drift&#10;Monitoring, Alerting)" camunda:type="external" camunda:topic="observability-design">
+      <bpmn:incoming>Flow_ObsTier_Design</bpmn:incoming>
+      <bpmn:outgoing>Flow_ObsDesign_SprintPlan</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Sprint Planning -->
+    <bpmn:userTask id="Task_SprintPlanning" name="Sprint Planning&#10;(Jira Backlog + Git&#10;Branching)" camunda:candidateGroups="procurement">
+      <bpmn:incoming>Flow_ObsDesign_SprintPlan</bpmn:incoming>
+      <bpmn:outgoing>Flow_SprintPlan_Resource</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Resource Allocation -->
+    <bpmn:userTask id="Task_ResourceAllocation" name="Resource Allocation&#10;+ Capacity Integration" camunda:candidateGroups="procurement">
+      <bpmn:incoming>Flow_SprintPlan_Resource</bpmn:incoming>
+      <bpmn:outgoing>Flow_Resource_PoC</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- PoC Development -->
+    <bpmn:userTask id="Task_PoCDevelopment" name="Proof of Concept&#10;Development (Scope Defined&#10;by Architect)" camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_Resource_PoC</bpmn:incoming>
+      <bpmn:outgoing>Flow_PoC_DMN10</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on PoC -->
+    <bpmn:boundaryEvent id="Timer_PoCReviewSLA" attachedToRef="Task_PoCDevelopment" cancelActivity="false">
+      <bpmn:outgoing>Flow_PoCReviewSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_PoCReview">
+        <bpmn:timeDuration>P10D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- DMN-10: PoC Gate -->
+    <bpmn:businessRuleTask id="Task_DMN10_PoCGate" name="DMN-10: PoC Gate&#10;Decision" camunda:decisionRef="DMN_10_POCGate" camunda:resultVariable="pocGateDecision" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_PoC_DMN10</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMN10_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Gateway: PoC Gate -->
+    <bpmn:exclusiveGateway id="Gateway_PoCGate" name="PoC Gate&#10;Passed?" default="Flow_PoCPassed">
+      <bpmn:incoming>Flow_DMN10_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_PoCPassed</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PoCFailed</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Development Execution -->
+    <bpmn:userTask id="Task_DevelopmentExecution" name="Development Execution&#10;(Build per HLDD, Controls&#10;Embedded)" camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_PoCPassed</bpmn:incoming>
+      <bpmn:outgoing>Flow_DevExec_Compliance</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Compliance Checkpoint Review -->
+    <bpmn:userTask id="Task_ComplianceCheckpointReview" name="In-Sprint Compliance&#10;Checkpoint Reviews" camunda:candidateGroups="legal-compliance">
+      <bpmn:incoming>Flow_DevExec_Compliance</bpmn:incoming>
+      <bpmn:outgoing>Flow_ComplianceCheck_Security</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Security Testing -->
+    <bpmn:userTask id="Task_SecurityTesting" name="Security Testing&#10;(SAST, DAST, Pen Test,&#10;SBOM)" camunda:candidateGroups="information-security">
+      <bpmn:incoming>Flow_ComplianceCheck_Security</bpmn:incoming>
+      <bpmn:outgoing>Flow_SecurityTest_AIGov</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- AI Governance Review -->
+    <bpmn:userTask id="Task_AIGovernanceReview" name="AI Governance Review&#10;(SR 11-7 Checklist,&#10;Model Validation)" camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_SecurityTest_AIGov</bpmn:incoming>
+      <bpmn:outgoing>Flow_AIGov_Compliance</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on AI Governance Review -->
+    <bpmn:boundaryEvent id="Timer_AIGovSLA" attachedToRef="Task_AIGovernanceReview" cancelActivity="false">
+      <bpmn:outgoing>Flow_AIGovSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_AIGovReview">
+        <bpmn:timeDuration>P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- Compliance Validation -->
+    <bpmn:userTask id="Task_ComplianceValidation" name="Compliance Validation&#10;(All Regulatory Controls&#10;Verified)" camunda:candidateGroups="legal-compliance">
+      <bpmn:incoming>Flow_AIGov_Compliance</bpmn:incoming>
+      <bpmn:outgoing>Flow_ComplianceVal_UAT</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- UAT Sign-Off -->
+    <bpmn:userTask id="Task_UATSignOff" name="UAT Sign-Off&#10;(Business Owner + End&#10;Users)" camunda:candidateGroups="business-owner">
+      <bpmn:incoming>Flow_ComplianceVal_UAT</bpmn:incoming>
+      <bpmn:outgoing>Flow_UAT_PreDeploy</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on UAT -->
+    <bpmn:boundaryEvent id="Timer_UATSignOffSLA" attachedToRef="Task_UATSignOff" cancelActivity="false">
+      <bpmn:outgoing>Flow_UATSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_UATSignOff">
+        <bpmn:timeDuration>P3D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- Pre-Deployment Package -->
+    <bpmn:serviceTask id="Task_PreDeploymentPackage" name="Pre-Deployment Review&#10;Package Assembly" camunda:type="external" camunda:topic="pre-deployment-package">
+      <bpmn:incoming>Flow_UAT_PreDeploy</bpmn:incoming>
+      <bpmn:outgoing>Flow_PreDeploy_Gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Gateway: Deployment Decision -->
+    <bpmn:exclusiveGateway id="Gateway_DeploymentDecision" name="Deployment&#10;Approved?" default="Flow_DeploymentApproved">
+      <bpmn:incoming>Flow_PreDeploy_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_DeploymentApproved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_DeploymentRejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- End Deployment Rejected -->
+    <bpmn:endEvent id="EndEvent_DeploymentRejected" name="Deployment Rejected&#10;(Return to Dev)">
+      <bpmn:incoming>Flow_DeploymentRejected</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Production Cutover -->
+    <bpmn:userTask id="Task_ProductionCutover" name="Production Cutover&#10;(Monitoring Activated,&#10;Alerting Configured)" camunda:candidateGroups="vendor-management">
+      <bpmn:incoming>Flow_DeploymentApproved</bpmn:incoming>
+      <bpmn:outgoing>Flow_ProdCutover_GTM</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Go-To-Market Readiness -->
+    <bpmn:userTask id="Task_GoToMarketReadiness" name="Go-To-Market Readiness&#10;+ Post-Deployment&#10;Validation" camunda:candidateGroups="business-owner">
+      <bpmn:incoming>Flow_ProdCutover_GTM</bpmn:incoming>
+      <bpmn:outgoing>Flow_GTM_PhaseTransition</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Phase Transition -->
+    <bpmn:userTask id="Task_PhaseTransitionP5A" name="Phase 5A Quality Gate&#10;+ Production Sign-Off" camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_GTM_PhaseTransition</bpmn:incoming>
+      <bpmn:outgoing>Flow_PhaseTransition_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- End Event -->
+    <bpmn:endEvent id="EndEvent_Phase5AComplete" name="Phase 5A Complete&#10;(Deployed to Production)">
+      <bpmn:incoming>Flow_PhaseTransition_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Additional End Events for SLA escalations -->
+    <bpmn:endEvent id="EndEvent_HLDDSLAEscalated" name="HLDD SLA&#10;Escalated">
+      <bpmn:incoming>Flow_HLDDSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_PoCFailed" name="PoC Failed&#10;(Revisit Design)">
+      <bpmn:incoming>Flow_PoCFailed</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_AIGovSLAEscalated" name="AI Gov Review&#10;SLA Escalated">
+      <bpmn:incoming>Flow_AIGovSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_UATSLAEscalated" name="UAT SLA&#10;Escalated">
+      <bpmn:incoming>Flow_UATSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_PoCReviewSLAEscalated" name="PoC Review&#10;SLA Escalated">
+      <bpmn:incoming>Flow_PoCReviewSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Text Annotations -->
+    <bpmn:textAnnotation id="Annotation_P5A_SR117">
+      <bpmn:text>SR 11-7: AI Governance checklist mandatory for AI-enabled builds. DMN-10 (PoCGate): Deterministic PoC evaluation. DMN-11 (TechRiskEval): Architecture risk scoring. DMN-12 (ObservabilityTier): Monitoring depth calibrated to risk.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P5A_SR117" sourceRef="Task_AIGovernanceReview" targetRef="Annotation_P5A_SR117" />
+
+    <bpmn:textAnnotation id="Annotation_P5A_SOX">
+      <bpmn:text>SOX: SAST/DAST security testing results logged. GDPR/CCPA: Privacy controls validated in compliance checkpoint. EU AI Act: AI governance review per risk tier. DORA: Operational resilience built into deployment design.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P5A_SOX" sourceRef="Task_SecurityTesting" targetRef="Annotation_P5A_SOX" />
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_Start_HLDD" sourceRef="StartEvent_Phase5AInitiated" targetRef="Task_HLDDDevelopment" />
+    <bpmn:sequenceFlow id="Flow_HLDD_TechRisk" sourceRef="Task_HLDDDevelopment" targetRef="Task_DMN11_TechRiskEval" />
+    <bpmn:sequenceFlow id="Flow_TechRisk_Gateway" sourceRef="Task_DMN11_TechRiskEval" targetRef="Gateway_TechRiskGate" />
+    <bpmn:sequenceFlow id="Flow_TechRiskAccepted" name="Accepted" sourceRef="Gateway_TechRiskGate" targetRef="Task_DMN12_ObservabilityTier" />
+    <bpmn:sequenceFlow id="Flow_TechRiskElevated" name="Elevated" sourceRef="Gateway_TechRiskGate" targetRef="Task_DMN12_ObservabilityTier">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${techRiskLevel == 'ELEVATED'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_ObsTier_Design" sourceRef="Task_DMN12_ObservabilityTier" targetRef="Task_ObservabilityDesign" />
+    <bpmn:sequenceFlow id="Flow_ObsDesign_SprintPlan" sourceRef="Task_ObservabilityDesign" targetRef="Task_SprintPlanning" />
+    <bpmn:sequenceFlow id="Flow_SprintPlan_Resource" sourceRef="Task_SprintPlanning" targetRef="Task_ResourceAllocation" />
+    <bpmn:sequenceFlow id="Flow_Resource_PoC" sourceRef="Task_ResourceAllocation" targetRef="Task_PoCDevelopment" />
+    <bpmn:sequenceFlow id="Flow_PoC_DMN10" sourceRef="Task_PoCDevelopment" targetRef="Task_DMN10_PoCGate" />
+    <bpmn:sequenceFlow id="Flow_DMN10_Gateway" sourceRef="Task_DMN10_PoCGate" targetRef="Gateway_PoCGate" />
+    <bpmn:sequenceFlow id="Flow_PoCPassed" name="Passed" sourceRef="Gateway_PoCGate" targetRef="Task_DevelopmentExecution">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${pocGateDecision == 'PASSED'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_PoCFailed" name="Failed" sourceRef="Gateway_PoCGate" targetRef="EndEvent_PoCFailed">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${pocGateDecision == 'FAILED'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_DevExec_Compliance" sourceRef="Task_DevelopmentExecution" targetRef="Task_ComplianceCheckpointReview" />
+    <bpmn:sequenceFlow id="Flow_ComplianceCheck_Security" sourceRef="Task_ComplianceCheckpointReview" targetRef="Task_SecurityTesting" />
+    <bpmn:sequenceFlow id="Flow_SecurityTest_AIGov" sourceRef="Task_SecurityTesting" targetRef="Task_AIGovernanceReview" />
+    <bpmn:sequenceFlow id="Flow_AIGov_Compliance" sourceRef="Task_AIGovernanceReview" targetRef="Task_ComplianceValidation" />
+    <bpmn:sequenceFlow id="Flow_ComplianceVal_UAT" sourceRef="Task_ComplianceValidation" targetRef="Task_UATSignOff" />
+    <bpmn:sequenceFlow id="Flow_UAT_PreDeploy" sourceRef="Task_UATSignOff" targetRef="Task_PreDeploymentPackage" />
+    <bpmn:sequenceFlow id="Flow_PreDeploy_Gateway" sourceRef="Task_PreDeploymentPackage" targetRef="Gateway_DeploymentDecision" />
+    <bpmn:sequenceFlow id="Flow_DeploymentApproved" name="Approved" sourceRef="Gateway_DeploymentDecision" targetRef="Task_ProductionCutover">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${deploymentApproved == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_DeploymentRejected" name="Rejected" sourceRef="Gateway_DeploymentDecision" targetRef="EndEvent_DeploymentRejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${deploymentApproved == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_ProdCutover_GTM" sourceRef="Task_ProductionCutover" targetRef="Task_GoToMarketReadiness" />
+    <bpmn:sequenceFlow id="Flow_GTM_PhaseTransition" sourceRef="Task_GoToMarketReadiness" targetRef="Task_PhaseTransitionP5A" />
+    <bpmn:sequenceFlow id="Flow_PhaseTransition_End" sourceRef="Task_PhaseTransitionP5A" targetRef="EndEvent_Phase5AComplete" />
+    <bpmn:sequenceFlow id="Flow_HLDDSLAEscalate" sourceRef="Timer_HLDDReviewSLA" targetRef="EndEvent_HLDDSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_PoCReviewSLAEscalate" sourceRef="Timer_PoCReviewSLA" targetRef="EndEvent_PoCReviewSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_AIGovSLAEscalate" sourceRef="Timer_AIGovSLA" targetRef="EndEvent_AIGovSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_UATSLAEscalate" sourceRef="Timer_UATSignOffSLA" targetRef="EndEvent_UATSLAEscalated" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Phase5A">
+    <bpmndi:BPMNPlane id="BPMNPlane_Phase5A" bpmnElement="Collaboration_Phase5A">
+
+      <bpmndi:BPMNShape id="Participant_Phase5A_di" bpmnElement="Participant_Phase5A" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="3100" height="1240" />
+      </bpmndi:BPMNShape>
+
+      <!-- Swim Lanes -->
+      <bpmndi:BPMNShape id="Lane_GB_P5A_di" bpmnElement="Lane_GB_P5A" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="3070" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BO_P5A_di" bpmnElement="Lane_BO_P5A" isHorizontal="true">
+        <dc:Bounds x="185" y="207" width="3070" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ITA_P5A_di" bpmnElement="Lane_ITA_P5A" isHorizontal="true">
+        <dc:Bounds x="185" y="367" width="3070" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Proc_P5A_di" bpmnElement="Lane_Proc_P5A" isHorizontal="true">
+        <dc:Bounds x="185" y="527" width="3070" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_LC_P5A_di" bpmnElement="Lane_LC_P5A" isHorizontal="true">
+        <dc:Bounds x="185" y="687" width="3070" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_IS_P5A_di" bpmnElement="Lane_IS_P5A" isHorizontal="true">
+        <dc:Bounds x="185" y="847" width="3070" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_VM_P5A_di" bpmnElement="Lane_VM_P5A" isHorizontal="true">
+        <dc:Bounds x="185" y="1007" width="3070" height="160" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start Event (BO) -->
+      <bpmndi:BPMNShape id="StartEvent_Phase5AInitiated_di" bpmnElement="StartEvent_Phase5AInitiated">
+        <dc:Bounds x="247" y="269" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="220" y="312" width="90" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- HLDD Development (ITA) x=330 -->
+      <bpmndi:BPMNShape id="Task_HLDDDevelopment_di" bpmnElement="Task_HLDDDevelopment">
+        <dc:Bounds x="330" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer on HLDD -->
+      <bpmndi:BPMNShape id="Timer_HLDDReviewSLA_di" bpmnElement="Timer_HLDDReviewSLA">
+        <dc:Bounds x="382" y="449" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End HLDD SLA Escalated (ITA) -->
+      <bpmndi:BPMNShape id="EndEvent_HLDDSLAEscalated_di" bpmnElement="EndEvent_HLDDSLAEscalated">
+        <dc:Bounds x="382" y="351" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="358" y="320" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-11 Tech Risk (ITA) x=520 -->
+      <bpmndi:BPMNShape id="Task_DMN11_TechRiskEval_di" bpmnElement="Task_DMN11_TechRiskEval">
+        <dc:Bounds x="520" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Tech Risk Gate (ITA) x=710 -->
+      <bpmndi:BPMNShape id="Gateway_TechRiskGate_di" bpmnElement="Gateway_TechRiskGate" isMarkerVisible="true">
+        <dc:Bounds x="705" y="402" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="688" y="459" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-12 Observability Tier (IS) x=800 -->
+      <bpmndi:BPMNShape id="Task_DMN12_ObservabilityTier_di" bpmnElement="Task_DMN12_ObservabilityTier">
+        <dc:Bounds x="800" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Observability Design (IS) x=990 -->
+      <bpmndi:BPMNShape id="Task_ObservabilityDesign_di" bpmnElement="Task_ObservabilityDesign">
+        <dc:Bounds x="990" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Sprint Planning (Procurement) x=1180 -->
+      <bpmndi:BPMNShape id="Task_SprintPlanning_di" bpmnElement="Task_SprintPlanning">
+        <dc:Bounds x="1180" y="547" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Resource Allocation (Procurement) x=1370 -->
+      <bpmndi:BPMNShape id="Task_ResourceAllocation_di" bpmnElement="Task_ResourceAllocation">
+        <dc:Bounds x="1370" y="547" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- PoC Development (ITA) x=1560 -->
+      <bpmndi:BPMNShape id="Task_PoCDevelopment_di" bpmnElement="Task_PoCDevelopment">
+        <dc:Bounds x="1560" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer on PoC -->
+      <bpmndi:BPMNShape id="Timer_PoCReviewSLA_di" bpmnElement="Timer_PoCReviewSLA">
+        <dc:Bounds x="1612" y="449" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End PoC Review SLA Escalated -->
+      <bpmndi:BPMNShape id="EndEvent_PoCReviewSLAEscalated_di" bpmnElement="EndEvent_PoCReviewSLAEscalated">
+        <dc:Bounds x="1612" y="351" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1588" y="320" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-10 PoC Gate (ITA) x=1750 -->
+      <bpmndi:BPMNShape id="Task_DMN10_PoCGate_di" bpmnElement="Task_DMN10_PoCGate">
+        <dc:Bounds x="1750" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway PoC Gate (ITA) x=1940 -->
+      <bpmndi:BPMNShape id="Gateway_PoCGate_di" bpmnElement="Gateway_PoCGate" isMarkerVisible="true">
+        <dc:Bounds x="1935" y="402" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1918" y="459" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- End PoC Failed (ITA) -->
+      <bpmndi:BPMNShape id="EndEvent_PoCFailed_di" bpmnElement="EndEvent_PoCFailed">
+        <dc:Bounds x="1937" y="351" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1913" y="320" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Development Execution (ITA) x=2030 -->
+      <bpmndi:BPMNShape id="Task_DevelopmentExecution_di" bpmnElement="Task_DevelopmentExecution">
+        <dc:Bounds x="2030" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Compliance Checkpoint Review (LC) x=2220 -->
+      <bpmndi:BPMNShape id="Task_ComplianceCheckpointReview_di" bpmnElement="Task_ComplianceCheckpointReview">
+        <dc:Bounds x="2220" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Security Testing (IS) x=2410 -->
+      <bpmndi:BPMNShape id="Task_SecurityTesting_di" bpmnElement="Task_SecurityTesting">
+        <dc:Bounds x="2410" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- AI Governance Review (GB) x=2600 -->
+      <bpmndi:BPMNShape id="Task_AIGovernanceReview_di" bpmnElement="Task_AIGovernanceReview">
+        <dc:Bounds x="2600" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer on AI Gov Review -->
+      <bpmndi:BPMNShape id="Timer_AIGovSLA_di" bpmnElement="Timer_AIGovSLA">
+        <dc:Bounds x="2652" y="149" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End AI Gov SLA Escalated (GB) -->
+      <bpmndi:BPMNShape id="EndEvent_AIGovSLAEscalated_di" bpmnElement="EndEvent_AIGovSLAEscalated">
+        <dc:Bounds x="2652" y="52" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2628" y="20" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Compliance Validation (LC) x=2600 y=707 -->
+      <bpmndi:BPMNShape id="Task_ComplianceValidation_di" bpmnElement="Task_ComplianceValidation">
+        <dc:Bounds x="2600" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- UAT Sign-Off (BO) x=2790 -->
+      <bpmndi:BPMNShape id="Task_UATSignOff_di" bpmnElement="Task_UATSignOff">
+        <dc:Bounds x="2790" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer on UAT -->
+      <bpmndi:BPMNShape id="Timer_UATSignOffSLA_di" bpmnElement="Timer_UATSignOffSLA">
+        <dc:Bounds x="2842" y="309" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End UAT SLA Escalated (BO) -->
+      <bpmndi:BPMNShape id="EndEvent_UATSLAEscalated_di" bpmnElement="EndEvent_UATSLAEscalated">
+        <dc:Bounds x="2842" y="207" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2818" y="178" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Pre-Deployment Package (VM) x=2790 y=1027 -->
+      <bpmndi:BPMNShape id="Task_PreDeploymentPackage_di" bpmnElement="Task_PreDeploymentPackage">
+        <dc:Bounds x="2790" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Deployment Decision (LC) x=2980 -->
+      <bpmndi:BPMNShape id="Gateway_DeploymentDecision_di" bpmnElement="Gateway_DeploymentDecision" isMarkerVisible="true">
+        <dc:Bounds x="2975" y="722" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2958" y="779" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- End Deployment Rejected (LC) -->
+      <bpmndi:BPMNShape id="EndEvent_DeploymentRejected_di" bpmnElement="EndEvent_DeploymentRejected">
+        <dc:Bounds x="2977" y="640" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2953" y="609" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Production Cutover (VM) x=3080 y=1027 -->
+      <bpmndi:BPMNShape id="Task_ProductionCutover_di" bpmnElement="Task_ProductionCutover">
+        <dc:Bounds x="3080" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Go-To-Market Readiness (BO) x=3080 y=247 -->
+      <bpmndi:BPMNShape id="Task_GoToMarketReadiness_di" bpmnElement="Task_GoToMarketReadiness">
+        <dc:Bounds x="3080" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase Transition (GB) x=3080 y=87 -->
+      <bpmndi:BPMNShape id="Task_PhaseTransitionP5A_di" bpmnElement="Task_PhaseTransitionP5A">
+        <dc:Bounds x="3080" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Phase 5A Complete (GB) x=3270 -->
+      <bpmndi:BPMNShape id="EndEvent_Phase5AComplete_di" bpmnElement="EndEvent_Phase5AComplete">
+        <dc:Bounds x="3272" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3248" y="145" width="84" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Annotations -->
+      <bpmndi:BPMNShape id="Annotation_P5A_SR117_di" bpmnElement="Annotation_P5A_SR117">
+        <dc:Bounds x="200" y="1175" width="900" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annotation_P5A_SOX_di" bpmnElement="Annotation_P5A_SOX">
+        <dc:Bounds x="1150" y="1175" width="900" height="55" />
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="Flow_Start_HLDD_di" bpmnElement="Flow_Start_HLDD">
+        <di:waypoint x="265" y="287" />
+        <di:waypoint x="265" y="427" />
+        <di:waypoint x="330" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_HLDD_TechRisk_di" bpmnElement="Flow_HLDD_TechRisk">
+        <di:waypoint x="470" y="427" />
+        <di:waypoint x="520" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_TechRisk_Gateway_di" bpmnElement="Flow_TechRisk_Gateway">
+        <di:waypoint x="660" y="427" />
+        <di:waypoint x="705" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_TechRiskAccepted_di" bpmnElement="Flow_TechRiskAccepted">
+        <di:waypoint x="730" y="452" />
+        <di:waypoint x="730" y="907" />
+        <di:waypoint x="800" y="907" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="738" y="677" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_TechRiskElevated_di" bpmnElement="Flow_TechRiskElevated">
+        <di:waypoint x="755" y="427" />
+        <di:waypoint x="780" y="427" />
+        <di:waypoint x="780" y="907" />
+        <di:waypoint x="800" y="907" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="758" y="659" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ObsTier_Design_di" bpmnElement="Flow_ObsTier_Design">
+        <di:waypoint x="940" y="907" />
+        <di:waypoint x="990" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ObsDesign_SprintPlan_di" bpmnElement="Flow_ObsDesign_SprintPlan">
+        <di:waypoint x="1130" y="907" />
+        <di:waypoint x="1155" y="907" />
+        <di:waypoint x="1155" y="587" />
+        <di:waypoint x="1180" y="587" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SprintPlan_Resource_di" bpmnElement="Flow_SprintPlan_Resource">
+        <di:waypoint x="1320" y="587" />
+        <di:waypoint x="1370" y="587" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Resource_PoC_di" bpmnElement="Flow_Resource_PoC">
+        <di:waypoint x="1510" y="587" />
+        <di:waypoint x="1535" y="587" />
+        <di:waypoint x="1535" y="427" />
+        <di:waypoint x="1560" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PoC_DMN10_di" bpmnElement="Flow_PoC_DMN10">
+        <di:waypoint x="1700" y="427" />
+        <di:waypoint x="1750" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DMN10_Gateway_di" bpmnElement="Flow_DMN10_Gateway">
+        <di:waypoint x="1890" y="427" />
+        <di:waypoint x="1935" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PoCPassed_di" bpmnElement="Flow_PoCPassed">
+        <di:waypoint x="1985" y="427" />
+        <di:waypoint x="2030" y="427" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1993" y="409" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PoCFailed_di" bpmnElement="Flow_PoCFailed">
+        <di:waypoint x="1960" y="402" />
+        <di:waypoint x="1960" y="387" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1968" y="392" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DevExec_Compliance_di" bpmnElement="Flow_DevExec_Compliance">
+        <di:waypoint x="2170" y="427" />
+        <di:waypoint x="2195" y="427" />
+        <di:waypoint x="2195" y="747" />
+        <di:waypoint x="2220" y="747" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ComplianceCheck_Security_di" bpmnElement="Flow_ComplianceCheck_Security">
+        <di:waypoint x="2360" y="747" />
+        <di:waypoint x="2385" y="747" />
+        <di:waypoint x="2385" y="907" />
+        <di:waypoint x="2410" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SecurityTest_AIGov_di" bpmnElement="Flow_SecurityTest_AIGov">
+        <di:waypoint x="2480" y="867" />
+        <di:waypoint x="2480" y="127" />
+        <di:waypoint x="2600" y="127" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_AIGov_Compliance_di" bpmnElement="Flow_AIGov_Compliance">
+        <di:waypoint x="2740" y="127" />
+        <di:waypoint x="2765" y="127" />
+        <di:waypoint x="2765" y="747" />
+        <di:waypoint x="2600" y="747" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ComplianceVal_UAT_di" bpmnElement="Flow_ComplianceVal_UAT">
+        <di:waypoint x="2740" y="747" />
+        <di:waypoint x="2860" y="747" />
+        <di:waypoint x="2860" y="327" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_UAT_PreDeploy_di" bpmnElement="Flow_UAT_PreDeploy">
+        <di:waypoint x="2860" y="327" />
+        <di:waypoint x="2860" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PreDeploy_Gateway_di" bpmnElement="Flow_PreDeploy_Gateway">
+        <di:waypoint x="2930" y="1067" />
+        <di:waypoint x="3000" y="1067" />
+        <di:waypoint x="3000" y="772" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DeploymentApproved_di" bpmnElement="Flow_DeploymentApproved">
+        <di:waypoint x="3000" y="772" />
+        <di:waypoint x="3000" y="1080" />
+        <di:waypoint x="3080" y="1067" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3008" y="917" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DeploymentRejected_di" bpmnElement="Flow_DeploymentRejected">
+        <di:waypoint x="2975" y="747" />
+        <di:waypoint x="2975" y="658" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2983" y="700" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ProdCutover_GTM_di" bpmnElement="Flow_ProdCutover_GTM">
+        <di:waypoint x="3150" y="1027" />
+        <di:waypoint x="3150" y="327" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_GTM_PhaseTransition_di" bpmnElement="Flow_GTM_PhaseTransition">
+        <di:waypoint x="3150" y="247" />
+        <di:waypoint x="3150" y="167" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PhaseTransition_End_di" bpmnElement="Flow_PhaseTransition_End">
+        <di:waypoint x="3220" y="127" />
+        <di:waypoint x="3272" y="120" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_HLDDSLAEscalate_di" bpmnElement="Flow_HLDDSLAEscalate">
+        <di:waypoint x="400" y="449" />
+        <di:waypoint x="400" y="387" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PoCReviewSLAEscalate_di" bpmnElement="Flow_PoCReviewSLAEscalate">
+        <di:waypoint x="1630" y="449" />
+        <di:waypoint x="1630" y="387" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_AIGovSLAEscalate_di" bpmnElement="Flow_AIGovSLAEscalate">
+        <di:waypoint x="2670" y="149" />
+        <di:waypoint x="2670" y="88" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_UATSLAEscalate_di" bpmnElement="Flow_UATSLAEscalate">
+        <di:waypoint x="2860" y="247" />
+        <di:waypoint x="2860" y="243" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P5A_SR117_di" bpmnElement="Assoc_P5A_SR117">
+        <di:waypoint x="2670" y="167" />
+        <di:waypoint x="650" y="1175" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P5A_SOX_di" bpmnElement="Assoc_P5A_SOX">
+        <di:waypoint x="2480" y="947" />
+        <di:waypoint x="1600" y="1175" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

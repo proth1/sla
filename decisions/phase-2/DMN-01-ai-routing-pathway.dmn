@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d01_DMN_01_AIRoutingPathway"
+             name="DMN-01: AI Routing and Pathway Assignment"
+             namespace="http://sla.governance.example.com/dmn/phase2">
+
+  <!--
+    DMN-01: AI Routing and Pathway Assignment
+    Phase: 2 (AI Routing Engine and Composite Scoring)
+    Hit Policy: UNIQUE
+    Regulatory: OCC 2023-17, SR 11-7
+    Task Type: Automated (A)
+    Description: Fires against structured intake data plus Software Registry results.
+                 Computes composite score, assigns governance pathway, starts SLA clock.
+  -->
+
+  <decision id="DMN01AIRoutingPathway" name="AI Routing and Pathway Assignment">
+    <decisionTable id="d01_dt_ai_routing" hitPolicy="UNIQUE">
+
+      <input id="d01_in_channel" label="Request Channel">
+        <inputExpression id="d01_ie_channel" typeRef="string">
+          <text>requestChannel</text>
+        </inputExpression>
+        <inputValues id="d01_iv_channel">
+          <text>"Internal","External"</text>
+        </inputValues>
+      </input>
+
+      <input id="d01_in_existing_solution" label="Existing Solution Match">
+        <inputExpression id="d01_ie_existing" typeRef="string">
+          <text>existingSolutionMatch</text>
+        </inputExpression>
+        <inputValues id="d01_iv_existing">
+          <text>"ExactMatch","PartialMatch","InFlightMatch","NoMatch"</text>
+        </inputValues>
+      </input>
+
+      <input id="d01_in_ai_tier" label="AI Risk Tier">
+        <inputExpression id="d01_ie_ai_tier" typeRef="string">
+          <text>aiRiskTier</text>
+        </inputExpression>
+        <inputValues id="d01_iv_ai_tier">
+          <text>"Tier1","Tier2","Tier3","NotAI"</text>
+        </inputValues>
+      </input>
+
+      <input id="d01_in_composite_score" label="Composite Score">
+        <inputExpression id="d01_ie_score" typeRef="integer">
+          <text>compositeScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="d01_in_vendor_status" label="Vendor Status">
+        <inputExpression id="d01_ie_vendor" typeRef="string">
+          <text>vendorStatus</text>
+        </inputExpression>
+        <inputValues id="d01_iv_vendor">
+          <text>"PreApproved","NotApproved","NewVendor","NA"</text>
+        </inputValues>
+      </input>
+
+      <output id="d01_out_pathway" label="Governance Pathway" typeRef="string" />
+      <output id="d01_out_fast_track" label="Fast Track?" typeRef="boolean" />
+      <output id="d01_out_required_reviews" label="Required Reviews" typeRef="string" />
+      <output id="d01_out_sla_days" label="Target SLA Days" typeRef="integer" />
+
+      <!-- Rule 1: Exact registry match → ITSM redirect regardless of other factors -->
+      <rule id="d01_r01_exact_match">
+        <description>Exact software registry match - redirect to ITSM self-service</description>
+        <inputEntry id="d01_ie1_r01"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie2_r01"><text>"ExactMatch"</text></inputEntry>
+        <inputEntry id="d01_ie3_r01"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie4_r01"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie5_r01"><text>-</text></inputEntry>
+        <outputEntry id="d01_oe1_r01"><text>"Fast-Track-ITSM"</text></outputEntry>
+        <outputEntry id="d01_oe2_r01"><text>true</text></outputEntry>
+        <outputEntry id="d01_oe3_r01"><text>"None - Redirect to ITSM service catalog"</text></outputEntry>
+        <outputEntry id="d01_oe4_r01"><text>1</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: In-flight backlog match → merge offer -->
+      <rule id="d01_r02_inflight_match">
+        <description>In-flight backlog match - offer merge with existing initiative</description>
+        <inputEntry id="d01_ie1_r02"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie2_r02"><text>"InFlightMatch"</text></inputEntry>
+        <inputEntry id="d01_ie3_r02"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie4_r02"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie5_r02"><text>-</text></inputEntry>
+        <outputEntry id="d01_oe1_r02"><text>"Merge-Offer-Pending"</text></outputEntry>
+        <outputEntry id="d01_oe2_r02"><text>false</text></outputEntry>
+        <outputEntry id="d01_oe3_r02"><text>"Portfolio Council at next cycle"</text></outputEntry>
+        <outputEntry id="d01_oe4_r02"><text>5</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Partial registry match → reuse assessment -->
+      <rule id="d01_r03_partial_match">
+        <description>Partial registry match 70-90% - schedule reuse assessment</description>
+        <inputEntry id="d01_ie1_r03"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie2_r03"><text>"PartialMatch"</text></inputEntry>
+        <inputEntry id="d01_ie3_r03"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie4_r03"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie5_r03"><text>-</text></inputEntry>
+        <outputEntry id="d01_oe1_r03"><text>"Reuse-Assessment-Pending"</text></outputEntry>
+        <outputEntry id="d01_oe2_r03"><text>false</text></outputEntry>
+        <outputEntry id="d01_oe3_r03"><text>"Product Owner + requestor within 5 days"</text></outputEntry>
+        <outputEntry id="d01_oe4_r03"><text>5</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Internal, Tier 3, low score, pre-approved vendor → fast-track buy lite -->
+      <rule id="d01_r04_fast_track_buy">
+        <description>Internal low-risk, pre-approved vendor - fast-track buy lite</description>
+        <inputEntry id="d01_ie1_r04"><text>"Internal"</text></inputEntry>
+        <inputEntry id="d01_ie2_r04"><text>"NoMatch"</text></inputEntry>
+        <inputEntry id="d01_ie3_r04"><text>"Tier3","NotAI"</text></inputEntry>
+        <inputEntry id="d01_ie4_r04"><text>[0..45]</text></inputEntry>
+        <inputEntry id="d01_ie5_r04"><text>"PreApproved"</text></inputEntry>
+        <outputEntry id="d01_oe1_r04"><text>"Fast-Track-Buy-Lite"</text></outputEntry>
+        <outputEntry id="d01_oe2_r04"><text>true</text></outputEntry>
+        <outputEntry id="d01_oe3_r04"><text>"Procurement (abbreviated)"</text></outputEntry>
+        <outputEntry id="d01_oe4_r04"><text>5</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: Internal, Tier 3, low score, no vendor → fast-track build lite -->
+      <rule id="d01_r05_fast_track_build">
+        <description>Internal low-risk no existing vendor - fast-track build lite</description>
+        <inputEntry id="d01_ie1_r05"><text>"Internal"</text></inputEntry>
+        <inputEntry id="d01_ie2_r05"><text>"NoMatch"</text></inputEntry>
+        <inputEntry id="d01_ie3_r05"><text>"Tier3","NotAI"</text></inputEntry>
+        <inputEntry id="d01_ie4_r05"><text>[0..45]</text></inputEntry>
+        <inputEntry id="d01_ie5_r05"><text>"NA","NotApproved"</text></inputEntry>
+        <outputEntry id="d01_oe1_r05"><text>"Fast-Track-Build-Lite"</text></outputEntry>
+        <outputEntry id="d01_oe2_r05"><text>true</text></outputEntry>
+        <outputEntry id="d01_oe3_r05"><text>"Architecture (abbreviated), Security (abbreviated)"</text></outputEntry>
+        <outputEntry id="d01_oe4_r05"><text>5</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: Internal, Tier 3, medium score → standard buy + RAE -->
+      <rule id="d01_r06_standard_buy">
+        <description>Internal Tier 3 medium score unapproved vendor - standard buy with RAE</description>
+        <inputEntry id="d01_ie1_r06"><text>"Internal"</text></inputEntry>
+        <inputEntry id="d01_ie2_r06"><text>"NoMatch"</text></inputEntry>
+        <inputEntry id="d01_ie3_r06"><text>"Tier3","NotAI"</text></inputEntry>
+        <inputEntry id="d01_ie4_r06"><text>[46..65]</text></inputEntry>
+        <inputEntry id="d01_ie5_r06"><text>"NotApproved","NewVendor"</text></inputEntry>
+        <outputEntry id="d01_oe1_r06"><text>"Standard-Buy-RAE"</text></outputEntry>
+        <outputEntry id="d01_oe2_r06"><text>false</text></outputEntry>
+        <outputEntry id="d01_oe3_r06"><text>"Procurement, Risk, Legal, CyberSec"</text></outputEntry>
+        <outputEntry id="d01_oe4_r06"><text>30</text></outputEntry>
+      </rule>
+
+      <!-- Rule 7: Internal, Tier 2 → standard build + AI Gov -->
+      <rule id="d01_r07_standard_build_ai">
+        <description>Internal Tier 2 AI - standard build pathway with AI governance</description>
+        <inputEntry id="d01_ie1_r07"><text>"Internal"</text></inputEntry>
+        <inputEntry id="d01_ie2_r07"><text>"NoMatch"</text></inputEntry>
+        <inputEntry id="d01_ie3_r07"><text>"Tier2"</text></inputEntry>
+        <inputEntry id="d01_ie4_r07"><text>[46..75]</text></inputEntry>
+        <inputEntry id="d01_ie5_r07"><text>-</text></inputEntry>
+        <outputEntry id="d01_oe1_r07"><text>"Standard-Build-AIGov"</text></outputEntry>
+        <outputEntry id="d01_oe2_r07"><text>false</text></outputEntry>
+        <outputEntry id="d01_oe3_r07"><text>"Architecture, PMO, AI Governance, Risk, Compliance"</text></outputEntry>
+        <outputEntry id="d01_oe4_r07"><text>60</text></outputEntry>
+      </rule>
+
+      <!-- Rule 8: Internal, Tier 1 → full PDLC + AI Gov full -->
+      <rule id="d01_r08_full_pdlc_tier1">
+        <description>Internal Tier 1 AI - full PDLC with complete AI governance review</description>
+        <inputEntry id="d01_ie1_r08"><text>"Internal"</text></inputEntry>
+        <inputEntry id="d01_ie2_r08"><text>"NoMatch"</text></inputEntry>
+        <inputEntry id="d01_ie3_r08"><text>"Tier1"</text></inputEntry>
+        <inputEntry id="d01_ie4_r08"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie5_r08"><text>-</text></inputEntry>
+        <outputEntry id="d01_oe1_r08"><text>"Full-PDLC-AIGov-Complete"</text></outputEntry>
+        <outputEntry id="d01_oe2_r08"><text>false</text></outputEntry>
+        <outputEntry id="d01_oe3_r08"><text>"Architecture, AI Governance (Exec Sponsor), Risk, Legal, CyberSec, Compliance, Audit"</text></outputEntry>
+        <outputEntry id="d01_oe4_r08"><text>90</text></outputEntry>
+      </rule>
+
+      <!-- Rule 9: External new vendor → full buy + TPRM -->
+      <rule id="d01_r09_external_tprm">
+        <description>External new vendor - full buy pathway with complete TPRM lifecycle</description>
+        <inputEntry id="d01_ie1_r09"><text>"External"</text></inputEntry>
+        <inputEntry id="d01_ie2_r09"><text>"NoMatch"</text></inputEntry>
+        <inputEntry id="d01_ie3_r09"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie4_r09"><text>-</text></inputEntry>
+        <inputEntry id="d01_ie5_r09"><text>"NewVendor","NotApproved"</text></inputEntry>
+        <outputEntry id="d01_oe1_r09"><text>"Full-Buy-TPRM"</text></outputEntry>
+        <outputEntry id="d01_oe2_r09"><text>false</text></outputEntry>
+        <outputEntry id="d01_oe3_r09"><text>"TPRM, Procurement, Legal, Finance, AI Governance (if AI-enabled)"</text></outputEntry>
+        <outputEntry id="d01_oe4_r09"><text>60</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d01_diagram_DMN01">
+      <dmndi:DMNShape id="d01_shape_DMN01" dmnElementRef="DMN01AIRoutingPathway">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

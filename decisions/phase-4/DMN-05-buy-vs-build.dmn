@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d05_DMN_05_BuyVsBuild"
+             name="DMN-05: Buy vs. Build Analysis"
+             namespace="http://sla.governance.example.com/dmn/phase4">
+
+  <!--
+    DMN-05: Buy vs. Build Analysis
+    Phase: 4 (Portfolio Prioritization, Go/No-Go, and Strategic Alignment)
+    Hit Policy: UNIQUE
+    Regulatory: OCC 2023-17, DORA
+    Task Type: Human-in-the-Loop (H) with agent-supported TCO analysis
+    Description: Evaluated across five dimensions after Go decision is confirmed.
+                 Determines procurement pathway: Buy, Build, Hybrid, or Defer.
+  -->
+
+  <decision id="DMN05BuyVsBuild" name="Buy vs. Build Analysis">
+    <decisionTable id="d05_dt_buy_build" hitPolicy="UNIQUE">
+
+      <input id="d05_in_market_solution" label="Market Solution Available?">
+        <inputExpression id="d05_ie_market" typeRef="boolean">
+          <text>marketSolutionAvailable</text>
+        </inputExpression>
+      </input>
+
+      <input id="d05_in_tco_comparison" label="5-Year TCO Comparison">
+        <inputExpression id="d05_ie_tco" typeRef="string">
+          <text>tcoComparison</text>
+        </inputExpression>
+        <inputValues id="d05_iv_tco">
+          <text>"BuySignificantlyCheaper","BuildSignificantlyCheaper","WithinThreshold","NotApplicable"</text>
+        </inputValues>
+      </input>
+
+      <input id="d05_in_ip_differentiation" label="IP Differentiation Required?">
+        <inputExpression id="d05_ie_ip_diff" typeRef="string">
+          <text>ipDifferentiationRequired</text>
+        </inputExpression>
+        <inputValues id="d05_iv_ip_diff">
+          <text>"Yes","No","Partial"</text>
+        </inputValues>
+      </input>
+
+      <input id="d05_in_complexity" label="Implementation Complexity">
+        <inputExpression id="d05_ie_complexity" typeRef="string">
+          <text>implementationComplexity</text>
+        </inputExpression>
+        <inputValues id="d05_iv_complexity">
+          <text>"Low","Medium","High"</text>
+        </inputValues>
+      </input>
+
+      <input id="d05_in_strategic_fit" label="Strategic Fit">
+        <inputExpression id="d05_ie_strategic_fit" typeRef="string">
+          <text>strategicFit</text>
+        </inputExpression>
+        <inputValues id="d05_iv_strategic_fit">
+          <text>"High","Standard","Low"</text>
+        </inputValues>
+      </input>
+
+      <output id="d05_out_decision" label="Build/Buy Decision" typeRef="string" />
+      <output id="d05_out_rationale" label="Decision Rationale" typeRef="string" />
+      <output id="d05_out_pathway" label="Procurement Pathway" typeRef="string" />
+      <output id="d05_out_next_phase" label="Next Phase" typeRef="string" />
+
+      <!-- Rule 1: Market solution, buy much cheaper, no IP need → BUY -->
+      <rule id="d05_r01_buy_standard">
+        <description>Market solution available, buy significantly cheaper, no IP differentiation - BUY</description>
+        <inputEntry id="d05_ie1_r01"><text>true</text></inputEntry>
+        <inputEntry id="d05_ie2_r01"><text>"BuySignificantlyCheaper"</text></inputEntry>
+        <inputEntry id="d05_ie3_r01"><text>"No"</text></inputEntry>
+        <inputEntry id="d05_ie4_r01"><text>-</text></inputEntry>
+        <inputEntry id="d05_ie5_r01"><text>-</text></inputEntry>
+        <outputEntry id="d05_oe1_r01"><text>"BUY"</text></outputEntry>
+        <outputEntry id="d05_oe2_r01"><text>"Market solution viable; lower 5-year TCO by >20%; no strategic differentiation value from internal build"</text></outputEntry>
+        <outputEntry id="d05_oe3_r01"><text>"Phase-5B-TPRM-Procurement"</text></outputEntry>
+        <outputEntry id="d05_oe4_r01"><text>"Phase5B"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: Market solution, buy cheaper, low strategic need → BUY fast -->
+      <rule id="d05_r02_buy_fast">
+        <description>Market solution, cheaper, low strategic need - fast buy abbreviated process</description>
+        <inputEntry id="d05_ie1_r02"><text>true</text></inputEntry>
+        <inputEntry id="d05_ie2_r02"><text>"BuySignificantlyCheaper"</text></inputEntry>
+        <inputEntry id="d05_ie3_r02"><text>"No"</text></inputEntry>
+        <inputEntry id="d05_ie4_r02"><text>"Low"</text></inputEntry>
+        <inputEntry id="d05_ie5_r02"><text>"Low"</text></inputEntry>
+        <outputEntry id="d05_oe1_r02"><text>"BUY-FAST"</text></outputEntry>
+        <outputEntry id="d05_oe2_r02"><text>"Standard commercial procurement; abbreviated process; low complexity and strategic risk"</text></outputEntry>
+        <outputEntry id="d05_oe3_r02"><text>"Phase-5B-Abbreviated"</text></outputEntry>
+        <outputEntry id="d05_oe4_r02"><text>"Phase5B"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Market solution, build cheaper, IP differentiation, manageable complexity → BUILD -->
+      <rule id="d05_r03_build_ip">
+        <description>Market solution exists but build is cheaper, IP differentiation required, manageable complexity - BUILD</description>
+        <inputEntry id="d05_ie1_r03"><text>true</text></inputEntry>
+        <inputEntry id="d05_ie2_r03"><text>"BuildSignificantlyCheaper"</text></inputEntry>
+        <inputEntry id="d05_ie3_r03"><text>"Yes","Partial"</text></inputEntry>
+        <inputEntry id="d05_ie4_r03"><text>"Low","Medium"</text></inputEntry>
+        <inputEntry id="d05_ie5_r03"><text>"High"</text></inputEntry>
+        <outputEntry id="d05_oe1_r03"><text>"BUILD"</text></outputEntry>
+        <outputEntry id="d05_oe2_r03"><text>"IP differentiation justifies internal build; manageable complexity; build cheaper over 5-year horizon"</text></outputEntry>
+        <outputEntry id="d05_oe3_r03"><text>"Phase-5A-PDLC"</text></outputEntry>
+        <outputEntry id="d05_oe4_r03"><text>"Phase5A"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Market solution, similar TCO, partial IP, medium complexity → HYBRID -->
+      <rule id="d05_r04_hybrid">
+        <description>Market solution exists, TCO similar, partial IP differentiation - HYBRID buy core/build extension</description>
+        <inputEntry id="d05_ie1_r04"><text>true</text></inputEntry>
+        <inputEntry id="d05_ie2_r04"><text>"WithinThreshold"</text></inputEntry>
+        <inputEntry id="d05_ie3_r04"><text>"Partial"</text></inputEntry>
+        <inputEntry id="d05_ie4_r04"><text>"Medium"</text></inputEntry>
+        <inputEntry id="d05_ie5_r04"><text>"High"</text></inputEntry>
+        <outputEntry id="d05_oe1_r04"><text>"HYBRID"</text></outputEntry>
+        <outputEntry id="d05_oe2_r04"><text>"Buy commercial core; build proprietary extension or integration layer; 5-year TCO within 20% threshold"</text></outputEntry>
+        <outputEntry id="d05_oe3_r04"><text>"Phase-5A-and-5B-Parallel"</text></outputEntry>
+        <outputEntry id="d05_oe4_r04"><text>"Phase5A+5B"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: No market solution, IP differentiation → BUILD -->
+      <rule id="d05_r05_build_no_market">
+        <description>No market solution available, IP differentiation required - BUILD internally</description>
+        <inputEntry id="d05_ie1_r05"><text>false</text></inputEntry>
+        <inputEntry id="d05_ie2_r05"><text>"NotApplicable"</text></inputEntry>
+        <inputEntry id="d05_ie3_r05"><text>"Yes","Partial"</text></inputEntry>
+        <inputEntry id="d05_ie4_r05"><text>-</text></inputEntry>
+        <inputEntry id="d05_ie5_r05"><text>"High"</text></inputEntry>
+        <outputEntry id="d05_oe1_r05"><text>"BUILD"</text></outputEntry>
+        <outputEntry id="d05_oe2_r05"><text>"No viable commercial solution; institutional differentiation required; internal build is the only viable path"</text></outputEntry>
+        <outputEntry id="d05_oe3_r05"><text>"Phase-5A-PDLC"</text></outputEntry>
+        <outputEntry id="d05_oe4_r05"><text>"Phase5A"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: No market solution, high complexity, no differentiation → DEFER -->
+      <rule id="d05_r06_defer_no_market">
+        <description>No market solution, high complexity, no clear differentiation - DEFER re-evaluate in 6 months</description>
+        <inputEntry id="d05_ie1_r06"><text>false</text></inputEntry>
+        <inputEntry id="d05_ie2_r06"><text>"NotApplicable"</text></inputEntry>
+        <inputEntry id="d05_ie3_r06"><text>"No"</text></inputEntry>
+        <inputEntry id="d05_ie4_r06"><text>"High"</text></inputEntry>
+        <inputEntry id="d05_ie5_r06"><text>-</text></inputEntry>
+        <outputEntry id="d05_oe1_r06"><text>"DEFER"</text></outputEntry>
+        <outputEntry id="d05_oe2_r06"><text>"No market solution; high implementation complexity; no IP differentiation; re-evaluate in 6 months for market readiness"</text></outputEntry>
+        <outputEntry id="d05_oe3_r06"><text>"Deferred-Portfolio-Review"</text></outputEntry>
+        <outputEntry id="d05_oe4_r06"><text>"Deferred"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d05_diagram_DMN05">
+      <dmndi:DMNShape id="d05_shape_DMN05" dmnElementRef="DMN05BuyVsBuild">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

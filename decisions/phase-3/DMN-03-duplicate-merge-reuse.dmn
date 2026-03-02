@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d03_DMN_03_DuplicateMergeReuse"
+             name="DMN-03: Duplicate, Merge, and Reuse Decision"
+             namespace="http://sla.governance.example.com/dmn/phase3">
+
+  <!--
+    DMN-03: Duplicate, Merge, and Reuse Decision
+    Phase: 3 (Product Management Review and Portfolio Governance)
+    Hit Policy: UNIQUE
+    Regulatory: OCC 2023-17
+    Task Type: Automated (A) for scoring; Human-in-the-Loop (H) for reuse assessment meetings
+    Description: Fires after automated Software Registry and backlog scan.
+                 Prevents duplicate spend and surfaces reuse opportunities.
+  -->
+
+  <decision id="DMN03DuplicateMergeReuse" name="Duplicate, Merge, and Reuse Decision">
+    <decisionTable id="d03_dt_duplicate_merge" hitPolicy="UNIQUE">
+
+      <input id="d03_in_registry_match" label="Registry Match Score (%)">
+        <inputExpression id="d03_ie_registry" typeRef="integer">
+          <text>registryMatchScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="d03_in_backlog_match" label="Backlog Match Score (%)">
+        <inputExpression id="d03_ie_backlog" typeRef="integer">
+          <text>backlogMatchScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="d03_in_match_type" label="Match Type">
+        <inputExpression id="d03_ie_match_type" typeRef="string">
+          <text>matchType</text>
+        </inputExpression>
+        <inputValues id="d03_iv_match_type">
+          <text>"ExactCapability","PartialCapability","InFlightMatch","SimilarInFlight","NoSignificantMatch","RetiredMatch"</text>
+        </inputValues>
+      </input>
+
+      <output id="d03_out_decision" label="Reuse Decision" typeRef="string" />
+      <output id="d03_out_task_type" label="Task Type" typeRef="string" />
+      <output id="d03_out_action" label="Required Action" typeRef="string" />
+      <output id="d03_out_sla_days" label="Resolution SLA (Days)" typeRef="integer" />
+
+      <!-- Rule 1: High registry match with exact capability → close and redirect -->
+      <rule id="d03_r01_exact_close">
+        <description>Registry match >90% exact capability - close intake and redirect to ITSM</description>
+        <inputEntry id="d03_ie1_r01"><text>&gt;= 91</text></inputEntry>
+        <inputEntry id="d03_ie2_r01"><text>-</text></inputEntry>
+        <inputEntry id="d03_ie3_r01"><text>"ExactCapability"</text></inputEntry>
+        <outputEntry id="d03_oe1_r01"><text>"CLOSE"</text></outputEntry>
+        <outputEntry id="d03_oe2_r01"><text>"Automated"</text></outputEntry>
+        <outputEntry id="d03_oe3_r01"><text>"Redirect to ITSM service catalog; close intake record with match rationale logged"</text></outputEntry>
+        <outputEntry id="d03_oe4_r01"><text>1</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: Partial registry match → reuse assessment -->
+      <rule id="d03_r02_partial_reuse">
+        <description>Registry match 70-90% partial capability - schedule structured reuse assessment</description>
+        <inputEntry id="d03_ie1_r02"><text>[70..90]</text></inputEntry>
+        <inputEntry id="d03_ie2_r02"><text>-</text></inputEntry>
+        <inputEntry id="d03_ie3_r02"><text>"PartialCapability"</text></inputEntry>
+        <outputEntry id="d03_oe1_r02"><text>"REUSE-ASSESSMENT"</text></outputEntry>
+        <outputEntry id="d03_oe2_r02"><text>"Human-in-Loop"</text></outputEntry>
+        <outputEntry id="d03_oe3_r02"><text>"Product Owner and requestor meeting within 5 business days; gap-fill evaluated; decision logged"</text></outputEntry>
+        <outputEntry id="d03_oe4_r02"><text>5</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Strong in-flight backlog match → merge offer -->
+      <rule id="d03_r03_inflight_merge">
+        <description>Backlog match >85% in-flight initiative - offer merge</description>
+        <inputEntry id="d03_ie1_r03"><text>-</text></inputEntry>
+        <inputEntry id="d03_ie2_r03"><text>&gt;= 86</text></inputEntry>
+        <inputEntry id="d03_ie3_r03"><text>"InFlightMatch"</text></inputEntry>
+        <outputEntry id="d03_oe1_r03"><text>"MERGE-OFFER"</text></outputEntry>
+        <outputEntry id="d03_oe2_r03"><text>"Human-in-Loop"</text></outputEntry>
+        <outputEntry id="d03_oe3_r03"><text>"Merge offer presented; if declined, proceed as separate with rationale logged; decision to Portfolio Council"</text></outputEntry>
+        <outputEntry id="d03_oe4_r03"><text>5</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Similar in-flight → strategic review -->
+      <rule id="d03_r04_similar_strategic">
+        <description>Backlog match 50-85% similar in-flight - strategic portfolio review</description>
+        <inputEntry id="d03_ie1_r04"><text>-</text></inputEntry>
+        <inputEntry id="d03_ie2_r04"><text>[50..85]</text></inputEntry>
+        <inputEntry id="d03_ie3_r04"><text>"SimilarInFlight"</text></inputEntry>
+        <outputEntry id="d03_oe1_r04"><text>"STRATEGIC-REVIEW"</text></outputEntry>
+        <outputEntry id="d03_oe2_r04"><text>"Human-in-Loop"</text></outputEntry>
+        <outputEntry id="d03_oe3_r04"><text>"Portfolio Council reviews both initiatives together at next governance cycle"</text></outputEntry>
+        <outputEntry id="d03_oe4_r04"><text>14</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: Retired asset match → surface rationale and proceed -->
+      <rule id="d03_r05_retired_match">
+        <description>Retired/decommissioned asset match - surface rationale then proceed as new</description>
+        <inputEntry id="d03_ie1_r05"><text>-</text></inputEntry>
+        <inputEntry id="d03_ie2_r05"><text>-</text></inputEntry>
+        <inputEntry id="d03_ie3_r05"><text>"RetiredMatch"</text></inputEntry>
+        <outputEntry id="d03_oe1_r05"><text>"SURFACE-RATIONALE-PROCEED"</text></outputEntry>
+        <outputEntry id="d03_oe2_r05"><text>"DeterministicAgent"</text></outputEntry>
+        <outputEntry id="d03_oe3_r05"><text>"Decommission rationale surfaced and included in intake record; proceed as new request with rationale logged"</text></outputEntry>
+        <outputEntry id="d03_oe4_r05"><text>2</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: No significant match → proceed as new -->
+      <rule id="d03_r06_no_match_proceed">
+        <description>No significant registry or backlog match - proceed as new request</description>
+        <inputEntry id="d03_ie1_r06"><text>&lt; 70</text></inputEntry>
+        <inputEntry id="d03_ie2_r06"><text>&lt; 50</text></inputEntry>
+        <inputEntry id="d03_ie3_r06"><text>"NoSignificantMatch"</text></inputEntry>
+        <outputEntry id="d03_oe1_r06"><text>"PROCEED-AS-NEW"</text></outputEntry>
+        <outputEntry id="d03_oe2_r06"><text>"Automated"</text></outputEntry>
+        <outputEntry id="d03_oe3_r06"><text>"Continue to portfolio prioritization as new request; no reuse opportunity identified"</text></outputEntry>
+        <outputEntry id="d03_oe4_r06"><text>1</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d03_diagram_DMN03">
+      <dmndi:DMNShape id="d03_shape_DMN03" dmnElementRef="DMN03DuplicateMergeReuse">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

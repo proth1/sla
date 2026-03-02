@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Phase1"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.42.0">
+
+  <bpmn:collaboration id="Collaboration_Phase1">
+    <bpmn:participant id="Participant_Phase1" name="Phase 1: Intake, Risk Classification &amp; Capability Reuse Gate" processRef="Process_IntakeRiskClassification" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_IntakeRiskClassification" name="Phase 1: Intake, Risk Classification and Capability Reuse Gate" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_Phase1">
+      <bpmn:lane id="Lane_GB_P1" name="Governance Board">
+        <bpmn:flowNodeRef>Task_ComplianceGovNotify</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_IntakeRejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BO_P1" name="Business Owner">
+        <bpmn:flowNodeRef>StartEvent_IntakeInitiated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ConversationalIntake</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PRDAutoGeneration</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_JiraADOPush</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_IntakeComplete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ITA_P1" name="IT Architecture">
+        <bpmn:flowNodeRef>Task_RegistryQuery</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DMN15_CapabilityReuse</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ReuseDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ReuseAssessment</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Proc_P1" name="Procurement">
+        <bpmn:flowNodeRef>Task_LicenseExpansionEval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_RedirectITSM</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_LC_P1" name="Legal &amp; Compliance">
+        <bpmn:flowNodeRef>Task_RegulatoryApplicabilityScan</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DataClassificationValidation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ComplianceFlag</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IS_P1" name="Information Security">
+        <bpmn:flowNodeRef>Task_FiveDimRiskAssessment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DMN09_AIRiskTier</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_RiskTier</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_VM_P1" name="Vendor Management">
+        <bpmn:flowNodeRef>Task_IntakeCompleteness</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_IntakeComplete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PhaseTransitionP1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_IntakeInitiated" name="Intake Session&#10;Initiated">
+      <bpmn:outgoing>Flow_Start_Intake</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Task: Conversational Intake Bot -->
+    <bpmn:serviceTask id="Task_ConversationalIntake" name="Conversational AI&#10;Intake Bot (Completeness&#10;Enforcement)" camunda:type="external" camunda:topic="intake-bot">
+      <bpmn:incoming>Flow_Start_Intake</bpmn:incoming>
+      <bpmn:outgoing>Flow_Intake_Completeness</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Task: Intake Completeness Check -->
+    <bpmn:serviceTask id="Task_IntakeCompleteness" name="Validate Intake&#10;Completeness (All Required&#10;Fields Validated)" camunda:type="external" camunda:topic="intake-validation">
+      <bpmn:incoming>Flow_Intake_Completeness</bpmn:incoming>
+      <bpmn:outgoing>Flow_Completeness_Gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Gateway: Intake Complete? -->
+    <bpmn:exclusiveGateway id="Gateway_IntakeComplete" name="Intake&#10;Complete?" default="Flow_IncompleteLoop">
+      <bpmn:incoming>Flow_Completeness_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_IncompleteLoop</bpmn:outgoing>
+      <bpmn:outgoing>Flow_IntakeComplete</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Registry Query -->
+    <bpmn:serviceTask id="Task_RegistryQuery" name="Software Registry&#10;Semantic Query (P0 API)" camunda:type="external" camunda:topic="registry-query">
+      <bpmn:incoming>Flow_IntakeComplete</bpmn:incoming>
+      <bpmn:outgoing>Flow_Registry_DMN15</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- DMN-15: Capability Reuse Decision -->
+    <bpmn:businessRuleTask id="Task_DMN15_CapabilityReuse" name="DMN-15: Capability Reuse&#10;Assessment" camunda:decisionRef="DMN_15_CapabilityReuse" camunda:resultVariable="reuseDecision" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_Registry_DMN15</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMN15_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Gateway: Reuse Decision -->
+    <bpmn:exclusiveGateway id="Gateway_ReuseDecision" name="Reuse Decision?" default="Flow_ProceedNew">
+      <bpmn:incoming>Flow_DMN15_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_RedirectITSM</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ReuseAssessment</bpmn:outgoing>
+      <bpmn:outgoing>Flow_LicenseExpansion</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ProceedNew</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Redirect to ITSM (exact match >90%) -->
+    <bpmn:endEvent id="EndEvent_RedirectITSM" name="Redirected to&#10;ITSM Self-Service">
+      <bpmn:incoming>Flow_RedirectITSM</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Reuse Assessment (partial match 70-90%) -->
+    <bpmn:userTask id="Task_ReuseAssessment" name="Reuse Assessment&#10;(70-90% Match) - 5 Day SLA" camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_ReuseAssessment</bpmn:incoming>
+      <bpmn:outgoing>Flow_Reuse_Risk</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on Reuse Assessment -->
+    <bpmn:boundaryEvent id="Timer_ReuseAssessmentSLA" attachedToRef="Task_ReuseAssessment" cancelActivity="false">
+      <bpmn:outgoing>Flow_ReuseSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_ReuseAssessment">
+        <bpmn:timeDuration>P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- License Expansion Evaluation -->
+    <bpmn:userTask id="Task_LicenseExpansionEval" name="Evaluate License Expansion&#10;vs Net-New Procurement" camunda:candidateGroups="procurement">
+      <bpmn:incoming>Flow_LicenseExpansion</bpmn:incoming>
+      <bpmn:outgoing>Flow_LicenseExp_Risk</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Five-Dimension Risk Assessment (parallel with reuse gate) -->
+    <bpmn:serviceTask id="Task_FiveDimRiskAssessment" name="5-Dimension Risk Assessment&#10;(Data Privacy, CyberSec,&#10;Operational, Regulatory)" camunda:type="external" camunda:topic="risk-assessment">
+      <bpmn:incoming>Flow_ProceedNew</bpmn:incoming>
+      <bpmn:incoming>Flow_Reuse_Risk</bpmn:incoming>
+      <bpmn:incoming>Flow_LicenseExp_Risk</bpmn:incoming>
+      <bpmn:outgoing>Flow_Risk_DMN09</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- DMN-09: AI Risk Tier -->
+    <bpmn:businessRuleTask id="Task_DMN09_AIRiskTier" name="DMN-09: AI Risk Tier&#10;Classification (SR 11-7)" camunda:decisionRef="DMN_09_AIRiskTier" camunda:resultVariable="aiRiskTier" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_Risk_DMN09</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMN09_RiskGateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Gateway: Risk Tier -->
+    <bpmn:exclusiveGateway id="Gateway_RiskTier" name="Risk Tier?" default="Flow_StandardRisk">
+      <bpmn:incoming>Flow_DMN09_RiskGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_UnacceptableRisk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_StandardRisk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_HighRisk</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Unacceptable Risk: Reject -->
+    <bpmn:endEvent id="EndEvent_IntakeRejected" name="Intake Rejected&#10;(Unacceptable Risk)">
+      <bpmn:incoming>Flow_UnacceptableRisk</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Regulatory Applicability Scan -->
+    <bpmn:serviceTask id="Task_RegulatoryApplicabilityScan" name="Regulatory Applicability&#10;Scan (DA Agent - Reg KB)" camunda:type="external" camunda:topic="regulatory-scan">
+      <bpmn:incoming>Flow_StandardRisk</bpmn:incoming>
+      <bpmn:incoming>Flow_HighRisk</bpmn:incoming>
+      <bpmn:outgoing>Flow_RegScan_DataClass</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Data Classification Validation -->
+    <bpmn:serviceTask id="Task_DataClassificationValidation" name="Data Classification&#10;Validation (PII/NPI/GDPR&#10;DPA Auto-Population)" camunda:type="external" camunda:topic="data-classification">
+      <bpmn:incoming>Flow_RegScan_DataClass</bpmn:incoming>
+      <bpmn:outgoing>Flow_DataClass_Gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Gateway: Compliance Flag? -->
+    <bpmn:exclusiveGateway id="Gateway_ComplianceFlag" name="Compliance&#10;Flags?" default="Flow_NoComplianceFlag">
+      <bpmn:incoming>Flow_DataClass_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_ComplianceFlagYes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_NoComplianceFlag</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Compliance Governance Notification -->
+    <bpmn:userTask id="Task_ComplianceGovNotify" name="Compliance Governance&#10;Notification + Response SLA" camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_ComplianceFlagYes</bpmn:incoming>
+      <bpmn:outgoing>Flow_ComplianceGov_PRD</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- PRD Auto-Generation -->
+    <bpmn:serviceTask id="Task_PRDAutoGeneration" name="PRD Auto-Generation&#10;(Structured Artifact)" camunda:type="external" camunda:topic="prd-generation">
+      <bpmn:incoming>Flow_NoComplianceFlag</bpmn:incoming>
+      <bpmn:incoming>Flow_ComplianceGov_PRD</bpmn:incoming>
+      <bpmn:outgoing>Flow_PRD_Jira</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Jira/ADO Push -->
+    <bpmn:serviceTask id="Task_JiraADOPush" name="Push to Jira/ADO&#10;(Epic + Stories Auto-Created)" camunda:type="external" camunda:topic="jira-push">
+      <bpmn:incoming>Flow_PRD_Jira</bpmn:incoming>
+      <bpmn:outgoing>Flow_Jira_PhaseTransition</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Phase Transition -->
+    <bpmn:userTask id="Task_PhaseTransitionP1" name="Phase 1 Completion&#10;Sign-Off + Phase Transition" camunda:candidateGroups="vendor-management">
+      <bpmn:incoming>Flow_Jira_PhaseTransition</bpmn:incoming>
+      <bpmn:outgoing>Flow_PhaseTransition_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- End Event: Intake Complete -->
+    <bpmn:endEvent id="EndEvent_IntakeComplete" name="Phase 1 Complete&#10;(Proceed to Phase 2)">
+      <bpmn:incoming>Flow_PhaseTransition_End</bpmn:incoming>
+      <bpmn:signalEventDefinition id="Signal_P1Complete" signalRef="Signal_Phase1Complete" />
+    </bpmn:endEvent>
+
+    <!-- Escalation end for Reuse SLA -->
+    <bpmn:endEvent id="EndEvent_ReuseSLAEscalated" name="Reuse Assessment&#10;SLA Escalated">
+      <bpmn:incoming>Flow_ReuseSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Annotations -->
+    <bpmn:textAnnotation id="Annotation_P1_SR117">
+      <bpmn:text>SR 11-7: AI risk classification at intake. DMN-09 assigns model risk tier (Tier 1/2/3). Tier 1 requires independent validation and Board-level reporting.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P1_SR117" sourceRef="Task_DMN09_AIRiskTier" targetRef="Annotation_P1_SR117" />
+
+    <bpmn:textAnnotation id="Annotation_P1_OCC">
+      <bpmn:text>OCC 2023-17: Capability reuse gate (DMN-15) mandatory before downstream design. GDPR/CCPA: Data classification at intake triggers DPA requirements. EU AI Act: AI classification per risk level.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P1_OCC" sourceRef="Task_DataClassificationValidation" targetRef="Annotation_P1_OCC" />
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_Start_Intake" sourceRef="StartEvent_IntakeInitiated" targetRef="Task_ConversationalIntake" />
+    <bpmn:sequenceFlow id="Flow_Intake_Completeness" sourceRef="Task_ConversationalIntake" targetRef="Task_IntakeCompleteness" />
+    <bpmn:sequenceFlow id="Flow_Completeness_Gateway" sourceRef="Task_IntakeCompleteness" targetRef="Gateway_IntakeComplete" />
+    <bpmn:sequenceFlow id="Flow_IncompleteLoop" name="Incomplete" sourceRef="Gateway_IntakeComplete" targetRef="Task_ConversationalIntake" />
+    <bpmn:sequenceFlow id="Flow_IntakeComplete" name="Complete" sourceRef="Gateway_IntakeComplete" targetRef="Task_RegistryQuery">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${intakeComplete == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Registry_DMN15" sourceRef="Task_RegistryQuery" targetRef="Task_DMN15_CapabilityReuse" />
+    <bpmn:sequenceFlow id="Flow_DMN15_Gateway" sourceRef="Task_DMN15_CapabilityReuse" targetRef="Gateway_ReuseDecision" />
+    <bpmn:sequenceFlow id="Flow_RedirectITSM" name="REUSE-REDIRECT" sourceRef="Gateway_ReuseDecision" targetRef="EndEvent_RedirectITSM">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${reuseDecision == 'REUSE_REDIRECT'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_ReuseAssessment" name="REUSE ASSESSMENT" sourceRef="Gateway_ReuseDecision" targetRef="Task_ReuseAssessment">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${reuseDecision == 'REUSE_ASSESSMENT'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_LicenseExpansion" name="EVALUATE EXPANSION" sourceRef="Gateway_ReuseDecision" targetRef="Task_LicenseExpansionEval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${reuseDecision == 'EVALUATE_EXPANSION'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_ProceedNew" name="PROCEED NEW" sourceRef="Gateway_ReuseDecision" targetRef="Task_FiveDimRiskAssessment" />
+    <bpmn:sequenceFlow id="Flow_Reuse_Risk" sourceRef="Task_ReuseAssessment" targetRef="Task_FiveDimRiskAssessment" />
+    <bpmn:sequenceFlow id="Flow_LicenseExp_Risk" sourceRef="Task_LicenseExpansionEval" targetRef="Task_FiveDimRiskAssessment" />
+    <bpmn:sequenceFlow id="Flow_Risk_DMN09" sourceRef="Task_FiveDimRiskAssessment" targetRef="Task_DMN09_AIRiskTier" />
+    <bpmn:sequenceFlow id="Flow_DMN09_RiskGateway" sourceRef="Task_DMN09_AIRiskTier" targetRef="Gateway_RiskTier" />
+    <bpmn:sequenceFlow id="Flow_UnacceptableRisk" name="Unacceptable" sourceRef="Gateway_RiskTier" targetRef="EndEvent_IntakeRejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${aiRiskTier == 'UNACCEPTABLE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_StandardRisk" name="Standard/Minimal" sourceRef="Gateway_RiskTier" targetRef="Task_RegulatoryApplicabilityScan" />
+    <bpmn:sequenceFlow id="Flow_HighRisk" name="High" sourceRef="Gateway_RiskTier" targetRef="Task_RegulatoryApplicabilityScan">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${aiRiskTier == 'HIGH'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_RegScan_DataClass" sourceRef="Task_RegulatoryApplicabilityScan" targetRef="Task_DataClassificationValidation" />
+    <bpmn:sequenceFlow id="Flow_DataClass_Gateway" sourceRef="Task_DataClassificationValidation" targetRef="Gateway_ComplianceFlag" />
+    <bpmn:sequenceFlow id="Flow_ComplianceFlagYes" name="Yes" sourceRef="Gateway_ComplianceFlag" targetRef="Task_ComplianceGovNotify">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${complianceFlagsExist == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_NoComplianceFlag" name="No" sourceRef="Gateway_ComplianceFlag" targetRef="Task_PRDAutoGeneration" />
+    <bpmn:sequenceFlow id="Flow_ComplianceGov_PRD" sourceRef="Task_ComplianceGovNotify" targetRef="Task_PRDAutoGeneration" />
+    <bpmn:sequenceFlow id="Flow_PRD_Jira" sourceRef="Task_PRDAutoGeneration" targetRef="Task_JiraADOPush" />
+    <bpmn:sequenceFlow id="Flow_Jira_PhaseTransition" sourceRef="Task_JiraADOPush" targetRef="Task_PhaseTransitionP1" />
+    <bpmn:sequenceFlow id="Flow_PhaseTransition_End" sourceRef="Task_PhaseTransitionP1" targetRef="EndEvent_IntakeComplete" />
+    <bpmn:sequenceFlow id="Flow_ReuseSLAEscalate" sourceRef="Timer_ReuseAssessmentSLA" targetRef="EndEvent_ReuseSLAEscalated" />
+
+  </bpmn:process>
+
+  <bpmn:signal id="Signal_Phase1Complete" name="Phase1Complete" />
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Phase1">
+    <bpmndi:BPMNPlane id="BPMNPlane_Phase1" bpmnElement="Collaboration_Phase1">
+
+      <bpmndi:BPMNShape id="Participant_Phase1_di" bpmnElement="Participant_Phase1" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="2500" height="1240" />
+      </bpmndi:BPMNShape>
+
+      <!-- Swim Lanes -->
+      <bpmndi:BPMNShape id="Lane_GB_P1_di" bpmnElement="Lane_GB_P1" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="2470" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BO_P1_di" bpmnElement="Lane_BO_P1" isHorizontal="true">
+        <dc:Bounds x="185" y="207" width="2470" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ITA_P1_di" bpmnElement="Lane_ITA_P1" isHorizontal="true">
+        <dc:Bounds x="185" y="367" width="2470" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Proc_P1_di" bpmnElement="Lane_Proc_P1" isHorizontal="true">
+        <dc:Bounds x="185" y="527" width="2470" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_LC_P1_di" bpmnElement="Lane_LC_P1" isHorizontal="true">
+        <dc:Bounds x="185" y="687" width="2470" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_IS_P1_di" bpmnElement="Lane_IS_P1" isHorizontal="true">
+        <dc:Bounds x="185" y="847" width="2470" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_VM_P1_di" bpmnElement="Lane_VM_P1" isHorizontal="true">
+        <dc:Bounds x="185" y="1007" width="2470" height="160" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start Event (Business Owner, y=207+62=269) -->
+      <bpmndi:BPMNShape id="StartEvent_IntakeInitiated_di" bpmnElement="StartEvent_IntakeInitiated">
+        <dc:Bounds x="247" y="269" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="225" y="312" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Conversational Intake (Business Owner) x=340 -->
+      <bpmndi:BPMNShape id="Task_ConversationalIntake_di" bpmnElement="Task_ConversationalIntake">
+        <dc:Bounds x="330" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Intake Completeness (Vendor Management, y=1007+40=1047) x=330 -->
+      <bpmndi:BPMNShape id="Task_IntakeCompleteness_di" bpmnElement="Task_IntakeCompleteness">
+        <dc:Bounds x="330" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Intake Complete (VM) x=520 -->
+      <bpmndi:BPMNShape id="Gateway_IntakeComplete_di" bpmnElement="Gateway_IntakeComplete" isMarkerVisible="true">
+        <dc:Bounds x="515" y="1042" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="498" y="1099" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Registry Query (IT Architecture, y=367+40=407) x=620 -->
+      <bpmndi:BPMNShape id="Task_RegistryQuery_di" bpmnElement="Task_RegistryQuery">
+        <dc:Bounds x="620" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-15 (IT Architecture) x=810 -->
+      <bpmndi:BPMNShape id="Task_DMN15_CapabilityReuse_di" bpmnElement="Task_DMN15_CapabilityReuse">
+        <dc:Bounds x="810" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Reuse Decision (ITA) x=1000 -->
+      <bpmndi:BPMNShape id="Gateway_ReuseDecision_di" bpmnElement="Gateway_ReuseDecision" isMarkerVisible="true">
+        <dc:Bounds x="995" y="402" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="975" y="459" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- End Redirect ITSM (Procurement, y=527+100=627) x=1300 -->
+      <bpmndi:BPMNShape id="EndEvent_RedirectITSM_di" bpmnElement="EndEvent_RedirectITSM">
+        <dc:Bounds x="1302" y="599" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1278" y="642" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Reuse Assessment (ITA) x=1100 -->
+      <bpmndi:BPMNShape id="Task_ReuseAssessment_di" bpmnElement="Task_ReuseAssessment">
+        <dc:Bounds x="1100" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer boundary on Reuse Assessment -->
+      <bpmndi:BPMNShape id="Timer_ReuseAssessmentSLA_di" bpmnElement="Timer_ReuseAssessmentSLA">
+        <dc:Bounds x="1152" y="449" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- EndEvent Reuse SLA Escalated (ITA) x=1100 y=507-->
+      <bpmndi:BPMNShape id="EndEvent_ReuseSLAEscalated_di" bpmnElement="EndEvent_ReuseSLAEscalated">
+        <dc:Bounds x="1152" y="351" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1128" y="320" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- License Expansion Eval (Procurement, y=527+40=567) x=1100 -->
+      <bpmndi:BPMNShape id="Task_LicenseExpansionEval_di" bpmnElement="Task_LicenseExpansionEval">
+        <dc:Bounds x="1100" y="547" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Five-Dim Risk Assessment (IS, y=847+40=887) x=1290 -->
+      <bpmndi:BPMNShape id="Task_FiveDimRiskAssessment_di" bpmnElement="Task_FiveDimRiskAssessment">
+        <dc:Bounds x="1290" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-09 AI Risk Tier (IS) x=1480 -->
+      <bpmndi:BPMNShape id="Task_DMN09_AIRiskTier_di" bpmnElement="Task_DMN09_AIRiskTier">
+        <dc:Bounds x="1480" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Risk Tier (IS) x=1670 -->
+      <bpmndi:BPMNShape id="Gateway_RiskTier_di" bpmnElement="Gateway_RiskTier" isMarkerVisible="true">
+        <dc:Bounds x="1665" y="882" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1655" y="939" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- End Intake Rejected (Governance Board, y=47+62=109) x=1760 -->
+      <bpmndi:BPMNShape id="EndEvent_IntakeRejected_di" bpmnElement="EndEvent_IntakeRejected">
+        <dc:Bounds x="1762" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1737" y="145" width="86" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Regulatory Applicability Scan (LC, y=687+40=727) x=1760 -->
+      <bpmndi:BPMNShape id="Task_RegulatoryApplicabilityScan_di" bpmnElement="Task_RegulatoryApplicabilityScan">
+        <dc:Bounds x="1760" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Data Classification (LC) x=1950 -->
+      <bpmndi:BPMNShape id="Task_DataClassificationValidation_di" bpmnElement="Task_DataClassificationValidation">
+        <dc:Bounds x="1950" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Compliance Flag (LC) x=2140 -->
+      <bpmndi:BPMNShape id="Gateway_ComplianceFlag_di" bpmnElement="Gateway_ComplianceFlag" isMarkerVisible="true">
+        <dc:Bounds x="2145" y="722" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2128" y="779" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Compliance Gov Notify (GB, y=47+40=87) x=2240 -->
+      <bpmndi:BPMNShape id="Task_ComplianceGovNotify_di" bpmnElement="Task_ComplianceGovNotify">
+        <dc:Bounds x="2240" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- PRD Auto-Generation (BO, y=207+40=247) x=2240 -->
+      <bpmndi:BPMNShape id="Task_PRDAutoGeneration_di" bpmnElement="Task_PRDAutoGeneration">
+        <dc:Bounds x="2240" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Jira Push (BO) x=2240 y=367 -->
+      <bpmndi:BPMNShape id="Task_JiraADOPush_di" bpmnElement="Task_JiraADOPush">
+        <dc:Bounds x="2240" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase Transition (VM) x=2240 y=1027 -->
+      <bpmndi:BPMNShape id="Task_PhaseTransitionP1_di" bpmnElement="Task_PhaseTransitionP1">
+        <dc:Bounds x="2240" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Event Intake Complete (BO) x=2430 y=269 -->
+      <bpmndi:BPMNShape id="EndEvent_IntakeComplete_di" bpmnElement="EndEvent_IntakeComplete">
+        <dc:Bounds x="2442" y="269" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2416" y="312" width="88" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Annotations -->
+      <bpmndi:BPMNShape id="Annotation_P1_SR117_di" bpmnElement="Annotation_P1_SR117">
+        <dc:Bounds x="200" y="1175" width="700" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annotation_P1_OCC_di" bpmnElement="Annotation_P1_OCC">
+        <dc:Bounds x="950" y="1175" width="700" height="55" />
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="Flow_Start_Intake_di" bpmnElement="Flow_Start_Intake">
+        <di:waypoint x="283" y="287" />
+        <di:waypoint x="330" y="287" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Intake_Completeness_di" bpmnElement="Flow_Intake_Completeness">
+        <di:waypoint x="400" y="327" />
+        <di:waypoint x="400" y="1067" />
+        <di:waypoint x="330" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Completeness_Gateway_di" bpmnElement="Flow_Completeness_Gateway">
+        <di:waypoint x="470" y="1067" />
+        <di:waypoint x="515" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_IncompleteLoop_di" bpmnElement="Flow_IncompleteLoop">
+        <di:waypoint x="540" y="1042" />
+        <di:waypoint x="540" y="980" />
+        <di:waypoint x="400" y="980" />
+        <di:waypoint x="400" y="327" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="438" y="962" width="55" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_IntakeComplete_di" bpmnElement="Flow_IntakeComplete">
+        <di:waypoint x="540" y="1042" />
+        <di:waypoint x="540" y="940" />
+        <di:waypoint x="690" y="940" />
+        <di:waypoint x="690" y="467" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="548" y="985" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Registry_DMN15_di" bpmnElement="Flow_Registry_DMN15">
+        <di:waypoint x="760" y="427" />
+        <di:waypoint x="810" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DMN15_Gateway_di" bpmnElement="Flow_DMN15_Gateway">
+        <di:waypoint x="950" y="427" />
+        <di:waypoint x="995" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_RedirectITSM_di" bpmnElement="Flow_RedirectITSM">
+        <di:waypoint x="1020" y="452" />
+        <di:waypoint x="1020" y="617" />
+        <di:waypoint x="1302" y="617" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1028" y="517" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ReuseAssessment_di" bpmnElement="Flow_ReuseAssessment">
+        <di:waypoint x="1045" y="427" />
+        <di:waypoint x="1100" y="427" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1048" y="409" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_LicenseExpansion_di" bpmnElement="Flow_LicenseExpansion">
+        <di:waypoint x="1020" y="452" />
+        <di:waypoint x="1020" y="587" />
+        <di:waypoint x="1100" y="587" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1028" y="507" width="60" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ProceedNew_di" bpmnElement="Flow_ProceedNew">
+        <di:waypoint x="1020" y="452" />
+        <di:waypoint x="1020" y="907" />
+        <di:waypoint x="1290" y="907" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1028" y="672" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Reuse_Risk_di" bpmnElement="Flow_Reuse_Risk">
+        <di:waypoint x="1240" y="427" />
+        <di:waypoint x="1265" y="427" />
+        <di:waypoint x="1265" y="907" />
+        <di:waypoint x="1290" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_LicenseExp_Risk_di" bpmnElement="Flow_LicenseExp_Risk">
+        <di:waypoint x="1240" y="587" />
+        <di:waypoint x="1265" y="587" />
+        <di:waypoint x="1265" y="907" />
+        <di:waypoint x="1290" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Risk_DMN09_di" bpmnElement="Flow_Risk_DMN09">
+        <di:waypoint x="1430" y="907" />
+        <di:waypoint x="1480" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DMN09_RiskGateway_di" bpmnElement="Flow_DMN09_RiskGateway">
+        <di:waypoint x="1620" y="907" />
+        <di:waypoint x="1665" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_UnacceptableRisk_di" bpmnElement="Flow_UnacceptableRisk">
+        <di:waypoint x="1690" y="882" />
+        <di:waypoint x="1690" y="120" />
+        <di:waypoint x="1762" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1698" y="497" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_StandardRisk_di" bpmnElement="Flow_StandardRisk">
+        <di:waypoint x="1715" y="907" />
+        <di:waypoint x="1740" y="907" />
+        <di:waypoint x="1740" y="747" />
+        <di:waypoint x="1760" y="747" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1718" y="817" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_HighRisk_di" bpmnElement="Flow_HighRisk">
+        <di:waypoint x="1715" y="932" />
+        <di:waypoint x="1715" y="980" />
+        <di:waypoint x="1840" y="980" />
+        <di:waypoint x="1840" y="747" />
+        <di:waypoint x="1900" y="747" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1723" y="953" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_RegScan_DataClass_di" bpmnElement="Flow_RegScan_DataClass">
+        <di:waypoint x="1900" y="747" />
+        <di:waypoint x="1950" y="747" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DataClass_Gateway_di" bpmnElement="Flow_DataClass_Gateway">
+        <di:waypoint x="2090" y="747" />
+        <di:waypoint x="2145" y="747" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ComplianceFlagYes_di" bpmnElement="Flow_ComplianceFlagYes">
+        <di:waypoint x="2170" y="722" />
+        <di:waypoint x="2170" y="127" />
+        <di:waypoint x="2240" y="127" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2178" y="422" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_NoComplianceFlag_di" bpmnElement="Flow_NoComplianceFlag">
+        <di:waypoint x="2170" y="772" />
+        <di:waypoint x="2170" y="287" />
+        <di:waypoint x="2240" y="287" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2178" y="527" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ComplianceGov_PRD_di" bpmnElement="Flow_ComplianceGov_PRD">
+        <di:waypoint x="2310" y="167" />
+        <di:waypoint x="2310" y="247" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PRD_Jira_di" bpmnElement="Flow_PRD_Jira">
+        <di:waypoint x="2310" y="327" />
+        <di:waypoint x="2310" y="387" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Jira_PhaseTransition_di" bpmnElement="Flow_Jira_PhaseTransition">
+        <di:waypoint x="2310" y="467" />
+        <di:waypoint x="2310" y="1027" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PhaseTransition_End_di" bpmnElement="Flow_PhaseTransition_End">
+        <di:waypoint x="2380" y="1067" />
+        <di:waypoint x="2460" y="1067" />
+        <di:waypoint x="2460" y="305" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ReuseSLAEscalate_di" bpmnElement="Flow_ReuseSLAEscalate">
+        <di:waypoint x="1170" y="449" />
+        <di:waypoint x="1170" y="387" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P1_SR117_di" bpmnElement="Assoc_P1_SR117">
+        <di:waypoint x="1550" y="947" />
+        <di:waypoint x="550" y="1175" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P1_OCC_di" bpmnElement="Assoc_P1_OCC">
+        <di:waypoint x="2020" y="787" />
+        <di:waypoint x="1300" y="1175" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

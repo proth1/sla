@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Phase2"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.42.0">
+
+  <bpmn:collaboration id="Collaboration_Phase2">
+    <bpmn:participant id="Participant_Phase2" name="Phase 2: AI Routing Engine &amp; Pathway Assignment" processRef="Process_RoutingEngineScoring" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_RoutingEngineScoring" name="Phase 2: Routing Engine and Scoring" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_Phase2">
+      <bpmn:lane id="Lane_GB_P2" name="Governance Board">
+        <bpmn:flowNodeRef>Task_SLAClockStart</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PhaseTransitionP2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_RoutingComplete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BO_P2" name="Business Owner">
+        <bpmn:flowNodeRef>StartEvent_RoutingInitiated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IntakeDataIngestion</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RequestorNotification</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ITA_P2" name="IT Architecture">
+        <bpmn:flowNodeRef>Task_DMN13_FastTrack</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_FastTrackEligible</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_FastTrackFulfillment</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Proc_P2" name="Procurement">
+        <bpmn:flowNodeRef>Task_RegistryResultsEnrich</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_LC_P2" name="Legal &amp; Compliance">
+        <bpmn:flowNodeRef>Task_CompositeScoreCalc</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DMN01_PathwayAssignment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_PathwayDecision</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IS_P2" name="Information Security">
+        <bpmn:flowNodeRef>Task_DecisionAuditLog</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PathwayConfig</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_VM_P2" name="Vendor Management">
+        <bpmn:flowNodeRef>Task_VendorDataEnrich</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ConcentrationRiskCheck</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_RoutingInitiated" name="Phase 1 Data&#10;Received">
+      <bpmn:incoming>Signal_P1Complete_catch</bpmn:incoming>
+      <bpmn:outgoing>Flow_Start_Ingest</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalDef_P1Catch" signalRef="Signal_Phase1Complete_P2" />
+    </bpmn:startEvent>
+
+    <!-- Intake Data Ingestion -->
+    <bpmn:serviceTask id="Task_IntakeDataIngestion" name="Ingest Structured&#10;Intake Data + Risk Scores" camunda:type="external" camunda:topic="data-ingestion">
+      <bpmn:incoming>Flow_Start_Ingest</bpmn:incoming>
+      <bpmn:outgoing>Flow_Ingest_Registry</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Registry Results Enrichment -->
+    <bpmn:serviceTask id="Task_RegistryResultsEnrich" name="Enrich with Registry&#10;Results (Existing Licenses,&#10;Vendor History)" camunda:type="external" camunda:topic="registry-enrichment">
+      <bpmn:incoming>Flow_Ingest_Registry</bpmn:incoming>
+      <bpmn:outgoing>Flow_Registry_VendorData</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Vendor Data Enrichment -->
+    <bpmn:serviceTask id="Task_VendorDataEnrich" name="Vendor Data Enrichment&#10;(Trust Centers, Prior&#10;Assessments)" camunda:type="external" camunda:topic="vendor-enrichment">
+      <bpmn:incoming>Flow_Registry_VendorData</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorData_Concentration</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Concentration Risk Check -->
+    <bpmn:serviceTask id="Task_ConcentrationRiskCheck" name="Vendor Concentration&#10;Risk Check (BCBS d577)" camunda:type="external" camunda:topic="concentration-risk">
+      <bpmn:incoming>Flow_VendorData_Concentration</bpmn:incoming>
+      <bpmn:outgoing>Flow_Concentration_CompositeScore</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Composite Score Calculation -->
+    <bpmn:serviceTask id="Task_CompositeScoreCalc" name="Composite Score&#10;Calculation (Weighted&#10;Multi-Dimension)" camunda:type="external" camunda:topic="composite-scoring">
+      <bpmn:incoming>Flow_Concentration_CompositeScore</bpmn:incoming>
+      <bpmn:outgoing>Flow_CompositeScore_DMN13</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- DMN-13: Fast-Track Eligibility -->
+    <bpmn:businessRuleTask id="Task_DMN13_FastTrack" name="DMN-13: Fast-Track&#10;Eligibility Check" camunda:decisionRef="DMN_13_FastTrackEligibility" camunda:resultVariable="fastTrackEligible" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_CompositeScore_DMN13</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMN13_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Gateway: Fast-Track Eligible? -->
+    <bpmn:exclusiveGateway id="Gateway_FastTrackEligible" name="Fast-Track&#10;Eligible?" default="Flow_NotFastTrack">
+      <bpmn:incoming>Flow_DMN13_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_FastTrack</bpmn:outgoing>
+      <bpmn:outgoing>Flow_NotFastTrack</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Fast-Track End Event -->
+    <bpmn:endEvent id="EndEvent_FastTrackFulfillment" name="Fast-Track ITSM&#10;Fulfillment (1-5 Days)">
+      <bpmn:incoming>Flow_FastTrack</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- DMN-01: AI Routing Pathway Assignment -->
+    <bpmn:businessRuleTask id="Task_DMN01_PathwayAssignment" name="DMN-01: AI Routing&#10;Pathway Assignment" camunda:decisionRef="DMN_01_AIRoutingPathway" camunda:resultVariable="selectedPathway" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_NotFastTrack</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMN01_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <!-- Gateway: Pathway Decision -->
+    <bpmn:exclusiveGateway id="Gateway_PathwayDecision" name="Assigned&#10;Pathway?" default="Flow_StandardBuy">
+      <bpmn:incoming>Flow_DMN01_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_PathwayBuild</bpmn:outgoing>
+      <bpmn:outgoing>Flow_StandardBuy</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PathwayHybrid</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Decision Audit Log -->
+    <bpmn:serviceTask id="Task_DecisionAuditLog" name="Decision Audit Log&#10;(DMN Rule ID, Timestamp,&#10;Provenance)" camunda:type="external" camunda:topic="audit-logging">
+      <bpmn:incoming>Flow_PathwayBuild</bpmn:incoming>
+      <bpmn:incoming>Flow_StandardBuy</bpmn:incoming>
+      <bpmn:incoming>Flow_PathwayHybrid</bpmn:incoming>
+      <bpmn:outgoing>Flow_AuditLog_PathwayConfig</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Pathway Configuration -->
+    <bpmn:serviceTask id="Task_PathwayConfig" name="Configure Pathway&#10;Parameters + Governance&#10;Depth Settings" camunda:type="external" camunda:topic="pathway-config">
+      <bpmn:incoming>Flow_AuditLog_PathwayConfig</bpmn:incoming>
+      <bpmn:outgoing>Flow_PathwayConfig_SLAClock</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- SLA Clock Start -->
+    <bpmn:serviceTask id="Task_SLAClockStart" name="Start SLA Clock&#10;(Pathway-Calibrated&#10;Timeline)" camunda:type="external" camunda:topic="sla-clock">
+      <bpmn:incoming>Flow_PathwayConfig_SLAClock</bpmn:incoming>
+      <bpmn:outgoing>Flow_SLAClock_Notification</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Requestor Notification -->
+    <bpmn:serviceTask id="Task_RequestorNotification" name="Notify Requestor&#10;(Pathway + Timeline)" camunda:type="external" camunda:topic="requestor-notification">
+      <bpmn:incoming>Flow_SLAClock_Notification</bpmn:incoming>
+      <bpmn:outgoing>Flow_Notification_PhaseTransition</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Phase Transition -->
+    <bpmn:userTask id="Task_PhaseTransitionP2" name="Phase 2 Quality Gate&#10;+ Approval Sign-Off" camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_Notification_PhaseTransition</bpmn:incoming>
+      <bpmn:outgoing>Flow_PhaseTransition_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- SLA Timer on Phase Transition -->
+    <bpmn:boundaryEvent id="Timer_Phase2QualityGate" attachedToRef="Task_PhaseTransitionP2" cancelActivity="false">
+      <bpmn:outgoing>Flow_P2QGEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_P2QualityGate">
+        <bpmn:timeDuration>P1D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- End Event: Routing Complete -->
+    <bpmn:endEvent id="EndEvent_RoutingComplete" name="Phase 2 Complete&#10;(Pathway Assigned)">
+      <bpmn:incoming>Flow_PhaseTransition_End</bpmn:incoming>
+      <bpmn:signalEventDefinition id="Signal_P2Complete" signalRef="Signal_Phase2Complete" />
+    </bpmn:endEvent>
+
+    <!-- Escalation End Event -->
+    <bpmn:endEvent id="EndEvent_P2SLAEscalated" name="Phase 2 QG&#10;SLA Escalated">
+      <bpmn:incoming>Flow_P2QGEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Text Annotations -->
+    <bpmn:textAnnotation id="Annotation_P2_DMN01">
+      <bpmn:text>DMN-01 (AIRoutingPathway): Routes to Fast-Track, Build, Buy, or Hybrid pathways based on composite risk score. All decisions logged with DMN Rule ID and version. OCC 2023-17 compliant.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P2_DMN01" sourceRef="Task_DMN01_PathwayAssignment" targetRef="Annotation_P2_DMN01" />
+
+    <bpmn:textAnnotation id="Annotation_P2_DORA">
+      <bpmn:text>DORA: Vendor concentration risk check per BCBS d577. GDPR/CCPA: Data residency routing. EU AI Act: AI pathway routing based on risk tier from DMN-09. SOX: Audit trail for all routing decisions.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_P2_DORA" sourceRef="Task_DecisionAuditLog" targetRef="Annotation_P2_DORA" />
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Signal_P1Complete_catch" sourceRef="StartEvent_RoutingInitiated" targetRef="Task_IntakeDataIngestion" />
+    <bpmn:sequenceFlow id="Flow_Start_Ingest" sourceRef="StartEvent_RoutingInitiated" targetRef="Task_IntakeDataIngestion" />
+    <bpmn:sequenceFlow id="Flow_Ingest_Registry" sourceRef="Task_IntakeDataIngestion" targetRef="Task_RegistryResultsEnrich" />
+    <bpmn:sequenceFlow id="Flow_Registry_VendorData" sourceRef="Task_RegistryResultsEnrich" targetRef="Task_VendorDataEnrich" />
+    <bpmn:sequenceFlow id="Flow_VendorData_Concentration" sourceRef="Task_VendorDataEnrich" targetRef="Task_ConcentrationRiskCheck" />
+    <bpmn:sequenceFlow id="Flow_Concentration_CompositeScore" sourceRef="Task_ConcentrationRiskCheck" targetRef="Task_CompositeScoreCalc" />
+    <bpmn:sequenceFlow id="Flow_CompositeScore_DMN13" sourceRef="Task_CompositeScoreCalc" targetRef="Task_DMN13_FastTrack" />
+    <bpmn:sequenceFlow id="Flow_DMN13_Gateway" sourceRef="Task_DMN13_FastTrack" targetRef="Gateway_FastTrackEligible" />
+    <bpmn:sequenceFlow id="Flow_FastTrack" name="Yes" sourceRef="Gateway_FastTrackEligible" targetRef="EndEvent_FastTrackFulfillment">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${fastTrackEligible == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_NotFastTrack" name="No" sourceRef="Gateway_FastTrackEligible" targetRef="Task_DMN01_PathwayAssignment" />
+    <bpmn:sequenceFlow id="Flow_DMN01_Gateway" sourceRef="Task_DMN01_PathwayAssignment" targetRef="Gateway_PathwayDecision" />
+    <bpmn:sequenceFlow id="Flow_PathwayBuild" name="Build" sourceRef="Gateway_PathwayDecision" targetRef="Task_DecisionAuditLog">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'BUILD'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_StandardBuy" name="Buy" sourceRef="Gateway_PathwayDecision" targetRef="Task_DecisionAuditLog" />
+    <bpmn:sequenceFlow id="Flow_PathwayHybrid" name="Hybrid" sourceRef="Gateway_PathwayDecision" targetRef="Task_DecisionAuditLog">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'HYBRID'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_AuditLog_PathwayConfig" sourceRef="Task_DecisionAuditLog" targetRef="Task_PathwayConfig" />
+    <bpmn:sequenceFlow id="Flow_PathwayConfig_SLAClock" sourceRef="Task_PathwayConfig" targetRef="Task_SLAClockStart" />
+    <bpmn:sequenceFlow id="Flow_SLAClock_Notification" sourceRef="Task_SLAClockStart" targetRef="Task_RequestorNotification" />
+    <bpmn:sequenceFlow id="Flow_Notification_PhaseTransition" sourceRef="Task_RequestorNotification" targetRef="Task_PhaseTransitionP2" />
+    <bpmn:sequenceFlow id="Flow_PhaseTransition_End" sourceRef="Task_PhaseTransitionP2" targetRef="EndEvent_RoutingComplete" />
+    <bpmn:sequenceFlow id="Flow_P2QGEscalate" sourceRef="Timer_Phase2QualityGate" targetRef="EndEvent_P2SLAEscalated" />
+
+  </bpmn:process>
+
+  <bpmn:signal id="Signal_Phase1Complete_P2" name="Phase1Complete" />
+  <bpmn:signal id="Signal_Phase2Complete" name="Phase2Complete" />
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Phase2">
+    <bpmndi:BPMNPlane id="BPMNPlane_Phase2" bpmnElement="Collaboration_Phase2">
+
+      <bpmndi:BPMNShape id="Participant_Phase2_di" bpmnElement="Participant_Phase2" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="2400" height="1240" />
+      </bpmndi:BPMNShape>
+
+      <!-- Swim Lanes -->
+      <bpmndi:BPMNShape id="Lane_GB_P2_di" bpmnElement="Lane_GB_P2" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BO_P2_di" bpmnElement="Lane_BO_P2" isHorizontal="true">
+        <dc:Bounds x="185" y="207" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ITA_P2_di" bpmnElement="Lane_ITA_P2" isHorizontal="true">
+        <dc:Bounds x="185" y="367" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Proc_P2_di" bpmnElement="Lane_Proc_P2" isHorizontal="true">
+        <dc:Bounds x="185" y="527" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_LC_P2_di" bpmnElement="Lane_LC_P2" isHorizontal="true">
+        <dc:Bounds x="185" y="687" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_IS_P2_di" bpmnElement="Lane_IS_P2" isHorizontal="true">
+        <dc:Bounds x="185" y="847" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_VM_P2_di" bpmnElement="Lane_VM_P2" isHorizontal="true">
+        <dc:Bounds x="185" y="1007" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start Event (BO, y=207+62=269) x=247 -->
+      <bpmndi:BPMNShape id="StartEvent_RoutingInitiated_di" bpmnElement="StartEvent_RoutingInitiated">
+        <dc:Bounds x="247" y="269" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="225" y="312" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Intake Data Ingestion (BO) x=330 -->
+      <bpmndi:BPMNShape id="Task_IntakeDataIngestion_di" bpmnElement="Task_IntakeDataIngestion">
+        <dc:Bounds x="330" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Registry Results Enrichment (Procurement, y=527+40=567) x=520 -->
+      <bpmndi:BPMNShape id="Task_RegistryResultsEnrich_di" bpmnElement="Task_RegistryResultsEnrich">
+        <dc:Bounds x="520" y="547" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Vendor Data Enrichment (VM, y=1007+40=1047) x=710 -->
+      <bpmndi:BPMNShape id="Task_VendorDataEnrich_di" bpmnElement="Task_VendorDataEnrich">
+        <dc:Bounds x="710" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Concentration Risk Check (VM) x=900 -->
+      <bpmndi:BPMNShape id="Task_ConcentrationRiskCheck_di" bpmnElement="Task_ConcentrationRiskCheck">
+        <dc:Bounds x="900" y="1027" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Composite Score (LC, y=687+40=727) x=1090 -->
+      <bpmndi:BPMNShape id="Task_CompositeScoreCalc_di" bpmnElement="Task_CompositeScoreCalc">
+        <dc:Bounds x="1090" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-13 Fast Track (ITA, y=367+40=407) x=1280 -->
+      <bpmndi:BPMNShape id="Task_DMN13_FastTrack_di" bpmnElement="Task_DMN13_FastTrack">
+        <dc:Bounds x="1280" y="387" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Fast Track Eligible (ITA) x=1470 -->
+      <bpmndi:BPMNShape id="Gateway_FastTrackEligible_di" bpmnElement="Gateway_FastTrackEligible" isMarkerVisible="true">
+        <dc:Bounds x="1465" y="402" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1448" y="459" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- End Fast Track (ITA) x=1570 -->
+      <bpmndi:BPMNShape id="EndEvent_FastTrackFulfillment_di" bpmnElement="EndEvent_FastTrackFulfillment">
+        <dc:Bounds x="1572" y="351" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1548" y="320" width="84" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- DMN-01 Pathway (LC) x=1570 y=707 -->
+      <bpmndi:BPMNShape id="Task_DMN01_PathwayAssignment_di" bpmnElement="Task_DMN01_PathwayAssignment">
+        <dc:Bounds x="1570" y="707" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Pathway Decision (LC) x=1760 -->
+      <bpmndi:BPMNShape id="Gateway_PathwayDecision_di" bpmnElement="Gateway_PathwayDecision" isMarkerVisible="true">
+        <dc:Bounds x="1755" y="722" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1738" y="779" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Decision Audit Log (IS, y=847+40=887) x=1850 -->
+      <bpmndi:BPMNShape id="Task_DecisionAuditLog_di" bpmnElement="Task_DecisionAuditLog">
+        <dc:Bounds x="1850" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Pathway Config (IS) x=2040 -->
+      <bpmndi:BPMNShape id="Task_PathwayConfig_di" bpmnElement="Task_PathwayConfig">
+        <dc:Bounds x="2040" y="867" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- SLA Clock Start (GB, y=47+40=87) x=2040 -->
+      <bpmndi:BPMNShape id="Task_SLAClockStart_di" bpmnElement="Task_SLAClockStart">
+        <dc:Bounds x="2040" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Requestor Notification (BO) x=2040 y=247 -->
+      <bpmndi:BPMNShape id="Task_RequestorNotification_di" bpmnElement="Task_RequestorNotification">
+        <dc:Bounds x="2040" y="247" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase Transition (GB) x=2230 y=87 -->
+      <bpmndi:BPMNShape id="Task_PhaseTransitionP2_di" bpmnElement="Task_PhaseTransitionP2">
+        <dc:Bounds x="2230" y="87" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Timer boundary on Phase Transition -->
+      <bpmndi:BPMNShape id="Timer_Phase2QualityGate_di" bpmnElement="Timer_Phase2QualityGate">
+        <dc:Bounds x="2282" y="149" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Event Routing Complete (GB) x=2420 y=87 -->
+      <bpmndi:BPMNShape id="EndEvent_RoutingComplete_di" bpmnElement="EndEvent_RoutingComplete">
+        <dc:Bounds x="2422" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2396" y="145" width="88" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- End Event P2 SLA Escalated (GB) -->
+      <bpmndi:BPMNShape id="EndEvent_P2SLAEscalated_di" bpmnElement="EndEvent_P2SLAEscalated">
+        <dc:Bounds x="2282" y="52" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2258" y="20" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Annotations -->
+      <bpmndi:BPMNShape id="Annotation_P2_DMN01_di" bpmnElement="Annotation_P2_DMN01">
+        <dc:Bounds x="200" y="1175" width="800" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annotation_P2_DORA_di" bpmnElement="Annotation_P2_DORA">
+        <dc:Bounds x="1050" y="1175" width="800" height="55" />
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="Flow_Start_Ingest_di" bpmnElement="Flow_Start_Ingest">
+        <di:waypoint x="283" y="287" />
+        <di:waypoint x="330" y="287" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Ingest_Registry_di" bpmnElement="Flow_Ingest_Registry">
+        <di:waypoint x="470" y="287" />
+        <di:waypoint x="495" y="287" />
+        <di:waypoint x="495" y="587" />
+        <di:waypoint x="520" y="587" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Registry_VendorData_di" bpmnElement="Flow_Registry_VendorData">
+        <di:waypoint x="660" y="587" />
+        <di:waypoint x="685" y="587" />
+        <di:waypoint x="685" y="1067" />
+        <di:waypoint x="710" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_VendorData_Concentration_di" bpmnElement="Flow_VendorData_Concentration">
+        <di:waypoint x="850" y="1067" />
+        <di:waypoint x="900" y="1067" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Concentration_CompositeScore_di" bpmnElement="Flow_Concentration_CompositeScore">
+        <di:waypoint x="1040" y="1067" />
+        <di:waypoint x="1065" y="1067" />
+        <di:waypoint x="1065" y="747" />
+        <di:waypoint x="1090" y="747" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_CompositeScore_DMN13_di" bpmnElement="Flow_CompositeScore_DMN13">
+        <di:waypoint x="1230" y="747" />
+        <di:waypoint x="1255" y="747" />
+        <di:waypoint x="1255" y="427" />
+        <di:waypoint x="1280" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DMN13_Gateway_di" bpmnElement="Flow_DMN13_Gateway">
+        <di:waypoint x="1420" y="427" />
+        <di:waypoint x="1465" y="427" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_FastTrack_di" bpmnElement="Flow_FastTrack">
+        <di:waypoint x="1490" y="402" />
+        <di:waypoint x="1490" y="369" />
+        <di:waypoint x="1572" y="369" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1510" y="383" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_NotFastTrack_di" bpmnElement="Flow_NotFastTrack">
+        <di:waypoint x="1490" y="452" />
+        <di:waypoint x="1490" y="747" />
+        <di:waypoint x="1570" y="747" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1498" y="597" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DMN01_Gateway_di" bpmnElement="Flow_DMN01_Gateway">
+        <di:waypoint x="1710" y="747" />
+        <di:waypoint x="1755" y="747" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PathwayBuild_di" bpmnElement="Flow_PathwayBuild">
+        <di:waypoint x="1780" y="772" />
+        <di:waypoint x="1780" y="907" />
+        <di:waypoint x="1850" y="907" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1788" y="832" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_StandardBuy_di" bpmnElement="Flow_StandardBuy">
+        <di:waypoint x="1805" y="747" />
+        <di:waypoint x="1830" y="747" />
+        <di:waypoint x="1830" y="907" />
+        <di:waypoint x="1850" y="907" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1808" y="822" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PathwayHybrid_di" bpmnElement="Flow_PathwayHybrid">
+        <di:waypoint x="1780" y="722" />
+        <di:waypoint x="1780" y="680" />
+        <di:waypoint x="1920" y="680" />
+        <di:waypoint x="1920" y="867" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1788" y="698" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_AuditLog_PathwayConfig_di" bpmnElement="Flow_AuditLog_PathwayConfig">
+        <di:waypoint x="1990" y="907" />
+        <di:waypoint x="2040" y="907" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PathwayConfig_SLAClock_di" bpmnElement="Flow_PathwayConfig_SLAClock">
+        <di:waypoint x="2110" y="867" />
+        <di:waypoint x="2110" y="167" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SLAClock_Notification_di" bpmnElement="Flow_SLAClock_Notification">
+        <di:waypoint x="2110" y="167" />
+        <di:waypoint x="2110" y="247" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Notification_PhaseTransition_di" bpmnElement="Flow_Notification_PhaseTransition">
+        <di:waypoint x="2110" y="247" />
+        <di:waypoint x="2110" y="127" />
+        <di:waypoint x="2230" y="127" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PhaseTransition_End_di" bpmnElement="Flow_PhaseTransition_End">
+        <di:waypoint x="2370" y="127" />
+        <di:waypoint x="2422" y="120" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P2QGEscalate_di" bpmnElement="Flow_P2QGEscalate">
+        <di:waypoint x="2300" y="149" />
+        <di:waypoint x="2300" y="88" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P2_DMN01_di" bpmnElement="Assoc_P2_DMN01">
+        <di:waypoint x="1640" y="787" />
+        <di:waypoint x="600" y="1175" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_P2_DORA_di" bpmnElement="Assoc_P2_DORA">
+        <di:waypoint x="1920" y="947" />
+        <di:waypoint x="1450" y="1175" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

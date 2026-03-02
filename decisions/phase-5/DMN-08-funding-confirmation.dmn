@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d08_DMN_08_FundingConfirmation"
+             name="DMN-08: Funding Confirmation Gate"
+             namespace="http://sla.governance.example.com/dmn/phase5b">
+
+  <!--
+    DMN-08: Funding Confirmation Gate
+    Phase: 5B (TPRM-Integrated Procurement - Stage 4 Contracting)
+    Hit Policy: UNIQUE
+    Regulatory: SOX, OCC 2023-17
+    Task Type: Human-in-the-Loop (H) for negotiation; Automated (A) for gate
+    Description: Final financial confirmation gate before contract execution and PO issuance.
+                 Finance Controller must confirm budget availability and FP&amp;A integration.
+  -->
+
+  <decision id="DMN08FundingConfirmation" name="Funding Confirmation Gate">
+    <decisionTable id="d08_dt_funding" hitPolicy="UNIQUE">
+
+      <input id="d08_in_finance_engaged" label="Finance Controller Engaged?">
+        <inputExpression id="d08_ie_finance" typeRef="boolean">
+          <text>financeControllerEngaged</text>
+        </inputExpression>
+      </input>
+
+      <input id="d08_in_budget_available" label="Budget Available?">
+        <inputExpression id="d08_ie_budget" typeRef="boolean">
+          <text>budgetAvailable</text>
+        </inputExpression>
+      </input>
+
+      <input id="d08_in_fpa_complete" label="FP&amp;A Integration Complete?">
+        <inputExpression id="d08_ie_fpa" typeRef="boolean">
+          <text>fpaIntegrationComplete</text>
+        </inputExpression>
+      </input>
+
+      <input id="d08_in_budget_year" label="Budget Year">
+        <inputExpression id="d08_ie_budget_year" typeRef="string">
+          <text>budgetYear</text>
+        </inputExpression>
+        <inputValues id="d08_iv_budget_year">
+          <text>"CurrentFY","NextFY"</text>
+        </inputValues>
+      </input>
+
+      <output id="d08_out_decision" label="Funding Decision" typeRef="string" />
+      <output id="d08_out_action" label="Required Action" typeRef="string" />
+      <output id="d08_out_sla" label="Resolution SLA" typeRef="string" />
+      <output id="d08_out_finance_note" label="Finance Integration Note" typeRef="string" />
+
+      <!-- Rule 1: Finance engaged, budget confirmed, FP&amp;A done, current FY → funded proceed -->
+      <rule id="d08_r01_funded_current">
+        <description>Fully funded in current fiscal year - proceed to contract execution and PO issuance</description>
+        <inputEntry id="d08_ie1_r01"><text>true</text></inputEntry>
+        <inputEntry id="d08_ie2_r01"><text>true</text></inputEntry>
+        <inputEntry id="d08_ie3_r01"><text>true</text></inputEntry>
+        <inputEntry id="d08_ie4_r01"><text>"CurrentFY"</text></inputEntry>
+        <outputEntry id="d08_oe1_r01"><text>"FUNDED-PROCEED"</text></outputEntry>
+        <outputEntry id="d08_oe2_r01"><text>"Final contract execution authorized; PO issuance approved; TPRM onboarding sequence initiated"</text></outputEntry>
+        <outputEntry id="d08_oe3_r01"><text>"Immediate - contract execution within 10 business days"</text></outputEntry>
+        <outputEntry id="d08_oe4_r01"><text>"Costs integrated into current FY budget; CMDB and procurement system updated"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: Finance engaged, budget confirmed, FP&amp;A done, next FY → funded deferred -->
+      <rule id="d08_r02_funded_deferred">
+        <description>Funding confirmed for next fiscal year - contract signed now, commencement deferred</description>
+        <inputEntry id="d08_ie1_r02"><text>true</text></inputEntry>
+        <inputEntry id="d08_ie2_r02"><text>true</text></inputEntry>
+        <inputEntry id="d08_ie3_r02"><text>true</text></inputEntry>
+        <inputEntry id="d08_ie4_r02"><text>"NextFY"</text></inputEntry>
+        <outputEntry id="d08_oe1_r02"><text>"FUNDED-DEFERRED"</text></outputEntry>
+        <outputEntry id="d08_oe2_r02"><text>"Contract signed now with future commencement date; costs accrued to next FY budget; vendor notified of deferred start"</text></outputEntry>
+        <outputEntry id="d08_oe3_r02"><text>"Contract execution within 10 days; service commencement at next FY start"</text></outputEntry>
+        <outputEntry id="d08_oe4_r02"><text>"Accrual entry created in FP&amp;A; budget reservation confirmed for next FY"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Finance not engaged → escalate immediately -->
+      <rule id="d08_r03_escalate">
+        <description>Finance Controller not yet engaged - escalate for immediate engagement</description>
+        <inputEntry id="d08_ie1_r03"><text>false</text></inputEntry>
+        <inputEntry id="d08_ie2_r03"><text>-</text></inputEntry>
+        <inputEntry id="d08_ie3_r03"><text>-</text></inputEntry>
+        <inputEntry id="d08_ie4_r03"><text>-</text></inputEntry>
+        <outputEntry id="d08_oe1_r03"><text>"ESCALATE"</text></outputEntry>
+        <outputEntry id="d08_oe2_r03"><text>"Finance Controller engaged within 3 business days; 10-day resolution target; contract execution blocked until financial confirmation received"</text></outputEntry>
+        <outputEntry id="d08_oe3_r03"><text>"10 business days from escalation"</text></outputEntry>
+        <outputEntry id="d08_oe4_r03"><text>"Portfolio Governance Council notified; SLA clock paused pending Finance engagement"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Finance engaged, no budget → no funding -->
+      <rule id="d08_r04_no_funding">
+        <description>Finance engaged but budget not available - defer to next planning cycle</description>
+        <inputEntry id="d08_ie1_r04"><text>true</text></inputEntry>
+        <inputEntry id="d08_ie2_r04"><text>false</text></inputEntry>
+        <inputEntry id="d08_ie3_r04"><text>-</text></inputEntry>
+        <inputEntry id="d08_ie4_r04"><text>-</text></inputEntry>
+        <outputEntry id="d08_oe1_r04"><text>"NO-FUNDING"</text></outputEntry>
+        <outputEntry id="d08_oe2_r04"><text>"Re-evaluated in next budget planning cycle; requestor notified with documented budget rationale; initiative parked in portfolio with priority flag"</text></outputEntry>
+        <outputEntry id="d08_oe3_r04"><text>"Next budget planning cycle (typically 90-180 days)"</text></outputEntry>
+        <outputEntry id="d08_oe4_r04"><text>"Budget gap documented; Finance Controller provides alternative funding path recommendation"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: Finance engaged, budget available, FP&amp;A pending → hold for FP&amp;A -->
+      <rule id="d08_r05_hold_fpa">
+        <description>Finance engaged, budget available but FP&amp;A integration not yet complete - hold</description>
+        <inputEntry id="d08_ie1_r05"><text>true</text></inputEntry>
+        <inputEntry id="d08_ie2_r05"><text>true</text></inputEntry>
+        <inputEntry id="d08_ie3_r05"><text>false</text></inputEntry>
+        <inputEntry id="d08_ie4_r05"><text>-</text></inputEntry>
+        <outputEntry id="d08_oe1_r05"><text>"HOLD-FPA"</text></outputEntry>
+        <outputEntry id="d08_oe2_r05"><text>"FP&amp;A integration required before PO issuance; Finance Controller completes TCO model integration within 5 business days"</text></outputEntry>
+        <outputEntry id="d08_oe3_r05"><text>"5 business days for FP&amp;A completion"</text></outputEntry>
+        <outputEntry id="d08_oe4_r05"><text>"TCO model finalized; contract financials integrated into FP&amp;A before PO issuance"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d08_diagram_DMN08">
+      <dmndi:DMNShape id="d08_shape_DMN08" dmnElementRef="DMN08FundingConfirmation">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

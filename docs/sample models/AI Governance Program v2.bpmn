@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_AIGovernance" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.42.0">
+  <bpmn:process id="SampleAIGovernanceProcess" name="Sample AI Governance Process" isExecutable="true" camunda:historyTimeToLive="10">
+    <bpmn:startEvent id="Start_AIGovernance" name="Start AI Governance Process" camunda:formHandlerClass="org.softcannery.camunda.FormioStartFormHandler" camunda:formKey="embedded:app:formio.html">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;governance_initiation&#34;, true)}" event="start" />
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="AI_Governance_Start" />
+          <camunda:property name="formio.outputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.file" value="AI_Governance_Start.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_to_initital_classification</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_StartEvent">
+        <bpmn:targetRef>DataStore_AIGovernance</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:startEvent>
+    <bpmn:dataStoreReference id="DataStore_AIGovernance" name="AIGovernanceData" />
+    <bpmn:userTask id="Task_InitialRiskClassification" name="Initial Risk Classification" camunda:formKey="embedded:app:formio.html" camunda:assignee="risk_analyst">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_InitialRiskClassification" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_InitialRiskClassification" />
+          <camunda:property name="formio.file" value="AI_Initial_Risk_Classification.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_InitialRiskClassification">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_initital_classification</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_risk_gateway</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_RiskClassification" name="Risk&#10; Classification">
+      <bpmn:incoming>Flow_to_risk_gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_unacceptable_risk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_high_risk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_limited_risk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_minimal_risk</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_UnacceptableRisk" name="Rejected as&#10;Unacceptable Risk">
+      <bpmn:incoming>Flow_unacceptable_risk</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_ComprehensiveRiskAssessment" name="High Risk Assessment" camunda:formKey="embedded:app:formio.html" camunda:assignee="senior_risk_analyst">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_ComprehensiveRiskAssessment" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_ComprehensiveRiskAssessment" />
+          <camunda:property name="formio.file" value="AI_Comprehensive_Risk_Assessment.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_ComprehensiveRiskAssessment">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_high_risk</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_governance_review_high</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_StandardRiskAssessment" name="Limited Risk Assessment" camunda:formKey="embedded:app:formio.html" camunda:assignee="risk_analyst">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_StandardRiskAssessment" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_StandardRiskAssessment" />
+          <camunda:property name="formio.file" value="AI_Standard_Risk_Assessment.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_StandardRiskAssessment">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_limited_risk</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_governance_review_limited</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_BasicRiskAssessment" name="Minimal Risk Assessment" camunda:formKey="embedded:app:formio.html" camunda:assignee="risk_analyst">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_BasicRiskAssessment" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_BasicRiskAssessment" />
+          <camunda:property name="formio.file" value="AI_Basic_Risk_Assessment.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_BasicRiskAssessment">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_minimal_risk</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_governance_review_minimal</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_GovernanceAdvisoryBoardReview" name="Governance Advisory Board Review" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_board">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_GovernanceAdvisoryBoardReview" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_GovernanceAdvisoryBoardReview" />
+          <camunda:property name="formio.file" value="AI_Governance_Board_Review.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_GovernanceAdvisoryBoardReview">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_governance_review_high</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_board_decision</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_GovernanceTeamReview" name="Governance Team Review" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_team">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_GovernanceTeamReview" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_GovernanceTeamReview" />
+          <camunda:property name="formio.file" value="AI_Governance_Team_Review.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_GovernanceTeamReview">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_governance_review_limited</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_team_decision</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_StandardApproval" name="Standard Approval" camunda:formKey="embedded:app:formio.html" camunda:assignee="approval_manager">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_StandardApproval" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_StandardApproval" />
+          <camunda:property name="formio.file" value="AI_Standard_Approval.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_StandardApproval">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_governance_review_minimal</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_standard_decision</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_BoardDecision" name="Governance Advisory Board Decision ?">
+      <bpmn:incoming>Flow_to_board_decision</bpmn:incoming>
+      <bpmn:outgoing>Flow_board_approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_board_rejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gateway_TeamDecision" name="Governance Team Decision ?">
+      <bpmn:incoming>Flow_to_team_decision</bpmn:incoming>
+      <bpmn:outgoing>Flow_team_approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_team_rejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gateway_StandardDecision" name="Standard Decision">
+      <bpmn:incoming>Flow_to_standard_decision</bpmn:incoming>
+      <bpmn:outgoing>Flow_standard_approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1cf4nld</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_RejectedProject" name="Project Rejected">
+      <bpmn:incoming>Flow_team_rejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_ApprovalConvergence">
+      <bpmn:incoming>Flow_board_approved</bpmn:incoming>
+      <bpmn:incoming>Flow_team_approved</bpmn:incoming>
+      <bpmn:incoming>Flow_standard_approved</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_controls_implementation</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_ControlsImplementation" name="Controls Implementation" camunda:formKey="embedded:app:formio.html" camunda:assignee="implementation_team">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_ControlsImplementation" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_ControlsImplementation" />
+          <camunda:property name="formio.file" value="AI_Controls_Implementation.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_ControlsImplementation">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_controls_implementation</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_predeployment_validation</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_PredeploymentValidation" name="Pre-Deployment Validation" camunda:formKey="embedded:app:formio.html" camunda:assignee="validation_team">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_PredeploymentValidation" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_PredeploymentValidation" />
+          <camunda:property name="formio.file" value="AI_Predeployment_Validation.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_PredeploymentValidation">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_predeployment_validation</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_deployment_decision</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_DeploymentDecision" name="Deployment Decision ?">
+      <bpmn:incoming>Flow_to_deployment_decision</bpmn:incoming>
+      <bpmn:outgoing>Flow_deployment_approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_deployment_rejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_DeploymentRejected" name="Deployment Rejected">
+      <bpmn:incoming>Flow_deployment_rejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_ProductionMonitoring" name="Production Monitoring" camunda:formKey="embedded:app:formio.html" camunda:assignee="monitoring_team">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_ProductionMonitoring" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_ProductionMonitoring" />
+          <camunda:property name="formio.file" value="AI_Production_Monitoring.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_ProductionMonitoring">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_deployment_approved</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_periodic_assessment</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_PeriodicAssessment" name="Periodic Assessment" camunda:formKey="embedded:app:formio.html" camunda:assignee="assessment_team">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_PeriodicAssessment" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_PeriodicAssessment" />
+          <camunda:property name="formio.file" value="AI_Periodic_Assessment.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_PeriodicAssessment">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_periodic_assessment</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_continuous_monitoring</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_ContinuousMonitoring" name="Continuous Monitoring" camunda:formKey="embedded:app:formio.html" camunda:assignee="monitoring_team">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_ContinuousMonitoring" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_ContinuousMonitoring" />
+          <camunda:property name="formio.file" value="AI_Continuous_Monitoring.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_ContinuousMonitoring">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_188uh36</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_retirement_decision</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_RetirementDecision" name="Retirement Decision ?">
+      <bpmn:incoming>Flow_to_retirement_decision</bpmn:incoming>
+      <bpmn:outgoing>Flow_continue_monitoring</bpmn:outgoing>
+      <bpmn:outgoing>Flow_system_retirement</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_SystemRetirement" name="System Retirement" camunda:formKey="embedded:app:formio.html" camunda:assignee="retirement_team">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_SystemRetirement" />
+          <camunda:property name="formio.inputDataSource" value="AIGovernanceData" />
+          <camunda:property name="formio.outputDataSource" value="Task_SystemRetirement" />
+          <camunda:property name="formio.file" value="AI_System_Retirement.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_SystemRetirement">${formio.AIGovernanceData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_system_retirement</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_complete</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_ProcessComplete" name="Governance Process Complete">
+      <bpmn:incoming>Flow_to_complete</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_to_initital_classification" sourceRef="Start_AIGovernance" targetRef="Task_InitialRiskClassification" />
+    <bpmn:sequenceFlow id="Flow_to_risk_gateway" sourceRef="Task_InitialRiskClassification" targetRef="Gateway_RiskClassification" />
+    <bpmn:sequenceFlow id="Flow_unacceptable_risk" name="Unacceptable Risk" sourceRef="Gateway_RiskClassification" targetRef="EndEvent_UnacceptableRisk">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_InitialRiskClassification.data.riskClassification == "Unacceptable"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_high_risk" name="High Risk" sourceRef="Gateway_RiskClassification" targetRef="Task_ComprehensiveRiskAssessment">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_InitialRiskClassification.data.riskClassification == "High"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_limited_risk" name="Limited Risk" sourceRef="Gateway_RiskClassification" targetRef="Task_StandardRiskAssessment">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_InitialRiskClassification.data.riskClassification == "Limited"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_minimal_risk" name="Minimal Risk" sourceRef="Gateway_RiskClassification" targetRef="Task_BasicRiskAssessment">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_InitialRiskClassification.data.riskClassification == "Minimal"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_to_governance_review_high" sourceRef="Task_ComprehensiveRiskAssessment" targetRef="Task_GovernanceAdvisoryBoardReview" />
+    <bpmn:sequenceFlow id="Flow_to_governance_review_limited" sourceRef="Task_StandardRiskAssessment" targetRef="Task_GovernanceTeamReview" />
+    <bpmn:sequenceFlow id="Flow_to_governance_review_minimal" sourceRef="Task_BasicRiskAssessment" targetRef="Task_StandardApproval" />
+    <bpmn:sequenceFlow id="Flow_to_board_decision" sourceRef="Task_GovernanceAdvisoryBoardReview" targetRef="Gateway_BoardDecision" />
+    <bpmn:sequenceFlow id="Flow_to_team_decision" sourceRef="Task_GovernanceTeamReview" targetRef="Gateway_TeamDecision" />
+    <bpmn:sequenceFlow id="Flow_to_standard_decision" sourceRef="Task_StandardApproval" targetRef="Gateway_StandardDecision" />
+    <bpmn:sequenceFlow id="Flow_board_approved" name="Approved" sourceRef="Gateway_BoardDecision" targetRef="Gateway_ApprovalConvergence">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_GovernanceAdvisoryBoardReview.data.approvalDecision == "Approved"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_board_rejected" name="Rejected" sourceRef="Gateway_BoardDecision" targetRef="Event_1set5z6">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_GovernanceAdvisoryBoardReview.data.approvalDecision == "Rejected"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_team_approved" name="Approved" sourceRef="Gateway_TeamDecision" targetRef="Gateway_ApprovalConvergence">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_GovernanceTeamReview.data.approvalDecision == "Approved"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_team_rejected" name="Rejected" sourceRef="Gateway_TeamDecision" targetRef="EndEvent_RejectedProject">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_GovernanceTeamReview.data.approvalDecision == "Rejected"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_standard_approved" name="Approved" sourceRef="Gateway_StandardDecision" targetRef="Gateway_ApprovalConvergence">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_StandardApproval.data.approvalDecision == "Approved"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_to_controls_implementation" sourceRef="Gateway_ApprovalConvergence" targetRef="Task_ControlsImplementation" />
+    <bpmn:sequenceFlow id="Flow_to_predeployment_validation" sourceRef="Task_ControlsImplementation" targetRef="Task_PredeploymentValidation" />
+    <bpmn:sequenceFlow id="Flow_to_deployment_decision" sourceRef="Task_PredeploymentValidation" targetRef="Gateway_DeploymentDecision" />
+    <bpmn:sequenceFlow id="Flow_deployment_approved" name="Approved" sourceRef="Gateway_DeploymentDecision" targetRef="Task_ProductionMonitoring">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_PredeploymentValidation.data.deploymentDecision == "Approved"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_deployment_rejected" name="Rejected" sourceRef="Gateway_DeploymentDecision" targetRef="EndEvent_DeploymentRejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_PredeploymentValidation.data.deploymentDecision == "Rejected"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_to_periodic_assessment" sourceRef="Task_ProductionMonitoring" targetRef="Task_PeriodicAssessment" />
+    <bpmn:sequenceFlow id="Flow_to_continuous_monitoring" sourceRef="Task_PeriodicAssessment" targetRef="Gateway_1b98ar4" />
+    <bpmn:sequenceFlow id="Flow_to_retirement_decision" sourceRef="Task_ContinuousMonitoring" targetRef="Gateway_RetirementDecision" />
+    <bpmn:sequenceFlow id="Flow_continue_monitoring" name="Continue" sourceRef="Gateway_RetirementDecision" targetRef="Gateway_1b98ar4">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_ContinuousMonitoring.data.retirementDecision == "Continue"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_system_retirement" name="Retire" sourceRef="Gateway_RetirementDecision" targetRef="Task_SystemRetirement">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_ContinuousMonitoring.data.retirementDecision == "Retire"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_to_complete" sourceRef="Task_SystemRetirement" targetRef="EndEvent_ProcessComplete" />
+    <bpmn:endEvent id="Event_1set5z6">
+      <bpmn:incoming>Flow_board_rejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_1b98ar4">
+      <bpmn:incoming>Flow_to_continuous_monitoring</bpmn:incoming>
+      <bpmn:incoming>Flow_continue_monitoring</bpmn:incoming>
+      <bpmn:outgoing>Flow_188uh36</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_188uh36" sourceRef="Gateway_1b98ar4" targetRef="Task_ContinuousMonitoring" />
+    <bpmn:endEvent id="Event_1ih5s7p" name="Project Rejected">
+      <bpmn:incoming>Flow_1cf4nld</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1cf4nld" name="Rejected" sourceRef="Gateway_StandardDecision" targetRef="Event_1ih5s7p">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.Task_StandardApproval.data.approvalDecision == "Rejected"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_AIGovernance">
+    <bpmndi:BPMNPlane id="BPMNPlane_AIGovernance" bpmnElement="SampleAIGovernanceProcess">
+      <bpmndi:BPMNShape id="Start_AIGovernance_di" bpmnElement="Start_AIGovernance">
+        <dc:Bounds x="192" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="180" y="112" width="60" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStore_AIGovernance_di" bpmnElement="DataStore_AIGovernance">
+        <dc:Bounds x="185" y="255" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="168" y="312" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InitialRiskClassification_di" bpmnElement="Task_InitialRiskClassification">
+        <dc:Bounds x="280" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_RiskClassification_di" bpmnElement="Gateway_RiskClassification" isMarkerVisible="true">
+        <dc:Bounds x="485" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="396" y="146" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_UnacceptableRisk_di" bpmnElement="EndEvent_UnacceptableRisk">
+        <dc:Bounds x="692" y="682" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="677" y="725" width="68" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ComprehensiveRiskAssessment_di" bpmnElement="Task_ComprehensiveRiskAssessment">
+        <dc:Bounds x="660" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_StandardRiskAssessment_di" bpmnElement="Task_StandardRiskAssessment">
+        <dc:Bounds x="660" y="320" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BasicRiskAssessment_di" bpmnElement="Task_BasicRiskAssessment">
+        <dc:Bounds x="660" y="520" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GovernanceAdvisoryBoardReview_di" bpmnElement="Task_GovernanceAdvisoryBoardReview">
+        <dc:Bounds x="830" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GovernanceTeamReview_di" bpmnElement="Task_GovernanceTeamReview">
+        <dc:Bounds x="830" y="320" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_StandardApproval_di" bpmnElement="Task_StandardApproval">
+        <dc:Bounds x="830" y="520" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_BoardDecision_di" bpmnElement="Gateway_BoardDecision" isMarkerVisible="true">
+        <dc:Bounds x="985" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="972" y="100" width="75" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_TeamDecision_di" bpmnElement="Gateway_TeamDecision" isMarkerVisible="true">
+        <dc:Bounds x="985" y="335" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="965" y="296" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_StandardDecision_di" bpmnElement="Gateway_StandardDecision" isMarkerVisible="true">
+        <dc:Bounds x="985" y="535" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="965" y="511" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_RejectedProject_di" bpmnElement="EndEvent_RejectedProject">
+        <dc:Bounds x="1072" y="422" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1049" y="473" width="81" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ApprovalConvergence_di" bpmnElement="Gateway_ApprovalConvergence" isMarkerVisible="true">
+        <dc:Bounds x="1165" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ControlsImplementation_di" bpmnElement="Task_ControlsImplementation">
+        <dc:Bounds x="1280" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PredeploymentValidation_di" bpmnElement="Task_PredeploymentValidation">
+        <dc:Bounds x="1440" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_DeploymentDecision_di" bpmnElement="Gateway_DeploymentDecision" isMarkerVisible="true">
+        <dc:Bounds x="1595" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1591" y="125" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_DeploymentRejected_di" bpmnElement="EndEvent_DeploymentRejected">
+        <dc:Bounds x="1672" y="262" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1661" y="305" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ProductionMonitoring_di" bpmnElement="Task_ProductionMonitoring">
+        <dc:Bounds x="1700" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PeriodicAssessment_di" bpmnElement="Task_PeriodicAssessment">
+        <dc:Bounds x="1860" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ContinuousMonitoring_di" bpmnElement="Task_ContinuousMonitoring">
+        <dc:Bounds x="2100" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_RetirementDecision_di" bpmnElement="Gateway_RetirementDecision" isMarkerVisible="true">
+        <dc:Bounds x="2255" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2253" y="216" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SystemRetirement_di" bpmnElement="Task_SystemRetirement">
+        <dc:Bounds x="2360" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ProcessComplete_di" bpmnElement="EndEvent_ProcessComplete">
+        <dc:Bounds x="2522" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2495" y="205" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1set5z6_di" bpmnElement="Event_1set5z6">
+        <dc:Bounds x="1072" y="232" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1b98ar4_di" bpmnElement="Gateway_1b98ar4" isMarkerVisible="true">
+        <dc:Bounds x="2005" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ih5s7p_di" bpmnElement="Event_1ih5s7p">
+        <dc:Bounds x="1072" y="632" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1050" y="675" width="81" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_StartEvent_di" bpmnElement="DataOutputAssociation_StartEvent">
+        <di:waypoint x="210" y="198" />
+        <di:waypoint x="210" y="255" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_initital_classification_di" bpmnElement="Flow_to_initital_classification">
+        <di:waypoint x="228" y="180" />
+        <di:waypoint x="280" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_risk_gateway_di" bpmnElement="Flow_to_risk_gateway">
+        <di:waypoint x="380" y="180" />
+        <di:waypoint x="485" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_unacceptable_risk_di" bpmnElement="Flow_unacceptable_risk">
+        <di:waypoint x="510" y="205" />
+        <di:waypoint x="510" y="700" />
+        <di:waypoint x="692" y="700" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="536" y="666" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_high_risk_di" bpmnElement="Flow_high_risk">
+        <di:waypoint x="535" y="180" />
+        <di:waypoint x="660" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="548" y="162" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_limited_risk_di" bpmnElement="Flow_limited_risk">
+        <di:waypoint x="510" y="205" />
+        <di:waypoint x="510" y="360" />
+        <di:waypoint x="660" y="360" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="537" y="372" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_minimal_risk_di" bpmnElement="Flow_minimal_risk">
+        <di:waypoint x="510" y="205" />
+        <di:waypoint x="510" y="560" />
+        <di:waypoint x="660" y="560" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="535" y="543" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_governance_review_high_di" bpmnElement="Flow_to_governance_review_high">
+        <di:waypoint x="760" y="180" />
+        <di:waypoint x="830" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_governance_review_limited_di" bpmnElement="Flow_to_governance_review_limited">
+        <di:waypoint x="760" y="360" />
+        <di:waypoint x="830" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_governance_review_minimal_di" bpmnElement="Flow_to_governance_review_minimal">
+        <di:waypoint x="760" y="560" />
+        <di:waypoint x="830" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_board_decision_di" bpmnElement="Flow_to_board_decision">
+        <di:waypoint x="930" y="180" />
+        <di:waypoint x="985" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_team_decision_di" bpmnElement="Flow_to_team_decision">
+        <di:waypoint x="930" y="360" />
+        <di:waypoint x="985" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_standard_decision_di" bpmnElement="Flow_to_standard_decision">
+        <di:waypoint x="930" y="560" />
+        <di:waypoint x="985" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_board_approved_di" bpmnElement="Flow_board_approved">
+        <di:waypoint x="1035" y="180" />
+        <di:waypoint x="1165" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1066" y="162" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_board_rejected_di" bpmnElement="Flow_board_rejected">
+        <di:waypoint x="1010" y="205" />
+        <di:waypoint x="1010" y="250" />
+        <di:waypoint x="1072" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1016" y="223" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_team_approved_di" bpmnElement="Flow_team_approved">
+        <di:waypoint x="1035" y="360" />
+        <di:waypoint x="1190" y="360" />
+        <di:waypoint x="1190" y="205" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1066" y="372" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_team_rejected_di" bpmnElement="Flow_team_rejected">
+        <di:waypoint x="1010" y="385" />
+        <di:waypoint x="1010" y="440" />
+        <di:waypoint x="1072" y="440" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1016" y="398" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_standard_approved_di" bpmnElement="Flow_standard_approved">
+        <di:waypoint x="1035" y="560" />
+        <di:waypoint x="1190" y="560" />
+        <di:waypoint x="1190" y="205" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1066" y="543" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_controls_implementation_di" bpmnElement="Flow_to_controls_implementation">
+        <di:waypoint x="1215" y="180" />
+        <di:waypoint x="1280" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_predeployment_validation_di" bpmnElement="Flow_to_predeployment_validation">
+        <di:waypoint x="1380" y="180" />
+        <di:waypoint x="1440" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_deployment_decision_di" bpmnElement="Flow_to_deployment_decision">
+        <di:waypoint x="1540" y="180" />
+        <di:waypoint x="1595" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_deployment_approved_di" bpmnElement="Flow_deployment_approved">
+        <di:waypoint x="1645" y="180" />
+        <di:waypoint x="1700" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1646" y="162" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_deployment_rejected_di" bpmnElement="Flow_deployment_rejected">
+        <di:waypoint x="1620" y="205" />
+        <di:waypoint x="1620" y="280" />
+        <di:waypoint x="1672" y="280" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1626" y="253" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_periodic_assessment_di" bpmnElement="Flow_to_periodic_assessment">
+        <di:waypoint x="1800" y="180" />
+        <di:waypoint x="1860" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_continuous_monitoring_di" bpmnElement="Flow_to_continuous_monitoring">
+        <di:waypoint x="1960" y="180" />
+        <di:waypoint x="2005" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_retirement_decision_di" bpmnElement="Flow_to_retirement_decision">
+        <di:waypoint x="2200" y="180" />
+        <di:waypoint x="2255" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_continue_monitoring_di" bpmnElement="Flow_continue_monitoring">
+        <di:waypoint x="2280" y="155" />
+        <di:waypoint x="2280" y="100" />
+        <di:waypoint x="2030" y="100" />
+        <di:waypoint x="2030" y="155" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2142" y="82" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_system_retirement_di" bpmnElement="Flow_system_retirement">
+        <di:waypoint x="2305" y="180" />
+        <di:waypoint x="2360" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2321" y="162" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_complete_di" bpmnElement="Flow_to_complete">
+        <di:waypoint x="2460" y="180" />
+        <di:waypoint x="2522" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_188uh36_di" bpmnElement="Flow_188uh36">
+        <di:waypoint x="2055" y="180" />
+        <di:waypoint x="2100" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1cf4nld_di" bpmnElement="Flow_1cf4nld">
+        <di:waypoint x="1010" y="585" />
+        <di:waypoint x="1010" y="650" />
+        <di:waypoint x="1072" y="650" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1016" y="615" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

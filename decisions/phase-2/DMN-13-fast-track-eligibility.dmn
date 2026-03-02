@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="d13_DMN_13_FastTrackEligibility"
+             name="DMN-13: Fast-Track Eligibility"
+             namespace="http://sla.governance.example.com/dmn/phase2">
+
+  <!--
+    DMN-13: Fast-Track Eligibility
+    Phase: 2 (AI Routing Engine - fires in conjunction with DMN-01)
+    Hit Policy: UNIQUE
+    Regulatory: OCC 2023-17
+    Task Type: Automated (A)
+    Description: Determines whether a request qualifies for the fast-track governance pathway.
+                 Fast-track applies to internal, low-risk, non-production or pre-approved requests
+                 that can bypass the full portfolio governance cycle.
+                 Works in tandem with DMN-01 to apply fast-track flag.
+  -->
+
+  <decision id="DMN13FastTrackEligibility" name="Fast-Track Eligibility">
+    <decisionTable id="d13_dt_fast_track" hitPolicy="UNIQUE">
+
+      <input id="d13_in_channel" label="Request Channel">
+        <inputExpression id="d13_ie_channel" typeRef="string">
+          <text>requestChannel</text>
+        </inputExpression>
+        <inputValues id="d13_iv_channel">
+          <text>"Internal","External"</text>
+        </inputValues>
+      </input>
+
+      <input id="d13_in_ai_flag" label="AI/ML Enabled?">
+        <inputExpression id="d13_ie_ai_flag" typeRef="boolean">
+          <text>aiEnabled</text>
+        </inputExpression>
+      </input>
+
+      <input id="d13_in_production_flag" label="Production System Impact?">
+        <inputExpression id="d13_ie_prod_flag" typeRef="boolean">
+          <text>productionSystemImpact</text>
+        </inputExpression>
+      </input>
+
+      <input id="d13_in_data_sensitivity" label="Data Sensitivity Level">
+        <inputExpression id="d13_ie_data_sens" typeRef="string">
+          <text>dataSensitivityLevel</text>
+        </inputExpression>
+        <inputValues id="d13_iv_data_sens">
+          <text>"HighPIINPI","ModerateConfidential","LowPublicInternal"</text>
+        </inputValues>
+      </input>
+
+      <input id="d13_in_vendor_preapproved" label="Vendor Pre-Approved or Existing License?">
+        <inputExpression id="d13_ie_vendor_preapproved" typeRef="string">
+          <text>vendorPreApprovalStatus</text>
+        </inputExpression>
+        <inputValues id="d13_iv_vendor_preapproved">
+          <text>"PreApproved","ExistingLicense","NewVendor","NotApplicable"</text>
+        </inputValues>
+      </input>
+
+      <output id="d13_out_fast_track_eligible" label="Fast-Track Eligible?" typeRef="boolean" />
+      <output id="d13_out_pathway" label="Fast-Track Pathway" typeRef="string" />
+      <output id="d13_out_rationale" label="Eligibility Rationale" typeRef="string" />
+      <output id="d13_out_max_sla_days" label="Max SLA Days" typeRef="integer" />
+
+      <!-- Rule 1: External request → always standard (never fast-track) -->
+      <rule id="d13_r01_external_standard">
+        <description>External requests are never fast-tracked - full governance required</description>
+        <inputEntry id="d13_ie1_r01"><text>"External"</text></inputEntry>
+        <inputEntry id="d13_ie2_r01"><text>-</text></inputEntry>
+        <inputEntry id="d13_ie3_r01"><text>-</text></inputEntry>
+        <inputEntry id="d13_ie4_r01"><text>-</text></inputEntry>
+        <inputEntry id="d13_ie5_r01"><text>-</text></inputEntry>
+        <outputEntry id="d13_oe1_r01"><text>false</text></outputEntry>
+        <outputEntry id="d13_oe2_r01"><text>"Standard-Full-Governance"</text></outputEntry>
+        <outputEntry id="d13_oe3_r01"><text>"External requests require full TPRM and procurement governance per OCC 2023-17"</text></outputEntry>
+        <outputEntry id="d13_oe4_r01"><text>60</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: High sensitivity data → always standard -->
+      <rule id="d13_r02_high_sensitivity_standard">
+        <description>High PII/NPI sensitivity data always requires full governance review</description>
+        <inputEntry id="d13_ie1_r02"><text>"Internal"</text></inputEntry>
+        <inputEntry id="d13_ie2_r02"><text>-</text></inputEntry>
+        <inputEntry id="d13_ie3_r02"><text>-</text></inputEntry>
+        <inputEntry id="d13_ie4_r02"><text>"HighPIINPI"</text></inputEntry>
+        <inputEntry id="d13_ie5_r02"><text>-</text></inputEntry>
+        <outputEntry id="d13_oe1_r02"><text>false</text></outputEntry>
+        <outputEntry id="d13_oe2_r02"><text>"Standard-Full-Governance"</text></outputEntry>
+        <outputEntry id="d13_oe3_r02"><text>"High PII/NPI sensitivity requires full compliance and legal review; GDPR/CCPA obligations apply"</text></outputEntry>
+        <outputEntry id="d13_oe4_r02"><text>45</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Tier 1 or Tier 2 AI → always standard -->
+      <rule id="d13_r03_ai_tier1_standard">
+        <description>Any AI-enabled system with production impact requires full SR 11-7 governance</description>
+        <inputEntry id="d13_ie1_r03"><text>"Internal"</text></inputEntry>
+        <inputEntry id="d13_ie2_r03"><text>true</text></inputEntry>
+        <inputEntry id="d13_ie3_r03"><text>true</text></inputEntry>
+        <inputEntry id="d13_ie4_r03"><text>-</text></inputEntry>
+        <inputEntry id="d13_ie5_r03"><text>-</text></inputEntry>
+        <outputEntry id="d13_oe1_r03"><text>false</text></outputEntry>
+        <outputEntry id="d13_oe2_r03"><text>"Standard-AIGov-Governance"</text></outputEntry>
+        <outputEntry id="d13_oe3_r03"><text>"AI-enabled production systems require SR 11-7 Model Risk Management review; fast-track ineligible"</text></outputEntry>
+        <outputEntry id="d13_oe4_r03"><text>60</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Internal, no AI, non-production, low sensitivity, pre-approved vendor → FAST-TRACK ITSM -->
+      <rule id="d13_r04_fast_track_itsm">
+        <description>Internal non-production, low sensitivity, pre-approved - fast-track ITSM fulfillment</description>
+        <inputEntry id="d13_ie1_r04"><text>"Internal"</text></inputEntry>
+        <inputEntry id="d13_ie2_r04"><text>false</text></inputEntry>
+        <inputEntry id="d13_ie3_r04"><text>false</text></inputEntry>
+        <inputEntry id="d13_ie4_r04"><text>"LowPublicInternal"</text></inputEntry>
+        <inputEntry id="d13_ie5_r04"><text>"PreApproved","ExistingLicense"</text></inputEntry>
+        <outputEntry id="d13_oe1_r04"><text>true</text></outputEntry>
+        <outputEntry id="d13_oe2_r04"><text>"Fast-Track-ITSM"</text></outputEntry>
+        <outputEntry id="d13_oe3_r04"><text>"Internal use, no AI, non-production, low sensitivity, pre-approved vendor or existing license; abbreviated governance"</text></outputEntry>
+        <outputEntry id="d13_oe4_r04"><text>5</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: Internal, no AI, production, low sensitivity, pre-approved → FAST-TRACK BUY LITE -->
+      <rule id="d13_r05_fast_track_buy">
+        <description>Internal production, low sensitivity, pre-approved vendor - fast-track buy lite</description>
+        <inputEntry id="d13_ie1_r05"><text>"Internal"</text></inputEntry>
+        <inputEntry id="d13_ie2_r05"><text>false</text></inputEntry>
+        <inputEntry id="d13_ie3_r05"><text>true</text></inputEntry>
+        <inputEntry id="d13_ie4_r05"><text>"LowPublicInternal","ModerateConfidential"</text></inputEntry>
+        <inputEntry id="d13_ie5_r05"><text>"PreApproved","ExistingLicense"</text></inputEntry>
+        <outputEntry id="d13_oe1_r05"><text>true</text></outputEntry>
+        <outputEntry id="d13_oe2_r05"><text>"Fast-Track-Buy-Lite"</text></outputEntry>
+        <outputEntry id="d13_oe3_r05"><text>"Internal production system, pre-approved vendor, low-moderate sensitivity; abbreviated procurement and security review"</text></outputEntry>
+        <outputEntry id="d13_oe4_r05"><text>5</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: Internal, no AI, no pre-approved vendor, moderate sensitivity → STANDARD -->
+      <rule id="d13_r06_new_vendor_standard">
+        <description>Internal request with new vendor requires standard governance</description>
+        <inputEntry id="d13_ie1_r06"><text>"Internal"</text></inputEntry>
+        <inputEntry id="d13_ie2_r06"><text>false</text></inputEntry>
+        <inputEntry id="d13_ie3_r06"><text>-</text></inputEntry>
+        <inputEntry id="d13_ie4_r06"><text>-</text></inputEntry>
+        <inputEntry id="d13_ie5_r06"><text>"NewVendor"</text></inputEntry>
+        <outputEntry id="d13_oe1_r06"><text>false</text></outputEntry>
+        <outputEntry id="d13_oe2_r06"><text>"Standard-Buy-Governance"</text></outputEntry>
+        <outputEntry id="d13_oe3_r06"><text>"New vendor requires standard TPRM intake and risk tiering before procurement proceeds"</text></outputEntry>
+        <outputEntry id="d13_oe4_r06"><text>30</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="d13_diagram_DMN13">
+      <dmndi:DMNShape id="d13_shape_DMN13" dmnElementRef="DMN13FastTrackEligibility">
+        <dc:Bounds x="100" y="100" width="300" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

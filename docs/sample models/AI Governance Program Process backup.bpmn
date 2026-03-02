@@ -1,0 +1,891 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_AIGov" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.42.0">
+  <bpmn:process id="SampleAIGovernanceProgramProcess" name="Sample AI Governance Program Process" isExecutable="true" camunda:historyTimeToLive="10">
+    <bpmn:userTask id="Task_EstablishGovernance" name="Establish Governance Structures" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_manager">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_EstablishGovernance" />
+          <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+          <camunda:property name="formio.outputDataSource" value="Task_EstablishGovernance" />
+          <camunda:property name="formio.file" value="AI Governance – Establish Governance Structures.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_EstablishGovernance">${formio.AIProgramData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_104pgqc</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_RiskImpact" name="Conduct Risk &#38; Impact Assessments" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_manager">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_RiskImpact" />
+          <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+          <camunda:property name="formio.outputDataSource" value="Task_RiskImpact" />
+          <camunda:property name="formio.file" value="AI_Governance_Risk_Impact_Assessment.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_RiskImpact">${formio.AIProgramData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_DevelopPolicies" name="Develop &#38; Approve Policies &#38; Controls" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_manager">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_DevelopPolicies" />
+          <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+          <camunda:property name="formio.outputDataSource" value="Task_DevelopPolicies" />
+          <camunda:property name="formio.file" value="AI_Governance_Policies_Controls.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_DevelopPolicies">${formio.AIProgramData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_Monitoring" name="Implement Monitoring &#38; Incident Response" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_manager">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_Monitoring" />
+          <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+          <camunda:property name="formio.outputDataSource" value="Task_Monitoring" />
+          <camunda:property name="formio.file" value="AI_Governance_Monitoring_Response.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_Monitoring">${formio.AIProgramData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_Audit" name="Audit &#38; Continuous Improvement" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_manager">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_Audit" />
+          <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+          <camunda:property name="formio.outputDataSource" value="Task_Audit" />
+          <camunda:property name="formio.file" value="AI_Governance_Audit_Improvement.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_Audit">${formio.AIProgramData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_IterateScale" name="Iterate &#38; Scale" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_manager">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="Task_IterateScale" />
+          <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+          <camunda:property name="formio.outputDataSource" value="Task_IterateScale" />
+          <camunda:property name="formio.file" value="AI_Governance_Iterate_Scale.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Task_IterateScale">${formio.AIProgramData.json}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_AIGovComplete" name="Program Implementation Complete">
+      <bpmn:incoming>Flow_8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_EstablishGovernance" targetRef="Task_RiskImpact" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_RiskImpact" targetRef="Task_DevelopPolicies" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_DevelopPolicies" targetRef="Task_Monitoring" />
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_Monitoring" targetRef="Task_Audit" />
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Task_Audit" targetRef="Task_IterateScale" />
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="Task_IterateScale" targetRef="EndEvent_AIGovComplete" />
+    <bpmn:startEvent id="AI_Governance_Start_New_AI_Governance_Program_Event" name="Start New AI Governance Program" camunda:formHandlerClass="org.softcannery.camunda.FormioStartFormHandler" camunda:formKey="embedded:app:formio.html">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;programInitiation&#34;, true)}" event="start" />
+        <camunda:properties>
+          <camunda:property name="formio.variable" value="AI_Governance_Start_New_AI_Governance_Program" />
+          <camunda:property name="formio.outputDataSource" value="AIProgramData" />
+          <camunda:property name="formio.file" value="AI_Governance_Start_New_AI_Governance_Program.formio" />
+          <camunda:property name="formio.form" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_1hfdgsq</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_1rocnil">
+        <bpmn:targetRef>DataStoreReference_180covw</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1hfdgsq" sourceRef="AI_Governance_Start_New_AI_Governance_Program_Event" targetRef="Activity_1s6ii6o" />
+    <bpmn:subProcess id="Activity_1s6ii6o" name="AI Governance Program Initiation">
+      <bpmn:incoming>Flow_1hfdgsq</bpmn:incoming>
+      <bpmn:outgoing>Flow_104pgqc</bpmn:outgoing>
+      <bpmn:userTask id="EstablishAIMaturityLevelTask" name="Establish AI Maturity Level" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="formio.variable" value="EstablishAIMaturityLevelTask" />
+            <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+            <camunda:property name="formio.outputDataSource" value="AIProgramData" />
+            <camunda:property name="formio.file" value="AI_Governance_Establish_AI_Maturity_Level.formio" />
+            <camunda:property name="formio.form" />
+          </camunda:properties>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="EstablishAIMaturityLevelTask">${formio.AIProgramData.json}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_1gutoio</bpmn:incoming>
+        <bpmn:outgoing>Flow_07pcb08</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:startEvent id="Event_19yvd6c">
+        <bpmn:outgoing>Flow_02ehwl8</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="Event_0oobros">
+        <bpmn:incoming>Flow_08o6ud3</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:userTask id="EstablishAIGovernancePolicyTask" name="Establish AI Governance Policy(s)" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="formio.variable" value="EstablishAIGovernancePolicyTask" />
+            <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+            <camunda:property name="formio.outputDataSource" value="AIProgramData" />
+            <camunda:property name="formio.file" value="AI_Governance_Establish_AI_Governance_Policy.formio" />
+            <camunda:property name="formio.form" />
+          </camunda:properties>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="EstablishAIGovernancePolicyTask">${formio.AIProgramData.json}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_07pcb08</bpmn:incoming>
+        <bpmn:outgoing>Flow_1d79o1q</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="Flow_1d79o1q" sourceRef="EstablishAIGovernancePolicyTask" targetRef="CombatBiasProcess" />
+      <bpmn:userTask id="DefineAIGovernanceMandateAndScopeTask" name="Define AI Governance Mandate &#38; Scope" camunda:formKey="embedded:app:formio.html" camunda:assignee="governance_manager">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="formio.variable" value="Task_DefineCharter" />
+            <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+            <camunda:property name="formio.outputDataSource" value="Task_DefineCharter" />
+            <camunda:property name="formio.file" value="AI Governance_Define_Mandate_and_Scope_Define_Charter.formio" />
+            <camunda:property name="formio.form" />
+          </camunda:properties>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="Task_DefineCharter">${formio.AIProgramData.json}</camunda:inputParameter>
+          </camunda:inputOutput>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_02ehwl8</bpmn:incoming>
+        <bpmn:outgoing>Flow_1gutoio</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:subProcess id="CombatBiasProcess" name="Combat Bias">
+        <bpmn:incoming>Flow_1d79o1q</bpmn:incoming>
+        <bpmn:outgoing>Flow_08o6ud3</bpmn:outgoing>
+        <bpmn:inclusiveGateway id="Gateway_0itybm2">
+          <bpmn:incoming>Flow_1su0pxp</bpmn:incoming>
+          <bpmn:outgoing>Flow_0rjvxh1</bpmn:outgoing>
+          <bpmn:outgoing>Flow_1uama3h</bpmn:outgoing>
+          <bpmn:outgoing>Flow_1vf2n6m</bpmn:outgoing>
+          <bpmn:outgoing>Flow_01hqea8</bpmn:outgoing>
+          <bpmn:outgoing>Flow_0onvz38</bpmn:outgoing>
+          <bpmn:outgoing>Flow_0lf021e</bpmn:outgoing>
+          <bpmn:outgoing>Flow_1v8sel1</bpmn:outgoing>
+          <bpmn:outgoing>Flow_03y4v3g</bpmn:outgoing>
+          <bpmn:outgoing>Flow_1k7epqd</bpmn:outgoing>
+          <bpmn:outgoing>Flow_09ixwlk</bpmn:outgoing>
+          <bpmn:outgoing>Flow_070habu</bpmn:outgoing>
+          <bpmn:outgoing>Flow_1s2mlzx</bpmn:outgoing>
+        </bpmn:inclusiveGateway>
+        <bpmn:userTask id="ReviewAndApproveEffortsToCombatBiasTask" name="Review and Approve Efforts to Combat Bias" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="ReviewAndApproveEffortsToCombatBiasTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="ReviewAndApproveEffortsToCombatBiasTask" />
+              <camunda:property name="formio.file" value="AI_Governance_Review_And_Approve_Efforts_To_Combat_Bias.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="ReviewAndApproveEffortsToCombatBiasTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_11vwscs</bpmn:incoming>
+          <bpmn:outgoing>Flow_19rk3wv</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="EthicalGuidelinesTask" name="Ethical Guidelines" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="EthicalGuidelinesTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="ethicalGuidelines" />
+              <camunda:property name="formio.file" value="AI_Governance_Ethical_Guidelines.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="EthicalGuidelinesTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_0rjvxh1</bpmn:incoming>
+          <bpmn:outgoing>Flow_0slgcm7</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="TransparencyTask" name="Transparency" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="TransparencyTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="TransparencyTask" />
+              <camunda:property name="formio.file" value="AI_Governance_Transparency.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="TransparencyTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_1uama3h</bpmn:incoming>
+          <bpmn:outgoing>Flow_1tyyln1</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="ImpactAnalysisTask" name="Impact Analysis" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="ImpactAnalysisTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="ImpactAnalysisTask" />
+              <camunda:property name="formio.file" value="AI_Governance_Impact_Analysis.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="ImpactAnalysisTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_0onvz38</bpmn:incoming>
+          <bpmn:outgoing>Flow_0vjvdzl</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="StakeholderEngagementTask" name="Stakeholder Engagement" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="StakeholderEngagementTask" />
+              <camunda:property name="formio.inputDataSource" value="StakeholderEngagementTask" />
+              <camunda:property name="formio.outputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.file" value="AI_Governance_Stakeholder_Engagement.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="StakeholderEngagementTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_01hqea8</bpmn:incoming>
+          <bpmn:outgoing>Flow_1ud0anu</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="AccountabilityTask" name="Accountability" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="AccountabilityTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="AccountabilityTask" />
+              <camunda:property name="formio.file" value="AI_Governance_Accountability.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="AccountabilityTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_03y4v3g</bpmn:incoming>
+          <bpmn:outgoing>Flow_0l2mmk6</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="DiverseDatasetsTask" name="Diverse Datasets" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="DiverseDatasetsTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="DiverseDatasetsTask" />
+              <camunda:property name="formio.file" value="AI_Governance_Diverse_Datasets.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="DiverseDatasetsTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_0lf021e</bpmn:incoming>
+          <bpmn:outgoing>Flow_1d4i369</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="HumanOversightTask" name="Human Oversight" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="HumanOversightTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="HumanOversightTask" />
+              <camunda:property name="formio.file" value="AI_Governance_Human_Oversight.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="HumanOversightTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_1v8sel1</bpmn:incoming>
+          <bpmn:outgoing>Flow_116wq1w</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="RegulatoryReviewTask" name="Regulatory Review" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="RegulatoryReviewTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="RegulatoryReviewTask" />
+              <camunda:property name="formio.file" value="AI_Governance_Regulatory_Review.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="RegulatoryReviewTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_1k7epqd</bpmn:incoming>
+          <bpmn:outgoing>Flow_0maebv3</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="OngoingMonitoringTask" name="Ongoing Monitoring" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="OngoingMonitoringTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="OngoingMonitoringTask" />
+              <camunda:property name="formio.file" value="AI_Governance_Ongoing_Monitoring.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="OngoingMonitoringTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_09ixwlk</bpmn:incoming>
+          <bpmn:outgoing>Flow_0pmyb0n</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="AIEducationTask" name="AI Education" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="AIEducationTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="AIEducationTask" />
+              <camunda:property name="formio.file" value="AI_Governance_AI_Education.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="AIEducationTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_070habu</bpmn:incoming>
+          <bpmn:outgoing>Flow_1x7x85l</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="ExpertCollaborationTask" name="Expert Collaboration" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="ExpertCollaborationTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="ExpertCollaborationTask" />
+              <camunda:property name="formio.file" value="AI_Governance_Expert_Collaboration.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="ExpertCollaborationTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_1vf2n6m</bpmn:incoming>
+          <bpmn:outgoing>Flow_0ip8x7u</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:endEvent id="Event_1nn9j7v" name="Combat Bias  Iteration&#10;Complete">
+          <bpmn:incoming>Flow_0vwzms0</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:exclusiveGateway id="Gateway_1lcsaie" name="Approved ?">
+          <bpmn:incoming>Flow_19rk3wv</bpmn:incoming>
+          <bpmn:outgoing>Flow_0vwzms0</bpmn:outgoing>
+          <bpmn:outgoing>Flow_1l4oglb</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:startEvent id="Event_1nx17ku">
+          <bpmn:outgoing>Flow_0casc32</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:userTask id="StepsToCombatBiasTask" name="Steps to Combat Bias" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="StepsToCombatBiasTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.file" value="AI_Governance_Steps_to_Combat_Bias.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="StepsToCombatBiasTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_0casc32</bpmn:incoming>
+          <bpmn:outgoing>Flow_0c0v0to</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:exclusiveGateway id="Gateway_0wf3t5x">
+          <bpmn:incoming>Flow_1l4oglb</bpmn:incoming>
+          <bpmn:incoming>Flow_0c0v0to</bpmn:incoming>
+          <bpmn:outgoing>Flow_1su0pxp</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:inclusiveGateway id="Gateway_0o9cvab">
+          <bpmn:incoming>Flow_0slgcm7</bpmn:incoming>
+          <bpmn:incoming>Flow_1tyyln1</bpmn:incoming>
+          <bpmn:incoming>Flow_0vjvdzl</bpmn:incoming>
+          <bpmn:incoming>Flow_1ud0anu</bpmn:incoming>
+          <bpmn:incoming>Flow_0l2mmk6</bpmn:incoming>
+          <bpmn:incoming>Flow_1d4i369</bpmn:incoming>
+          <bpmn:incoming>Flow_116wq1w</bpmn:incoming>
+          <bpmn:incoming>Flow_0maebv3</bpmn:incoming>
+          <bpmn:incoming>Flow_0pmyb0n</bpmn:incoming>
+          <bpmn:incoming>Flow_1x7x85l</bpmn:incoming>
+          <bpmn:incoming>Flow_0ip8x7u</bpmn:incoming>
+          <bpmn:incoming>Flow_0fgj55j</bpmn:incoming>
+          <bpmn:outgoing>Flow_11vwscs</bpmn:outgoing>
+        </bpmn:inclusiveGateway>
+        <bpmn:userTask id="ExplainabilityTask" name="Explainability" camunda:formKey="embedded:app:formio.html" camunda:assignee="kermit">
+          <bpmn:extensionElements>
+            <camunda:properties>
+              <camunda:property name="formio.variable" value="ExplainabilityTask" />
+              <camunda:property name="formio.inputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.outputDataSource" value="AIProgramData" />
+              <camunda:property name="formio.file" value="AI Governance_Explainability.formio" />
+              <camunda:property name="formio.form" />
+            </camunda:properties>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="ExplainabilityTask">${formio.AIProgramData.json}</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_1s2mlzx</bpmn:incoming>
+          <bpmn:outgoing>Flow_0fgj55j</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:sequenceFlow id="Flow_1su0pxp" sourceRef="Gateway_0wf3t5x" targetRef="Gateway_0itybm2" />
+        <bpmn:sequenceFlow id="Flow_0rjvxh1" sourceRef="Gateway_0itybm2" targetRef="EthicalGuidelinesTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_establishEthicalGuidelines == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_1uama3h" sourceRef="Gateway_0itybm2" targetRef="TransparencyTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_prioritizeTransparency == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_1vf2n6m" sourceRef="Gateway_0itybm2" targetRef="ExpertCollaborationTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_collaborateWithExperts == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_01hqea8" sourceRef="Gateway_0itybm2" targetRef="StakeholderEngagementTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_involveDiverseStakeholders == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_0onvz38" sourceRef="Gateway_0itybm2" targetRef="ImpactAnalysisTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_conductImpactAnalyses == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_0lf021e" sourceRef="Gateway_0itybm2" targetRef="DiverseDatasetsTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_useDiverseDatasets == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_1v8sel1" sourceRef="Gateway_0itybm2" targetRef="HumanOversightTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_provideHumanOversight == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_03y4v3g" sourceRef="Gateway_0itybm2" targetRef="AccountabilityTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_establishAccountability == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_1k7epqd" sourceRef="Gateway_0itybm2" targetRef="RegulatoryReviewTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_considerRegulatoryFrameworks == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_09ixwlk" sourceRef="Gateway_0itybm2" targetRef="OngoingMonitoringTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_implementMonitoringAuditing == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_070habu" sourceRef="Gateway_0itybm2" targetRef="AIEducationTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_investInAIEducation == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_1s2mlzx" sourceRef="Gateway_0itybm2" targetRef="ExplainabilityTask">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.AIProgramData.data.program_explainability == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_11vwscs" sourceRef="Gateway_0o9cvab" targetRef="ReviewAndApproveEffortsToCombatBiasTask" />
+        <bpmn:sequenceFlow id="Flow_19rk3wv" sourceRef="ReviewAndApproveEffortsToCombatBiasTask" targetRef="Gateway_1lcsaie" />
+        <bpmn:sequenceFlow id="Flow_0slgcm7" sourceRef="EthicalGuidelinesTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_1tyyln1" sourceRef="TransparencyTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_0vjvdzl" sourceRef="ImpactAnalysisTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_1ud0anu" sourceRef="StakeholderEngagementTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_0l2mmk6" sourceRef="AccountabilityTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_1d4i369" sourceRef="DiverseDatasetsTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_116wq1w" sourceRef="HumanOversightTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_0maebv3" sourceRef="RegulatoryReviewTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_0pmyb0n" sourceRef="OngoingMonitoringTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_1x7x85l" sourceRef="AIEducationTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_0ip8x7u" sourceRef="ExpertCollaborationTask" targetRef="Gateway_0o9cvab" />
+        <bpmn:sequenceFlow id="Flow_0vwzms0" name="Yes" sourceRef="Gateway_1lcsaie" targetRef="Event_1nn9j7v">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.ReviewAndApproveEffortsToCombatBiasTask.data.approvalDecision == "Approved"}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_1l4oglb" name="No" sourceRef="Gateway_1lcsaie" targetRef="Gateway_0wf3t5x">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formio.ReviewAndApproveEffortsToCombatBiasTask.data.approvalDecision == "NotApproved"}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_0casc32" sourceRef="Event_1nx17ku" targetRef="StepsToCombatBiasTask" />
+        <bpmn:sequenceFlow id="Flow_0c0v0to" sourceRef="StepsToCombatBiasTask" targetRef="Gateway_0wf3t5x" />
+        <bpmn:sequenceFlow id="Flow_0fgj55j" sourceRef="ExplainabilityTask" targetRef="Gateway_0o9cvab" />
+      </bpmn:subProcess>
+      <bpmn:sequenceFlow id="Flow_08o6ud3" sourceRef="CombatBiasProcess" targetRef="Event_0oobros" />
+      <bpmn:sequenceFlow id="Flow_02ehwl8" sourceRef="Event_19yvd6c" targetRef="DefineAIGovernanceMandateAndScopeTask" />
+      <bpmn:sequenceFlow id="Flow_1gutoio" sourceRef="DefineAIGovernanceMandateAndScopeTask" targetRef="EstablishAIMaturityLevelTask" />
+      <bpmn:sequenceFlow id="Flow_07pcb08" sourceRef="EstablishAIMaturityLevelTask" targetRef="EstablishAIGovernancePolicyTask" />
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_104pgqc" sourceRef="Activity_1s6ii6o" targetRef="Task_EstablishGovernance" />
+    <bpmn:dataStoreReference id="DataStoreReference_180covw" name="AIProgramData" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_AIGov">
+    <bpmndi:BPMNPlane id="BPMNPlane_AIGov" bpmnElement="SampleAIGovernanceProgramProcess">
+      <bpmndi:BPMNShape id="Task_EstablishGovernance_di" bpmnElement="Task_EstablishGovernance">
+        <dc:Bounds x="420" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RiskImpact_di" bpmnElement="Task_RiskImpact">
+        <dc:Bounds x="570" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DevelopPolicies_di" bpmnElement="Task_DevelopPolicies">
+        <dc:Bounds x="720" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Monitoring_di" bpmnElement="Task_Monitoring">
+        <dc:Bounds x="870" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Audit_di" bpmnElement="Task_Audit">
+        <dc:Bounds x="1020" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_IterateScale_di" bpmnElement="Task_IterateScale">
+        <dc:Bounds x="1170" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_AIGovComplete_di" bpmnElement="EndEvent_AIGovComplete">
+        <dc:Bounds x="1320" y="105" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1300" y="150" width="76" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0y8au0e_di" bpmnElement="AI_Governance_Start_New_AI_Governance_Program_Event">
+        <dc:Bounds x="182" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="169" y="52" width="62" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1mqmbz1_di" bpmnElement="Activity_1s6ii6o">
+        <dc:Bounds x="270" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_180covw_di" bpmnElement="DataStoreReference_180covw">
+        <dc:Bounds x="175" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="162" y="252" width="76" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="520" y="120" />
+        <di:waypoint x="570" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="670" y="120" />
+        <di:waypoint x="720" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="820" y="120" />
+        <di:waypoint x="870" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <di:waypoint x="970" y="120" />
+        <di:waypoint x="1020" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7">
+        <di:waypoint x="1120" y="120" />
+        <di:waypoint x="1170" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8">
+        <di:waypoint x="1270" y="122" />
+        <di:waypoint x="1320" y="122" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_1rocnil_di" bpmnElement="DataOutputAssociation_1rocnil">
+        <di:waypoint x="200" y="138" />
+        <di:waypoint x="200" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hfdgsq_di" bpmnElement="Flow_1hfdgsq">
+        <di:waypoint x="218" y="120" />
+        <di:waypoint x="270" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_104pgqc_di" bpmnElement="Flow_104pgqc">
+        <di:waypoint x="370" y="120" />
+        <di:waypoint x="420" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_185xs0w">
+    <bpmndi:BPMNPlane id="BPMNPlane_1b1lb3c" bpmnElement="Activity_1s6ii6o">
+      <bpmndi:BPMNShape id="Activity_07gleuf_di" bpmnElement="EstablishAIMaturityLevelTask">
+        <dc:Bounds x="375" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_19yvd6c_di" bpmnElement="Event_19yvd6c">
+        <dc:Bounds x="102" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0oobros_di" bpmnElement="Event_0oobros">
+        <dc:Bounds x="882" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_14e5gx9_di" bpmnElement="EstablishAIGovernancePolicyTask">
+        <dc:Bounds x="546" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0l5w78e" bpmnElement="DefineAIGovernanceMandateAndScopeTask">
+        <dc:Bounds x="204" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qzf412_di" bpmnElement="CombatBiasProcess" isExpanded="false">
+        <dc:Bounds x="717" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1d79o1q_di" bpmnElement="Flow_1d79o1q">
+        <di:waypoint x="646" y="200" />
+        <di:waypoint x="717" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08o6ud3_di" bpmnElement="Flow_08o6ud3">
+        <di:waypoint x="817" y="200" />
+        <di:waypoint x="882" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02ehwl8_di" bpmnElement="Flow_02ehwl8">
+        <di:waypoint x="138" y="200" />
+        <di:waypoint x="204" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gutoio_di" bpmnElement="Flow_1gutoio">
+        <di:waypoint x="304" y="200" />
+        <di:waypoint x="375" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07pcb08_di" bpmnElement="Flow_07pcb08">
+        <di:waypoint x="475" y="200" />
+        <di:waypoint x="546" y="200" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_0iymp5x">
+    <bpmndi:BPMNPlane id="BPMNPlane_13webdn" bpmnElement="CombatBiasProcess">
+      <bpmndi:BPMNShape id="Gateway_0dby2bs_di" bpmnElement="Gateway_0itybm2">
+        <dc:Bounds x="483" y="195" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1n76isi_di" bpmnElement="ReviewAndApproveEffortsToCombatBiasTask">
+        <dc:Bounds x="1218" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1w5fqd9_di" bpmnElement="EthicalGuidelinesTask">
+        <dc:Bounds x="588" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0a6gx11_di" bpmnElement="TransparencyTask">
+        <dc:Bounds x="588" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1u2kpcz_di" bpmnElement="ImpactAnalysisTask">
+        <dc:Bounds x="718" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_04cy6or_di" bpmnElement="StakeholderEngagementTask">
+        <dc:Bounds x="718" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_05iiv0q_di" bpmnElement="AccountabilityTask">
+        <dc:Bounds x="718" y="580" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qs92e9_di" bpmnElement="DiverseDatasetsTask">
+        <dc:Bounds x="848" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0a5kpyg_di" bpmnElement="HumanOversightTask">
+        <dc:Bounds x="848" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0sb1psh_di" bpmnElement="RegulatoryReviewTask">
+        <dc:Bounds x="848" y="580" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_11v622z_di" bpmnElement="OngoingMonitoringTask">
+        <dc:Bounds x="978" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0717r01_di" bpmnElement="AIEducationTask">
+        <dc:Bounds x="978" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0bnrnlw_di" bpmnElement="ExpertCollaborationTask">
+        <dc:Bounds x="588" y="580" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1nn9j7v_di" bpmnElement="Event_1nn9j7v">
+        <dc:Bounds x="1470" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1456" y="245" width="67" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1lcsaie_di" bpmnElement="Gateway_1lcsaie" isMarkerVisible="true">
+        <dc:Bounds x="1353" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1350" y="252" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1nx17ku_di" bpmnElement="Event_1nx17ku">
+        <dc:Bounds x="180" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0n2flvd_di" bpmnElement="StepsToCombatBiasTask">
+        <dc:Bounds x="258" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0wf3t5x_di" bpmnElement="Gateway_0wf3t5x" isMarkerVisible="true">
+        <dc:Bounds x="393" y="195" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0oqkzi8_di" bpmnElement="Gateway_0o9cvab">
+        <dc:Bounds x="1133" y="195" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_195hexs_di" bpmnElement="ExplainabilityTask">
+        <dc:Bounds x="978" y="580" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1su0pxp_di" bpmnElement="Flow_1su0pxp">
+        <di:waypoint x="443" y="220" />
+        <di:waypoint x="483" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rjvxh1_di" bpmnElement="Flow_0rjvxh1">
+        <di:waypoint x="533" y="220" />
+        <di:waypoint x="638" y="220" />
+        <di:waypoint x="638" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1uama3h_di" bpmnElement="Flow_1uama3h">
+        <di:waypoint x="508" y="245" />
+        <di:waypoint x="508" y="380" />
+        <di:waypoint x="638" y="380" />
+        <di:waypoint x="638" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vf2n6m_di" bpmnElement="Flow_1vf2n6m">
+        <di:waypoint x="508" y="245" />
+        <di:waypoint x="508" y="540" />
+        <di:waypoint x="638" y="540" />
+        <di:waypoint x="638" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01hqea8_di" bpmnElement="Flow_01hqea8">
+        <di:waypoint x="508" y="245" />
+        <di:waypoint x="508" y="380" />
+        <di:waypoint x="768" y="380" />
+        <di:waypoint x="768" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0onvz38_di" bpmnElement="Flow_0onvz38">
+        <di:waypoint x="533" y="220" />
+        <di:waypoint x="768" y="220" />
+        <di:waypoint x="768" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lf021e_di" bpmnElement="Flow_0lf021e">
+        <di:waypoint x="533" y="220" />
+        <di:waypoint x="898" y="220" />
+        <di:waypoint x="898" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1v8sel1_di" bpmnElement="Flow_1v8sel1">
+        <di:waypoint x="508" y="245" />
+        <di:waypoint x="508" y="380" />
+        <di:waypoint x="898" y="380" />
+        <di:waypoint x="898" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03y4v3g_di" bpmnElement="Flow_03y4v3g">
+        <di:waypoint x="508" y="245" />
+        <di:waypoint x="508" y="540" />
+        <di:waypoint x="768" y="540" />
+        <di:waypoint x="768" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1k7epqd_di" bpmnElement="Flow_1k7epqd">
+        <di:waypoint x="508" y="245" />
+        <di:waypoint x="508" y="540" />
+        <di:waypoint x="898" y="540" />
+        <di:waypoint x="898" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09ixwlk_di" bpmnElement="Flow_09ixwlk">
+        <di:waypoint x="533" y="220" />
+        <di:waypoint x="1028" y="220" />
+        <di:waypoint x="1028" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_070habu_di" bpmnElement="Flow_070habu">
+        <di:waypoint x="508" y="245" />
+        <di:waypoint x="508" y="380" />
+        <di:waypoint x="1028" y="380" />
+        <di:waypoint x="1028" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1s2mlzx_di" bpmnElement="Flow_1s2mlzx">
+        <di:waypoint x="508" y="245" />
+        <di:waypoint x="508" y="540" />
+        <di:waypoint x="1028" y="540" />
+        <di:waypoint x="1028" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11vwscs_di" bpmnElement="Flow_11vwscs">
+        <di:waypoint x="1183" y="220" />
+        <di:waypoint x="1218" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19rk3wv_di" bpmnElement="Flow_19rk3wv">
+        <di:waypoint x="1318" y="220" />
+        <di:waypoint x="1353" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0slgcm7_di" bpmnElement="Flow_0slgcm7">
+        <di:waypoint x="638" y="260" />
+        <di:waypoint x="638" y="220" />
+        <di:waypoint x="1133" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tyyln1_di" bpmnElement="Flow_1tyyln1">
+        <di:waypoint x="638" y="420" />
+        <di:waypoint x="638" y="380" />
+        <di:waypoint x="1158" y="380" />
+        <di:waypoint x="1158" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vjvdzl_di" bpmnElement="Flow_0vjvdzl">
+        <di:waypoint x="768" y="260" />
+        <di:waypoint x="768" y="220" />
+        <di:waypoint x="1133" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ud0anu_di" bpmnElement="Flow_1ud0anu">
+        <di:waypoint x="768" y="420" />
+        <di:waypoint x="768" y="380" />
+        <di:waypoint x="1158" y="380" />
+        <di:waypoint x="1158" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0l2mmk6_di" bpmnElement="Flow_0l2mmk6">
+        <di:waypoint x="768" y="580" />
+        <di:waypoint x="768" y="540" />
+        <di:waypoint x="1158" y="540" />
+        <di:waypoint x="1158" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1d4i369_di" bpmnElement="Flow_1d4i369">
+        <di:waypoint x="898" y="260" />
+        <di:waypoint x="898" y="220" />
+        <di:waypoint x="1133" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_116wq1w_di" bpmnElement="Flow_116wq1w">
+        <di:waypoint x="898" y="420" />
+        <di:waypoint x="898" y="380" />
+        <di:waypoint x="1158" y="380" />
+        <di:waypoint x="1158" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0maebv3_di" bpmnElement="Flow_0maebv3">
+        <di:waypoint x="898" y="580" />
+        <di:waypoint x="898" y="540" />
+        <di:waypoint x="1158" y="540" />
+        <di:waypoint x="1158" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pmyb0n_di" bpmnElement="Flow_0pmyb0n">
+        <di:waypoint x="1028" y="260" />
+        <di:waypoint x="1028" y="220" />
+        <di:waypoint x="1133" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1x7x85l_di" bpmnElement="Flow_1x7x85l">
+        <di:waypoint x="1028" y="420" />
+        <di:waypoint x="1028" y="380" />
+        <di:waypoint x="1158" y="380" />
+        <di:waypoint x="1158" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ip8x7u_di" bpmnElement="Flow_0ip8x7u">
+        <di:waypoint x="638" y="580" />
+        <di:waypoint x="638" y="540" />
+        <di:waypoint x="1158" y="540" />
+        <di:waypoint x="1158" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vwzms0_di" bpmnElement="Flow_0vwzms0">
+        <di:waypoint x="1403" y="220" />
+        <di:waypoint x="1470" y="220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1428" y="202" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1l4oglb_di" bpmnElement="Flow_1l4oglb">
+        <di:waypoint x="1378" y="195" />
+        <di:waypoint x="1378" y="160" />
+        <di:waypoint x="418" y="160" />
+        <di:waypoint x="418" y="195" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1390" y="173" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0casc32_di" bpmnElement="Flow_0casc32">
+        <di:waypoint x="216" y="220" />
+        <di:waypoint x="258" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c0v0to_di" bpmnElement="Flow_0c0v0to">
+        <di:waypoint x="358" y="220" />
+        <di:waypoint x="393" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fgj55j_di" bpmnElement="Flow_0fgj55j">
+        <di:waypoint x="1028" y="580" />
+        <di:waypoint x="1028" y="540" />
+        <di:waypoint x="1158" y="540" />
+        <di:waypoint x="1158" y="245" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
