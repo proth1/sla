@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.3
+**Current Version**: 2026.03.4
 **Last Release**: 2026-03-03
-**Total Releases**: 3
+**Total Releases**: 4
 
 ## Artifact Counts
 
@@ -11,7 +11,8 @@
 | DMN Decision Tables | 8 |
 | BPMN Process Models | 10 |
 | Cross-Cutting Sub-Processes | 5 |
-| Presentation Slides | 34 |
+| Presentation Slides | 32 |
+| BPMN SVG Diagrams | 10 |
 | Regulatory Frameworks | 13 |
 | Pools | 2 |
 | Swim Lanes | 9+1 |
@@ -29,6 +30,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.4 | 2026-03-03 | #9 | Presentation build with BPMN SVG rendering |
 | 2026.03.3 | 2026-03-03 | #8 | 8-phase rebuild: PRD, 8 DMN tables, 10 BPMN models, 5 cross-cutting sub-processes |
 | 2026.03.2 | 2026-03-02 | #4 | Redesign master orchestrator — correct dimensions and parallel gateway |
 | 2026.03.1 | 2026-03-02 | #1 | Complete 7-phase governance framework build-out |

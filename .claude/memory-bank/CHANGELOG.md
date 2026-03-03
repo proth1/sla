@@ -1,5 +1,15 @@
 # Changelog
 
+## [2026.03.4] - 2026-03-03
+
+### Added
+- 10 BPMN SVG renderings in `docs/presentations/images/` (master + 8 phases + cross-cutting)
+- `_worker.js` for Cloudflare Pages proxy secret validation
+
+### Changed
+- Replaced all 10 `{{PLACEHOLDER}}` tokens in presentation with actual SVG paths
+- Fixed slide counter from 33 to 32 (actual count)
+
 ## [2026.03.3] - 2026-03-03
 
 ### Added
