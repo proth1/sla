@@ -1,6 +1,7 @@
 name = "sla-presentation-auth"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
+account_id = "9cf2c4bac542fc51cda0343dc1485db1"
 
 # Protected URL: https://sla.agentic-innovations.com
 #

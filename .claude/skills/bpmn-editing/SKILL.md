@@ -78,16 +78,7 @@ Let Camunda Modeler format the definitions element. Don't manually format with m
 | Event | 36 | 36 |
 | Collapsed Sub-Process | 100 | 80 |
 
-### 5. Activity Element Types
-
-Use `<bpmn:userTask>` for all governance activities, NOT `<bpmn:callActivity>`. Call activities render with a thick double-line border and collapse marker in Camunda Modeler. User tasks render as standard thin-bordered rectangles matching the reference models.
-
-```xml
-<bpmn:userTask id="Task_PhaseX" name="Phase X: ..."
-    camunda:candidateGroups="lane-group">
-```
-
-### 6. Timer Boundary Event Pattern
+### 5. Timer Boundary Event Pattern
 
 Timer boundary events MUST have outgoing flows. Position labels to the RIGHT:
 
@@ -98,11 +89,11 @@ Timer boundary events MUST have outgoing flows. Position labels to the RIGHT:
 </bpmndi:BPMNLabel>
 ```
 
-### 7. Parallel Branch Spacing
+### 6. Parallel Branch Spacing
 
 Use 170-180px vertical spacing between parallel branches for visual clarity.
 
-### 8. Escalation Event Positioning
+### 7. Escalation Event Positioning
 
 Position escalation end events 50px below the triggering boundary event, 58px to the right:
 
@@ -114,7 +105,7 @@ Position escalation end events 50px below the triggering boundary event, 58px to
 </bpmndi:BPMNShape>
 ```
 
-### 9. Collapsed Subprocess for Parallel Execution
+### 8. Collapsed Subprocess for Parallel Execution
 
 Encapsulate parallel split/join patterns in **collapsed subprocesses** to keep the main flow clean:
 
@@ -131,7 +122,7 @@ Start -> Split Gateway -> Task1 -> Task2 -> Task3 -> Join Gateway -> End
 - Task flows go DOWN, across to join
 - Tasks spaced ~110px horizontally
 
-### 10. No Redundant Gateway Names
+### 9. No Redundant Gateway Names
 
 Parallel gateways should NOT have names when the context is clear:
 
@@ -143,7 +134,7 @@ Parallel gateways should NOT have names when the context is clear:
 <bpmn:parallelGateway id="Gateway_Fork">
 ```
 
-### 11. DI Element Ordering
+### 10. DI Element Ordering
 
 Within the `BPMNDiagram` section, order elements as:
 1. **Container shapes** (process, participant, lanes)
@@ -153,7 +144,7 @@ Within the `BPMNDiagram` section, order elements as:
 
 This ordering matches Camunda Modeler's output and minimizes diffs.
 
-### 12. Error Event Sub-Process Centering
+### 11. Error Event Sub-Process Centering
 
 When a subprocess has an error event sub-process, center it within the parent subprocess:
 
@@ -163,7 +154,7 @@ When a subprocess has an error event sub-process, center it within the parent su
 <!-- Error sub-process: x=200+(400-200)/2=300, centered within parent -->
 ```
 
-### 13. Left-to-Right Flow Within Lanes (CRITICAL)
+### 12. Left-to-Right Flow Within Lanes (CRITICAL)
 
 **All sequence flows MUST move left-to-right** within their swim lane. No backward flows except explicit loops.
 
@@ -175,14 +166,14 @@ WRONG (backward flow):
 [Task B] <- [Gateway] -> [Task A]
 ```
 
-### 14. Cross-Lane Routing
+### 13. Cross-Lane Routing
 
 When flows cross between SLA governance swim lanes:
 - Use **vertical segments** to cross lane boundaries
 - Keep **horizontal segments** within a single lane
 - Never draw diagonal lines crossing 2+ lane boundaries
 
-### 15. Multi-Line Event Labels
+### 14. Multi-Line Event Labels
 
 Use `&#10;` for compact event labels:
 

@@ -19,29 +19,29 @@
     <bpmn:laneSet id="LaneSet_Master">
       <bpmn:lane id="Lane_GovernanceBoard" name="Governance Board">
         <bpmn:flowNodeRef>StartEvent_RequestReceived</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_Phase2</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_Phase3b</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase3b</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_BusinessOwner" name="Business Owner">
-        <bpmn:flowNodeRef>Task_Phase1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase1</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_ITArchitecture" name="IT Architecture">
         <bpmn:flowNodeRef>Gateway_BuildOrBuy</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_Phase4a</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase4a</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_PostImplementation</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_Procurement" name="Procurement">
-        <bpmn:flowNodeRef>Task_Phase4b</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase4b</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_LegalCompliance" name="Legal &amp; Compliance">
-        <bpmn:flowNodeRef>Task_Phase3a</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase3a</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_InformationSecurity" name="Information Security">
-        <bpmn:flowNodeRef>Task_Phase0</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase0</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_VendorManagement" name="Vendor Management">
-        <bpmn:flowNodeRef>Task_Phase5</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_Phase6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_Phase6</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_AssetRetired</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
@@ -50,35 +50,60 @@
       <bpmn:outgoing>Flow_Start_P0</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:userTask id="Task_Phase0" name="Phase 0: Software Asset Intelligence"
-        camunda:candidateGroups="information-security">
+    <bpmn:callActivity id="CallActivity_Phase0" name="Phase 0: Software Asset Intelligence"
+        calledElement="Process_SoftwareAssetIntelligence">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_Start_P0</bpmn:incoming>
       <bpmn:outgoing>Flow_P0_P1</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:callActivity>
 
-    <bpmn:userTask id="Task_Phase1" name="Phase 1: Intake &amp; Risk Classification"
-        camunda:candidateGroups="business-owner">
+    <bpmn:callActivity id="CallActivity_Phase1" name="Phase 1: Intake &amp; Risk Classification"
+        calledElement="Process_IntakeRiskClassification">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_P0_P1</bpmn:incoming>
       <bpmn:outgoing>Flow_P1_P2</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:callActivity>
 
-    <bpmn:userTask id="Task_Phase2" name="Phase 2: Routing Engine &amp; Scoring"
-        camunda:candidateGroups="sla-governance-board">
+    <bpmn:callActivity id="CallActivity_Phase2" name="Phase 2: Routing Engine &amp; Scoring"
+        calledElement="Process_RoutingEngineScoring">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_P1_P2</bpmn:incoming>
       <bpmn:outgoing>Flow_P2_P3a</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:callActivity>
 
-    <bpmn:userTask id="Task_Phase3a" name="Phase 3a: Product Management Review"
-        camunda:candidateGroups="legal-compliance">
+    <bpmn:callActivity id="CallActivity_Phase3a" name="Phase 3a: Product Management Review"
+        calledElement="Process_ProductManagementReview">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_P2_P3a</bpmn:incoming>
       <bpmn:outgoing>Flow_P3a_P3b</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:callActivity>
 
-    <bpmn:userTask id="Task_Phase3b" name="Phase 3b: Portfolio Prioritization &amp; Go/No-Go"
-        camunda:candidateGroups="sla-governance-board">
+    <bpmn:callActivity id="CallActivity_Phase3b" name="Phase 3b: Portfolio Prioritization &amp; Go/No-Go"
+        calledElement="Process_PortfolioPrioritization">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_P3a_P3b</bpmn:incoming>
       <bpmn:outgoing>Flow_P3b_Gateway</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:callActivity>
 
     <bpmn:exclusiveGateway id="Gateway_BuildOrBuy" name="Pathway?" default="Flow_Gateway_Build">
       <bpmn:incoming>Flow_P3b_Gateway</bpmn:incoming>
@@ -86,17 +111,27 @@
       <bpmn:outgoing>Flow_Gateway_Buy</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_Phase4a" name="Phase 4a: PDLC Build Pathway"
-        camunda:candidateGroups="it-architecture">
+    <bpmn:callActivity id="CallActivity_Phase4a" name="Phase 4a: PDLC Build Pathway"
+        calledElement="Process_PDLCBuildPathway">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_Gateway_Build</bpmn:incoming>
       <bpmn:outgoing>Flow_P4a_Merge</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:callActivity>
 
-    <bpmn:userTask id="Task_Phase4b" name="Phase 4b: TPRM Buy Pathway"
-        camunda:candidateGroups="procurement">
+    <bpmn:callActivity id="CallActivity_Phase4b" name="Phase 4b: TPRM Buy Pathway"
+        calledElement="Process_TPRMBuyPathway">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_Gateway_Buy</bpmn:incoming>
       <bpmn:outgoing>Flow_P4b_Merge</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:callActivity>
 
     <bpmn:exclusiveGateway id="Gateway_PostImplementation">
       <bpmn:incoming>Flow_P4a_Merge</bpmn:incoming>
@@ -104,17 +139,27 @@
       <bpmn:outgoing>Flow_Merge_P5</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_Phase5" name="Phase 5: Observability &amp; Monitoring"
-        camunda:candidateGroups="vendor-management">
+    <bpmn:callActivity id="CallActivity_Phase5" name="Phase 5: Observability &amp; Monitoring"
+        calledElement="Process_PostDeploymentObservability">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_Merge_P5</bpmn:incoming>
       <bpmn:outgoing>Flow_P5_P6</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:callActivity>
 
-    <bpmn:userTask id="Task_Phase6" name="Phase 6: Retirement Management"
-        camunda:candidateGroups="vendor-management">
+    <bpmn:callActivity id="CallActivity_Phase6" name="Phase 6: Retirement Management"
+        calledElement="Process_RetirementManagement">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_P5_P6</bpmn:incoming>
       <bpmn:outgoing>Flow_P6_End</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:callActivity>
 
     <bpmn:endEvent id="EndEvent_AssetRetired" name="Asset&#10;Retired">
       <bpmn:incoming>Flow_P6_End</bpmn:incoming>
@@ -123,30 +168,30 @@
     <bpmn:textAnnotation id="Annotation_Regulatory">
       <bpmn:text>Regulatory Alignment: OCC Bulletin 2023-17 | SR 11-7 MRM | NIST AI RMF 1.0 | ISO/IEC 27001:2022 | BCBS d577 | GDPR/CCPA | EU AI Act | DORA | SOX | FINRA | SEC</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Assoc_Regulatory" sourceRef="Task_Phase2" targetRef="Annotation_Regulatory" />
+    <bpmn:association id="Assoc_Regulatory" sourceRef="CallActivity_Phase2" targetRef="Annotation_Regulatory" />
 
     <bpmn:textAnnotation id="Annotation_DMN">
       <bpmn:text>DMN Tables: DMN_PathwaySelection | DMN_RiskClassification | DMN_AIRiskLevel | DMN_VendorTier | DMN_BudgetApproval | DMN_ComplianceGate | DMN_DataClassification | DMN_SecurityClearance | DMN_EscalationRouting | DMN_SLAThreshold | DMN_RetirementEligibility | DMN_ChangeImpact | DMN_AuditFrequency | DMN_ApprovalAuthority</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Assoc_DMN" sourceRef="Task_Phase3b" targetRef="Annotation_DMN" />
+    <bpmn:association id="Assoc_DMN" sourceRef="CallActivity_Phase3b" targetRef="Annotation_DMN" />
 
-    <bpmn:sequenceFlow id="Flow_Start_P0" sourceRef="StartEvent_RequestReceived" targetRef="Task_Phase0" />
-    <bpmn:sequenceFlow id="Flow_P0_P1" sourceRef="Task_Phase0" targetRef="Task_Phase1" />
-    <bpmn:sequenceFlow id="Flow_P1_P2" sourceRef="Task_Phase1" targetRef="Task_Phase2" />
-    <bpmn:sequenceFlow id="Flow_P2_P3a" sourceRef="Task_Phase2" targetRef="Task_Phase3a" />
-    <bpmn:sequenceFlow id="Flow_P3a_P3b" sourceRef="Task_Phase3a" targetRef="Task_Phase3b" />
-    <bpmn:sequenceFlow id="Flow_P3b_Gateway" sourceRef="Task_Phase3b" targetRef="Gateway_BuildOrBuy" />
-    <bpmn:sequenceFlow id="Flow_Gateway_Build" name="Build" sourceRef="Gateway_BuildOrBuy" targetRef="Task_Phase4a">
+    <bpmn:sequenceFlow id="Flow_Start_P0" sourceRef="StartEvent_RequestReceived" targetRef="CallActivity_Phase0" />
+    <bpmn:sequenceFlow id="Flow_P0_P1" sourceRef="CallActivity_Phase0" targetRef="CallActivity_Phase1" />
+    <bpmn:sequenceFlow id="Flow_P1_P2" sourceRef="CallActivity_Phase1" targetRef="CallActivity_Phase2" />
+    <bpmn:sequenceFlow id="Flow_P2_P3a" sourceRef="CallActivity_Phase2" targetRef="CallActivity_Phase3a" />
+    <bpmn:sequenceFlow id="Flow_P3a_P3b" sourceRef="CallActivity_Phase3a" targetRef="CallActivity_Phase3b" />
+    <bpmn:sequenceFlow id="Flow_P3b_Gateway" sourceRef="CallActivity_Phase3b" targetRef="Gateway_BuildOrBuy" />
+    <bpmn:sequenceFlow id="Flow_Gateway_Build" name="Build" sourceRef="Gateway_BuildOrBuy" targetRef="CallActivity_Phase4a">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'BUILD'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_Gateway_Buy" name="Buy" sourceRef="Gateway_BuildOrBuy" targetRef="Task_Phase4b">
+    <bpmn:sequenceFlow id="Flow_Gateway_Buy" name="Buy" sourceRef="Gateway_BuildOrBuy" targetRef="CallActivity_Phase4b">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'BUY'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_P4a_Merge" sourceRef="Task_Phase4a" targetRef="Gateway_PostImplementation" />
-    <bpmn:sequenceFlow id="Flow_P4b_Merge" sourceRef="Task_Phase4b" targetRef="Gateway_PostImplementation" />
-    <bpmn:sequenceFlow id="Flow_Merge_P5" sourceRef="Gateway_PostImplementation" targetRef="Task_Phase5" />
-    <bpmn:sequenceFlow id="Flow_P5_P6" sourceRef="Task_Phase5" targetRef="Task_Phase6" />
-    <bpmn:sequenceFlow id="Flow_P6_End" sourceRef="Task_Phase6" targetRef="EndEvent_AssetRetired" />
+    <bpmn:sequenceFlow id="Flow_P4a_Merge" sourceRef="CallActivity_Phase4a" targetRef="Gateway_PostImplementation" />
+    <bpmn:sequenceFlow id="Flow_P4b_Merge" sourceRef="CallActivity_Phase4b" targetRef="Gateway_PostImplementation" />
+    <bpmn:sequenceFlow id="Flow_Merge_P5" sourceRef="Gateway_PostImplementation" targetRef="CallActivity_Phase5" />
+    <bpmn:sequenceFlow id="Flow_P5_P6" sourceRef="CallActivity_Phase5" targetRef="CallActivity_Phase6" />
+    <bpmn:sequenceFlow id="Flow_P6_End" sourceRef="CallActivity_Phase6" targetRef="EndEvent_AssetRetired" />
 
   </bpmn:process>
 
@@ -182,23 +227,23 @@
           <dc:Bounds x="229" y="152" width="72" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_Phase0_di" bpmnElement="Task_Phase0">
+      <bpmndi:BPMNShape id="CallActivity_Phase0_di" bpmnElement="CallActivity_Phase0">
         <dc:Bounds x="340" y="907" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_Phase1_di" bpmnElement="Task_Phase1">
+      <bpmndi:BPMNShape id="CallActivity_Phase1_di" bpmnElement="CallActivity_Phase1">
         <dc:Bounds x="560" y="247" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_Phase2_di" bpmnElement="Task_Phase2">
+      <bpmndi:BPMNShape id="CallActivity_Phase2_di" bpmnElement="CallActivity_Phase2">
         <dc:Bounds x="780" y="87" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_Phase3a_di" bpmnElement="Task_Phase3a">
+      <bpmndi:BPMNShape id="CallActivity_Phase3a_di" bpmnElement="CallActivity_Phase3a">
         <dc:Bounds x="1000" y="747" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_Phase3b_di" bpmnElement="Task_Phase3b">
+      <bpmndi:BPMNShape id="CallActivity_Phase3b_di" bpmnElement="CallActivity_Phase3b">
         <dc:Bounds x="1220" y="87" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -208,22 +253,22 @@
           <dc:Bounds x="1449" y="459" width="62" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_Phase4a_di" bpmnElement="Task_Phase4a">
+      <bpmndi:BPMNShape id="CallActivity_Phase4a_di" bpmnElement="CallActivity_Phase4a">
         <dc:Bounds x="1580" y="387" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_Phase4b_di" bpmnElement="Task_Phase4b">
+      <bpmndi:BPMNShape id="CallActivity_Phase4b_di" bpmnElement="CallActivity_Phase4b">
         <dc:Bounds x="1580" y="547" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_PostImplementation_di" bpmnElement="Gateway_PostImplementation" isMarkerVisible="true">
         <dc:Bounds x="1815" y="402" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_Phase5_di" bpmnElement="Task_Phase5">
+      <bpmndi:BPMNShape id="CallActivity_Phase5_di" bpmnElement="CallActivity_Phase5">
         <dc:Bounds x="1930" y="1047" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_Phase6_di" bpmnElement="Task_Phase6">
+      <bpmndi:BPMNShape id="CallActivity_Phase6_di" bpmnElement="CallActivity_Phase6">
         <dc:Bounds x="2160" y="1047" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>

@@ -162,19 +162,6 @@ Label positioning: Horizontal flows -- above (y - 18). Vertical flows -- beside 
 
 Timer names: Use `&#10;` for line breaks (e.g., `"2 Hour&#10;SLA"`).
 
-## Activity Element Types
-
-**Rule: Use `<bpmn:userTask>` for all governance activities, NOT `<bpmn:callActivity>`.**
-
-Call activities render with a thick double-line border and collapse marker in Camunda Modeler.
-User tasks render as standard thin-bordered rectangles matching the reference models.
-
-For documentation-only orchestration models, use userTask with candidateGroups:
-```xml
-<bpmn:userTask id="Task_PhaseX" name="Phase X: ..."
-    camunda:candidateGroups="lane-group">
-```
-
 ## XML Formatting Rules
 
 1. **No XML comment blocks** -- Camunda Modeler strips them
