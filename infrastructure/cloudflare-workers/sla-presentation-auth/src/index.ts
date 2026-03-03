@@ -11,6 +11,7 @@ interface Env {
   DESCOPE_PROJECT_ID: string;
   PAGES_URL: string;
   WORKER_DOMAIN: string;
+  PROXY_SECRET: string;
   CF_ACCESS_CLIENT_ID: string;
   CF_ACCESS_CLIENT_SECRET: string;
 }
@@ -260,6 +261,7 @@ async function proxyToPagesWithNewSession(
   const pagesUrl = new URL(url.pathname + url.search, env.PAGES_URL);
 
   const headers = new Headers(request.headers);
+  headers.set('X-SLA-Auth-Proxy', env.PROXY_SECRET);
   if (env.CF_ACCESS_CLIENT_ID && env.CF_ACCESS_CLIENT_SECRET) {
     headers.set('CF-Access-Client-Id', env.CF_ACCESS_CLIENT_ID);
     headers.set('CF-Access-Client-Secret', env.CF_ACCESS_CLIENT_SECRET);
@@ -268,6 +270,7 @@ async function proxyToPagesWithNewSession(
   const response = await fetch(pagesUrl.toString(), {
     method: request.method,
     headers: headers,
+    redirect: 'manual',
   });
 
   const newHeaders = new Headers(response.headers);
@@ -313,6 +316,7 @@ async function proxyToPages(request: Request, env: Env, url: URL): Promise<Respo
   const pagesUrl = new URL(url.pathname + url.search, env.PAGES_URL);
 
   const headers = new Headers(request.headers);
+  headers.set('X-SLA-Auth-Proxy', env.PROXY_SECRET);
   if (env.CF_ACCESS_CLIENT_ID && env.CF_ACCESS_CLIENT_SECRET) {
     headers.set('CF-Access-Client-Id', env.CF_ACCESS_CLIENT_ID);
     headers.set('CF-Access-Client-Secret', env.CF_ACCESS_CLIENT_SECRET);
@@ -321,6 +325,7 @@ async function proxyToPages(request: Request, env: Env, url: URL): Promise<Respo
   const response = await fetch(pagesUrl.toString(), {
     method: request.method,
     headers: headers,
+    redirect: 'manual',
   });
 
   return new Response(response.body, {
