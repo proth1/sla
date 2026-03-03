@@ -55,7 +55,7 @@ if [[ -z "${JIRA_AUTH:-}" ]]; then
 fi
 
 # Fetch Jira issue comments and look for CDD evidence markers
-COMMENTS=$(curl -s -u "${JIRA_AUTH}" \
+COMMENTS=$(curl -s --max-time 8 -u "${JIRA_AUTH}" \
   "${JIRA_URL}/rest/api/3/issue/${JIRA_KEY}/comment" 2>/dev/null | \
   jq -r '.comments[].body.content[]?.content[]?.text // empty' 2>/dev/null || echo "")
 

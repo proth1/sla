@@ -90,7 +90,7 @@ Do NOT embed conditions in gateway expressions. Use business rule tasks referenc
 <!-- CORRECT: DMN-driven routing -->
 <bpmn:businessRuleTask id="Task_DecidePathway"
   name="Select Governance Pathway"
-  camunda:decisionRef="DMN_PathwaySelection"
+  camunda:decisionRef="DMN_PathwayRouting"
   camunda:resultVariable="selectedPathway"
   camunda:mapDecisionResult="singleResult" />
 
@@ -232,6 +232,110 @@ Every collapsed subprocess MUST have its own `BPMNDiagram` element with complete
     <!-- Internal element shapes and edges -->
   </bpmndi:BPMNPlane>
 </bpmndi:BPMNDiagram>
+```
+
+## Camunda Process Attributes
+
+**Rule: Every process definition MUST include `camunda:historyTimeToLive`**
+
+```xml
+<bpmn:process id="Process_ESG_Master" name="Enterprise Software Governance"
+    isExecutable="false" camunda:historyTimeToLive="180">
+```
+
+**Rule: DMN references SHOULD include `camunda:decisionRefBinding="latest"`**
+
+```xml
+<bpmn:businessRuleTask id="Task_RiskTier"
+  name="Risk Tier Assignment"
+  camunda:decisionRef="DMN_RiskTierClassification"
+  camunda:decisionRefBinding="latest"
+  camunda:resultVariable="riskTier"
+  camunda:mapDecisionResult="singleResult" />
+```
+
+## Service Task Pattern
+
+**Rule: Use `bpmn:serviceTask` with `camunda:type="external"` for Automation lane tasks**
+
+Automation lane activities that represent automated processing (not human decisions) use external service tasks:
+
+```xml
+<bpmn:serviceTask id="Task_AutoScan" name="Automated Security Scan"
+  camunda:type="external" camunda:topic="security-scan">
+```
+
+Use `bpmn:userTask` for all governance activities involving human judgment.
+
+## Error Boundary Events
+
+Error boundary events are always interrupting per BPMN 2.0 spec. Do NOT set `cancelActivity` on error boundaries — the default (`true`) is correct and mandatory.
+
+```xml
+<bpmn:boundaryEvent id="Boundary_Error" attachedToRef="SubProcess_Phase3">
+  <bpmn:outgoing>Flow_ToErrorHandler</bpmn:outgoing>
+  <bpmn:errorEventDefinition id="ErrorDef_1" />
+</bpmn:boundaryEvent>
+```
+
+## Signal Events for Phase Transitions
+
+Signal events enable cross-process communication for phase transitions and emergency cessation:
+
+```xml
+<bpmn:signal id="Signal_EmergencyCessation" name="EmergencyCessation" />
+
+<bpmn:endEvent id="End_Terminated" name="Emergency&#10;Termination">
+  <bpmn:signalEventDefinition signalRef="Signal_EmergencyCessation" />
+</bpmn:endEvent>
+```
+
+## Message Flow Between Pools
+
+Message flows connect the Enterprise Governance pool to the Vendor/Third Party pool:
+
+```xml
+<bpmn:messageFlow id="MsgFlow_RFP" name="RFP / Due Diligence Request"
+  sourceRef="SP_Phase3_DueDiligence" targetRef="Participant_VendorThirdParty" />
+```
+
+Rules:
+- Message flows cross pool boundaries only (never within a pool)
+- Label message flows with the document/data being exchanged
+- Use intermediate message events for synchronous vendor responses
+
+## Terminate End Event
+
+Terminate end events stop all active tokens in the current scope:
+
+- **In a sub-process**: Terminates all parallel branches within that sub-process only
+- **At top level**: Terminates the entire process instance
+
+Use for emergency cessation patterns (compliance breach, security incident).
+
+## Multi-Instance Tasks
+
+For parallel reviews across multiple assessors (e.g., vendor reviews), use multi-instance:
+
+```xml
+<bpmn:userTask id="Task_ParallelReview" name="Assessor Review">
+  <bpmn:multiInstanceLoopCharacteristics isSequential="false"
+    camunda:collection="assessorList" camunda:elementVariable="assessor" />
+</bpmn:userTask>
+```
+
+## DMN-First Clarification
+
+Reading DMN output variables in `conditionExpression` is acceptable — the business logic lives in the DMN table, and the gateway simply routes based on the result:
+
+```xml
+<!-- ACCEPTABLE: Gateway reads DMN output variable -->
+<bpmn:sequenceFlow id="Flow_HighRisk" name="High Risk">
+  <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${riskTier == 'High'}</bpmn:conditionExpression>
+</bpmn:sequenceFlow>
+
+<!-- WRONG: Business logic embedded directly -->
+<bpmn:conditionExpression>${riskScore > 7 && vendorTier == 'critical'}</bpmn:conditionExpression>
 ```
 
 ## Validation Checklist

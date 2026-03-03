@@ -17,26 +17,26 @@
   <bpmn:process id="Process_CrossCuttingEvents" name="Cross-Cutting Event Sub-Processes" isExecutable="false" camunda:historyTimeToLive="180">
 
     <bpmn:laneSet id="LaneSet_CrossCutting">
-      <bpmn:lane id="Lane_Business" name="Business Lane" camunda:candidateGroups="business-lane">
+      <bpmn:lane id="Lane_Business" name="Business">
         <bpmn:flowNodeRef>StartEvent_CrossCuttingInit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SubProcess_SP1_SLAMonitoring</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP1_Complete</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SubProcess_SP3_IncidentResponse</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP3_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Governance" name="Governance Lane" camunda:candidateGroups="governance-lane">
+      <bpmn:lane id="Lane_Governance" name="Governance">
         <bpmn:flowNodeRef>SubProcess_SP4_RegulatoryChange</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP4_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment Lane" camunda:candidateGroups="technical-assessment">
+      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
         <bpmn:flowNodeRef>SubProcess_SP2_VulnerabilityRemediation</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP2_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Compliance" name="Compliance Lane" camunda:candidateGroups="compliance-lane">
+      <bpmn:lane id="Lane_Compliance" name="Compliance">
         <bpmn:flowNodeRef>SubProcess_SP5_ContinuousImprovement</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP5_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Automation" name="Automation Lane" camunda:candidateGroups="vendor-response">
+      <bpmn:lane id="Lane_Automation" name="Automation">
       </bpmn:lane>
     </bpmn:laneSet>
 
@@ -64,7 +64,7 @@
         <bpmn:outgoing>Flow_SP1_Monitor_DMN</bpmn:outgoing>
       </bpmn:serviceTask>
 
-      <bpmn:businessRuleTask id="SP1_Task_ThresholdCheck" name="Check SLA Threshold&#10;(DMN-8 Monitoring&#10;Cadence)" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:resultVariable="thresholdLevel" camunda:mapDecisionResult="singleResult">
+      <bpmn:businessRuleTask id="SP1_Task_ThresholdCheck" name="Check SLA&#10;Threshold" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:resultVariable="thresholdLevel" camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_SP1_Monitor_DMN</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_DMN_Gateway</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -148,7 +148,7 @@
         <bpmn:messageEventDefinition id="SP2_MsgDef" messageRef="Message_VulnerabilityDetected" />
       </bpmn:startEvent>
 
-      <bpmn:businessRuleTask id="SP2_Task_Classify" name="Classify Vulnerability&#10;(DMN-7 Vulnerability&#10;Remediation Routing)" camunda:decisionRef="DMN_VulnerabilityRemediationRouting" camunda:resultVariable="vulnTier" camunda:mapDecisionResult="singleResult">
+      <bpmn:businessRuleTask id="SP2_Task_Classify" name="Classify&#10;Vulnerability" camunda:decisionRef="DMN_VulnerabilityRemediationRouting" camunda:resultVariable="vulnTier" camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_SP2_Start_Classify</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_Classify_Tier</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -779,7 +779,7 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SP1_Annotation_DMN_di" bpmnElement="SP1_Annotation_DMN">
-        <dc:Bounds x="240" y="180" width="630" height="55" />
+        <dc:Bounds x="240" y="510" width="630" height="55" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Flow_SP1_Start_Monitor_di" bpmnElement="Flow_SP1_Start_Monitor">
@@ -867,7 +867,7 @@
 
       <bpmndi:BPMNEdge id="SP1_Assoc_DMN_di" bpmnElement="SP1_Assoc_DMN">
         <di:waypoint x="450" y="140" />
-        <di:waypoint x="450" y="180" />
+        <di:waypoint x="450" y="510" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>

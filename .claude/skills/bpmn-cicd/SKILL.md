@@ -1,8 +1,8 @@
 ---
 name: bpmn-cicd
-version: 1.0.0
+version: 1.1.0
 created: 2025-12-21
-updated: 2025-12-21
+updated: 2026-03-03
 description: Hybrid CI/CD patterns for BPMN process deployment combining fast JavaScript validation gates with AI-powered intelligent analysis and testing. Use when deploying BPMN processes through CI/CD pipelines with quality gates, automated testing, and deployment verification.
 ---
 
@@ -57,14 +57,14 @@ Focus CI/CD work on:
 The BPMN CI/CD pipeline is invoked via Claude Code commands and skills:
 
 ```bash
-# Full pipeline - validate, test, and deploy
-/deploy-bpmn staging
+# Full validation pipeline
+bash scripts/validators/validate-bpmn.sh
 
-# Test only (no deployment)
-/test-bpmn loan-approval-process
+# Validate a specific file
+bash scripts/validators/validate-bpmn.sh processes/phase-1-intake/initiation-and-intake.bpmn
 
-# Check pipeline status
-/pipeline-status
+# Test generation
+/test-bpmn [process-name]
 ```
 
 ### Pipeline Execution Flow
@@ -104,11 +104,11 @@ Phase 7: Verification (sonnet - ~$0.02) [DEFERRED]
 
 ```bash
 # Phase 1: Fast validation only
-node scripts/bpmn-interpreter/tests/support/bpmn-validator.js processes/loan-approval.bpmn
-node scripts/bpmn-interpreter/tests/support/element-checker.js processes/loan-approval.bpmn
+node scripts/validators/bpmn-validator.js processes/loan-approval.bpmn
+node scripts/validators/element-checker.js processes/loan-approval.bpmn
 
 # Phase 1.5: Visual validation
-node scripts/bpmn-interpreter/tests/support/visual-overlap-checker.js processes/loan-approval.bpmn
+node scripts/validators/visual-overlap-checker.js processes/loan-approval.bpmn
 
 # Phase 2: AI analysis
 > Use the bpmn-validator subagent to analyze best practices for processes/loan-approval.bpmn
@@ -132,11 +132,11 @@ For complex orchestration:
 
 ### Environment Targets
 
-| Command | Environment | Verification |
-|---------|-------------|--------------|
-| `/deploy-bpmn local` | Local Docker Camunda (8080) | Immediate [DEFERRED] |
-| `/deploy-bpmn staging` | GKE staging namespace | Smoke test [DEFERRED] |
-| `/deploy-bpmn production` | GKE prod namespace | Full verification [DEFERRED] |
+| Tool | Purpose |
+|------|---------|
+| `bash scripts/validators/validate-bpmn.sh` | Full validation pipeline |
+| `bpmn-validator` subagent | AI best practice analysis |
+| `bpmn-tester` subagent | BDD test generation |
 
 ---
 
@@ -224,8 +224,8 @@ For complex orchestration:
 ### Fast Gates (JavaScript - $0)
 ```bash
 # Always run these first
-node scripts/bpmn-interpreter/tests/support/bpmn-validator.js [file.bpmn]
-node scripts/bpmn-interpreter/tests/support/element-checker.js [file.bpmn]
+node scripts/validators/bpmn-validator.js [file.bpmn]
+node scripts/validators/element-checker.js [file.bpmn]
 ```
 
 ### AI Analysis (Model-Routed)
@@ -386,15 +386,11 @@ claude "> Verify BPMN deployment health after rollback to $PREVIOUS_VERSION"
 
 - **bpmn-validator**: BPMN validation and best practices
 - **bpmn-tester**: Test generation and failure analysis
-- **cicd-pipeline**: CI/CD orchestration and deployment (deferred)
-- **evidence-collection**: CDD compliance evidence generation
+- **pipeline-orchestrator**: Full pipeline orchestration
 
 ## Related Commands
 
 - **/test-bpmn**: User-friendly test invocation
-- **/deploy-bpmn**: Deploy BPMN to Camunda (deferred)
-- **/pipeline-status**: Check CI/CD pipeline status
-- **/rollback**: Rollback failed deployment (deferred)
 
 ## Related Rules
 

@@ -16,8 +16,9 @@
 import fs from 'fs/promises';
 import path from 'path';
 import BpmnModdle from 'bpmn-moddle';
+import camundaModdle from 'camunda-bpmn-moddle/resources/camunda.json' with { type: 'json' };
 
-const moddle = new BpmnModdle();
+const moddle = new BpmnModdle({ camunda: camundaModdle });
 
 // Elements supported by SLA Governance Platform
 const SUPPORTED_ELEMENTS = [
@@ -53,22 +54,35 @@ const PARTIALLY_SUPPORTED_EVENTS = [
 
 // Event definitions NOT supported
 const UNSUPPORTED_EVENTS = [
-  'bpmn:SignalEventDefinition',
   'bpmn:EscalationEventDefinition',
   'bpmn:CompensateEventDefinition',
   'bpmn:ConditionalEventDefinition',
   'bpmn:LinkEventDefinition'
 ];
 
-// Valid SLA Governance Platform swim-lane candidateGroups
+// Valid SLA Governance Platform swim-lane candidateGroups (9+1 lanes)
 const VALID_CANDIDATE_GROUPS = [
-  'sla-governance-board',
-  'business-owner',
-  'it-architecture',
-  'procurement',
-  'legal-compliance',
-  'information-security',
-  'vendor-management'
+  'business-lane',
+  'governance-lane',
+  'contracting-lane',
+  'technical-assessment',
+  'ai-review',
+  'compliance-lane',
+  'oversight-lane',
+  'automation-lane',
+  'vendor-response'
+];
+
+// Valid DMN decision table IDs (8 canonical tables)
+const VALID_DMN_IDS = [
+  'DMN_RiskTierClassification',
+  'DMN_PathwayRouting',
+  'DMN_GovernanceReviewRouting',
+  'DMN_AutomationTierAssignment',
+  'DMN_AgentConfidenceEscalation',
+  'DMN_ChangeRiskScoring',
+  'DMN_VulnerabilityRemediationRouting',
+  'DMN_MonitoringCadenceAssignment'
 ];
 
 class ValidationResult {
@@ -228,11 +242,17 @@ function validateProcess(process, result) {
   if (laneSets.length > 0) {
     validateSwimLanes(process, elements, result);
   }
+
+  // Validate DMN decision references
+  validateDmnReferences(process, elements, result);
+
+  // Validate boundary events have outgoing flows
+  validateBoundaryEvents(elements, result);
 }
 
 /**
  * Validate SLA Governance Platform swim-lane candidateGroup assignments.
- * User tasks must use one of the 7 valid governance groups.
+ * User tasks must use one of the 9+1 valid governance groups.
  */
 function validateSwimLanes(process, elements, result) {
   result.addInfo(`Validating swim-lane candidateGroups for process: ${process.id}`);
@@ -240,7 +260,11 @@ function validateSwimLanes(process, elements, result) {
   const userTasks = elements.filter(e => e.$type === 'bpmn:UserTask');
 
   for (const task of userTasks) {
-    const candidateGroups = task.candidateGroups || [];
+    // camunda-bpmn-moddle parses camunda:candidateGroups as a string attribute
+    const candidateGroupsAttr = task.candidateGroups || task.$attrs?.['camunda:candidateGroups'] || '';
+    const candidateGroups = typeof candidateGroupsAttr === 'string'
+      ? candidateGroupsAttr.split(',').map(g => g.trim()).filter(Boolean)
+      : [];
 
     if (candidateGroups.length === 0) {
       result.addWarning(
@@ -252,11 +276,54 @@ function validateSwimLanes(process, elements, result) {
 
     for (const group of candidateGroups) {
       if (!VALID_CANDIDATE_GROUPS.includes(group)) {
-        result.addWarning(
-          `candidateGroup "${group}" is not a recognized SLA Governance Platform group. Valid groups: ${VALID_CANDIDATE_GROUPS.join(', ')}`,
+        result.addError(
+          `candidateGroup "${group}" is not a recognized SLA Governance group. Valid groups: ${VALID_CANDIDATE_GROUPS.join(', ')}`,
           task.id
         );
       }
+    }
+  }
+}
+
+/**
+ * Validate DMN decision references against the 8 canonical table IDs.
+ */
+function validateDmnReferences(process, elements, result) {
+  const businessRuleTasks = elements.filter(e => e.$type === 'bpmn:BusinessRuleTask');
+
+  for (const task of businessRuleTasks) {
+    const decisionRef = task.decisionRef || task.$attrs?.['camunda:decisionRef'] || '';
+
+    if (!decisionRef) {
+      result.addWarning(
+        `BusinessRuleTask has no camunda:decisionRef - should reference a DMN table`,
+        task.id
+      );
+      continue;
+    }
+
+    if (!VALID_DMN_IDS.includes(decisionRef)) {
+      result.addError(
+        `decisionRef "${decisionRef}" is not a canonical DMN table ID. Valid IDs: ${VALID_DMN_IDS.join(', ')}`,
+        task.id
+      );
+    }
+  }
+}
+
+/**
+ * Validate that all boundary events have outgoing flows.
+ */
+function validateBoundaryEvents(elements, result) {
+  const boundaryEvents = elements.filter(e => e.$type === 'bpmn:BoundaryEvent');
+
+  for (const event of boundaryEvents) {
+    const outgoing = event.outgoing || [];
+    if (outgoing.length === 0) {
+      result.addError(
+        `BoundaryEvent has no outgoing flow - timer/error boundaries must connect to an escalation target`,
+        event.id
+      );
     }
   }
 }

@@ -14,37 +14,37 @@
   <bpmn:process id="Process_ESG_Master" name="Enterprise Software Governance — Intake to Retirement" isExecutable="false" camunda:historyTimeToLive="180">
 
     <bpmn:laneSet id="LaneSet_ESG">
-      <bpmn:lane id="Lane_Business" name="Business Lane">
+      <bpmn:lane id="Lane_Business" name="Business">
         <bpmn:flowNodeRef>StartEvent_InitiativeRequest</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP_Phase2_Planning</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Rejected</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Governance" name="Governance Lane">
+      <bpmn:lane id="Lane_Governance" name="Governance">
         <bpmn:flowNodeRef>SP_Phase4_GovernanceReview</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_Governance</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_GovMerge</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Rejected_Gov</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Contracting" name="Contracting Lane">
+      <bpmn:lane id="Lane_Contracting" name="Contracting">
         <bpmn:flowNodeRef>SP_Phase5_Contracting</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment Lane">
+      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
         <bpmn:flowNodeRef>SP_Phase6_SDLC</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP_Phase7_Deployment</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_Deployment</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_AIReview" name="AI Review Lane">
+      <bpmn:lane id="Lane_AIReview" name="AI Review">
         <bpmn:flowNodeRef>Gateway_RiskTier</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Compliance" name="Compliance Lane">
+      <bpmn:lane id="Lane_Compliance" name="Compliance">
         <bpmn:flowNodeRef>SP_Phase3_DueDiligence</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Oversight" name="Oversight Lane">
+      <bpmn:lane id="Lane_Oversight" name="Oversight">
         <bpmn:flowNodeRef>StartEvent_OversightAudit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_OversightPlaceholder</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_OversightComplete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Automation" name="Automation Lane">
+      <bpmn:lane id="Lane_Automation" name="Automation">
         <bpmn:flowNodeRef>SP_Phase1_Intake</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP_Phase8_Operations</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_Monitoring</bpmn:flowNodeRef>
@@ -72,11 +72,10 @@
       </bpmn:startEvent>
 
       <bpmn:businessRuleTask id="SP1_Task_ClassifyRequest" name="Classify Governance Request"
-        camunda:decisionRef="PathwaySelection"
+        camunda:decisionRef="DMN_PathwayRouting"
         camunda:decisionRefBinding="latest"
         camunda:resultVariable="governancePathway"
-        camunda:mapDecisionResult="singleResult"
-        camunda:candidateGroups="automation-lane">
+        camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_SP1_Start_Classify</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_Classify_Register</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -116,11 +115,10 @@
       </bpmn:startEvent>
 
       <bpmn:businessRuleTask id="SP2_Task_RiskClassification" name="Risk Classification"
-        camunda:decisionRef="RiskClassification"
+        camunda:decisionRef="DMN_RiskTierClassification"
         camunda:decisionRefBinding="latest"
         camunda:resultVariable="riskTier"
-        camunda:mapDecisionResult="singleResult"
-        camunda:candidateGroups="business-lane">
+        camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_SP2_Start_RiskClass</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_RiskClass_Scope</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -163,15 +161,10 @@
         <bpmn:outgoing>Flow_SP3_DD_DataClass</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:businessRuleTask id="SP3_Task_DataClassification" name="Data Classification"
-        camunda:decisionRef="DataClassification"
-        camunda:decisionRefBinding="latest"
-        camunda:resultVariable="dataClassification"
-        camunda:mapDecisionResult="singleResult"
-        camunda:candidateGroups="compliance-lane">
+      <bpmn:userTask id="SP3_Task_DataClassification" name="Data Classification" camunda:candidateGroups="compliance-lane">
         <bpmn:incoming>Flow_SP3_DD_DataClass</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_DataClass_End</bpmn:outgoing>
-      </bpmn:businessRuleTask>
+      </bpmn:userTask>
 
       <bpmn:endEvent id="SP3_End" name="Due Diligence&#10;Complete">
         <bpmn:incoming>Flow_SP3_DataClass_End</bpmn:incoming>
@@ -191,11 +184,10 @@
       </bpmn:startEvent>
 
       <bpmn:businessRuleTask id="SP4_Task_ApprovalAuthority" name="Determine Approval&#10;Authority"
-        camunda:decisionRef="ApprovalAuthority"
+        camunda:decisionRef="DMN_GovernanceReviewRouting"
         camunda:decisionRefBinding="latest"
         camunda:resultVariable="approvalAuthority"
-        camunda:mapDecisionResult="singleResult"
-        camunda:candidateGroups="governance-lane">
+        camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_SP4_Start_ApprAuth</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_ApprAuth_Review</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -240,15 +232,10 @@
         <bpmn:outgoing>Flow_SP5_Start_CompReq</bpmn:outgoing>
       </bpmn:startEvent>
 
-      <bpmn:businessRuleTask id="SP5_Task_ComplianceRequirements" name="Identify Compliance&#10;Requirements"
-        camunda:decisionRef="ComplianceRequirements"
-        camunda:decisionRefBinding="latest"
-        camunda:resultVariable="complianceRequirements"
-        camunda:mapDecisionResult="singleResult"
-        camunda:candidateGroups="contracting-lane">
+      <bpmn:userTask id="SP5_Task_ComplianceRequirements" name="Identify Compliance&#10;Requirements" camunda:candidateGroups="compliance-lane">
         <bpmn:incoming>Flow_SP5_Start_CompReq</bpmn:incoming>
         <bpmn:outgoing>Flow_SP5_CompReq_Contract</bpmn:outgoing>
-      </bpmn:businessRuleTask>
+      </bpmn:userTask>
 
       <bpmn:userTask id="SP5_Task_ContractNegotiation" name="Contract Negotiation&#10;&amp; Controls Setup" camunda:candidateGroups="contracting-lane">
         <bpmn:incoming>Flow_SP5_CompReq_Contract</bpmn:incoming>
@@ -273,15 +260,10 @@
         <bpmn:outgoing>Flow_SP6_Start_TestReq</bpmn:outgoing>
       </bpmn:startEvent>
 
-      <bpmn:businessRuleTask id="SP6_Task_TestingRequirements" name="Determine Testing&#10;Requirements"
-        camunda:decisionRef="TestingRequirements"
-        camunda:decisionRefBinding="latest"
-        camunda:resultVariable="testingRequirements"
-        camunda:mapDecisionResult="singleResult"
-        camunda:candidateGroups="technical-assessment">
+      <bpmn:userTask id="SP6_Task_TestingRequirements" name="Determine Testing&#10;Requirements" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP6_Start_TestReq</bpmn:incoming>
         <bpmn:outgoing>Flow_SP6_TestReq_Build</bpmn:outgoing>
-      </bpmn:businessRuleTask>
+      </bpmn:userTask>
 
       <bpmn:userTask id="SP6_Task_BuildConfigure" name="Build / Configure&#10;Solution" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP6_TestReq_Build</bpmn:incoming>
@@ -305,15 +287,10 @@
         <bpmn:outgoing>Flow_SP7_Start_SLAPriority</bpmn:outgoing>
       </bpmn:startEvent>
 
-      <bpmn:businessRuleTask id="SP7_Task_SLAPriority" name="Set SLA Priority"
-        camunda:decisionRef="SLAPriority"
-        camunda:decisionRefBinding="latest"
-        camunda:resultVariable="slaPriority"
-        camunda:mapDecisionResult="singleResult"
-        camunda:candidateGroups="technical-assessment">
+      <bpmn:userTask id="SP7_Task_SLAPriority" name="Set SLA Priority" camunda:candidateGroups="automation-lane">
         <bpmn:incoming>Flow_SP7_Start_SLAPriority</bpmn:incoming>
         <bpmn:outgoing>Flow_SP7_SLAPriority_Deploy</bpmn:outgoing>
-      </bpmn:businessRuleTask>
+      </bpmn:userTask>
 
       <bpmn:userTask id="SP7_Task_ProductionDeployment" name="Production Deployment&#10;&amp; Go-Live Approval" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP7_SLAPriority_Deploy</bpmn:incoming>
@@ -344,16 +321,15 @@
       </bpmn:startEvent>
 
       <bpmn:businessRuleTask id="SP8_Task_AuditFrequency" name="Set Audit Frequency"
-        camunda:decisionRef="AuditFrequency"
+        camunda:decisionRef="DMN_MonitoringCadenceAssignment"
         camunda:decisionRefBinding="latest"
         camunda:resultVariable="auditFrequency"
-        camunda:mapDecisionResult="singleResult"
-        camunda:candidateGroups="automation-lane">
+        camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_SP8_Start_AuditFreq</bpmn:incoming>
         <bpmn:outgoing>Flow_SP8_AuditFreq_Monitor</bpmn:outgoing>
       </bpmn:businessRuleTask>
 
-      <bpmn:userTask id="SP8_Task_OngoingMonitoring" name="Ongoing SLA Monitoring&#10;&amp; Performance Review" camunda:candidateGroups="vendor-management">
+      <bpmn:userTask id="SP8_Task_OngoingMonitoring" name="Ongoing SLA Monitoring&#10;&amp; Performance Review" camunda:candidateGroups="automation-lane">
         <bpmn:incoming>Flow_SP8_AuditFreq_Monitor</bpmn:incoming>
         <bpmn:outgoing>Flow_SP8_Monitor_End</bpmn:outgoing>
       </bpmn:userTask>
@@ -473,7 +449,7 @@
 
   <bpmn:process id="Process_VendorResponse" name="Vendor / Third Party Response" isExecutable="false">
     <bpmn:laneSet id="LaneSet_Vendor">
-      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response Lane">
+      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response">
         <bpmn:flowNodeRef>VendorStart</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_VendorAttestation</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>VendorEnd</bpmn:flowNodeRef>
@@ -530,9 +506,9 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_InitiativeRequest_di" bpmnElement="StartEvent_InitiativeRequest">
-        <dc:Bounds x="222" y="71" width="36" height="36" />
+        <dc:Bounds x="280" y="91" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="205" y="114" width="70" height="27" />
+          <dc:Bounds x="263" y="134" width="70" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -541,7 +517,7 @@
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
-      <bpmndi:BPMNShape id="BoundaryEvent_Phase1_SLA_di" bpmnElement="BoundaryEvent_Phase1_SLA" cancelActivity="false">
+      <bpmndi:BPMNShape id="BoundaryEvent_Phase1_SLA_di" bpmnElement="BoundaryEvent_Phase1_SLA">
         <dc:Bounds x="342" y="1004" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="386" y="1008" width="46" height="27" />
@@ -551,7 +527,7 @@
       <bpmndi:BPMNShape id="EndEvent_Escalation_P1_di" bpmnElement="EndEvent_Escalation_P1">
         <dc:Bounds x="342" y="1055" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="319" y="1098" width="82" height="27" />
+          <dc:Bounds x="386" y="1059" width="82" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -585,21 +561,21 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_Governance_di" bpmnElement="Gateway_Governance" isMarkerVisible="true">
-        <dc:Bounds x="1095" y="197" width="50" height="50" />
+        <dc:Bounds x="1095" y="207" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1071" y="254" width="98" height="27" />
+          <dc:Bounds x="1071" y="264" width="98" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Rejected_Gov_di" bpmnElement="EndEvent_Rejected_Gov">
         <dc:Bounds x="1102" y="72" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1078" y="115" width="84" height="40" />
+          <dc:Bounds x="1145" y="65" width="96" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_GovMerge_di" bpmnElement="Gateway_GovMerge" isMarkerVisible="true">
-        <dc:Bounds x="1215" y="197" width="50" height="50" />
+        <dc:Bounds x="1215" y="207" width="50" height="50" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SP_Phase5_Contracting_di" bpmnElement="SP_Phase5_Contracting" isExpanded="false">
@@ -618,9 +594,9 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_Deployment_di" bpmnElement="Gateway_Deployment" isMarkerVisible="true">
-        <dc:Bounds x="1875" y="447" width="50" height="50" />
+        <dc:Bounds x="1875" y="457" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1851" y="504" width="98" height="27" />
+          <dc:Bounds x="1851" y="514" width="98" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -629,7 +605,7 @@
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
-      <bpmndi:BPMNShape id="BoundaryEvent_Phase8_Periodic_di" bpmnElement="BoundaryEvent_Phase8_Periodic" cancelActivity="false">
+      <bpmndi:BPMNShape id="BoundaryEvent_Phase8_Periodic_di" bpmnElement="BoundaryEvent_Phase8_Periodic">
         <dc:Bounds x="2042" y="1004" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="2086" y="1008" width="46" height="27" />
@@ -639,7 +615,7 @@
       <bpmndi:BPMNShape id="EndEvent_PeriodicReview_di" bpmnElement="EndEvent_PeriodicReview">
         <dc:Bounds x="2042" y="1055" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2016" y="1098" width="88" height="27" />
+          <dc:Bounds x="2086" y="1059" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -689,16 +665,16 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="TextAnnotation_Regulatory_di" bpmnElement="TextAnnotation_Regulatory">
-        <dc:Bounds x="340" y="910" width="1060" height="55" />
+        <dc:Bounds x="340" y="1290" width="1060" height="55" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="TextAnnotation_DMN_di" bpmnElement="TextAnnotation_DMN">
-        <dc:Bounds x="1420" y="822" width="1060" height="55" />
+        <dc:Bounds x="1420" y="1290" width="1060" height="55" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Flow_Start_Phase1_di" bpmnElement="Flow_Start_Phase1">
-        <di:waypoint x="240" y="107" />
-        <di:waypoint x="240" y="982" />
+        <di:waypoint x="298" y="127" />
+        <di:waypoint x="298" y="982" />
         <di:waypoint x="310" y="982" />
       </bpmndi:BPMNEdge>
 
@@ -743,38 +719,38 @@
 
       <bpmndi:BPMNEdge id="Flow_Phase4_GovGateway_di" bpmnElement="Flow_Phase4_GovGateway">
         <di:waypoint x="1030" y="232" />
-        <di:waypoint x="1095" y="222" />
+        <di:waypoint x="1095" y="232" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Gov_Rejected_di" bpmnElement="Flow_Gov_Rejected">
-        <di:waypoint x="1120" y="197" />
+        <di:waypoint x="1120" y="207" />
         <di:waypoint x="1120" y="108" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1128" y="144" width="44" height="14" />
+          <dc:Bounds x="1128" y="150" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Gov_Approved_di" bpmnElement="Flow_Gov_Approved">
-        <di:waypoint x="1145" y="222" />
-        <di:waypoint x="1215" y="222" />
+        <di:waypoint x="1145" y="232" />
+        <di:waypoint x="1215" y="232" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1162" y="204" width="44" height="14" />
+          <dc:Bounds x="1162" y="214" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Gov_ApprovedConditions_di" bpmnElement="Flow_Gov_ApprovedConditions">
-        <di:waypoint x="1120" y="247" />
-        <di:waypoint x="1120" y="285" />
-        <di:waypoint x="1240" y="285" />
-        <di:waypoint x="1240" y="247" />
+        <di:waypoint x="1120" y="257" />
+        <di:waypoint x="1120" y="290" />
+        <di:waypoint x="1240" y="290" />
+        <di:waypoint x="1240" y="257" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1128" y="258" width="104" height="27" />
+          <dc:Bounds x="1128" y="268" width="104" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_GovMerge_Phase5_di" bpmnElement="Flow_GovMerge_Phase5">
-        <di:waypoint x="1265" y="222" />
-        <di:waypoint x="1302" y="222" />
+        <di:waypoint x="1265" y="232" />
+        <di:waypoint x="1302" y="232" />
         <di:waypoint x="1302" y="357" />
         <di:waypoint x="1340" y="357" />
       </bpmndi:BPMNEdge>
@@ -793,11 +769,11 @@
 
       <bpmndi:BPMNEdge id="Flow_Phase7_DeployGateway_di" bpmnElement="Flow_Phase7_DeployGateway">
         <di:waypoint x="1800" y="482" />
-        <di:waypoint x="1875" y="472" />
+        <di:waypoint x="1875" y="482" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Deploy_Approved_di" bpmnElement="Flow_Deploy_Approved">
-        <di:waypoint x="1900" y="497" />
+        <di:waypoint x="1900" y="507" />
         <di:waypoint x="1900" y="982" />
         <di:waypoint x="2010" y="982" />
         <bpmndi:BPMNLabel>
@@ -806,27 +782,27 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Deploy_Rejected_di" bpmnElement="Flow_Deploy_Rejected">
-        <di:waypoint x="1875" y="447" />
-        <di:waypoint x="1875" y="400" />
-        <di:waypoint x="1570" y="400" />
-        <di:waypoint x="1570" y="422" />
+        <di:waypoint x="1875" y="457" />
+        <di:waypoint x="1875" y="430" />
+        <di:waypoint x="1570" y="430" />
+        <di:waypoint x="1570" y="442" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1676" y="380" width="100" height="14" />
+          <dc:Bounds x="1676" y="412" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Phase8_MonitoringGateway_di" bpmnElement="Flow_Phase8_MonitoringGateway">
         <di:waypoint x="2110" y="982" />
-        <di:waypoint x="2185" y="972" />
+        <di:waypoint x="2185" y="982" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Monitor_Continue_di" bpmnElement="Flow_Monitor_Continue">
         <di:waypoint x="2210" y="947" />
-        <di:waypoint x="2210" y="910" />
-        <di:waypoint x="2060" y="910" />
+        <di:waypoint x="2210" y="930" />
+        <di:waypoint x="2060" y="930" />
         <di:waypoint x="2060" y="942" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2078" y="890" width="88" height="14" />
+          <dc:Bounds x="2078" y="912" width="88" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
@@ -840,7 +816,7 @@
 
       <bpmndi:BPMNEdge id="Flow_Emergency_Terminated_di" bpmnElement="Flow_Emergency_Terminated">
         <di:waypoint x="2580" y="982" />
-        <di:waypoint x="2652" y="972" />
+        <di:waypoint x="2652" y="982" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_P1_SLA_Escalation_di" bpmnElement="Flow_P1_SLA_Escalation">
@@ -855,22 +831,22 @@
 
       <bpmndi:BPMNEdge id="Flow_Oversight_Start_Task_di" bpmnElement="Flow_Oversight_Start_Task">
         <di:waypoint x="258" y="849" />
-        <di:waypoint x="320" y="857" />
+        <di:waypoint x="320" y="849" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Oversight_Task_End_di" bpmnElement="Flow_Oversight_Task_End">
-        <di:waypoint x="420" y="857" />
+        <di:waypoint x="420" y="849" />
         <di:waypoint x="492" y="849" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_Regulatory_di" bpmnElement="Assoc_Regulatory">
         <di:waypoint x="810" y="772" />
-        <di:waypoint x="810" y="822" />
+        <di:waypoint x="810" y="1290" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_DMN_di" bpmnElement="Assoc_DMN">
         <di:waypoint x="525" y="152" />
-        <di:waypoint x="525" y="822" />
+        <di:waypoint x="525" y="1290" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="MsgFlow_RFP_Vendor_di" bpmnElement="MsgFlow_RFP_Vendor">

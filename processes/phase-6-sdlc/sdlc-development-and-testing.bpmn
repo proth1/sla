@@ -19,7 +19,7 @@
   <bpmn:process id="Process_Phase6SDLC" name="Phase 6: SDLC Development and Testing" isExecutable="false" camunda:historyTimeToLive="180">
 
     <bpmn:laneSet id="LaneSet_Phase6SDLC">
-      <bpmn:lane id="Lane_Business" name="Business Lane" camunda:candidateGroups="business-lane">
+      <bpmn:lane id="Lane_Business" name="Business">
         <bpmn:flowNodeRef>StartEvent_Phase6Initiated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SubProcess_6A_SprintLifecycle</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>BoundaryEvent_SP6A_SLA</bpmn:flowNodeRef>
@@ -32,13 +32,13 @@
         <bpmn:flowNodeRef>Gateway_QualityGate_Merge</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Phase6Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Governance" name="Governance Lane" camunda:candidateGroups="governance-lane">
+      <bpmn:lane id="Lane_Governance" name="Governance">
         <bpmn:flowNodeRef>Gateway_QualityGate</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_QualityGateRejected</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Contracting" name="Contracting Lane" camunda:candidateGroups="contracting-lane">
+      <bpmn:lane id="Lane_Contracting" name="Contracting">
       </bpmn:lane>
-      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment" camunda:candidateGroups="technical-assessment">
+      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
         <bpmn:flowNodeRef>SubProcess_6B_DevPipeline</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>BoundaryEvent_SP6B_SLA</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP6B_SLAEscalated</bpmn:flowNodeRef>
@@ -48,16 +48,16 @@
         <bpmn:flowNodeRef>EndEvent_SP6C_SLAEscalated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_Parallel_Join_TC</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_AIReview" name="AI Review Lane" camunda:candidateGroups="ai-review">
+      <bpmn:lane id="Lane_AIReview" name="AI Review">
       </bpmn:lane>
-      <bpmn:lane id="Lane_Compliance" name="Compliance Lane" camunda:candidateGroups="compliance-lane">
+      <bpmn:lane id="Lane_Compliance" name="Compliance">
         <bpmn:flowNodeRef>SubProcess_6E_ComplianceGates</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>BoundaryEvent_SP6E_SLA</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP6E_SLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Oversight" name="Oversight Lane" camunda:candidateGroups="oversight-lane">
+      <bpmn:lane id="Lane_Oversight" name="Oversight">
       </bpmn:lane>
-      <bpmn:lane id="Lane_Automation" name="Automation Lane" camunda:candidateGroups="automation-lane">
+      <bpmn:lane id="Lane_Automation" name="Automation">
         <bpmn:flowNodeRef>SubProcess_6D_DevSecOps</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>BoundaryEvent_SP6D_SLA</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP6D_SLAEscalated</bpmn:flowNodeRef>
@@ -246,7 +246,7 @@
 
   <bpmn:process id="Process_VendorPhase6" name="Vendor / Third Party" isExecutable="false">
     <bpmn:laneSet id="LaneSet_VendorPhase6">
-      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response" camunda:candidateGroups="vendor-response">
+      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response">
         <bpmn:flowNodeRef>StartEvent_Vendor_Phase6</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_Vendor_ProvideBuildArtifacts</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Vendor_Phase6</bpmn:flowNodeRef>
@@ -581,16 +581,16 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="BoundaryEvent_Phase6_Timer_di" bpmnElement="BoundaryEvent_Phase6_Timer">
-        <dc:Bounds x="408" y="131" width="36" height="36" />
+        <dc:Bounds x="432" y="131" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="452" y="135" width="65" height="27" />
+          <dc:Bounds x="476" y="135" width="65" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Phase6TimerEscalated_di" bpmnElement="EndEvent_Phase6TimerEscalated">
-        <dc:Bounds x="408" y="185" width="36" height="36" />
+        <dc:Bounds x="432" y="185" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="387" y="228" width="78" height="27" />
+          <dc:Bounds x="411" y="228" width="78" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -760,8 +760,8 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Phase6_Timer_End_di" bpmnElement="Flow_Phase6_Timer_End">
-        <di:waypoint x="426" y="167" />
-        <di:waypoint x="426" y="185" />
+        <di:waypoint x="450" y="167" />
+        <di:waypoint x="450" y="185" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6A_SP6B_di" bpmnElement="Flow_SP6A_SP6B">
