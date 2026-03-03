@@ -18,29 +18,29 @@
   <bpmn:process id="Process_Phase2Planning" name="Phase 2: Planning and Inherent Risk Scoping" isExecutable="false" camunda:historyTimeToLive="180">
 
     <bpmn:laneSet id="LaneSet_Phase2Planning">
-      <bpmn:lane id="Lane_Business" name="Business">
+      <bpmn:lane id="Lane_Business" name="Business" camunda:candidateGroups="business-lane">
         <bpmn:flowNodeRef>StartEvent_Phase2Initiated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_2_1_BusinessCaseValidation</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_2_5_ScopeDefinitionBusiness</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Phase2Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Governance" name="Governance">
+      <bpmn:lane id="Lane_Governance" name="Governance" camunda:candidateGroups="governance-lane">
         <bpmn:flowNodeRef>EndEvent_Rejected</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Contracting" name="Contracting">
+      <bpmn:lane id="Lane_Contracting" name="Contracting" camunda:candidateGroups="contracting-lane">
       </bpmn:lane>
-      <bpmn:lane id="Lane_Technical" name="Technical Assessment">
+      <bpmn:lane id="Lane_Technical" name="Technical Assessment" camunda:candidateGroups="technical-assessment">
         <bpmn:flowNodeRef>Task_2_5_ScopeDefinitionTech</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_AIReview" name="AI Review">
+      <bpmn:lane id="Lane_AIReview" name="AI Review" camunda:candidateGroups="ai-review">
         <bpmn:flowNodeRef>Task_2_4_AIRiskClassification</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Compliance" name="Compliance">
+      <bpmn:lane id="Lane_Compliance" name="Compliance" camunda:candidateGroups="compliance-lane">
         <bpmn:flowNodeRef>Task_2_6_RegulatoryMapping</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Oversight" name="Oversight">
+      <bpmn:lane id="Lane_Oversight" name="Oversight" camunda:candidateGroups="oversight-lane">
       </bpmn:lane>
-      <bpmn:lane id="Lane_Automation" name="Automation">
+      <bpmn:lane id="Lane_Automation" name="Automation" camunda:candidateGroups="automation-lane">
         <bpmn:flowNodeRef>EndEvent_SLAEscalated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_2_2_InherentRiskScoring</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>BoundaryEvent_Phase2SLATimer</bpmn:flowNodeRef>
@@ -232,7 +232,7 @@
 
   <bpmn:process id="Process_VendorPhase2" name="Vendor / Third Party — Phase 2" isExecutable="false" camunda:historyTimeToLive="180">
     <bpmn:laneSet id="LaneSet_Vendor">
-      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response">
+      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response" camunda:candidateGroups="vendor-response">
         <bpmn:flowNodeRef>StartEvent_VendorPhase2</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_VendorPhase2</bpmn:flowNodeRef>
       </bpmn:lane>
