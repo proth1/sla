@@ -385,15 +385,12 @@
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_SLA" sourceRef="Task_SLAPerformanceReport" targetRef="Annotation_SLA" />
 
-    <!-- Error References -->
-    <bpmn:error id="Error_SecurityHold" name="Security Hold" errorCode="SEC_HOLD" />
-    <bpmn:error id="Error_ComplianceHold" name="Compliance Hold" errorCode="COMP_HOLD" />
-
-    <!-- Signal References -->
-    <bpmn:signal id="Signal_GoLiveComplete" name="GoLiveComplete" />
-    <bpmn:signal id="Signal_P5Complete" name="P5Complete" />
-
   </bpmn:process>
+
+  <bpmn:error id="Error_SecurityHold" name="Security Hold" errorCode="SEC_HOLD" />
+  <bpmn:error id="Error_ComplianceHold" name="Compliance Hold" errorCode="COMP_HOLD" />
+  <bpmn:signal id="Signal_GoLiveComplete" name="GoLiveComplete" />
+  <bpmn:signal id="Signal_P5Complete" name="P5Complete" />
 
   <bpmndi:BPMNDiagram id="BPMNDiagram_PostDeployObs">
     <bpmndi:BPMNPlane id="BPMNPlane_PostDeployObs" bpmnElement="Collab_PostDeployObs">

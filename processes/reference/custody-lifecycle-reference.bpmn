@@ -264,8 +264,6 @@
       <bpmn:incoming>Flow_AuthorizeEnd</bpmn:incoming>
     </bpmn:endEvent>
 
-    <bpmn:error id="Error_SettlementRejection" name="Settlement Rejection" errorCode="SETTLE_REJECT" />
-
     <bpmn:sequenceFlow id="Flow_01" sourceRef="StartEvent_AssetReceived" targetRef="Task_VerifyAssetDetails" />
     <bpmn:sequenceFlow id="Flow_02" sourceRef="Task_VerifyAssetDetails" targetRef="Task_AssetOnboarding" />
     <bpmn:sequenceFlow id="Flow_03" sourceRef="Task_AssetOnboarding" targetRef="Gateway_OnboardingComplete" />
@@ -295,6 +293,8 @@
     <bpmn:sequenceFlow id="Flow_13" sourceRef="Task_AssetReconciliation" targetRef="Task_RegulatoryReporting" />
     <bpmn:sequenceFlow id="Flow_14" sourceRef="Task_RegulatoryReporting" targetRef="EndEvent_LifecycleComplete" />
   </bpmn:process>
+
+  <bpmn:error id="Error_SettlementRejection" name="Settlement Rejection" errorCode="SETTLE_REJECT" />
 
   <bpmndi:BPMNDiagram id="BPMNDiagram_Custody">
     <bpmndi:BPMNPlane id="BPMNPlane_Custody" bpmnElement="Collaboration_Custody">

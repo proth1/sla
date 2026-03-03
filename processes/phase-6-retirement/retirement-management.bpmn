@@ -405,11 +405,10 @@
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_Security" sourceRef="Task_SecureDataDestruction" targetRef="Annotation_Security" />
 
-    <!-- Error and Signal References -->
-    <bpmn:error id="Error_LegalHold" name="Legal Hold" errorCode="LEGAL_HOLD" />
-    <bpmn:signal id="Signal_P5Complete" name="P5Complete" />
-
   </bpmn:process>
+
+  <bpmn:error id="Error_LegalHold" name="Legal Hold" errorCode="LEGAL_HOLD" />
+  <bpmn:signal id="Signal_P5Complete" name="P5Complete" />
 
   <bpmndi:BPMNDiagram id="BPMNDiagram_RetirementMgmt">
     <bpmndi:BPMNPlane id="BPMNPlane_RetirementMgmt" bpmnElement="Collab_RetirementMgmt">

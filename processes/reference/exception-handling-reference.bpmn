@@ -203,8 +203,6 @@
       <bpmn:incoming>Flow_08</bpmn:incoming>
     </bpmn:endEvent>
 
-    <bpmn:error id="Error_ApprovalTimeoutDef" name="Approval Timeout" errorCode="APPROVAL_TIMEOUT" />
-
     <bpmn:sequenceFlow id="Flow_01" sourceRef="StartEvent_ExceptionRaised" targetRef="Task_SubmitException" />
     <bpmn:sequenceFlow id="Flow_01a" sourceRef="Task_SubmitException" targetRef="Gateway_AdditionalInfoMerge" />
     <bpmn:sequenceFlow id="Flow_ToAdditionalInfo" sourceRef="Task_RequestMoreInfo" targetRef="Task_ProvideAdditionalInfo" />
@@ -228,6 +226,8 @@
     <bpmn:sequenceFlow id="Flow_ToRejected" sourceRef="Task_CompensatePreviousActions" targetRef="EndEvent_ExceptionRejected" />
     <bpmn:sequenceFlow id="Flow_ReviewRejectCompensate" name="Early Reject" sourceRef="Gateway_ReviewOutcome" targetRef="Task_CompensatePreviousActions" />
   </bpmn:process>
+
+  <bpmn:error id="Error_ApprovalTimeoutDef" name="Approval Timeout" errorCode="APPROVAL_TIMEOUT" />
 
   <bpmndi:BPMNDiagram id="BPMNDiagram_ExceptionHandling">
     <bpmndi:BPMNPlane id="BPMNPlane_ExceptionHandling" bpmnElement="Collaboration_ExceptionHandling">
