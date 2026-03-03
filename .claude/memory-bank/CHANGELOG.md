@@ -1,5 +1,31 @@
 # Changelog
 
+## [2026.03.6] - 2026-03-03
+
+### Fixed
+- All 5 BPMN agents updated from obsolete 7-phase/7-lane/14-DMN to current 8-phase/9+1-lane/8-DMN schema
+- All 4 BPMN context files completely rewritten for current schema
+- 4 skills fixed (bpmn-editing, bpmn-cicd, tprm-workflow-builder, context-bpmn)
+- bpmn-validator.js: 9+1 candidateGroups, camunda-bpmn-moddle parsing, DMN cross-reference validation
+- visual-overlap-checker.js: per-BPMNDiagram scoping eliminates cross-diagram false positives
+- validate-bpmn.sh: integrate element-checker, exclude archive, overlap as blocking gate
+- pre-edit-validation.sh: branch protection now functional
+- validate-cdd-evidence.sh: curl timeout prevents hook hangs
+- Phase-3 BPMN: 10 invalid candidateGroups fixed to canonical 9+1 names
+- Master BPMN: 4 DMN refs corrected to canonical IDs, 4 non-canonical businessRuleTasks converted
+- Visual overlaps fixed in Phase-1, Phase-8, and Cross-cutting models
+
+### Added
+- 7 BPMN 2.0 pattern rules: error boundary, signal events, message flow, terminate end, service task, multi-instance, DMN-first clarification
+- Phase-scoped regulatory annotation guidance in bpmn-governance-standards.md
+- Vendor pool usage guidance
+
+## [2026.03.5] - 2026-03-03
+
+### Fixed
+- Phase 2 Planning BPMN layout: moved all split/join gateways to Automation lane, replaced diagonal cross-lane flows with L-shaped vertical routing, fixed overlapping risk tier lines, standardized Automation lane to 125px
+- Restored `camunda:candidateGroups` on all 9+1 lane definitions (inadvertently dropped during layout rewrite)
+
 ## [2026.03.4] - 2026-03-03
 
 ### Added

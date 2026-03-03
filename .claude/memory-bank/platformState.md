@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.4
+**Current Version**: 2026.03.6
 **Last Release**: 2026-03-03
-**Total Releases**: 4
+**Total Releases**: 6
 
 ## Artifact Counts
 
@@ -30,6 +30,8 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.6 | 2026-03-03 | #11 | BPMN infrastructure remediation — 32 files aligned with 8-phase schema |
+| 2026.03.5 | 2026-03-03 | #10 | Fix Phase 2 Planning BPMN layout for human readability |
 | 2026.03.4 | 2026-03-03 | #9 | Presentation build with BPMN SVG rendering |
 | 2026.03.3 | 2026-03-03 | #8 | 8-phase rebuild: PRD, 8 DMN tables, 10 BPMN models, 5 cross-cutting sub-processes |
 | 2026.03.2 | 2026-03-02 | #4 | Redesign master orchestrator — correct dimensions and parallel gateway |
