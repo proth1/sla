@@ -13,7 +13,6 @@ interface Env {
   WORKER_DOMAIN: string;
   CF_ACCESS_CLIENT_ID: string;
   CF_ACCESS_CLIENT_SECRET: string;
-  SESSION_SECRET: string;
 }
 
 // Allowed email addresses and domains
@@ -25,10 +24,6 @@ const SESSION_COOKIE = 'DS';
 const REFRESH_COOKIE = 'DSR';
 const PENDING_EMAIL_COOKIE = 'PENDING_EMAIL';
 const LOGIN_PATH = '/auth/login';
-
-// Worker-managed session cookie (survives Descope JWT expiry)
-const WORKER_SESSION_COOKIE = 'SLA_SESSION';
-const WORKER_SESSION_TTL = 8 * 60 * 60; // 8 hours in seconds
 
 // SLA logo SVG markup (matches KMFlow style: single bold text)
 const SLA_LOGO_SVG = `<svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg">
@@ -68,16 +63,7 @@ export default {
       return handleLogout(url);
     }
 
-    // 1. Check worker-managed session first (survives Descope JWT expiry)
-    const workerSession = getWorkerSession(request);
-    if (workerSession) {
-      const sessionEmail = await verifyWorkerSession(workerSession, env);
-      if (sessionEmail && isEmailAuthorized(sessionEmail)) {
-        return proxyToPages(request, env, url);
-      }
-    }
-
-    // 2. Fall back to Descope JWT validation
+    // Check for valid session
     const sessionToken = getSessionToken(request);
     const refreshToken = getRefreshToken(request);
 
@@ -85,6 +71,7 @@ export default {
       return redirectToLogin(url);
     }
 
+    // Validate JWT
     let validation = sessionToken ? await validateDescopeJWT(sessionToken) : { valid: false, reason: 'No session token' };
 
     // If session expired but we have refresh token, try server-side refresh
@@ -99,8 +86,7 @@ export default {
           if (!email || !isEmailAuthorized(email)) {
             return renderUnauthorizedPage(email);
           }
-          // Refresh worked — proxy and set new worker session + Descope cookies
-          return proxyToPagesWithNewSession(request, env, url, refreshResult.sessionJwt, refreshResult.refreshJwt, email);
+          return proxyToPagesWithNewSession(request, env, url, refreshResult.sessionJwt, refreshResult.refreshJwt);
         }
       }
 
@@ -117,61 +103,10 @@ export default {
       return renderUnauthorizedPage(email);
     }
 
-    // Descope JWT is valid — proxy and set worker-managed session cookie
-    return proxyToPagesWithWorkerSession(request, env, url, email);
+    // Proxy to Pages (serves index.html at / automatically)
+    return proxyToPages(request, env, url);
   },
 };
-
-// --- Worker-managed session (HMAC-signed, 8h TTL) ---
-
-function getWorkerSession(request: Request): string | null {
-  const cookie = request.headers.get('Cookie') || '';
-  const match = cookie.match(new RegExp(`${WORKER_SESSION_COOKIE}=([^;]+)`));
-  return match ? decodeURIComponent(match[1]) : null;
-}
-
-async function createWorkerSession(email: string, env: Env): Promise<string> {
-  const expires = Math.floor(Date.now() / 1000) + WORKER_SESSION_TTL;
-  const payload = `${email}|${expires}`;
-  const signature = await hmacSign(payload, env);
-  return `${payload}|${signature}`;
-}
-
-async function verifyWorkerSession(session: string, env: Env): Promise<string | null> {
-  const parts = session.split('|');
-  if (parts.length !== 3) return null;
-
-  const [email, expiresStr, signature] = parts;
-  const expires = parseInt(expiresStr, 10);
-
-  // Check expiry
-  if (isNaN(expires) || Math.floor(Date.now() / 1000) > expires) return null;
-
-  // Verify HMAC
-  const payload = `${email}|${expiresStr}`;
-  const expectedSig = await hmacSign(payload, env);
-  if (signature !== expectedSig) return null;
-
-  return email;
-}
-
-async function hmacSign(data: string, env: Env): Promise<string> {
-  const secret = env.SESSION_SECRET || env.DESCOPE_PROJECT_ID;
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
-  return btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/=+$/, '');
-}
-
-function workerSessionCookie(value: string): string {
-  return `${WORKER_SESSION_COOKIE}=${encodeURIComponent(value)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${WORKER_SESSION_TTL}`;
-}
 
 function isEmailAuthorized(email: string): boolean {
   const lowerEmail = email.toLowerCase();
@@ -315,43 +250,12 @@ async function refreshSessionServerSide(
   }
 }
 
-async function proxyToPagesWithWorkerSession(
-  request: Request,
-  env: Env,
-  url: URL,
-  email: string
-): Promise<Response> {
-  const pagesUrl = new URL(url.pathname + url.search, env.PAGES_URL);
-
-  const headers = new Headers(request.headers);
-  if (env.CF_ACCESS_CLIENT_ID && env.CF_ACCESS_CLIENT_SECRET) {
-    headers.set('CF-Access-Client-Id', env.CF_ACCESS_CLIENT_ID);
-    headers.set('CF-Access-Client-Secret', env.CF_ACCESS_CLIENT_SECRET);
-  }
-
-  const response = await fetch(pagesUrl.toString(), {
-    method: request.method,
-    headers: headers,
-  });
-
-  const sessionValue = await createWorkerSession(email, env);
-  const newHeaders = new Headers(response.headers);
-  newHeaders.append('Set-Cookie', workerSessionCookie(sessionValue));
-
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers: newHeaders,
-  });
-}
-
 async function proxyToPagesWithNewSession(
   request: Request,
   env: Env,
   url: URL,
   sessionJwt: string,
-  refreshJwt?: string,
-  email?: string
+  refreshJwt?: string
 ): Promise<Response> {
   const pagesUrl = new URL(url.pathname + url.search, env.PAGES_URL);
 
@@ -371,12 +275,6 @@ async function proxyToPagesWithNewSession(
 
   if (refreshJwt) {
     newHeaders.append('Set-Cookie', `${REFRESH_COOKIE}=${refreshJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
-  }
-
-  // Also set worker-managed session so reloads don't need Descope revalidation
-  if (email) {
-    const sessionValue = await createWorkerSession(email, env);
-    newHeaders.append('Set-Cookie', workerSessionCookie(sessionValue));
   }
 
   return new Response(response.body, {
@@ -435,13 +333,16 @@ async function proxyToPages(request: Request, env: Env, url: URL): Promise<Respo
 function handleLogout(url: URL): Response {
   const loginUrl = new URL(LOGIN_PATH, url.origin);
 
-  const headers = new Headers();
-  headers.set('Location', loginUrl.toString());
-  headers.append('Set-Cookie', `${SESSION_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT`);
-  headers.append('Set-Cookie', `${REFRESH_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT`);
-  headers.append('Set-Cookie', `${WORKER_SESSION_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT`);
-
-  return new Response(null, { status: 302, headers });
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: loginUrl.toString(),
+      'Set-Cookie': [
+        `${SESSION_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
+        `${REFRESH_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
+      ].join(', '),
+    },
+  });
 }
 
 async function handleSendOTP(request: Request, env: Env, url: URL): Promise<Response> {
@@ -546,10 +447,6 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
     if (data.refreshJwt) {
       headers.append('Set-Cookie', `${REFRESH_COOKIE}=${data.refreshJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
     }
-
-    // Set worker-managed session cookie (8h TTL, survives Descope JWT expiry)
-    const workerSessionValue = await createWorkerSession(verifiedEmail, env);
-    headers.append('Set-Cookie', workerSessionCookie(workerSessionValue));
 
     return new Response(null, { status: 302, headers });
   } catch (error) {
