@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN5-AgentConfidenceEscalation-definitions"
+             name="DMN-5: Agent Confidence Escalation"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_AgentConfidenceEscalation"
+            name="Agent Confidence Escalation"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="DMN_AgentConfidenceEscalation-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-5: Agent Confidence Escalation
+        Phase: Cross-cutting (triggered at any agent task handoff point)
+        Hit Policy: FIRST (most restrictive/specific rule wins — evaluated top to bottom)
+        Description: Determines routing for agent task outputs based on the agent's self-reported
+                     confidence score and the initiative's risk tier. Lower confidence or higher
+                     risk tier triggers escalation toward manual human control.
+          - Manual Takeover:       Agent confidence too low OR risk tier too high to trust autonomous output
+          - Human Review:          Moderate confidence or elevated risk — human validates before progression
+          - Autonomous Progression: High confidence AND low/moderate risk — agent output accepted directly
+        Inputs:
+          agentConfidenceScore: 0-100 (agent self-reported confidence in its output)
+          riskTier:             "Unacceptable" | "High" | "Limited" | "Minimal"
+        Outputs:
+          escalationRouting:    "Autonomous Progression" | "Human Review" | "Manual Takeover"
+          escalationRationale:  Reason for routing decision
+          escalationOwner:      Who receives the work item
+        FIRST hit policy — rules ordered from most restrictive to least restrictive.
+        First matching rule fires; subsequent rules are not evaluated.
+      -->
+
+      <input id="input-confidenceScore" label="Agent Confidence Score (0-100)">
+        <inputExpression id="inputExpr-confidenceScore" typeRef="integer">
+          <text>agentConfidenceScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-riskTier" label="Risk Tier">
+        <inputExpression id="inputExpr-riskTier" typeRef="string">
+          <text>riskTier</text>
+        </inputExpression>
+        <inputValues id="inputVals-riskTier">
+          <text>"Unacceptable","High","Limited","Minimal"</text>
+        </inputValues>
+      </input>
+
+      <output id="output-escalationRouting"
+              label="Escalation Routing"
+              name="escalationRouting"
+              typeRef="string" />
+
+      <output id="output-escalationRationale"
+              label="Escalation Rationale"
+              name="escalationRationale"
+              typeRef="string" />
+
+      <output id="output-escalationOwner"
+              label="Escalation Owner"
+              name="escalationOwner"
+              typeRef="string" />
+
+      <!--
+        RULE 1 (FIRST — highest priority): Any Unacceptable risk tier -> Manual Takeover
+        Regardless of confidence score. Unacceptable risk means no autonomous agent action.
+      -->
+      <rule id="rule-1">
+        <description>Unacceptable risk tier: Manual Takeover regardless of confidence — no autonomous action permitted at this risk level</description>
+        <inputEntry id="ie-1-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>"Unacceptable"</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"Manual Takeover"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"Risk tier Unacceptable: autonomous agent action prohibited. All work requires human engineer execution with independent review."</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>"Senior Risk Officer + Board Oversight Committee"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 2: High risk + any confidence below 80 -> Manual Takeover
+        High-risk initiatives require high confidence thresholds for any autonomous action.
+      -->
+      <rule id="rule-2">
+        <description>High risk, confidence &lt; 80: Manual Takeover — high-risk requires high-confidence threshold</description>
+        <inputEntry id="ie-2-1"><text>&lt; 80</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>"High"</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"Manual Takeover"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"High risk tier with agent confidence below 80: human engineers must execute this task. Agent output is advisory only — do not use as primary deliverable."</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"Assigned Risk Analyst + Human Engineering Team"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 3: Very low confidence (< 40) on any risk tier -> Manual Takeover
+        Below 40% confidence the agent output is unreliable regardless of risk tier.
+      -->
+      <rule id="rule-3">
+        <description>Confidence &lt; 40 on any risk tier: Manual Takeover — agent output unreliable, discard and execute manually</description>
+        <inputEntry id="ie-3-1"><text>&lt; 40</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>-</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Manual Takeover"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"Agent confidence critically low (below 40): output quality insufficient for any use. Discard agent output. Human engineer must execute this task from scratch."</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"Phase Orchestrator + Human Engineering Team"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 4: High risk + confidence 80-89 -> Human Review
+        High-risk requires human validation even at moderately high confidence.
+      -->
+      <rule id="rule-4">
+        <description>High risk, confidence 80-89: Human Review — high risk demands human validation before acceptance</description>
+        <inputEntry id="ie-4-1"><text>[80..89]</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>"High"</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Human Review"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"High risk tier: agent confidence adequate but human validation required for all High-risk task outputs before progression. Human reviewer must verify key findings."</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>"Risk Analyst (assigned) + Compliance Lane Reviewer"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 5: Limited risk + confidence 40-69 -> Human Review
+        Moderate confidence on limited-risk initiatives triggers human review gate.
+      -->
+      <rule id="rule-5">
+        <description>Limited risk, confidence 40-69: Human Review — moderate confidence requires human validation gate</description>
+        <inputEntry id="ie-5-1"><text>[40..69]</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>"Limited"</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"Human Review"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"Agent confidence moderate (40-69) on Limited-risk initiative: human review required. Reviewer should focus on areas flagged by agent as uncertain."</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>"Assigned Risk Analyst"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 6: Minimal risk + confidence 40-59 -> Human Review
+        Even low-risk initiatives need review at borderline confidence.
+      -->
+      <rule id="rule-6">
+        <description>Minimal risk, confidence 40-59: Human Review — borderline confidence warrants spot-check review</description>
+        <inputEntry id="ie-6-1"><text>[40..59]</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>"Minimal"</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"Human Review"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"Agent confidence borderline (40-59) on Minimal-risk initiative: spot-check human review required before autonomous progression."</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>"Automated Review Queue + On-Call Risk Analyst"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 7: High risk + confidence >= 90 -> Human Review (not autonomous — high risk always needs human)
+        Even at very high confidence, High-risk mandates human review.
+      -->
+      <rule id="rule-7">
+        <description>High risk, confidence &gt;= 90: Human Review — high risk always requires human review regardless of confidence</description>
+        <inputEntry id="ie-7-1"><text>&gt;= 90</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>"High"</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"Human Review"</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"High risk tier: human review mandatory per governance policy even at high agent confidence. Agent output accepted as primary input but human must validate and sign off."</text></outputEntry>
+        <outputEntry id="oe-7-3"><text>"Risk Analyst (assigned) + Phase Orchestrator"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 8: Limited risk + confidence >= 70 -> Autonomous Progression
+        Sufficient confidence on moderate-risk initiative — agent proceeds without human gate.
+      -->
+      <rule id="rule-8">
+        <description>Limited risk, confidence &gt;= 70: Autonomous Progression — sufficient confidence for autonomous action on Limited-risk tasks</description>
+        <inputEntry id="ie-8-1"><text>&gt;= 70</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>"Limited"</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"Autonomous Progression"</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"Agent confidence sufficient (70+) for Limited-risk initiative: autonomous progression approved. Output logged for audit trail. Exception-based human review only."</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>"Master Orchestrator (automated audit logging)"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 9: Minimal risk + confidence >= 60 -> Autonomous Progression
+        Standard autonomous threshold for low-risk initiatives.
+      -->
+      <rule id="rule-9">
+        <description>Minimal risk, confidence &gt;= 60: Autonomous Progression — standard threshold for autonomous action on Minimal-risk tasks</description>
+        <inputEntry id="ie-9-1"><text>&gt;= 60</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>"Minimal"</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"Autonomous Progression"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"Agent confidence sufficient (60+) for Minimal-risk initiative: autonomous progression approved. Spot-check audit applies. No human gate required for this task."</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>"Master Orchestrator (automated audit logging)"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN5-diagram">
+      <dmndi:DMNShape id="DMN5-shape" dmnElementRef="DMN_AgentConfidenceEscalation">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

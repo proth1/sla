@@ -1,0 +1,1534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_CrossCuttingEvents"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="Collaboration_CrossCutting">
+    <bpmn:participant id="Participant_EnterpriseGovernance" name="Enterprise Governance" processRef="Process_CrossCuttingEvents" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_CrossCuttingEvents" name="Cross-Cutting Event Sub-Processes" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_CrossCutting">
+      <bpmn:lane id="Lane_Business" name="Business Lane" camunda:candidateGroups="business-lane">
+        <bpmn:flowNodeRef>StartEvent_CrossCuttingInit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_SP1_SLAMonitoring</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP1_Complete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_SP3_IncidentResponse</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP3_Complete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Governance" name="Governance Lane" camunda:candidateGroups="governance-lane">
+        <bpmn:flowNodeRef>SubProcess_SP4_RegulatoryChange</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP4_Complete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment Lane" camunda:candidateGroups="technical-assessment">
+        <bpmn:flowNodeRef>SubProcess_SP2_VulnerabilityRemediation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP2_Complete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Compliance" name="Compliance Lane" camunda:candidateGroups="compliance-lane">
+        <bpmn:flowNodeRef>SubProcess_SP5_ContinuousImprovement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP5_Complete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Automation" name="Automation Lane" camunda:candidateGroups="vendor-response">
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="StartEvent_CrossCuttingInit" name="Governance&#10;Platform&#10;Active">
+      <bpmn:outgoing>Flow_Start_SP1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Start_SP2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Start_SP3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Start_SP4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Start_SP5</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:subProcess id="SubProcess_SP1_SLAMonitoring" name="SP-Cross-1: SLA Monitoring&#10;&amp; Breach Management">
+      <bpmn:incoming>Flow_Start_SP1</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP1_End</bpmn:outgoing>
+
+      <bpmn:startEvent id="SP1_Start_Timer" name="Monitoring&#10;Cycle Timer">
+        <bpmn:outgoing>Flow_SP1_Start_Monitor</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP1_TimerDef">
+          <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/PT24H</bpmn:timeCycle>
+        </bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+
+      <bpmn:serviceTask id="SP1_Task_MonitorMetrics" name="Monitor SLA&#10;Metrics" camunda:type="external" camunda:topic="sla-metrics-collection">
+        <bpmn:incoming>Flow_SP1_Start_Monitor</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP1_Monitor_DMN</bpmn:outgoing>
+      </bpmn:serviceTask>
+
+      <bpmn:businessRuleTask id="SP1_Task_ThresholdCheck" name="Check SLA Threshold&#10;(DMN-8 Monitoring&#10;Cadence)" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:resultVariable="thresholdLevel" camunda:mapDecisionResult="singleResult">
+        <bpmn:incoming>Flow_SP1_Monitor_DMN</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP1_DMN_Gateway</bpmn:outgoing>
+      </bpmn:businessRuleTask>
+
+      <bpmn:exclusiveGateway id="SP1_Gateway_Threshold" name="Threshold&#10;Level?" default="Flow_SP1_NoAction">
+        <bpmn:incoming>Flow_SP1_DMN_Gateway</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP1_Warning50</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP1_Alert75</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP1_Critical90</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP1_Breach100</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP1_NoAction</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+
+      <bpmn:serviceTask id="SP1_Task_Notify50" name="50% Warning:&#10;Notify Owner" camunda:type="external" camunda:topic="sla-notification">
+        <bpmn:incoming>Flow_SP1_Warning50</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP1_50_Merge</bpmn:outgoing>
+      </bpmn:serviceTask>
+
+      <bpmn:userTask id="SP1_Task_Escalate75" name="75% Alert:&#10;Escalate to&#10;Management" camunda:candidateGroups="business-lane">
+        <bpmn:incoming>Flow_SP1_Alert75</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP1_75_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP1_Task_Emergency90" name="90% Critical:&#10;Emergency Review" camunda:candidateGroups="governance-lane">
+        <bpmn:incoming>Flow_SP1_Critical90</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP1_90_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP1_Task_Breach100" name="100% Breach:&#10;Root Cause +&#10;Remediation Plan" camunda:candidateGroups="governance-lane">
+        <bpmn:incoming>Flow_SP1_Breach100</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP1_100_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:exclusiveGateway id="SP1_Gateway_Merge">
+        <bpmn:incoming>Flow_SP1_50_Merge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP1_75_Merge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP1_90_Merge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP1_100_Merge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP1_NoAction</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP1_Merge_End</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+
+      <bpmn:endEvent id="SP1_End" name="Monitoring&#10;Cycle Complete">
+        <bpmn:incoming>Flow_SP1_Merge_End</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:sequenceFlow id="Flow_SP1_Start_Monitor" sourceRef="SP1_Start_Timer" targetRef="SP1_Task_MonitorMetrics" />
+      <bpmn:sequenceFlow id="Flow_SP1_Monitor_DMN" sourceRef="SP1_Task_MonitorMetrics" targetRef="SP1_Task_ThresholdCheck" />
+      <bpmn:sequenceFlow id="Flow_SP1_DMN_Gateway" sourceRef="SP1_Task_ThresholdCheck" targetRef="SP1_Gateway_Threshold" />
+      <bpmn:sequenceFlow id="Flow_SP1_Warning50" name="50% Warning" sourceRef="SP1_Gateway_Threshold" targetRef="SP1_Task_Notify50">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{thresholdLevel == '50-warning'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP1_Alert75" name="75% Alert" sourceRef="SP1_Gateway_Threshold" targetRef="SP1_Task_Escalate75">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{thresholdLevel == '75-alert'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP1_Critical90" name="90% Critical" sourceRef="SP1_Gateway_Threshold" targetRef="SP1_Task_Emergency90">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{thresholdLevel == '90-critical'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP1_Breach100" name="100% Breach" sourceRef="SP1_Gateway_Threshold" targetRef="SP1_Task_Breach100">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{thresholdLevel == '100-breach'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP1_NoAction" sourceRef="SP1_Gateway_Threshold" targetRef="SP1_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP1_50_Merge" sourceRef="SP1_Task_Notify50" targetRef="SP1_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP1_75_Merge" sourceRef="SP1_Task_Escalate75" targetRef="SP1_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP1_90_Merge" sourceRef="SP1_Task_Emergency90" targetRef="SP1_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP1_100_Merge" sourceRef="SP1_Task_Breach100" targetRef="SP1_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP1_Merge_End" sourceRef="SP1_Gateway_Merge" targetRef="SP1_End" />
+
+      <bpmn:textAnnotation id="SP1_Annotation_DMN">
+        <bpmn:text>DMN-8 Monitoring Cadence: Determines escalation path based on SLA consumption percentage (50/75/90/100 thresholds). OCC 2023-17: Ongoing monitoring requirements. DORA: Digital operational resilience SLA tracking.</bpmn:text>
+      </bpmn:textAnnotation>
+      <bpmn:association id="SP1_Assoc_DMN" sourceRef="SP1_Task_ThresholdCheck" targetRef="SP1_Annotation_DMN" />
+    </bpmn:subProcess>
+
+    <bpmn:subProcess id="SubProcess_SP2_VulnerabilityRemediation" name="SP-Cross-2: Vulnerability&#10;Remediation Lifecycle">
+      <bpmn:incoming>Flow_Start_SP2</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP2_End</bpmn:outgoing>
+
+      <bpmn:startEvent id="SP2_Start_Message" name="Vulnerability&#10;Detected">
+        <bpmn:outgoing>Flow_SP2_Start_Classify</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="SP2_MsgDef" messageRef="Message_VulnerabilityDetected" />
+      </bpmn:startEvent>
+
+      <bpmn:businessRuleTask id="SP2_Task_Classify" name="Classify Vulnerability&#10;(DMN-7 Vulnerability&#10;Remediation Routing)" camunda:decisionRef="DMN_VulnerabilityRemediationRouting" camunda:resultVariable="vulnTier" camunda:mapDecisionResult="singleResult">
+        <bpmn:incoming>Flow_SP2_Start_Classify</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP2_Classify_Tier</bpmn:outgoing>
+      </bpmn:businessRuleTask>
+
+      <bpmn:exclusiveGateway id="SP2_Gateway_Tier" name="Remediation&#10;Tier?" default="Flow_SP2_TierLow">
+        <bpmn:incoming>Flow_SP2_Classify_Tier</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP2_TierCritical</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP2_TierHigh</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP2_TierMedium</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP2_TierLow</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+
+      <bpmn:userTask id="SP2_Task_Critical" name="Critical: 24h&#10;Emergency Fix" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP2_TierCritical</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP2_Critical_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:boundaryEvent id="SP2_Timer_Critical" name="24h&#10;SLA" attachedToRef="SP2_Task_Critical" cancelActivity="false">
+        <bpmn:outgoing>Flow_SP2_CriticalSLA</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP2_TimerDef_Critical">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT24H</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+
+      <bpmn:endEvent id="SP2_End_CriticalEscalated" name="Critical SLA&#10;Escalated">
+        <bpmn:incoming>Flow_SP2_CriticalSLA</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:userTask id="SP2_Task_High" name="High: 7-Day&#10;Remediation" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP2_TierHigh</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP2_High_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:boundaryEvent id="SP2_Timer_High" name="7 Day&#10;SLA" attachedToRef="SP2_Task_High" cancelActivity="false">
+        <bpmn:outgoing>Flow_SP2_HighSLA</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP2_TimerDef_High">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P7D</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+
+      <bpmn:endEvent id="SP2_End_HighEscalated" name="High SLA&#10;Escalated">
+        <bpmn:incoming>Flow_SP2_HighSLA</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:userTask id="SP2_Task_Medium" name="Medium: 30-Day&#10;Remediation" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP2_TierMedium</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP2_Medium_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP2_Task_Low" name="Low: 90-Day&#10;Remediation" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP2_TierLow</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP2_Low_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:exclusiveGateway id="SP2_Gateway_Merge">
+        <bpmn:incoming>Flow_SP2_Critical_Merge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP2_High_Merge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP2_Medium_Merge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP2_Low_Merge</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP2_Merge_Fix</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+
+      <bpmn:serviceTask id="SP2_Task_ExecuteFix" name="Execute&#10;Remediation Fix" camunda:type="external" camunda:topic="vulnerability-remediation">
+        <bpmn:incoming>Flow_SP2_Merge_Fix</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP2_Fix_Verify</bpmn:outgoing>
+      </bpmn:serviceTask>
+
+      <bpmn:userTask id="SP2_Task_Verify" name="Verify&#10;Remediation" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP2_Fix_Verify</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP2_Verify_Close</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:endEvent id="SP2_End_Closed" name="Vulnerability&#10;Closed">
+        <bpmn:incoming>Flow_SP2_Verify_Close</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:sequenceFlow id="Flow_SP2_Start_Classify" sourceRef="SP2_Start_Message" targetRef="SP2_Task_Classify" />
+      <bpmn:sequenceFlow id="Flow_SP2_Classify_Tier" sourceRef="SP2_Task_Classify" targetRef="SP2_Gateway_Tier" />
+      <bpmn:sequenceFlow id="Flow_SP2_TierCritical" name="Critical" sourceRef="SP2_Gateway_Tier" targetRef="SP2_Task_Critical">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{vulnTier == 'critical'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP2_TierHigh" name="High" sourceRef="SP2_Gateway_Tier" targetRef="SP2_Task_High">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{vulnTier == 'high'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP2_TierMedium" name="Medium" sourceRef="SP2_Gateway_Tier" targetRef="SP2_Task_Medium">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{vulnTier == 'medium'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP2_TierLow" name="Low" sourceRef="SP2_Gateway_Tier" targetRef="SP2_Task_Low" />
+      <bpmn:sequenceFlow id="Flow_SP2_CriticalSLA" sourceRef="SP2_Timer_Critical" targetRef="SP2_End_CriticalEscalated" />
+      <bpmn:sequenceFlow id="Flow_SP2_HighSLA" sourceRef="SP2_Timer_High" targetRef="SP2_End_HighEscalated" />
+      <bpmn:sequenceFlow id="Flow_SP2_Critical_Merge" sourceRef="SP2_Task_Critical" targetRef="SP2_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP2_High_Merge" sourceRef="SP2_Task_High" targetRef="SP2_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP2_Medium_Merge" sourceRef="SP2_Task_Medium" targetRef="SP2_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP2_Low_Merge" sourceRef="SP2_Task_Low" targetRef="SP2_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP2_Merge_Fix" sourceRef="SP2_Gateway_Merge" targetRef="SP2_Task_ExecuteFix" />
+      <bpmn:sequenceFlow id="Flow_SP2_Fix_Verify" sourceRef="SP2_Task_ExecuteFix" targetRef="SP2_Task_Verify" />
+      <bpmn:sequenceFlow id="Flow_SP2_Verify_Close" sourceRef="SP2_Task_Verify" targetRef="SP2_End_Closed" />
+
+      <bpmn:textAnnotation id="SP2_Annotation_SLA">
+        <bpmn:text>4-Tier SLA Matrix: Critical=24h | High=7d | Medium=30d | Low=90d. DMN-7 Vulnerability Remediation Routing. OCC 2023-17: Third-party vulnerability management. DORA: ICT risk management remediation requirements.</bpmn:text>
+      </bpmn:textAnnotation>
+      <bpmn:association id="SP2_Assoc_SLA" sourceRef="SP2_Task_Classify" targetRef="SP2_Annotation_SLA" />
+    </bpmn:subProcess>
+
+    <bpmn:subProcess id="SubProcess_SP3_IncidentResponse" name="SP-Cross-3: Incident&#10;Response">
+      <bpmn:incoming>Flow_Start_SP3</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP3_End</bpmn:outgoing>
+
+      <bpmn:startEvent id="SP3_Start_Message" name="Incident&#10;Detected">
+        <bpmn:outgoing>Flow_SP3_Start_Triage</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="SP3_MsgDef" messageRef="Message_IncidentDetected" />
+      </bpmn:startEvent>
+
+      <bpmn:serviceTask id="SP3_Task_Triage" name="Triage&#10;Incident" camunda:type="external" camunda:topic="incident-triage">
+        <bpmn:incoming>Flow_SP3_Start_Triage</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_Triage_Classify</bpmn:outgoing>
+      </bpmn:serviceTask>
+
+      <bpmn:exclusiveGateway id="SP3_Gateway_Severity" name="Severity&#10;Level?" default="Flow_SP3_P4">
+        <bpmn:incoming>Flow_SP3_Triage_Classify</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_P1</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP3_P2</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP3_P3</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP3_P4</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+
+      <bpmn:userTask id="SP3_Task_P1Response" name="P1: 15-Min&#10;Response (Critical)" camunda:candidateGroups="governance-lane">
+        <bpmn:incoming>Flow_SP3_P1</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_P1_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:boundaryEvent id="SP3_Timer_P1" name="15 Min&#10;SLA" attachedToRef="SP3_Task_P1Response" cancelActivity="false">
+        <bpmn:outgoing>Flow_SP3_P1SLA</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP3_TimerDef_P1">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT15M</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+
+      <bpmn:endEvent id="SP3_End_P1Escalated" name="P1 SLA&#10;Escalated">
+        <bpmn:incoming>Flow_SP3_P1SLA</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:userTask id="SP3_Task_P2Response" name="P2: 1-Hour&#10;Response (High)" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP3_P2</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_P2_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:boundaryEvent id="SP3_Timer_P2" name="1 Hour&#10;SLA" attachedToRef="SP3_Task_P2Response" cancelActivity="false">
+        <bpmn:outgoing>Flow_SP3_P2SLA</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP3_TimerDef_P2">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1H</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+
+      <bpmn:endEvent id="SP3_End_P2Escalated" name="P2 SLA&#10;Escalated">
+        <bpmn:incoming>Flow_SP3_P2SLA</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:userTask id="SP3_Task_P3Response" name="P3: 4-Hour&#10;Response (Medium)" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP3_P3</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_P3_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP3_Task_P4Response" name="P4: 24-Hour&#10;Response (Low)" camunda:candidateGroups="vendor-response">
+        <bpmn:incoming>Flow_SP3_P4</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_P4_Merge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:exclusiveGateway id="SP3_Gateway_Merge">
+        <bpmn:incoming>Flow_SP3_P1_Merge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP3_P2_Merge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP3_P3_Merge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP3_P4_Merge</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_Merge_Contain</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+
+      <bpmn:userTask id="SP3_Task_Containment" name="Containment" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP3_Merge_Contain</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_Contain_Investigate</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP3_Task_Investigation" name="Investigation" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP3_Contain_Investigate</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_Investigate_Resolve</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP3_Task_Resolution" name="Resolution" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP3_Investigate_Resolve</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_Resolve_PostMortem</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP3_Task_PostMortem" name="Post-Mortem&#10;Review" camunda:candidateGroups="governance-lane">
+        <bpmn:incoming>Flow_SP3_Resolve_PostMortem</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_PostMortem_End</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:endEvent id="SP3_End_Resolved" name="Incident&#10;Resolved">
+        <bpmn:incoming>Flow_SP3_PostMortem_End</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:sequenceFlow id="Flow_SP3_Start_Triage" sourceRef="SP3_Start_Message" targetRef="SP3_Task_Triage" />
+      <bpmn:sequenceFlow id="Flow_SP3_Triage_Classify" sourceRef="SP3_Task_Triage" targetRef="SP3_Gateway_Severity" />
+      <bpmn:sequenceFlow id="Flow_SP3_P1" name="P1 Critical" sourceRef="SP3_Gateway_Severity" targetRef="SP3_Task_P1Response">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{severity == 'P1'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP3_P2" name="P2 High" sourceRef="SP3_Gateway_Severity" targetRef="SP3_Task_P2Response">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{severity == 'P2'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP3_P3" name="P3 Medium" sourceRef="SP3_Gateway_Severity" targetRef="SP3_Task_P3Response">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{severity == 'P3'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP3_P4" name="P4 Low" sourceRef="SP3_Gateway_Severity" targetRef="SP3_Task_P4Response" />
+      <bpmn:sequenceFlow id="Flow_SP3_P1SLA" sourceRef="SP3_Timer_P1" targetRef="SP3_End_P1Escalated" />
+      <bpmn:sequenceFlow id="Flow_SP3_P2SLA" sourceRef="SP3_Timer_P2" targetRef="SP3_End_P2Escalated" />
+      <bpmn:sequenceFlow id="Flow_SP3_P1_Merge" sourceRef="SP3_Task_P1Response" targetRef="SP3_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP3_P2_Merge" sourceRef="SP3_Task_P2Response" targetRef="SP3_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP3_P3_Merge" sourceRef="SP3_Task_P3Response" targetRef="SP3_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP3_P4_Merge" sourceRef="SP3_Task_P4Response" targetRef="SP3_Gateway_Merge" />
+      <bpmn:sequenceFlow id="Flow_SP3_Merge_Contain" sourceRef="SP3_Gateway_Merge" targetRef="SP3_Task_Containment" />
+      <bpmn:sequenceFlow id="Flow_SP3_Contain_Investigate" sourceRef="SP3_Task_Containment" targetRef="SP3_Task_Investigation" />
+      <bpmn:sequenceFlow id="Flow_SP3_Investigate_Resolve" sourceRef="SP3_Task_Investigation" targetRef="SP3_Task_Resolution" />
+      <bpmn:sequenceFlow id="Flow_SP3_Resolve_PostMortem" sourceRef="SP3_Task_Resolution" targetRef="SP3_Task_PostMortem" />
+      <bpmn:sequenceFlow id="Flow_SP3_PostMortem_End" sourceRef="SP3_Task_PostMortem" targetRef="SP3_End_Resolved" />
+
+      <bpmn:textAnnotation id="SP3_Annotation_SLA">
+        <bpmn:text>Incident SLA Matrix: P1=15min | P2=1hr | P3=4hr | P4=24hr. OCC 2023-17: Third-party incident notification. DORA: Major ICT incident reporting within 4 hours. SOX: Incident impact on financial controls.</bpmn:text>
+      </bpmn:textAnnotation>
+      <bpmn:association id="SP3_Assoc_SLA" sourceRef="SP3_Task_Triage" targetRef="SP3_Annotation_SLA" />
+    </bpmn:subProcess>
+
+    <bpmn:subProcess id="SubProcess_SP4_RegulatoryChange" name="SP-Cross-4: Regulatory&#10;Change Management">
+      <bpmn:incoming>Flow_Start_SP4</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP4_End</bpmn:outgoing>
+
+      <bpmn:startEvent id="SP4_Start_Message" name="Regulatory&#10;Update Received">
+        <bpmn:outgoing>Flow_SP4_Start_Notice</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="SP4_MsgDef" messageRef="Message_RegulatoryUpdate" />
+      </bpmn:startEvent>
+
+      <bpmn:userTask id="SP4_Task_ReceiveNotice" name="Receive &amp; Log&#10;Regulatory Notice" camunda:candidateGroups="compliance-lane">
+        <bpmn:incoming>Flow_SP4_Start_Notice</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_Notice_Impact</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP4_Task_ImpactAssessment" name="Impact&#10;Assessment" camunda:candidateGroups="compliance-lane">
+        <bpmn:incoming>Flow_SP4_Notice_Impact</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_Impact_Gap</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:boundaryEvent id="SP4_Timer_Assessment" name="10 Day&#10;SLA" attachedToRef="SP4_Task_ImpactAssessment" cancelActivity="false">
+        <bpmn:outgoing>Flow_SP4_AssessmentSLA</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP4_TimerDef_Assessment">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P10D</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+
+      <bpmn:endEvent id="SP4_End_AssessmentEscalated" name="Assessment&#10;SLA Escalated">
+        <bpmn:incoming>Flow_SP4_AssessmentSLA</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:userTask id="SP4_Task_GapAnalysis" name="Gap Analysis&#10;vs Current Controls" camunda:candidateGroups="compliance-lane">
+        <bpmn:incoming>Flow_SP4_Impact_Gap</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_Gap_Plan</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP4_Task_RemediationPlan" name="Remediation Plan&#10;(Board Approval)" camunda:candidateGroups="governance-lane">
+        <bpmn:incoming>Flow_SP4_Gap_Plan</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_Plan_Implement</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP4_Task_Implementation" name="Implementation&#10;(90-Day Workflow)" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP4_Plan_Implement</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_Implement_Validate</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:boundaryEvent id="SP4_Timer_Implementation" name="90 Day&#10;Compliance SLA" attachedToRef="SP4_Task_Implementation" cancelActivity="false">
+        <bpmn:outgoing>Flow_SP4_ImplementSLA</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP4_TimerDef_Implementation">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P90D</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+
+      <bpmn:endEvent id="SP4_End_ImplementEscalated" name="Compliance SLA&#10;Breach">
+        <bpmn:incoming>Flow_SP4_ImplementSLA</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:userTask id="SP4_Task_Validation" name="Validation &amp;&#10;Attestation" camunda:candidateGroups="compliance-lane">
+        <bpmn:incoming>Flow_SP4_Implement_Validate</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_Validate_End</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:endEvent id="SP4_End_Compliant" name="Regulatory&#10;Compliance&#10;Achieved">
+        <bpmn:incoming>Flow_SP4_Validate_End</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:sequenceFlow id="Flow_SP4_Start_Notice" sourceRef="SP4_Start_Message" targetRef="SP4_Task_ReceiveNotice" />
+      <bpmn:sequenceFlow id="Flow_SP4_Notice_Impact" sourceRef="SP4_Task_ReceiveNotice" targetRef="SP4_Task_ImpactAssessment" />
+      <bpmn:sequenceFlow id="Flow_SP4_Impact_Gap" sourceRef="SP4_Task_ImpactAssessment" targetRef="SP4_Task_GapAnalysis" />
+      <bpmn:sequenceFlow id="Flow_SP4_AssessmentSLA" sourceRef="SP4_Timer_Assessment" targetRef="SP4_End_AssessmentEscalated" />
+      <bpmn:sequenceFlow id="Flow_SP4_Gap_Plan" sourceRef="SP4_Task_GapAnalysis" targetRef="SP4_Task_RemediationPlan" />
+      <bpmn:sequenceFlow id="Flow_SP4_Plan_Implement" sourceRef="SP4_Task_RemediationPlan" targetRef="SP4_Task_Implementation" />
+      <bpmn:sequenceFlow id="Flow_SP4_Implement_Validate" sourceRef="SP4_Task_Implementation" targetRef="SP4_Task_Validation" />
+      <bpmn:sequenceFlow id="Flow_SP4_ImplementSLA" sourceRef="SP4_Timer_Implementation" targetRef="SP4_End_ImplementEscalated" />
+      <bpmn:sequenceFlow id="Flow_SP4_Validate_End" sourceRef="SP4_Task_Validation" targetRef="SP4_End_Compliant" />
+
+      <bpmn:textAnnotation id="SP4_Annotation_Reg">
+        <bpmn:text>90-Day Compliance Workflow. Applicable frameworks: OCC 2023-17, DORA, SOX, GDPR/CCPA, EU AI Act, SR 11-7. Board-level awareness required for High/Critical regulatory changes. Impact assessment SLA: 10 days.</bpmn:text>
+      </bpmn:textAnnotation>
+      <bpmn:association id="SP4_Assoc_Reg" sourceRef="SP4_Task_RemediationPlan" targetRef="SP4_Annotation_Reg" />
+    </bpmn:subProcess>
+
+    <bpmn:subProcess id="SubProcess_SP5_ContinuousImprovement" name="SP-Cross-5: Continuous Improvement&#10;&amp; Process Mining">
+      <bpmn:incoming>Flow_Start_SP5</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP5_End</bpmn:outgoing>
+
+      <bpmn:startEvent id="SP5_Start_Timer" name="Quarterly&#10;Review Cycle">
+        <bpmn:outgoing>Flow_SP5_Start_Collect</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP5_TimerDef">
+          <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/P3M</bpmn:timeCycle>
+        </bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+
+      <bpmn:serviceTask id="SP5_Task_CollectData" name="Collect Process&#10;Mining Data" camunda:type="external" camunda:topic="process-mining-data">
+        <bpmn:incoming>Flow_SP5_Start_Collect</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP5_Collect_Analyze</bpmn:outgoing>
+      </bpmn:serviceTask>
+
+      <bpmn:serviceTask id="SP5_Task_AnalyzeBottlenecks" name="Analyze&#10;Bottlenecks" camunda:type="external" camunda:topic="bottleneck-analysis">
+        <bpmn:incoming>Flow_SP5_Collect_Analyze</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP5_Analyze_Identify</bpmn:outgoing>
+      </bpmn:serviceTask>
+
+      <bpmn:userTask id="SP5_Task_IdentifyImprovements" name="Identify&#10;Improvements" camunda:candidateGroups="business-lane">
+        <bpmn:incoming>Flow_SP5_Analyze_Identify</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP5_Identify_Prioritize</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP5_Task_Prioritize" name="Prioritize&#10;Improvements" camunda:candidateGroups="governance-lane">
+        <bpmn:incoming>Flow_SP5_Identify_Prioritize</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP5_Prioritize_Implement</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP5_Task_Implement" name="Implement&#10;Process Changes" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_SP5_Prioritize_Implement</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP5_Implement_Measure</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:serviceTask id="SP5_Task_Measure" name="Measure&#10;Outcomes" camunda:type="external" camunda:topic="improvement-measurement">
+        <bpmn:incoming>Flow_SP5_Implement_Measure</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP5_Measure_Report</bpmn:outgoing>
+      </bpmn:serviceTask>
+
+      <bpmn:userTask id="SP5_Task_Report" name="Report to&#10;Governance Board" camunda:candidateGroups="governance-lane">
+        <bpmn:incoming>Flow_SP5_Measure_Report</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP5_Report_Recalibrate</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:userTask id="SP5_Task_Recalibrate" name="Recalibrate&#10;Process Targets" camunda:candidateGroups="compliance-lane">
+        <bpmn:incoming>Flow_SP5_Report_Recalibrate</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP5_Recalibrate_End</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:endEvent id="SP5_End_CycleComplete" name="Improvement&#10;Cycle Complete">
+        <bpmn:incoming>Flow_SP5_Recalibrate_End</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:sequenceFlow id="Flow_SP5_Start_Collect" sourceRef="SP5_Start_Timer" targetRef="SP5_Task_CollectData" />
+      <bpmn:sequenceFlow id="Flow_SP5_Collect_Analyze" sourceRef="SP5_Task_CollectData" targetRef="SP5_Task_AnalyzeBottlenecks" />
+      <bpmn:sequenceFlow id="Flow_SP5_Analyze_Identify" sourceRef="SP5_Task_AnalyzeBottlenecks" targetRef="SP5_Task_IdentifyImprovements" />
+      <bpmn:sequenceFlow id="Flow_SP5_Identify_Prioritize" sourceRef="SP5_Task_IdentifyImprovements" targetRef="SP5_Task_Prioritize" />
+      <bpmn:sequenceFlow id="Flow_SP5_Prioritize_Implement" sourceRef="SP5_Task_Prioritize" targetRef="SP5_Task_Implement" />
+      <bpmn:sequenceFlow id="Flow_SP5_Implement_Measure" sourceRef="SP5_Task_Implement" targetRef="SP5_Task_Measure" />
+      <bpmn:sequenceFlow id="Flow_SP5_Measure_Report" sourceRef="SP5_Task_Measure" targetRef="SP5_Task_Report" />
+      <bpmn:sequenceFlow id="Flow_SP5_Report_Recalibrate" sourceRef="SP5_Task_Report" targetRef="SP5_Task_Recalibrate" />
+      <bpmn:sequenceFlow id="Flow_SP5_Recalibrate_End" sourceRef="SP5_Task_Recalibrate" targetRef="SP5_End_CycleComplete" />
+
+      <bpmn:textAnnotation id="SP5_Annotation_CI">
+        <bpmn:text>Quarterly improvement cycle (R/P3M). 8 improvement activities: Collect → Analyze → Identify → Prioritize → Implement → Measure → Report → Recalibrate. Process mining enables data-driven governance optimization. OCC 2023-17: Continuous monitoring and improvement of third-party risk management.</bpmn:text>
+      </bpmn:textAnnotation>
+      <bpmn:association id="SP5_Assoc_CI" sourceRef="SP5_Task_Measure" targetRef="SP5_Annotation_CI" />
+    </bpmn:subProcess>
+
+    <bpmn:endEvent id="EndEvent_SP1_Complete" name="SP1&#10;Concluded">
+      <bpmn:incoming>Flow_SP1_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_SP2_Complete" name="SP2&#10;Concluded">
+      <bpmn:incoming>Flow_SP2_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_SP3_Complete" name="SP3&#10;Concluded">
+      <bpmn:incoming>Flow_SP3_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_SP4_Complete" name="SP4&#10;Concluded">
+      <bpmn:incoming>Flow_SP4_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_SP5_Complete" name="SP5&#10;Concluded">
+      <bpmn:incoming>Flow_SP5_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_Start_SP1" sourceRef="StartEvent_CrossCuttingInit" targetRef="SubProcess_SP1_SLAMonitoring" />
+    <bpmn:sequenceFlow id="Flow_Start_SP2" sourceRef="StartEvent_CrossCuttingInit" targetRef="SubProcess_SP2_VulnerabilityRemediation" />
+    <bpmn:sequenceFlow id="Flow_Start_SP3" sourceRef="StartEvent_CrossCuttingInit" targetRef="SubProcess_SP3_IncidentResponse" />
+    <bpmn:sequenceFlow id="Flow_Start_SP4" sourceRef="StartEvent_CrossCuttingInit" targetRef="SubProcess_SP4_RegulatoryChange" />
+    <bpmn:sequenceFlow id="Flow_Start_SP5" sourceRef="StartEvent_CrossCuttingInit" targetRef="SubProcess_SP5_ContinuousImprovement" />
+    <bpmn:sequenceFlow id="Flow_SP1_End" sourceRef="SubProcess_SP1_SLAMonitoring" targetRef="EndEvent_SP1_Complete" />
+    <bpmn:sequenceFlow id="Flow_SP2_End" sourceRef="SubProcess_SP2_VulnerabilityRemediation" targetRef="EndEvent_SP2_Complete" />
+    <bpmn:sequenceFlow id="Flow_SP3_End" sourceRef="SubProcess_SP3_IncidentResponse" targetRef="EndEvent_SP3_Complete" />
+    <bpmn:sequenceFlow id="Flow_SP4_End" sourceRef="SubProcess_SP4_RegulatoryChange" targetRef="EndEvent_SP4_Complete" />
+    <bpmn:sequenceFlow id="Flow_SP5_End" sourceRef="SubProcess_SP5_ContinuousImprovement" targetRef="EndEvent_SP5_Complete" />
+
+  </bpmn:process>
+
+  <bpmn:message id="Message_VulnerabilityDetected" name="VulnerabilityDetected" />
+  <bpmn:message id="Message_IncidentDetected" name="IncidentDetected" />
+  <bpmn:message id="Message_RegulatoryUpdate" name="RegulatoryUpdate" />
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_CrossCutting">
+    <bpmndi:BPMNPlane id="BPMNPlane_CrossCutting" bpmnElement="Collaboration_CrossCutting">
+
+      <bpmndi:BPMNShape id="Participant_EnterpriseGovernance_di" bpmnElement="Participant_EnterpriseGovernance" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="1620" height="660" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="1590" height="165" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
+        <dc:Bounds x="185" y="212" width="1590" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_TechnicalAssessment_di" bpmnElement="Lane_TechnicalAssessment" isHorizontal="true">
+        <dc:Bounds x="185" y="342" width="1590" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
+        <dc:Bounds x="185" y="472" width="1590" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
+        <dc:Bounds x="185" y="602" width="1590" height="105" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="StartEvent_CrossCuttingInit_di" bpmnElement="StartEvent_CrossCuttingInit">
+        <dc:Bounds x="248" y="111" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="226" y="154" width="80" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_SP1_SLAMonitoring_di" bpmnElement="SubProcess_SP1_SLAMonitoring" isExpanded="false">
+        <dc:Bounds x="360" y="89" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP1_Complete_di" bpmnElement="EndEvent_SP1_Complete">
+        <dc:Bounds x="532" y="111" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="516" y="154" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_SP3_IncidentResponse_di" bpmnElement="SubProcess_SP3_IncidentResponse" isExpanded="false">
+        <dc:Bounds x="640" y="89" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP3_Complete_di" bpmnElement="EndEvent_SP3_Complete">
+        <dc:Bounds x="812" y="111" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="796" y="154" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_SP4_RegulatoryChange_di" bpmnElement="SubProcess_SP4_RegulatoryChange" isExpanded="false">
+        <dc:Bounds x="360" y="237" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP4_Complete_di" bpmnElement="EndEvent_SP4_Complete">
+        <dc:Bounds x="532" y="259" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="516" y="302" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_SP2_VulnerabilityRemediation_di" bpmnElement="SubProcess_SP2_VulnerabilityRemediation" isExpanded="false">
+        <dc:Bounds x="360" y="367" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP2_Complete_di" bpmnElement="EndEvent_SP2_Complete">
+        <dc:Bounds x="532" y="389" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="516" y="432" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_SP5_ContinuousImprovement_di" bpmnElement="SubProcess_SP5_ContinuousImprovement" isExpanded="false">
+        <dc:Bounds x="360" y="497" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP5_Complete_di" bpmnElement="EndEvent_SP5_Complete">
+        <dc:Bounds x="532" y="519" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="516" y="562" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Start_SP1_di" bpmnElement="Flow_Start_SP1">
+        <di:waypoint x="284" y="129" />
+        <di:waypoint x="360" y="129" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Start_SP2_di" bpmnElement="Flow_Start_SP2">
+        <di:waypoint x="266" y="147" />
+        <di:waypoint x="266" y="407" />
+        <di:waypoint x="360" y="407" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Start_SP3_di" bpmnElement="Flow_Start_SP3">
+        <di:waypoint x="284" y="129" />
+        <di:waypoint x="312" y="129" />
+        <di:waypoint x="312" y="129" />
+        <di:waypoint x="640" y="129" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Start_SP4_di" bpmnElement="Flow_Start_SP4">
+        <di:waypoint x="266" y="147" />
+        <di:waypoint x="266" y="277" />
+        <di:waypoint x="360" y="277" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Start_SP5_di" bpmnElement="Flow_Start_SP5">
+        <di:waypoint x="266" y="147" />
+        <di:waypoint x="266" y="537" />
+        <di:waypoint x="360" y="537" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_End_di" bpmnElement="Flow_SP1_End">
+        <di:waypoint x="460" y="129" />
+        <di:waypoint x="532" y="129" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_End_di" bpmnElement="Flow_SP2_End">
+        <di:waypoint x="460" y="407" />
+        <di:waypoint x="532" y="407" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_End_di" bpmnElement="Flow_SP3_End">
+        <di:waypoint x="740" y="129" />
+        <di:waypoint x="812" y="129" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP4_End_di" bpmnElement="Flow_SP4_End">
+        <di:waypoint x="460" y="277" />
+        <di:waypoint x="532" y="277" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP5_End_di" bpmnElement="Flow_SP5_End">
+        <di:waypoint x="460" y="537" />
+        <di:waypoint x="532" y="537" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SP1">
+    <bpmndi:BPMNPlane id="BPMNPlane_SP1" bpmnElement="SubProcess_SP1_SLAMonitoring">
+
+      <bpmndi:BPMNShape id="SP1_Start_Timer_di" bpmnElement="SP1_Start_Timer">
+        <dc:Bounds x="152" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="132" y="125" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP1_Task_MonitorMetrics_di" bpmnElement="SP1_Task_MonitorMetrics">
+        <dc:Bounds x="240" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP1_Task_ThresholdCheck_di" bpmnElement="SP1_Task_ThresholdCheck">
+        <dc:Bounds x="400" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP1_Gateway_Threshold_di" bpmnElement="SP1_Gateway_Threshold" isMarkerVisible="true">
+        <dc:Bounds x="555" y="75" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="540" y="132" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP1_Task_Notify50_di" bpmnElement="SP1_Task_Notify50">
+        <dc:Bounds x="670" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP1_Task_Escalate75_di" bpmnElement="SP1_Task_Escalate75">
+        <dc:Bounds x="670" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP1_Task_Emergency90_di" bpmnElement="SP1_Task_Emergency90">
+        <dc:Bounds x="670" y="300" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP1_Task_Breach100_di" bpmnElement="SP1_Task_Breach100">
+        <dc:Bounds x="670" y="420" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP1_Gateway_Merge_di" bpmnElement="SP1_Gateway_Merge" isMarkerVisible="true">
+        <dc:Bounds x="835" y="75" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP1_End_di" bpmnElement="SP1_End">
+        <dc:Bounds x="952" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="929" y="125" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP1_Annotation_DMN_di" bpmnElement="SP1_Annotation_DMN">
+        <dc:Bounds x="240" y="180" width="630" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_Start_Monitor_di" bpmnElement="Flow_SP1_Start_Monitor">
+        <di:waypoint x="188" y="100" />
+        <di:waypoint x="240" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_Monitor_DMN_di" bpmnElement="Flow_SP1_Monitor_DMN">
+        <di:waypoint x="340" y="100" />
+        <di:waypoint x="400" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_DMN_Gateway_di" bpmnElement="Flow_SP1_DMN_Gateway">
+        <di:waypoint x="500" y="100" />
+        <di:waypoint x="555" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_Warning50_di" bpmnElement="Flow_SP1_Warning50">
+        <di:waypoint x="605" y="100" />
+        <di:waypoint x="670" y="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="614" y="82" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_Alert75_di" bpmnElement="Flow_SP1_Alert75">
+        <di:waypoint x="580" y="125" />
+        <di:waypoint x="580" y="220" />
+        <di:waypoint x="670" y="220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="591" y="168" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_Critical90_di" bpmnElement="Flow_SP1_Critical90">
+        <di:waypoint x="580" y="125" />
+        <di:waypoint x="580" y="340" />
+        <di:waypoint x="670" y="340" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="591" y="290" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_Breach100_di" bpmnElement="Flow_SP1_Breach100">
+        <di:waypoint x="580" y="125" />
+        <di:waypoint x="580" y="460" />
+        <di:waypoint x="670" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="591" y="418" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_NoAction_di" bpmnElement="Flow_SP1_NoAction">
+        <di:waypoint x="605" y="100" />
+        <di:waypoint x="835" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_50_Merge_di" bpmnElement="Flow_SP1_50_Merge">
+        <di:waypoint x="770" y="100" />
+        <di:waypoint x="835" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_75_Merge_di" bpmnElement="Flow_SP1_75_Merge">
+        <di:waypoint x="770" y="220" />
+        <di:waypoint x="860" y="220" />
+        <di:waypoint x="860" y="125" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_90_Merge_di" bpmnElement="Flow_SP1_90_Merge">
+        <di:waypoint x="770" y="340" />
+        <di:waypoint x="860" y="340" />
+        <di:waypoint x="860" y="125" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_100_Merge_di" bpmnElement="Flow_SP1_100_Merge">
+        <di:waypoint x="770" y="460" />
+        <di:waypoint x="860" y="460" />
+        <di:waypoint x="860" y="125" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP1_Merge_End_di" bpmnElement="Flow_SP1_Merge_End">
+        <di:waypoint x="885" y="100" />
+        <di:waypoint x="952" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="SP1_Assoc_DMN_di" bpmnElement="SP1_Assoc_DMN">
+        <di:waypoint x="450" y="140" />
+        <di:waypoint x="450" y="180" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SP2">
+    <bpmndi:BPMNPlane id="BPMNPlane_SP2" bpmnElement="SubProcess_SP2_VulnerabilityRemediation">
+
+      <bpmndi:BPMNShape id="SP2_Start_Message_di" bpmnElement="SP2_Start_Message">
+        <dc:Bounds x="152" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="132" y="125" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Task_Classify_di" bpmnElement="SP2_Task_Classify">
+        <dc:Bounds x="240" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Gateway_Tier_di" bpmnElement="SP2_Gateway_Tier" isMarkerVisible="true">
+        <dc:Bounds x="395" y="75" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="378" y="132" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Task_Critical_di" bpmnElement="SP2_Task_Critical">
+        <dc:Bounds x="510" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Timer_Critical_di" bpmnElement="SP2_Timer_Critical">
+        <dc:Bounds x="542" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="586" y="126" width="38" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_End_CriticalEscalated_di" bpmnElement="SP2_End_CriticalEscalated">
+        <dc:Bounds x="542" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="225" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Task_High_di" bpmnElement="SP2_Task_High">
+        <dc:Bounds x="510" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Timer_High_di" bpmnElement="SP2_Timer_High">
+        <dc:Bounds x="542" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="586" y="316" width="38" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_End_HighEscalated_di" bpmnElement="SP2_End_HighEscalated">
+        <dc:Bounds x="542" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="415" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Task_Medium_di" bpmnElement="SP2_Task_Medium">
+        <dc:Bounds x="510" y="440" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Task_Low_di" bpmnElement="SP2_Task_Low">
+        <dc:Bounds x="510" y="560" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Gateway_Merge_di" bpmnElement="SP2_Gateway_Merge" isMarkerVisible="true">
+        <dc:Bounds x="675" y="75" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Task_ExecuteFix_di" bpmnElement="SP2_Task_ExecuteFix">
+        <dc:Bounds x="790" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Task_Verify_di" bpmnElement="SP2_Task_Verify">
+        <dc:Bounds x="950" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_End_Closed_di" bpmnElement="SP2_End_Closed">
+        <dc:Bounds x="1112" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1090" y="125" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP2_Annotation_SLA_di" bpmnElement="SP2_Annotation_SLA">
+        <dc:Bounds x="240" y="660" width="700" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_Start_Classify_di" bpmnElement="Flow_SP2_Start_Classify">
+        <di:waypoint x="188" y="100" />
+        <di:waypoint x="240" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_Classify_Tier_di" bpmnElement="Flow_SP2_Classify_Tier">
+        <di:waypoint x="340" y="100" />
+        <di:waypoint x="395" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_TierCritical_di" bpmnElement="Flow_SP2_TierCritical">
+        <di:waypoint x="445" y="100" />
+        <di:waypoint x="510" y="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="453" y="82" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_TierHigh_di" bpmnElement="Flow_SP2_TierHigh">
+        <di:waypoint x="420" y="125" />
+        <di:waypoint x="420" y="290" />
+        <di:waypoint x="510" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="252" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_TierMedium_di" bpmnElement="Flow_SP2_TierMedium">
+        <di:waypoint x="420" y="125" />
+        <di:waypoint x="420" y="480" />
+        <di:waypoint x="510" y="480" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="442" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_TierLow_di" bpmnElement="Flow_SP2_TierLow">
+        <di:waypoint x="420" y="125" />
+        <di:waypoint x="420" y="600" />
+        <di:waypoint x="510" y="600" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="562" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_CriticalSLA_di" bpmnElement="Flow_SP2_CriticalSLA">
+        <di:waypoint x="560" y="158" />
+        <di:waypoint x="560" y="182" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_HighSLA_di" bpmnElement="Flow_SP2_HighSLA">
+        <di:waypoint x="560" y="348" />
+        <di:waypoint x="560" y="372" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_Critical_Merge_di" bpmnElement="Flow_SP2_Critical_Merge">
+        <di:waypoint x="610" y="100" />
+        <di:waypoint x="675" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_High_Merge_di" bpmnElement="Flow_SP2_High_Merge">
+        <di:waypoint x="610" y="290" />
+        <di:waypoint x="700" y="290" />
+        <di:waypoint x="700" y="125" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_Medium_Merge_di" bpmnElement="Flow_SP2_Medium_Merge">
+        <di:waypoint x="610" y="480" />
+        <di:waypoint x="700" y="480" />
+        <di:waypoint x="700" y="125" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_Low_Merge_di" bpmnElement="Flow_SP2_Low_Merge">
+        <di:waypoint x="610" y="600" />
+        <di:waypoint x="700" y="600" />
+        <di:waypoint x="700" y="125" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_Merge_Fix_di" bpmnElement="Flow_SP2_Merge_Fix">
+        <di:waypoint x="725" y="100" />
+        <di:waypoint x="790" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_Fix_Verify_di" bpmnElement="Flow_SP2_Fix_Verify">
+        <di:waypoint x="890" y="100" />
+        <di:waypoint x="950" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_Verify_Close_di" bpmnElement="Flow_SP2_Verify_Close">
+        <di:waypoint x="1050" y="100" />
+        <di:waypoint x="1112" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="SP2_Assoc_SLA_di" bpmnElement="SP2_Assoc_SLA">
+        <di:waypoint x="290" y="140" />
+        <di:waypoint x="290" y="660" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SP3">
+    <bpmndi:BPMNPlane id="BPMNPlane_SP3" bpmnElement="SubProcess_SP3_IncidentResponse">
+
+      <bpmndi:BPMNShape id="SP3_Start_Message_di" bpmnElement="SP3_Start_Message">
+        <dc:Bounds x="152" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="132" y="125" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_Triage_di" bpmnElement="SP3_Task_Triage">
+        <dc:Bounds x="240" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Gateway_Severity_di" bpmnElement="SP3_Gateway_Severity" isMarkerVisible="true">
+        <dc:Bounds x="395" y="75" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="378" y="132" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_P1Response_di" bpmnElement="SP3_Task_P1Response">
+        <dc:Bounds x="510" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Timer_P1_di" bpmnElement="SP3_Timer_P1">
+        <dc:Bounds x="542" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="586" y="126" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_End_P1Escalated_di" bpmnElement="SP3_End_P1Escalated">
+        <dc:Bounds x="542" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="225" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_P2Response_di" bpmnElement="SP3_Task_P2Response">
+        <dc:Bounds x="510" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Timer_P2_di" bpmnElement="SP3_Timer_P2">
+        <dc:Bounds x="542" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="586" y="316" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_End_P2Escalated_di" bpmnElement="SP3_End_P2Escalated">
+        <dc:Bounds x="542" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="415" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_P3Response_di" bpmnElement="SP3_Task_P3Response">
+        <dc:Bounds x="510" y="440" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_P4Response_di" bpmnElement="SP3_Task_P4Response">
+        <dc:Bounds x="510" y="560" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Gateway_Merge_di" bpmnElement="SP3_Gateway_Merge" isMarkerVisible="true">
+        <dc:Bounds x="675" y="75" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_Containment_di" bpmnElement="SP3_Task_Containment">
+        <dc:Bounds x="790" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_Investigation_di" bpmnElement="SP3_Task_Investigation">
+        <dc:Bounds x="950" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_Resolution_di" bpmnElement="SP3_Task_Resolution">
+        <dc:Bounds x="1110" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_PostMortem_di" bpmnElement="SP3_Task_PostMortem">
+        <dc:Bounds x="1270" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_End_Resolved_di" bpmnElement="SP3_End_Resolved">
+        <dc:Bounds x="1432" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1410" y="125" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Annotation_SLA_di" bpmnElement="SP3_Annotation_SLA">
+        <dc:Bounds x="240" y="680" width="700" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_Start_Triage_di" bpmnElement="Flow_SP3_Start_Triage">
+        <di:waypoint x="188" y="100" />
+        <di:waypoint x="240" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_Triage_Classify_di" bpmnElement="Flow_SP3_Triage_Classify">
+        <di:waypoint x="340" y="100" />
+        <di:waypoint x="395" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_P1_di" bpmnElement="Flow_SP3_P1">
+        <di:waypoint x="445" y="100" />
+        <di:waypoint x="510" y="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="452" y="82" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_P2_di" bpmnElement="Flow_SP3_P2">
+        <di:waypoint x="420" y="125" />
+        <di:waypoint x="420" y="290" />
+        <di:waypoint x="510" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="252" width="38" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_P3_di" bpmnElement="Flow_SP3_P3">
+        <di:waypoint x="420" y="125" />
+        <di:waypoint x="420" y="480" />
+        <di:waypoint x="510" y="480" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="442" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_P4_di" bpmnElement="Flow_SP3_P4">
+        <di:waypoint x="420" y="125" />
+        <di:waypoint x="420" y="600" />
+        <di:waypoint x="510" y="600" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="562" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_P1SLA_di" bpmnElement="Flow_SP3_P1SLA">
+        <di:waypoint x="560" y="158" />
+        <di:waypoint x="560" y="182" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_P2SLA_di" bpmnElement="Flow_SP3_P2SLA">
+        <di:waypoint x="560" y="348" />
+        <di:waypoint x="560" y="372" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_P1_Merge_di" bpmnElement="Flow_SP3_P1_Merge">
+        <di:waypoint x="610" y="100" />
+        <di:waypoint x="675" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_P2_Merge_di" bpmnElement="Flow_SP3_P2_Merge">
+        <di:waypoint x="610" y="290" />
+        <di:waypoint x="700" y="290" />
+        <di:waypoint x="700" y="125" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_P3_Merge_di" bpmnElement="Flow_SP3_P3_Merge">
+        <di:waypoint x="610" y="480" />
+        <di:waypoint x="700" y="480" />
+        <di:waypoint x="700" y="125" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_P4_Merge_di" bpmnElement="Flow_SP3_P4_Merge">
+        <di:waypoint x="610" y="600" />
+        <di:waypoint x="700" y="600" />
+        <di:waypoint x="700" y="125" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_Merge_Contain_di" bpmnElement="Flow_SP3_Merge_Contain">
+        <di:waypoint x="725" y="100" />
+        <di:waypoint x="790" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_Contain_Investigate_di" bpmnElement="Flow_SP3_Contain_Investigate">
+        <di:waypoint x="890" y="100" />
+        <di:waypoint x="950" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_Investigate_Resolve_di" bpmnElement="Flow_SP3_Investigate_Resolve">
+        <di:waypoint x="1050" y="100" />
+        <di:waypoint x="1110" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_Resolve_PostMortem_di" bpmnElement="Flow_SP3_Resolve_PostMortem">
+        <di:waypoint x="1210" y="100" />
+        <di:waypoint x="1270" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_PostMortem_End_di" bpmnElement="Flow_SP3_PostMortem_End">
+        <di:waypoint x="1370" y="100" />
+        <di:waypoint x="1432" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="SP3_Assoc_SLA_di" bpmnElement="SP3_Assoc_SLA">
+        <di:waypoint x="290" y="140" />
+        <di:waypoint x="290" y="680" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SP4">
+    <bpmndi:BPMNPlane id="BPMNPlane_SP4" bpmnElement="SubProcess_SP4_RegulatoryChange">
+
+      <bpmndi:BPMNShape id="SP4_Start_Message_di" bpmnElement="SP4_Start_Message">
+        <dc:Bounds x="152" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="130" y="125" width="80" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_Task_ReceiveNotice_di" bpmnElement="SP4_Task_ReceiveNotice">
+        <dc:Bounds x="240" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_Task_ImpactAssessment_di" bpmnElement="SP4_Task_ImpactAssessment">
+        <dc:Bounds x="400" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_Timer_Assessment_di" bpmnElement="SP4_Timer_Assessment">
+        <dc:Bounds x="432" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="476" y="126" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_End_AssessmentEscalated_di" bpmnElement="SP4_End_AssessmentEscalated">
+        <dc:Bounds x="432" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="408" y="225" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_Task_GapAnalysis_di" bpmnElement="SP4_Task_GapAnalysis">
+        <dc:Bounds x="560" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_Task_RemediationPlan_di" bpmnElement="SP4_Task_RemediationPlan">
+        <dc:Bounds x="720" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_Task_Implementation_di" bpmnElement="SP4_Task_Implementation">
+        <dc:Bounds x="880" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_Timer_Implementation_di" bpmnElement="SP4_Timer_Implementation">
+        <dc:Bounds x="912" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="956" y="126" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_End_ImplementEscalated_di" bpmnElement="SP4_End_ImplementEscalated">
+        <dc:Bounds x="912" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="887" y="225" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_Task_Validation_di" bpmnElement="SP4_Task_Validation">
+        <dc:Bounds x="1040" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_End_Compliant_di" bpmnElement="SP4_End_Compliant">
+        <dc:Bounds x="1202" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1178" y="125" width="84" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP4_Annotation_Reg_di" bpmnElement="SP4_Annotation_Reg">
+        <dc:Bounds x="240" y="280" width="700" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_SP4_Start_Notice_di" bpmnElement="Flow_SP4_Start_Notice">
+        <di:waypoint x="188" y="100" />
+        <di:waypoint x="240" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP4_Notice_Impact_di" bpmnElement="Flow_SP4_Notice_Impact">
+        <di:waypoint x="340" y="100" />
+        <di:waypoint x="400" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP4_Impact_Gap_di" bpmnElement="Flow_SP4_Impact_Gap">
+        <di:waypoint x="500" y="100" />
+        <di:waypoint x="560" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP4_AssessmentSLA_di" bpmnElement="Flow_SP4_AssessmentSLA">
+        <di:waypoint x="450" y="158" />
+        <di:waypoint x="450" y="182" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP4_Gap_Plan_di" bpmnElement="Flow_SP4_Gap_Plan">
+        <di:waypoint x="660" y="100" />
+        <di:waypoint x="720" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP4_Plan_Implement_di" bpmnElement="Flow_SP4_Plan_Implement">
+        <di:waypoint x="820" y="100" />
+        <di:waypoint x="880" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP4_Implement_Validate_di" bpmnElement="Flow_SP4_Implement_Validate">
+        <di:waypoint x="980" y="100" />
+        <di:waypoint x="1040" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP4_ImplementSLA_di" bpmnElement="Flow_SP4_ImplementSLA">
+        <di:waypoint x="930" y="158" />
+        <di:waypoint x="930" y="182" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP4_Validate_End_di" bpmnElement="Flow_SP4_Validate_End">
+        <di:waypoint x="1140" y="100" />
+        <di:waypoint x="1202" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="SP4_Assoc_Reg_di" bpmnElement="SP4_Assoc_Reg">
+        <di:waypoint x="770" y="140" />
+        <di:waypoint x="770" y="280" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SP5">
+    <bpmndi:BPMNPlane id="BPMNPlane_SP5" bpmnElement="SubProcess_SP5_ContinuousImprovement">
+
+      <bpmndi:BPMNShape id="SP5_Start_Timer_di" bpmnElement="SP5_Start_Timer">
+        <dc:Bounds x="152" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="132" y="125" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP5_Task_CollectData_di" bpmnElement="SP5_Task_CollectData">
+        <dc:Bounds x="240" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP5_Task_AnalyzeBottlenecks_di" bpmnElement="SP5_Task_AnalyzeBottlenecks">
+        <dc:Bounds x="400" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP5_Task_IdentifyImprovements_di" bpmnElement="SP5_Task_IdentifyImprovements">
+        <dc:Bounds x="560" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP5_Task_Prioritize_di" bpmnElement="SP5_Task_Prioritize">
+        <dc:Bounds x="720" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP5_Task_Implement_di" bpmnElement="SP5_Task_Implement">
+        <dc:Bounds x="880" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP5_Task_Measure_di" bpmnElement="SP5_Task_Measure">
+        <dc:Bounds x="1040" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP5_Task_Report_di" bpmnElement="SP5_Task_Report">
+        <dc:Bounds x="1200" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP5_Task_Recalibrate_di" bpmnElement="SP5_Task_Recalibrate">
+        <dc:Bounds x="1360" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP5_End_CycleComplete_di" bpmnElement="SP5_End_CycleComplete">
+        <dc:Bounds x="1522" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1500" y="125" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP5_Annotation_CI_di" bpmnElement="SP5_Annotation_CI">
+        <dc:Bounds x="240" y="180" width="800" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_SP5_Start_Collect_di" bpmnElement="Flow_SP5_Start_Collect">
+        <di:waypoint x="188" y="100" />
+        <di:waypoint x="240" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP5_Collect_Analyze_di" bpmnElement="Flow_SP5_Collect_Analyze">
+        <di:waypoint x="340" y="100" />
+        <di:waypoint x="400" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP5_Analyze_Identify_di" bpmnElement="Flow_SP5_Analyze_Identify">
+        <di:waypoint x="500" y="100" />
+        <di:waypoint x="560" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP5_Identify_Prioritize_di" bpmnElement="Flow_SP5_Identify_Prioritize">
+        <di:waypoint x="660" y="100" />
+        <di:waypoint x="720" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP5_Prioritize_Implement_di" bpmnElement="Flow_SP5_Prioritize_Implement">
+        <di:waypoint x="820" y="100" />
+        <di:waypoint x="880" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP5_Implement_Measure_di" bpmnElement="Flow_SP5_Implement_Measure">
+        <di:waypoint x="980" y="100" />
+        <di:waypoint x="1040" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP5_Measure_Report_di" bpmnElement="Flow_SP5_Measure_Report">
+        <di:waypoint x="1140" y="100" />
+        <di:waypoint x="1200" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP5_Report_Recalibrate_di" bpmnElement="Flow_SP5_Report_Recalibrate">
+        <di:waypoint x="1300" y="100" />
+        <di:waypoint x="1360" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP5_Recalibrate_End_di" bpmnElement="Flow_SP5_Recalibrate_End">
+        <di:waypoint x="1460" y="100" />
+        <di:waypoint x="1522" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="SP5_Assoc_CI_di" bpmnElement="SP5_Assoc_CI">
+        <di:waypoint x="1090" y="140" />
+        <di:waypoint x="1090" y="180" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>
