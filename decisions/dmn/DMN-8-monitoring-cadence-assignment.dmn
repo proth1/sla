@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN8-MonitoringCadenceAssignment-definitions"
+             name="DMN-8: Monitoring Cadence Assignment"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_MonitoringCadenceAssignment"
+            name="Monitoring Cadence Assignment"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="DMN_MonitoringCadenceAssignment-table" hitPolicy="UNIQUE">
+
+      <!--
+        DMN-8: Monitoring Cadence Assignment
+        Phase: 7 (Deployment) — Task 7.4 Monitoring Activation; Phase 8 (Operations) — Task 8.1
+        Hit Policy: UNIQUE
+        Regulatory: OCC 2023-17, DORA, BCBS d577, NIST CSF 2.0, ISO 27001
+        Description: Assigns monitoring frequency, reassessment cycle, and escalation thresholds
+                     for a deployed asset based on its risk tier and asset type.
+                     Implements the monitoring cadence configuration described in Phase 7 and 8.
+        Risk Tiers (from DMN-1 output):
+          High:     Corresponds to High risk tier — aggressive monitoring cadence
+          Limited:  Corresponds to Limited risk tier — quarterly reassessment
+          Minimal:  Corresponds to Minimal risk tier — semi-annual reassessment
+          Unacceptable: Would not reach deployment; included for completeness / exceptional cases
+        Asset Types:
+          Vendor:       Third-party vendor relationship (TPRM monitoring)
+          InternalApp:  Internally built application
+          AIModel:      AI/ML model in production (per SR 11-7 model risk management)
+        Output cadences aligned to Phase 7.4 specification:
+          High = monthly reassessment, Limited = quarterly, Minimal = semi-annually
+        SLA escalation thresholds define when automated monitoring triggers human escalation.
+      -->
+
+      <input id="input-riskTier" label="Risk Tier">
+        <inputExpression id="inputExpr-riskTier" typeRef="string">
+          <text>riskTier</text>
+        </inputExpression>
+        <inputValues id="inputVals-riskTier">
+          <text>"High","Limited","Minimal","Unacceptable"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-assetType" label="Asset Type">
+        <inputExpression id="inputExpr-assetType" typeRef="string">
+          <text>assetType</text>
+        </inputExpression>
+        <inputValues id="inputVals-assetType">
+          <text>"Vendor","InternalApp","AIModel"</text>
+        </inputValues>
+      </input>
+
+      <output id="output-monitoringFrequency"
+              label="Monitoring Frequency"
+              name="monitoringFrequency"
+              typeRef="string" />
+
+      <output id="output-reassessmentCycle"
+              label="Reassessment Cycle"
+              name="reassessmentCycle"
+              typeRef="string" />
+
+      <output id="output-escalationThresholds"
+              label="Escalation Thresholds"
+              name="escalationThresholds"
+              typeRef="string" />
+
+      <!--
+        HIGH RISK — Monthly monitoring cadence per Phase 7.4 specification
+        Aggressive monitoring with quarterly formal reassessment.
+      -->
+
+      <rule id="rule-1">
+        <description>High Risk + Vendor: Monthly monitoring, quarterly reassessment — critical TPRM oversight per OCC 2023-17</description>
+        <inputEntry id="ie-1-1"><text>"High"</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>"Vendor"</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"Monthly: automated SLA compliance check, security posture scan, performance scorecard (Service Quality 30%, Security Posture 25%, Contractual Compliance 20%, Relationship Quality 15%, Strategic Value 10%); daily attack surface scanning"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"Quarterly formal reassessment: full due diligence refresh; SOC 2 Type II review; financial stability check; regulatory compliance attestation; executive-level business review"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>"SLA breach threshold: escalate to Vendor Management team at 80% elapsed; escalate to VP-level at 95% elapsed; escalate to Board notification at 100% breach; performance scorecard below 70 triggers immediate review"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-2">
+        <description>High Risk + Internal App: Monthly monitoring, quarterly reassessment — high-risk internal system requires intensive monitoring</description>
+        <inputEntry id="ie-2-1"><text>"High"</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>"InternalApp"</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"Monthly: automated performance baseline review, security vulnerability scan, dependency health check, compliance control validation; weekly error rate and availability tracking"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"Quarterly formal reassessment: architecture review, threat model refresh, penetration test scheduling, regulatory control gap analysis, capacity planning review"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"Availability drops below 99.5% triggers immediate P1 incident; error rate above 1% triggers P2 escalation; security finding CVSS &gt; 7.0 triggers immediate escalation to CISO; monthly assessment below threshold triggers CAB review"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-3">
+        <description>High Risk + AI Model: Monthly monitoring, quarterly reassessment — SR 11-7 model risk requires continuous drift detection</description>
+        <inputEntry id="ie-3-1"><text>"High"</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>"AIModel"</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Monthly: formal model performance review; weekly: data drift detection (KS test, PSI, JS divergence), concept drift analysis, fairness metric monitoring, prediction distribution analysis; real-time: performance drift alerting"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"Quarterly formal reassessment: full model validation refresh per SR 11-7; champion-challenger evaluation; bias testing; training data governance review; explainability audit; AI Ethics Committee review for High-risk models"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"Model accuracy degradation &gt; 5% from baseline triggers Watch status; &gt; 10% triggers Warning and human review; &gt; 15% triggers Action Required with model suspension consideration; fairness disparity &gt; 10% triggers immediate Ethics Committee escalation"</text></outputEntry>
+      </rule>
+
+      <!--
+        LIMITED RISK — Quarterly monitoring cadence
+        Quarterly monitoring with semi-annual formal reassessment.
+      -->
+
+      <rule id="rule-4">
+        <description>Limited Risk + Vendor: Quarterly monitoring, semi-annual reassessment — standard TPRM oversight</description>
+        <inputEntry id="ie-4-1"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>"Vendor"</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Quarterly: SLA compliance review, security questionnaire, performance scorecard update, regulatory attestation review; weekly attack surface scanning"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"Semi-annual formal reassessment: updated due diligence review, SOC 2 report review, financial health check, contract compliance audit, relationship health review"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>"SLA breach triggers escalation to Vendor Management at 85% elapsed; escalation to VP-level at 100% breach; performance scorecard below 65 triggers enhanced monitoring; security finding CVSS &gt; 7.0 triggers immediate escalation"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-5">
+        <description>Limited Risk + Internal App: Quarterly monitoring, semi-annual reassessment — standard internal system oversight</description>
+        <inputEntry id="ie-5-1"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>"InternalApp"</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"Quarterly: automated security scan, performance trend analysis, dependency vulnerability check, compliance control spot-check; monthly error rate and availability dashboard review"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"Semi-annual formal reassessment: architecture health check, security assessment, regulatory control review, capacity planning, dependency lifecycle review"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>"Availability drops below 99% triggers P2 escalation to engineering team; CVSS &gt; 7.0 finding triggers escalation to Information Security; compliance control failure triggers Compliance Lane review within 5 business days"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-6">
+        <description>Limited Risk + AI Model: Quarterly monitoring, semi-annual reassessment — SR 11-7 standard model monitoring</description>
+        <inputEntry id="ie-6-1"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>"AIModel"</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"Quarterly: model performance review, data drift check, fairness metrics review; monthly: prediction distribution monitoring, error rate tracking; real-time: confidence score alerting"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"Semi-annual formal reassessment: model validation review per SR 11-7, bias testing, performance benchmarking, training data governance check, regulatory compliance validation"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>"Model accuracy degradation &gt; 8% triggers Warning status and team review; &gt; 15% triggers Action Required; fairness disparity &gt; 10% triggers Model Owner escalation; quarterly review below threshold triggers AI CoE assessment"</text></outputEntry>
+      </rule>
+
+      <!--
+        MINIMAL RISK — Semi-annual monitoring cadence per Phase 7.4 specification
+        Light-touch monitoring with annual formal reassessment.
+      -->
+
+      <rule id="rule-7">
+        <description>Minimal Risk + Vendor: Semi-annual monitoring, annual reassessment — abbreviated TPRM for low-risk vendors</description>
+        <inputEntry id="ie-7-1"><text>"Minimal"</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>"Vendor"</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"Semi-annual: automated SLA compliance check, annual security questionnaire, performance spot-check; quarterly: attack surface scan (automated)"</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"Annual formal reassessment: biennial due diligence refresh, attestation-based compliance review, financial health spot-check, relationship review; trigger-based reassessment for material changes"</text></outputEntry>
+        <outputEntry id="oe-7-3"><text>"SLA breach triggers Vendor Management notification; CVSS critical finding triggers immediate escalation; material change to vendor (M&amp;A, leadership, regulatory action) triggers out-of-cycle reassessment"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8">
+        <description>Minimal Risk + Internal App: Semi-annual monitoring, annual reassessment — light-touch oversight for low-risk internal tools</description>
+        <inputEntry id="ie-8-1"><text>"Minimal"</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>"InternalApp"</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"Semi-annual: automated vulnerability scan, availability trend review, dependency check; ongoing: automated error alerting (threshold-based)"</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"Annual formal reassessment: lightweight security review, dependency lifecycle check, compliance attestation; trigger-based review for significant changes or incidents"</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>"CVSS critical or high finding triggers Information Security escalation; availability below 95% triggers engineering team review; security incident triggers immediate out-of-cycle assessment"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-9">
+        <description>Minimal Risk + AI Model: Semi-annual monitoring, annual reassessment — basic model health monitoring for low-risk models</description>
+        <inputEntry id="ie-9-1"><text>"Minimal"</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>"AIModel"</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"Semi-annual: model performance review, basic drift check; monthly: automated prediction quality monitoring; real-time: error rate alerting on confidence score collapse"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"Annual formal reassessment: lightweight model validation, performance benchmarking, bias spot-check; trigger-based reassessment for significant performance degradation or regulatory change"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>"Accuracy degradation &gt; 15% from baseline triggers Model Owner review and reassessment; confidence score below 40 triggers human review routing per DMN-5; compliance change affecting model scope triggers out-of-cycle validation"</text></outputEntry>
+      </rule>
+
+      <!--
+        UNACCEPTABLE RISK — Exception handling
+        Assets assessed as Unacceptable risk that somehow reached deployment
+        (e.g., under board exception). Requires maximum monitoring intensity.
+      -->
+
+      <rule id="rule-10">
+        <description>Unacceptable Risk + any Asset Type (Vendor): Maximum monitoring — board-exception deployment requires continuous oversight</description>
+        <inputEntry id="ie-10-1"><text>"Unacceptable"</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>"Vendor"</text></inputEntry>
+        <outputEntry id="oe-10-1"><text>"Continuous: real-time automated monitoring; daily: security posture scan, SLA compliance check, performance scorecard; weekly: formal risk officer review"</text></outputEntry>
+        <outputEntry id="oe-10-2"><text>"Monthly formal reassessment: full due diligence, board-level risk reporting, compliance certification, exit plan progress review; continuous reassessment of exit triggers"</text></outputEntry>
+        <outputEntry id="oe-10-3"><text>"Any SLA breach or security finding triggers immediate Board Risk Committee notification; continuous exit plan readiness monitoring; automatic escalation to CISO and Chief Risk Officer on any adverse finding"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-11">
+        <description>Unacceptable Risk + Internal App: Maximum monitoring — board-exception deployment requires continuous oversight</description>
+        <inputEntry id="ie-11-1"><text>"Unacceptable"</text></inputEntry>
+        <inputEntry id="ie-11-2"><text>"InternalApp"</text></inputEntry>
+        <outputEntry id="oe-11-1"><text>"Continuous: real-time error monitoring, security event logging; daily: vulnerability scan, compliance control validation, performance health; weekly: engineering risk review"</text></outputEntry>
+        <outputEntry id="oe-11-2"><text>"Monthly formal reassessment: full architecture and security review, board-level risk report, compliance certification; continuous monitoring of remediation progress to reduce risk tier"</text></outputEntry>
+        <outputEntry id="oe-11-3"><text>"Any CVSS finding triggers immediate escalation to CISO; availability below 99.9% triggers P1 incident; compliance failure triggers immediate suspension consideration and Board notification"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-12">
+        <description>Unacceptable Risk + AI Model: Maximum monitoring — board-exception AI deployment requires Ethics Committee continuous oversight</description>
+        <inputEntry id="ie-12-1"><text>"Unacceptable"</text></inputEntry>
+        <inputEntry id="ie-12-2"><text>"AIModel"</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>"Continuous: real-time prediction monitoring, fairness metric tracking, drift detection; daily: performance review, bias check, data governance validation; weekly: AI Ethics Committee briefing"</text></outputEntry>
+        <outputEntry id="oe-12-2"><text>"Monthly formal reassessment: full SR 11-7 model validation, Ethics Committee review, board-level AI risk report, regulatory compliance certification; continuous champion-challenger evaluation for replacement"</text></outputEntry>
+        <outputEntry id="oe-12-3"><text>"Any accuracy degradation &gt; 3% triggers immediate model suspension review; fairness disparity triggers Ethics Committee emergency session; any adverse outcome triggering legal or regulatory implications triggers immediate board notification and model suspension"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN8-diagram">
+      <dmndi:DMNShape id="DMN8-shape" dmnElementRef="DMN_MonitoringCadenceAssignment">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

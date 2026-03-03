@@ -10,9 +10,10 @@ SLA (Software Lifecycle Automation) is an **Enterprise Software Governance** fra
 
 ## Repository Layout
 
-- `processes/phase-{0..6}-*/` — BPMN models organized by 7 governance phases (Idea Inception → Retirement)
-- `processes/reference/` — Reference BPMN models from upstream sources
-- `decisions/phase-{1..6}/`, `decisions/cross-cutting/` — DMN decision tables
+- `processes/master/` — Level 0 master orchestrator BPMN
+- `processes/phase-{1..8}-*/` — BPMN models organized by 8 governance phases (Intake → Operations & Retirement)
+- `processes/cross-cutting/` — 5 cross-cutting event sub-processes
+- `decisions/dmn/` — 8 DMN 1.3 decision tables (DMN-1 through DMN-8)
 - `docs/requirements/` — Source .docx/.pptx requirement documents
 - `docs/presentations/index.html` — Master HTML presentation (template with `{{PLACEHOLDER}}` tokens)
 - `scripts/validators/` — JavaScript BPMN validators
@@ -42,9 +43,9 @@ npx wrangler deploy
 
 ## Workflow
 
-1. Create a Jira issue (SLM-XXX) at https://agentic-sdlc.atlassian.net
-2. Branch from main: `feature/SLM-{id}-description`
-3. Commit format: `SLM-XXX: Description`
+1. Create a Jira issue (SLA-XXX) at https://agentic-sdlc.atlassian.net
+2. Branch from main: `feature/SLA-{id}-description`
+3. Commit format: `SLA-XXX: Description`
 4. PR via `gh pr create` — triggers automatic `pr-orchestrator` review (PostToolUse hook)
 5. After merge — PostToolUse hook triggers CHANGELOG, Jira transition, and cleanup
 
@@ -53,11 +54,16 @@ npx wrangler deploy
 ## BPMN Modeling Constraints
 
 - **Target engine**: Camunda Platform 7 (use `camunda:` namespace, `candidateGroups`, `historyTimeToLive`)
-- **7 swim lanes**: Governance Board, Business Owner, IT Architecture, Procurement, Legal & Compliance, Information Security, Vendor Management
-- **4 pathways**: Fast-Track (green), Standard (blue), Enhanced (gold), Emergency (red)
+- **Process ID**: `ESG-E2E-Master-v4.0` (Enterprise Software Governance)
+- **2 pools**: Enterprise Governance (8 lanes) + Vendor/Third Party (1 lane)
+- **9+1 lanes**: Business, Governance, Contracting, Technical Assessment, AI Review, Compliance, Oversight, Automation + Vendor Response
+- **8 phases**: Intake → Planning → Due Diligence → Governance Review → Contracting → SDLC → Deployment → Operations
+- **4 pathways**: Fast-Track, Build, Buy, Hybrid
+- **3 end events**: End_Retired, End_Terminated, End_Rejected
 - **DMN-first**: Every XOR gateway with business logic must reference a DMN table, not embed conditions
-- **14 DMN tables**: PathwaySelection, RiskClassification, VendorTier, AIRiskLevel, BudgetApproval, SecurityClearance, DataClassification, ComplianceGate, EscalationRouting, SLAThreshold, RetirementEligibility, ChangeImpact, AuditFrequency, ApprovalAuthority
-- **Regulatory annotations required**: OCC 2023-17, SR 11-7, SOX, GDPR/CCPA, EU AI Act, DORA as applicable
+- **8 DMN tables**: RiskTierClassification, PathwayRouting, GovernanceReviewRouting, AutomationTierAssignment, AgentConfidenceEscalation, ChangeRiskScoring, VulnerabilityRemediationRouting, MonitoringCadenceAssignment
+- **5 cross-cutting sub-processes**: SLA Monitoring, Vulnerability Remediation, Incident Response, Regulatory Change, Continuous Improvement
+- **Regulatory annotations**: OCC 2023-17, SR 11-7, SOX, GDPR/CCPA, EU AI Act, DORA, NIST CSF 2.0, ISO 27001
 - **SLA timers**: ISO 8601 boundary timer events on review/approval tasks
 - **Phase transitions**: Must pass through completion gateway → quality gate → approval task → phase transition event
 

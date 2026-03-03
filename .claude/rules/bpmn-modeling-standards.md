@@ -84,7 +84,7 @@ Place milestone events before split gateways and after join gateways. Naming: `"
 
 **Rule: Every XOR gateway with business logic MUST reference a DMN table**
 
-Do NOT embed conditions in gateway expressions. Use business rule tasks referencing the 14 governance DMN tables.
+Do NOT embed conditions in gateway expressions. Use business rule tasks referencing the 8 governance DMN tables.
 
 ```xml
 <!-- CORRECT: DMN-driven routing -->
@@ -256,8 +256,8 @@ Every collapsed subprocess MUST have its own `BPMNDiagram` element with complete
 
 - [ ] Phase boundary pattern: completion -> quality gate -> approval -> transition
 - [ ] Regulatory annotations present (OCC 2023-17, SR 11-7, etc.)
-- [ ] All candidateGroups from the 7 valid SLA groups
-- [ ] All decisionRef from the 14 valid DMN table IDs
+- [ ] All candidateGroups from the 9+1 valid lane groups (business-lane, governance-lane, contracting-lane, technical-assessment, ai-review, compliance-lane, oversight-lane, automation-lane, vendor-response)
+- [ ] All decisionRef from the 8 valid DMN table IDs (DMN_RiskTierClassification, DMN_PathwayRouting, DMN_GovernanceReviewRouting, DMN_AutomationTierAssignment, DMN_AgentConfidenceEscalation, DMN_ChangeRiskScoring, DMN_VulnerabilityRemediationRouting, DMN_MonitoringCadenceAssignment)
 
 **XML Formatting**
 

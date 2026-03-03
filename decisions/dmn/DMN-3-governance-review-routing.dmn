@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN3-GovernanceReviewRouting-definitions"
+             name="DMN-3: Governance Review Routing"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_GovernanceReviewRouting"
+            name="Governance Review Routing"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="DMN_GovernanceReviewRouting-table" hitPolicy="UNIQUE">
+
+      <!--
+        DMN-3: Governance Review Routing
+        Phase: 4 (Governance Review and Approval) — Task 4.2 Risk-Tiered Review Routing
+        Hit Policy: UNIQUE
+        Regulatory: NIST CSF 2.0, ISO 27001, DORA, EU AI Act, SR 11-7
+        Description: Routes an initiative to the appropriate governance review authority based on
+                     risk tier assigned by DMN-1. Implements the XOR gateway after Phase 2.
+          - Unacceptable: Auto-Reject — no governance review; immediate rejection
+          - High:         AI Governance Advisory Board — full board review with legal, compliance, risk, security
+          - Limited:      Governance Committee — standard committee review with compliance cross-reference
+          - Minimal:      Fast Path Reviewer — single-reviewer automated criteria check
+        Input:
+          riskTier: "Unacceptable" | "High" | "Limited" | "Minimal"
+        Outputs:
+          reviewAuthority: The governance body or reviewer role
+          reviewSLADays:   Maximum calendar days for review completion
+          reviewScope:     Description of required review activities
+      -->
+
+      <input id="input-riskTier" label="Risk Tier">
+        <inputExpression id="inputExpr-riskTier" typeRef="string">
+          <text>riskTier</text>
+        </inputExpression>
+        <inputValues id="inputVals-riskTier">
+          <text>"Unacceptable","High","Limited","Minimal"</text>
+        </inputValues>
+      </input>
+
+      <output id="output-reviewAuthority"
+              label="Review Authority"
+              name="reviewAuthority"
+              typeRef="string" />
+
+      <output id="output-reviewSLADays"
+              label="Review SLA (Calendar Days)"
+              name="reviewSLADays"
+              typeRef="integer" />
+
+      <output id="output-reviewScope"
+              label="Review Scope"
+              name="reviewScope"
+              typeRef="string" />
+
+      <!--
+        RULE 1: UNACCEPTABLE — Auto-Reject
+        No governance review occurs. Initiative is immediately rejected.
+        Triggers End_Rejected terminal state. Zero SLA days (immediate).
+        Aligned to Phase 2 XOR gateway: Unacceptable Risk -> End_Rejected.
+      -->
+      <rule id="rule-1">
+        <description>Unacceptable Risk: Auto-Reject — immediate rejection without governance review; triggers End_Rejected</description>
+        <inputEntry id="ie-1-1"><text>"Unacceptable"</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"Auto-Reject"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>0</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>"Immediate rejection: risk profile exceeds acceptable threshold. No further processing. Document rejection rationale and notify initiating business owner."</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 2: HIGH — AI Governance Advisory Board
+        Full board review: comprehensive evidence evaluation, legal review, compliance assessment,
+        risk acceptance documentation, detailed decision record.
+        SLA: 5-10 business days per Phase 4 specification (use 10 calendar days for SLA timer).
+      -->
+      <rule id="rule-2">
+        <description>High Risk: AI Governance Advisory Board review — comprehensive board session with all functional lanes</description>
+        <inputEntry id="ie-2-1"><text>"High"</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"AI Governance Advisory Board"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>10</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"Full board review: comprehensive evidence evaluation; legal review; compliance assessment against NIST CSF 2.0, ISO 27001, DORA, EU AI Act, SR 11-7; risk acceptance documentation; ethical impact assessment; detailed decision record. All lanes participate."</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 3: LIMITED — Governance Committee
+        Standard committee review with compliance cross-reference and stakeholder input.
+        Full committee deliberation with documented decision rationale.
+        SLA: 3-5 business days (use 7 calendar days for SLA timer).
+      -->
+      <rule id="rule-3">
+        <description>Limited Risk: Governance Committee review — full committee deliberation with compliance cross-reference</description>
+        <inputEntry id="ie-3-1"><text>"Limited"</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Governance Committee"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>7</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"Standard committee review: compliance cross-reference (NIST CSF, ISO 27001, DORA); stakeholder input from Compliance and Business lanes; full committee deliberation; document decision rationale. Majority approval required."</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 4: MINIMAL — Fast Path Reviewer
+        Single-reviewer automated criteria check. Validate against pre-approved criteria.
+        Escalate to Governance Committee if criteria not met.
+        SLA: 1-2 business days (use 3 calendar days for SLA timer).
+      -->
+      <rule id="rule-4">
+        <description>Minimal Risk: Fast Path Reviewer — single reviewer, automated criteria validation, expedited approval</description>
+        <inputEntry id="ie-4-1"><text>"Minimal"</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Fast Path Reviewer"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>3</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>"Fast path review: validate against pre-approved criteria checklist; single-reviewer sign-off for criteria match; escalate to Governance Committee if any criteria not met. Automated compliance pre-check executed before human review."</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN3-diagram">
+      <dmndi:DMNShape id="DMN3-shape" dmnElementRef="DMN_GovernanceReviewRouting">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

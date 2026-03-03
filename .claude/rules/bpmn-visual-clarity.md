@@ -33,17 +33,28 @@ WRONG: Backward flow (right to left)
 
 ## Multi-Lane Layout (7 Governance Swim Lanes)
 
-SLA governance models use 7 swim lanes. Each lane is 160px tall:
+SLA governance models use 2 pools with 9+1 lanes. Each lane is 125px tall:
+
+### Enterprise Governance Pool (8 lanes)
 
 | Lane | Y-Start | Y-End | candidateGroups |
 |------|---------|-------|-----------------|
-| Governance Board | 0 | 160 | `sla-governance-board` |
-| Business Owner | 160 | 320 | `business-owner` |
-| IT Architecture | 320 | 480 | `it-architecture` |
-| Procurement | 480 | 640 | `procurement` |
-| Legal & Compliance | 640 | 800 | `legal-compliance` |
-| Information Security | 800 | 960 | `information-security` |
-| Vendor Management | 960 | 1120 | `vendor-management` |
+| Business Lane | 0 | 125 | `business-lane` |
+| Governance Lane | 125 | 250 | `governance-lane` |
+| Contracting Lane | 250 | 375 | `contracting-lane` |
+| Technical Assessment Lane | 375 | 500 | `technical-assessment` |
+| AI Review Lane | 500 | 625 | `ai-review` |
+| Compliance Lane | 625 | 750 | `compliance-lane` |
+| Oversight Lane | 750 | 875 | `oversight-lane` |
+| Automation Lane | 875 | 1000 | `automation-lane` |
+
+### Vendor / Third Party Pool (1 lane)
+
+| Lane | Y-Start | Y-End | candidateGroups |
+|------|---------|-------|-----------------|
+| Vendor Response Lane | 1030 | 1155 | `vendor-response` |
+
+(30px gap between pools)
 
 ### Element Positioning Within Lanes
 
@@ -51,13 +62,15 @@ Tasks should be centered vertically within their assigned lane:
 
 | Lane | Task Y-Position | Gateway Y-Position | Event Y-Position |
 |------|----------------|-------------------|-----------------|
-| Governance Board | 40 | 55 | 62 |
-| Business Owner | 200 | 215 | 222 |
-| IT Architecture | 360 | 375 | 382 |
-| Procurement | 520 | 535 | 542 |
-| Legal & Compliance | 680 | 695 | 702 |
-| Information Security | 840 | 855 | 862 |
-| Vendor Management | 1000 | 1015 | 1022 |
+| Business | 22 | 37 | 44 |
+| Governance | 147 | 162 | 169 |
+| Contracting | 272 | 287 | 294 |
+| Technical Assessment | 397 | 412 | 419 |
+| AI Review | 522 | 537 | 544 |
+| Compliance | 647 | 662 | 669 |
+| Oversight | 772 | 787 | 794 |
+| Automation | 897 | 912 | 919 |
+| Vendor Response | 1052 | 1067 | 1074 |
 
 ---
 
