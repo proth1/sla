@@ -24,25 +24,38 @@ fi
 
 PASSED=0
 FAILED=0
-WARNINGS=0
 
 validate_file() {
     local file="$1"
     local filename=$(basename "$file")
+    local file_failed=0
     echo -e "${BLUE}Validating: $filename${NC}"
 
     # Run BPMN validator
     if node "$SCRIPT_DIR/bpmn-validator.js" "$file" 2>/dev/null; then
-        ((PASSED++))
+        true
     else
-        ((FAILED++))
+        file_failed=1
     fi
 
-    # Run visual overlap checker
+    # Run visual overlap checker (blocking gate)
     if node "$SCRIPT_DIR/visual-overlap-checker.js" "$file" 2>/dev/null; then
         true
     else
-        ((WARNINGS++))
+        file_failed=1
+    fi
+
+    # Run element checker
+    if node "$SCRIPT_DIR/element-checker.js" "$(dirname "$file")" 2>/dev/null; then
+        true
+    else
+        echo -e "${YELLOW}  Element checker warning for $filename${NC}"
+    fi
+
+    if [ "$file_failed" -eq 0 ]; then
+        ((PASSED++))
+    else
+        ((FAILED++))
     fi
 
     echo ""
@@ -52,16 +65,15 @@ if [ -n "$1" ]; then
     # Validate specific file
     validate_file "$1"
 else
-    # Validate all BPMN files in the project
+    # Validate all BPMN files in the project (excluding archive)
     while IFS= read -r -d '' file; do
         validate_file "$file"
-    done < <(find "$PROJECT_DIR/processes" -name "*.bpmn" -print0 2>/dev/null)
+    done < <(find "$PROJECT_DIR/processes" -name "*.bpmn" ! -path "*/archive/*" -print0 2>/dev/null)
 fi
 
 echo -e "${BLUE}=== Validation Summary ===${NC}"
 echo -e "Passed: ${GREEN}$PASSED${NC}"
 echo -e "Failed: ${RED}$FAILED${NC}"
-echo -e "Warnings: ${YELLOW}$WARNINGS${NC}"
 
 if [ "$FAILED" -gt 0 ]; then
     exit 1

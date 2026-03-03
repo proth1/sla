@@ -6,22 +6,22 @@ All governance BPMN models MUST use these 2 pools with 9+1 lanes:
 
 ### Enterprise Governance Pool
 
-| Lane | candidateGroups | RACI Role | Three Lines of Defense |
-|------|----------------|-----------|----------------------|
-| Business Lane | `business-lane` | Business Owner (1st Line) | 1st |
-| Governance Lane | `governance-lane` | Risk & Governance (2nd Line) | 2nd |
-| Contracting Lane | `contracting-lane` | Legal (1st/2nd Line) | 1st/2nd |
-| Technical Assessment Lane | `technical-assessment` | Cybersecurity (2nd Line) | 2nd |
-| AI Review Lane | `ai-review` | AI Governance (2nd Line) | 2nd |
-| Compliance Lane | `compliance-lane` | Compliance (2nd Line) | 2nd |
-| Oversight Lane | `oversight-lane` | Internal Audit (3rd Line) | 3rd |
-| Automation Lane | `automation-lane` | Service Provider / BPM Engine (1st Line) | 1st |
+| Lane Name | candidateGroups | RACI Role | Three Lines of Defense |
+|-----------|----------------|-----------|----------------------|
+| Business | `business-lane` | Business Owner (1st Line) | 1st |
+| Governance | `governance-lane` | Risk & Governance (2nd Line) | 2nd |
+| Contracting | `contracting-lane` | Legal (1st/2nd Line) | 1st/2nd |
+| Technical Assessment | `technical-assessment` | Cybersecurity (2nd Line) | 2nd |
+| AI Review | `ai-review` | AI Governance (2nd Line) | 2nd |
+| Compliance | `compliance-lane` | Compliance (2nd Line) | 2nd |
+| Oversight | `oversight-lane` | Internal Audit (3rd Line) | 3rd |
+| Automation | `automation-lane` | Service Provider / BPM Engine (1st Line) | 1st |
 
 ### Vendor / Third Party Pool
 
-| Lane | candidateGroups | RACI Role | Three Lines of Defense |
-|------|----------------|-----------|----------------------|
-| Vendor Response Lane | `vendor-response` | External Vendor | N/A |
+| Lane Name | candidateGroups | RACI Role | Three Lines of Defense |
+|-----------|----------------|-----------|----------------------|
+| Vendor Response | `vendor-response` | External Vendor | N/A |
 
 ## 8-Phase Sequential Flow
 
@@ -53,7 +53,8 @@ All governance BPMN models MUST use these 2 pools with 9+1 lanes:
 
 ## Regulatory Text Annotations
 
-Every BPMN model MUST include text annotations for applicable regulations:
+Each BPMN model MUST include text annotations for **applicable** regulations based on its phase scope (see `bpmn-modeling-standards.md` Regulatory Annotations table for phase-specific mapping). Not every model needs all 11 frameworks — include only those relevant to the phase:
+
 - **OCC 2023-17**: Third-party risk management guidance
 - **SR 11-7**: Model risk management (for AI governance processes)
 - **SOX**: Financial controls and audit requirements
@@ -85,6 +86,7 @@ Business Rule Tasks MUST reference one of these 8 DMN tables:
 <bpmn:businessRuleTask id="Task_RiskTier"
   name="Risk Tier Assignment"
   camunda:decisionRef="DMN_RiskTierClassification"
+  camunda:decisionRefBinding="latest"
   camunda:resultVariable="riskTier"
   camunda:mapDecisionResult="singleResult" />
 ```
@@ -119,3 +121,7 @@ Each phase transition MUST pass through:
 | SP-Cross-3 | Incident Response | Security alert from monitoring |
 | SP-Cross-4 | Regulatory Change Management | Regulatory horizon scanning |
 | SP-Cross-5 | Continuous Improvement & Process Mining | Continuous + quarterly timer |
+
+## Vendor Pool Usage
+
+The Vendor/Third Party pool is required in all governance models that involve external vendor interaction (phases 3, 5). For phases without direct vendor communication (e.g., phase 1 intake, phase 8 operations), an empty Vendor pool with a collapsed participant is acceptable to maintain consistent 2-pool layout.

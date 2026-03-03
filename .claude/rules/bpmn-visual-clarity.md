@@ -31,28 +31,28 @@ WRONG: Backward flow (right to left)
 
 ---
 
-## Multi-Lane Layout (7 Governance Swim Lanes)
+## Multi-Lane Layout (9+1 Governance Swim Lanes)
 
 SLA governance models use 2 pools with 9+1 lanes. Each lane is 125px tall:
 
 ### Enterprise Governance Pool (8 lanes)
 
-| Lane | Y-Start | Y-End | candidateGroups |
-|------|---------|-------|-----------------|
-| Business Lane | 0 | 125 | `business-lane` |
-| Governance Lane | 125 | 250 | `governance-lane` |
-| Contracting Lane | 250 | 375 | `contracting-lane` |
-| Technical Assessment Lane | 375 | 500 | `technical-assessment` |
-| AI Review Lane | 500 | 625 | `ai-review` |
-| Compliance Lane | 625 | 750 | `compliance-lane` |
-| Oversight Lane | 750 | 875 | `oversight-lane` |
-| Automation Lane | 875 | 1000 | `automation-lane` |
+| Lane Name | Y-Start | Y-End | candidateGroups |
+|-----------|---------|-------|-----------------|
+| Business | 0 | 125 | `business-lane` |
+| Governance | 125 | 250 | `governance-lane` |
+| Contracting | 250 | 375 | `contracting-lane` |
+| Technical Assessment | 375 | 500 | `technical-assessment` |
+| AI Review | 500 | 625 | `ai-review` |
+| Compliance | 625 | 750 | `compliance-lane` |
+| Oversight | 750 | 875 | `oversight-lane` |
+| Automation | 875 | 1000 | `automation-lane` |
 
 ### Vendor / Third Party Pool (1 lane)
 
-| Lane | Y-Start | Y-End | candidateGroups |
-|------|---------|-------|-----------------|
-| Vendor Response Lane | 1030 | 1155 | `vendor-response` |
+| Lane Name | Y-Start | Y-End | candidateGroups |
+|-----------|---------|-------|-----------------|
+| Vendor Response | 1030 | 1155 | `vendor-response` |
 
 (30px gap between pools)
 

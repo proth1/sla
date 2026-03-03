@@ -211,7 +211,7 @@ All governance BPMN models MUST include:
 - Regulatory annotation text annotations (OCC 2023-17, SR 11-7, etc.) as applicable
 - Phase boundary patterns at process end (completion -> quality gate -> approval -> transition)
 - DMN references for business logic (not embedded conditions)
-- Valid candidateGroups from the 7 SLA governance lanes
+- Valid candidateGroups from the 9+1 SLA governance lanes
 
 ## Related Rules
 

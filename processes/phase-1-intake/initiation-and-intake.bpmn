@@ -18,25 +18,25 @@
   <bpmn:process id="Process_SP_Phase1_Intake" name="Phase 1: Initiation and Intake" isExecutable="false" camunda:historyTimeToLive="180">
 
     <bpmn:laneSet id="LaneSet_Phase1Intake">
-      <bpmn:lane id="Lane_Business" name="Business Lane" camunda:candidateGroups="business-lane">
+      <bpmn:lane id="Lane_Business" name="Business">
         <bpmn:flowNodeRef>StartEvent_IntakeRequest</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_1_1_InitiativeRequest</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>BoundaryEvent_Task_1_1_PhaseSLA</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1_SLAEscalation</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Governance" name="Governance Lane" camunda:candidateGroups="governance-lane">
+      <bpmn:lane id="Lane_Governance" name="Governance">
       </bpmn:lane>
-      <bpmn:lane id="Lane_Contracting" name="Contracting Lane" camunda:candidateGroups="contracting-lane">
+      <bpmn:lane id="Lane_Contracting" name="Contracting">
       </bpmn:lane>
-      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment" camunda:candidateGroups="technical-assessment">
+      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
       </bpmn:lane>
-      <bpmn:lane id="Lane_AIReview" name="AI Review Lane" camunda:candidateGroups="ai-review">
+      <bpmn:lane id="Lane_AIReview" name="AI Review">
       </bpmn:lane>
-      <bpmn:lane id="Lane_Compliance" name="Compliance Lane" camunda:candidateGroups="compliance-lane">
+      <bpmn:lane id="Lane_Compliance" name="Compliance">
       </bpmn:lane>
-      <bpmn:lane id="Lane_Oversight" name="Oversight Lane" camunda:candidateGroups="oversight-lane">
+      <bpmn:lane id="Lane_Oversight" name="Oversight">
       </bpmn:lane>
-      <bpmn:lane id="Lane_Automation" name="Automation Lane" camunda:candidateGroups="automation-lane">
+      <bpmn:lane id="Lane_Automation" name="Automation">
         <bpmn:flowNodeRef>Task_1_2_AIPreScreening</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_1_3_PreliminaryCategorization</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_1_4_CapabilityReuseAssessment</bpmn:flowNodeRef>
@@ -51,7 +51,7 @@
       <bpmn:messageEventDefinition id="MessageEventDef_IntakeRequest" />
     </bpmn:startEvent>
 
-    <bpmn:userTask id="Task_1_1_InitiativeRequest" name="1.1 Initiative Request&#10;Submission&#10;(Portal Auto-Capture)"
+    <bpmn:userTask id="Task_1_1_InitiativeRequest" name="1.1 Initiative&#10;Request Submission"
         camunda:candidateGroups="business-lane">
       <bpmn:incoming>Flow_StartEvent_Task_1_1</bpmn:incoming>
       <bpmn:outgoing>Flow_Task_1_1_Task_1_2</bpmn:outgoing>
@@ -69,31 +69,31 @@
       <bpmn:incoming>Flow_BoundaryEvent_Task_1_1_EndEvent_1_SLAEscalation</bpmn:incoming>
     </bpmn:endEvent>
 
-    <bpmn:serviceTask id="Task_1_2_AIPreScreening" name="1.2 AI Pre-Screening&#10;(Vendor / Initiative&#10;Reputation Scan)"
+    <bpmn:serviceTask id="Task_1_2_AIPreScreening" name="1.2 AI&#10;Pre-Screening"
         camunda:type="external" camunda:topic="ai-prescreening">
       <bpmn:incoming>Flow_Task_1_1_Task_1_2</bpmn:incoming>
       <bpmn:outgoing>Flow_Task_1_2_Task_1_3</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:serviceTask id="Task_1_3_PreliminaryCategorization" name="1.3 Preliminary&#10;Categorization&#10;(Build/Buy/Reuse/Hybrid)"
+    <bpmn:serviceTask id="Task_1_3_PreliminaryCategorization" name="1.3 Preliminary&#10;Categorization"
         camunda:type="external" camunda:topic="initiative-categorization">
       <bpmn:incoming>Flow_Task_1_2_Task_1_3</bpmn:incoming>
       <bpmn:outgoing>Flow_Task_1_3_Task_1_4</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:serviceTask id="Task_1_4_CapabilityReuseAssessment" name="1.4 Capability Reuse&#10;Assessment&#10;(Registry Query + AI)"
+    <bpmn:serviceTask id="Task_1_4_CapabilityReuseAssessment" name="1.4 Capability&#10;Reuse Assessment"
         camunda:type="external" camunda:topic="capability-reuse-assessment">
       <bpmn:incoming>Flow_Task_1_3_Task_1_4</bpmn:incoming>
       <bpmn:outgoing>Flow_Task_1_4_Task_1_5</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:serviceTask id="Task_1_5_KnowledgeHarvestingInitiation" name="1.5 Knowledge Harvesting&#10;Initiation&#10;(BPM + API Integration)"
+    <bpmn:serviceTask id="Task_1_5_KnowledgeHarvestingInitiation" name="1.5 Knowledge&#10;Harvesting"
         camunda:type="external" camunda:topic="knowledge-harvesting">
       <bpmn:incoming>Flow_Task_1_4_Task_1_5</bpmn:incoming>
       <bpmn:outgoing>Flow_Task_1_5_Task_1_6</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:businessRuleTask id="Task_1_6_RoutingAssignment" name="1.6 Routing Assignment&#10;(Pathway + Risk Analyst)"
+    <bpmn:businessRuleTask id="Task_1_6_RoutingAssignment" name="1.6 Routing&#10;Assignment"
         camunda:decisionRef="DMN_PathwayRouting"
         camunda:decisionRefBinding="latest"
         camunda:resultVariable="selectedPathway"
@@ -184,9 +184,9 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_1_SLAEscalation_di" bpmnElement="EndEvent_1_SLAEscalation">
-        <dc:Bounds x="372" y="185" width="36" height="36" />
+        <dc:Bounds x="460" y="131" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="354" y="228" width="73" height="27" />
+          <dc:Bounds x="504" y="135" width="73" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -247,8 +247,8 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_BoundaryEvent_Task_1_1_EndEvent_1_SLAEscalation_di" bpmnElement="Flow_BoundaryEvent_Task_1_1_EndEvent_1_SLAEscalation">
-        <di:waypoint x="390" y="167" />
-        <di:waypoint x="390" y="185" />
+        <di:waypoint x="408" y="149" />
+        <di:waypoint x="460" y="149" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Task_1_2_Task_1_3_di" bpmnElement="Flow_Task_1_2_Task_1_3">

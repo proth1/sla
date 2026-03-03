@@ -22,18 +22,18 @@
 
     <bpmn:laneSet id="LaneSet_Phase3">
 
-      <bpmn:lane id="Lane_Business" name="Business Lane">
+      <bpmn:lane id="Lane_Business" name="Business">
         <bpmn:flowNodeRef>Task_36_FinancialStabilityReview</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_36SLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_Governance" name="Governance Lane">
+      <bpmn:lane id="Lane_Governance" name="Governance">
         <bpmn:flowNodeRef>Task_PhaseQualityGate</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Phase3Complete</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_QGSLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_Contracting" name="Contracting Lane">
+      <bpmn:lane id="Lane_Contracting" name="Contracting">
         <bpmn:flowNodeRef>Task_ContractingReview</bpmn:flowNodeRef>
       </bpmn:lane>
 
@@ -46,23 +46,23 @@
         <bpmn:flowNodeRef>EndEvent_39SLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_AIReview" name="AI Review Lane">
+      <bpmn:lane id="Lane_AIReview" name="AI Review">
         <bpmn:flowNodeRef>Gateway_AIMLCheck</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_35_AIModelRiskAssessment</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_35SLAEscalated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_AIBranchMerge</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_Compliance" name="Compliance Lane">
+      <bpmn:lane id="Lane_Compliance" name="Compliance">
         <bpmn:flowNodeRef>Task_34_ComplianceAssessment</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_34SLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_Oversight" name="Oversight Lane">
+      <bpmn:lane id="Lane_Oversight" name="Oversight">
         <bpmn:flowNodeRef>Task_OversightReview</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_Automation" name="Automation Lane">
+      <bpmn:lane id="Lane_Automation" name="Automation">
         <bpmn:flowNodeRef>StartEvent_Phase3Initiated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_31_EvidenceCollection</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_32_AgentSwarmDeployment</bpmn:flowNodeRef>
@@ -119,7 +119,7 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
 
-    <bpmn:userTask id="Task_37_OperationalResilienceVerification" name="3.7 Operational Resilience&#10;Verification (AI + Human)" camunda:candidateGroups="it-architecture">
+    <bpmn:userTask id="Task_37_OperationalResilienceVerification" name="3.7 Operational&#10;Resilience Verification" camunda:candidateGroups="technical-assessment">
       <bpmn:incoming>Flow_33_37</bpmn:incoming>
       <bpmn:outgoing>Flow_37_Join</bpmn:outgoing>
     </bpmn:userTask>
@@ -149,7 +149,7 @@
       <bpmn:outgoing>Flow_AICheck_NoAI</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_35_AIModelRiskAssessment" name="3.5 AI Model Risk&#10;Assessment (SR 11-7 / EU AI Act)" camunda:candidateGroups="information-security">
+    <bpmn:userTask id="Task_35_AIModelRiskAssessment" name="3.5 AI Model Risk&#10;Assessment" camunda:candidateGroups="technical-assessment">
       <bpmn:incoming>Flow_AICheck_Yes</bpmn:incoming>
       <bpmn:outgoing>Flow_35_AIBranchMerge</bpmn:outgoing>
     </bpmn:userTask>
@@ -167,7 +167,7 @@
       <bpmn:outgoing>Flow_AIBranchMerge_Join</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_36_FinancialStabilityReview" name="3.6 Financial Stability&#10;Review (AI + Human)" camunda:candidateGroups="business-owner">
+    <bpmn:userTask id="Task_36_FinancialStabilityReview" name="3.6 Financial&#10;Stability Review" camunda:candidateGroups="business-lane">
       <bpmn:incoming>Flow_Split_Financial</bpmn:incoming>
       <bpmn:outgoing>Flow_36_Join</bpmn:outgoing>
     </bpmn:userTask>
@@ -198,7 +198,7 @@
       <bpmn:outgoing>Flow_NoBuildPath</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_39_ArchitectureFeasibility" name="3.9 Architecture Feasibility&#10;Assessment (Architecture Agent)" camunda:candidateGroups="it-architecture">
+    <bpmn:userTask id="Task_39_ArchitectureFeasibility" name="3.9 Architecture&#10;Feasibility Assessment" camunda:candidateGroups="technical-assessment">
       <bpmn:incoming>Flow_YesBuildPath</bpmn:incoming>
       <bpmn:outgoing>Flow_39_310</bpmn:outgoing>
     </bpmn:userTask>
@@ -221,17 +221,17 @@
       <bpmn:outgoing>Flow_PathwayMerge_Oversight</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_OversightReview" name="Oversight Review&#10;(Risk Acceptance)" camunda:candidateGroups="sla-governance-board">
+    <bpmn:userTask id="Task_OversightReview" name="Oversight Review&#10;(Risk Acceptance)" camunda:candidateGroups="governance-lane">
       <bpmn:incoming>Flow_PathwayMerge_Oversight</bpmn:incoming>
       <bpmn:outgoing>Flow_Oversight_Contracting</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_ContractingReview" name="Contracting Review&#10;(Terms Validation)" camunda:candidateGroups="legal-compliance">
+    <bpmn:userTask id="Task_ContractingReview" name="Contracting Review&#10;(Terms Validation)" camunda:candidateGroups="compliance-lane">
       <bpmn:incoming>Flow_Oversight_Contracting</bpmn:incoming>
       <bpmn:outgoing>Flow_Contracting_QualityGate</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_PhaseQualityGate" name="Phase 3 Quality Gate&#10;+ Approval Sign-Off" camunda:candidateGroups="sla-governance-board">
+    <bpmn:userTask id="Task_PhaseQualityGate" name="Phase 3 Quality Gate&#10;+ Approval Sign-Off" camunda:candidateGroups="governance-lane">
       <bpmn:incoming>Flow_Contracting_QualityGate</bpmn:incoming>
       <bpmn:outgoing>Flow_QualityGate_End</bpmn:outgoing>
     </bpmn:userTask>
@@ -361,14 +361,14 @@
       <bpmn:outgoing>Flow_VendorStart_Evidence</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:userTask id="Task_VendorEvidenceSubmission" name="Evidence Package&#10;Submission (SOC2, ISO27001)" camunda:candidateGroups="vendor-management">
+    <bpmn:userTask id="Task_VendorEvidenceSubmission" name="Evidence Package&#10;Submission" camunda:candidateGroups="vendor-response">
       <bpmn:incoming>Flow_VendorStart_Evidence</bpmn:incoming>
       <bpmn:outgoing>Flow_VendorEvidence_End</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_VendorSecurityQuestionnaire" name="Security Questionnaire&#10;Response (CAIQ / SIG)" camunda:candidateGroups="vendor-management" />
+    <bpmn:userTask id="Task_VendorSecurityQuestionnaire" name="Security Questionnaire&#10;Response" camunda:candidateGroups="vendor-response" />
 
-    <bpmn:userTask id="Task_VendorComplianceAttestation" name="Compliance Attestation&#10;(GDPR DPA, Data Processing)" camunda:candidateGroups="vendor-management" />
+    <bpmn:userTask id="Task_VendorComplianceAttestation" name="Compliance&#10;Attestation" camunda:candidateGroups="vendor-response" />
 
     <bpmn:endEvent id="EndEvent_VendorEngagementEnd" name="Vendor Engagement&#10;Complete">
       <bpmn:incoming>Flow_VendorEvidence_End</bpmn:incoming>
@@ -489,7 +489,7 @@
       <bpmndi:BPMNShape id="EndEvent_33SLAEscalated_di" bpmnElement="EndEvent_33SLAEscalated">
         <dc:Bounds x="882" y="424" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="858" y="397" width="84" height="27" />
+          <dc:Bounds x="858" y="464" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -507,7 +507,7 @@
       <bpmndi:BPMNShape id="EndEvent_37SLAEscalated_di" bpmnElement="EndEvent_37SLAEscalated">
         <dc:Bounds x="1092" y="424" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1068" y="397" width="84" height="27" />
+          <dc:Bounds x="1068" y="464" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -532,7 +532,7 @@
       <bpmndi:BPMNShape id="EndEvent_35SLAEscalated_di" bpmnElement="EndEvent_35SLAEscalated">
         <dc:Bounds x="992" y="549" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="968" y="522" width="84" height="27" />
+          <dc:Bounds x="968" y="589" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -587,7 +587,7 @@
       <bpmndi:BPMNShape id="EndEvent_39SLAEscalated_di" bpmnElement="EndEvent_39SLAEscalated">
         <dc:Bounds x="1692" y="424" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1668" y="397" width="84" height="27" />
+          <dc:Bounds x="1668" y="464" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -619,9 +619,9 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_QGSLAEscalated_di" bpmnElement="EndEvent_QGSLAEscalated">
-        <dc:Bounds x="2294" y="172" width="36" height="36" />
+        <dc:Bounds x="2294" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2270" y="145" width="84" height="27" />
+          <dc:Bounds x="2270" y="115" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -842,8 +842,8 @@
 
       <bpmndi:BPMNEdge id="Flow_QGSLAEscalate_di" bpmnElement="Flow_QGSLAEscalate">
         <di:waypoint x="2212" y="256" />
-        <di:waypoint x="2212" y="210" />
-        <di:waypoint x="2294" y="190" />
+        <di:waypoint x="2212" y="160" />
+        <di:waypoint x="2294" y="160" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_OCC_di" bpmnElement="Assoc_OCC">

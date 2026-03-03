@@ -21,7 +21,7 @@
 
     <bpmn:laneSet id="LaneSet_Phase8">
 
-      <bpmn:lane id="Lane_Business" name="Business Lane">
+      <bpmn:lane id="Lane_Business" name="Business">
         <bpmn:flowNodeRef>Task_85_VendorPerformance</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_85SLAEscalated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_8R1_RetirementAssessment</bpmn:flowNodeRef>
@@ -29,7 +29,7 @@
         <bpmn:flowNodeRef>Task_EmgStakeholderNotify</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_Governance" name="Governance Lane">
+      <bpmn:lane id="Lane_Governance" name="Governance">
         <bpmn:flowNodeRef>StartEvent_Phase8Initiated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_8C2_ChangeApproval</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_8R7_FinalAudit</bpmn:flowNodeRef>
@@ -37,7 +37,7 @@
         <bpmn:flowNodeRef>Task_EmgImpactAssessment</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_Contracting" name="Contracting Lane">
+      <bpmn:lane id="Lane_Contracting" name="Contracting">
         <bpmn:flowNodeRef>Task_8R3_VendorNotification</bpmn:flowNodeRef>
       </bpmn:lane>
 
@@ -51,21 +51,21 @@
         <bpmn:flowNodeRef>EndEvent_Terminated</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_AIReview" name="AI Review Lane">
+      <bpmn:lane id="Lane_AIReview" name="AI Review">
         <bpmn:flowNodeRef>Task_82_AIDriftMonitoring</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_82SLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_Compliance" name="Compliance Lane">
+      <bpmn:lane id="Lane_Compliance" name="Compliance">
         <bpmn:flowNodeRef>Task_8R4b_ComplianceArchive</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_Oversight" name="Oversight Lane">
+      <bpmn:lane id="Lane_Oversight" name="Oversight">
         <bpmn:flowNodeRef>Task_83_TriggerReview</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_83SLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
 
-      <bpmn:lane id="Lane_Automation" name="Automation Lane">
+      <bpmn:lane id="Lane_Automation" name="Automation">
         <bpmn:flowNodeRef>Task_81_ControlMonitoring</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_ParallelSplit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_84_SLABreachRCA</bpmn:flowNodeRef>
@@ -110,7 +110,7 @@
       <bpmn:outgoing>Flow_Split_85</bpmn:outgoing>
     </bpmn:parallelGateway>
 
-    <bpmn:userTask id="Task_82_AIDriftMonitoring" name="8.2 AI Model Drift&#10;Monitoring (Champion-&#10;Challenger Testing)" camunda:candidateGroups="ai-review">
+    <bpmn:userTask id="Task_82_AIDriftMonitoring" name="8.2 AI Model&#10;Drift Monitoring" camunda:candidateGroups="ai-review">
       <bpmn:incoming>Flow_Split_82</bpmn:incoming>
       <bpmn:outgoing>Flow_82_Join</bpmn:outgoing>
     </bpmn:userTask>
@@ -139,7 +139,7 @@
       <bpmn:outgoing>Flow_84_Join</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:userTask id="Task_85_VendorPerformance" name="8.5 Vendor Performance&#10;Management (Scorecard&#10;Reviews, SLA Tracking)" camunda:candidateGroups="business-lane">
+    <bpmn:userTask id="Task_85_VendorPerformance" name="8.5 Vendor&#10;Performance Management" camunda:candidateGroups="business-lane">
       <bpmn:incoming>Flow_Split_85</bpmn:incoming>
       <bpmn:outgoing>Flow_85_Join</bpmn:outgoing>
     </bpmn:userTask>
@@ -174,7 +174,7 @@
       <bpmn:outgoing>Flow_88_CadenceDMN</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:businessRuleTask id="Task_MonitoringCadence" name="Monitoring Cadence&#10;Assignment (DMN-8&#10;Cadence Decision)" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:resultVariable="monitoringCadence" camunda:mapDecisionResult="singleResult">
+    <bpmn:businessRuleTask id="Task_MonitoringCadence" name="Monitoring Cadence&#10;Assignment" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:resultVariable="monitoringCadence" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_88_CadenceDMN</bpmn:incoming>
       <bpmn:outgoing>Flow_CadenceDMN_OutcomeGateway</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -200,7 +200,7 @@
         <bpmn:outgoing>Flow_8C_Start_ChangeImpact</bpmn:outgoing>
       </bpmn:startEvent>
 
-      <bpmn:businessRuleTask id="Task_8C_ChangeRisk" name="Change Risk Scoring&#10;(DMN-6 Change Risk)" camunda:decisionRef="DMN_ChangeRiskScoring" camunda:resultVariable="changeRiskScore" camunda:mapDecisionResult="singleResult">
+      <bpmn:businessRuleTask id="Task_8C_ChangeRisk" name="Change Risk&#10;Scoring" camunda:decisionRef="DMN_ChangeRiskScoring" camunda:resultVariable="changeRiskScore" camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_8C_Start_ChangeImpact</bpmn:incoming>
         <bpmn:outgoing>Flow_8C_ChangeRisk_Impact</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -427,7 +427,7 @@
 
   <bpmn:process id="Process_VendorResponse" name="Vendor / Third Party Response" isExecutable="false" camunda:historyTimeToLive="180">
     <bpmn:laneSet id="LaneSet_Vendor">
-      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response Lane">
+      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response">
         <bpmn:flowNodeRef>StartEvent_VendorEngaged</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_VendorSLADataSubmission</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_VendorRetireAck</bpmn:flowNodeRef>
@@ -651,9 +651,9 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_ProcessSLAEscalated_di" bpmnElement="EndEvent_ProcessSLAEscalated">
-        <dc:Bounds x="564" y="1391" width="36" height="36" />
+        <dc:Bounds x="564" y="1300" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="540" y="1434" width="84" height="27" />
+          <dc:Bounds x="540" y="1343" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -787,8 +787,10 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_LoopBack_Merge_di" bpmnElement="Flow_LoopBack_Merge">
-        <di:waypoint x="1490" y="1222" />
-        <di:waypoint x="1490" y="1152" />
+        <di:waypoint x="1515" y="1247" />
+        <di:waypoint x="1515" y="1342" />
+        <di:waypoint x="1390" y="1342" />
+        <di:waypoint x="1390" y="1152" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Outcome_Change_di" bpmnElement="Flow_Outcome_Change">
@@ -843,7 +845,7 @@
       <bpmndi:BPMNEdge id="Flow_EmgNo_Skip_di" bpmnElement="Flow_EmgNo_Skip">
         <di:waypoint x="492" y="1342" />
         <di:waypoint x="564" y="1342" />
-        <di:waypoint x="564" y="1391" />
+        <di:waypoint x="564" y="1336" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="517" y="1318" width="15" height="14" />
         </bpmndi:BPMNLabel>

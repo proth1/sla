@@ -33,8 +33,8 @@ const CHECKABLE_TYPES = [
   'ReceiveTask', 'ManualTask', 'BusinessRuleTask', 'SubProcess',
   'CallActivity', 'ExclusiveGateway', 'ParallelGateway',
   'InclusiveGateway', 'EventBasedGateway', 'StartEvent', 'EndEvent',
-  'IntermediateCatchEvent', 'IntermediateThrowEvent', 'TextAnnotation',
-  'DataObjectReference', 'DataStoreReference'
+  'IntermediateCatchEvent', 'IntermediateThrowEvent', 'BoundaryEvent',
+  'TextAnnotation', 'DataObjectReference', 'DataStoreReference'
 ];
 
 class ValidationResult {
@@ -174,42 +174,50 @@ function parseBounds(boundsMatch) {
 }
 
 /**
- * Extract element shapes from BPMN XML using regex
- * This is a fast approach that doesn't require XML parsing libraries
+ * Extract element shapes from BPMN XML, grouped by BPMNDiagram.
+ * Each BPMNDiagram (e.g., main process, collapsed sub-processes) has its
+ * own coordinate space, so overlaps must only be checked within the same diagram.
  */
-function extractShapesFromXml(xml) {
-  const shapes = [];
+function extractShapesByDiagram(xml) {
+  const diagrams = [];
 
-  // Find all BPMNShape elements
-  const shapeRegex = /<bpmndi:BPMNShape[^>]*id="([^"]*)"[^>]*bpmnElement="([^"]*)"[^>]*>([\s\S]*?)<\/bpmndi:BPMNShape>/g;
-  const selfClosingShapeRegex = /<bpmndi:BPMNShape[^>]*id="([^"]*)"[^>]*bpmnElement="([^"]*)"[^>]*\/>/g;
+  // Split by BPMNDiagram sections
+  const diagramRegex = /<bpmndi:BPMNDiagram[^>]*id="([^"]*)"[^>]*>([\s\S]*?)<\/bpmndi:BPMNDiagram>/g;
+  let diagramMatch;
 
-  let match;
+  while ((diagramMatch = diagramRegex.exec(xml)) !== null) {
+    const diagramId = diagramMatch[1];
+    const diagramContent = diagramMatch[2];
+    const shapes = [];
 
-  // Process shapes with children (bounds, labels)
-  while ((match = shapeRegex.exec(xml)) !== null) {
-    const shapeId = match[1];
-    const bpmnElementId = match[2];
-    const shapeContent = match[3];
+    const shapeRegex = /<bpmndi:BPMNShape[^>]*id="([^"]*)"[^>]*bpmnElement="([^"]*)"[^>]*>([\s\S]*?)<\/bpmndi:BPMNShape>/g;
+    let match;
 
-    // Extract bounds
-    const boundsMatch = shapeContent.match(/<dc:Bounds[^>]*\/>/);
-    const bounds = parseBounds(boundsMatch ? boundsMatch[0] : null);
+    while ((match = shapeRegex.exec(diagramContent)) !== null) {
+      const shapeId = match[1];
+      const bpmnElementId = match[2];
+      const shapeContent = match[3];
 
-    if (bounds) {
-      // Determine element type from the bpmnElement reference
-      const elementType = getElementType(xml, bpmnElementId);
+      const boundsMatch = shapeContent.match(/<dc:Bounds[^>]*\/>/);
+      const bounds = parseBounds(boundsMatch ? boundsMatch[0] : null);
 
-      shapes.push({
-        id: bpmnElementId,
-        shapeId: shapeId,
-        type: elementType,
-        bounds: bounds
-      });
+      if (bounds) {
+        const elementType = getElementType(xml, bpmnElementId);
+        shapes.push({
+          id: bpmnElementId,
+          shapeId: shapeId,
+          type: elementType,
+          bounds: bounds
+        });
+      }
+    }
+
+    if (shapes.length > 0) {
+      diagrams.push({ diagramId, shapes });
     }
   }
 
-  return shapes;
+  return diagrams;
 }
 
 /**
@@ -292,17 +300,20 @@ function validateBpmnFile(filePath) {
       return result;
     }
 
-    // Extract shapes
-    const shapes = extractShapesFromXml(xml);
-    result.addInfo(`Found ${shapes.length} shape(s) with bounds`);
+    // Extract shapes grouped by diagram (each BPMNDiagram has its own coordinate space)
+    const diagrams = extractShapesByDiagram(xml);
+    const totalShapes = diagrams.reduce((sum, d) => sum + d.shapes.length, 0);
+    result.addInfo(`Found ${totalShapes} shape(s) with bounds across ${diagrams.length} diagram(s)`);
 
-    if (shapes.length === 0) {
+    if (totalShapes === 0) {
       result.addWarning('No checkable shapes found in diagram');
       return result;
     }
 
-    // Check for overlaps
-    checkOverlaps(shapes, result);
+    // Check for overlaps within each diagram separately
+    for (const diagram of diagrams) {
+      checkOverlaps(diagram.shapes, result);
+    }
 
     // Summary
     if (result.overlaps.length === 0) {

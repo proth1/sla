@@ -19,28 +19,28 @@
   <bpmn:process id="Process_Phase7Deployment" name="Phase 7: Deployment Decision and Go-Live" isExecutable="false" camunda:historyTimeToLive="180">
 
     <bpmn:laneSet id="LaneSet_Phase7">
-      <bpmn:lane id="Lane_Business" name="Business Lane">
+      <bpmn:lane id="Lane_Business" name="Business">
         <bpmn:flowNodeRef>StartEvent_Phase7Initiated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Phase8Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Governance" name="Governance Lane">
+      <bpmn:lane id="Lane_Governance" name="Governance">
         <bpmn:flowNodeRef>EndEvent_Rejected</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Contracting" name="Contracting Lane">
+      <bpmn:lane id="Lane_Contracting" name="Contracting">
       </bpmn:lane>
       <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
         <bpmn:flowNodeRef>Task_71_ReadinessAssessment</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_DeploymentDecision</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_AIReview" name="AI Review Lane">
+      <bpmn:lane id="Lane_AIReview" name="AI Review">
         <bpmn:flowNodeRef>EndEvent_ReadinessSLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Compliance" name="Compliance Lane">
+      <bpmn:lane id="Lane_Compliance" name="Compliance">
         <bpmn:flowNodeRef>EndEvent_RollbackRequired</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Oversight" name="Oversight Lane">
+      <bpmn:lane id="Lane_Oversight" name="Oversight">
       </bpmn:lane>
-      <bpmn:lane id="Lane_Automation" name="Automation Lane">
+      <bpmn:lane id="Lane_Automation" name="Automation">
         <bpmn:flowNodeRef>Task_72_ProgressiveDeployment</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_HealthChecks</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_73_PostDeployVerification</bpmn:flowNodeRef>
@@ -52,7 +52,7 @@
       <bpmn:outgoing>Flow_Start_Readiness</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:userTask id="Task_71_ReadinessAssessment" name="7.1 Deployment Readiness&#10;Assessment (Review Phase 6&#10;Artifacts, Compliance Gates,&#10;Security Clearances)" camunda:candidateGroups="technical-assessment">
+    <bpmn:userTask id="Task_71_ReadinessAssessment" name="7.1 Deployment&#10;Readiness Assessment" camunda:candidateGroups="technical-assessment">
       <bpmn:incoming>Flow_Start_Readiness</bpmn:incoming>
       <bpmn:outgoing>Flow_Readiness_Decision</bpmn:outgoing>
     </bpmn:userTask>
@@ -64,7 +64,7 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
 
-    <bpmn:businessRuleTask id="Task_71_ChangeRiskScoring" name="7.1a Change Risk Scoring&#10;(DMN-6 Change Risk&#10;Scoring)" camunda:decisionRef="DMN_ChangeRiskScoring" camunda:resultVariable="deploymentRiskLevel" camunda:mapDecisionResult="singleResult">
+    <bpmn:businessRuleTask id="Task_71_ChangeRiskScoring" name="7.1a Change&#10;Risk Scoring" camunda:decisionRef="DMN_ChangeRiskScoring" camunda:resultVariable="deploymentRiskLevel" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_Readiness_Decision</bpmn:incoming>
       <bpmn:outgoing>Flow_RiskScoring_Gate</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -150,7 +150,7 @@
 
   <bpmn:process id="Process_VendorResponse" name="Vendor / Third Party Response" isExecutable="false" camunda:historyTimeToLive="180">
     <bpmn:laneSet id="LaneSet_Vendor">
-      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response Lane">
+      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response">
         <bpmn:flowNodeRef>StartEvent_VendorDeployRequest</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_VendorDeployCoordination</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_VendorResponseSent</bpmn:flowNodeRef>
@@ -161,7 +161,7 @@
       <bpmn:outgoing>Flow_VendorStart_Coord</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:userTask id="Task_VendorDeployCoordination" name="Vendor Deployment&#10;Coordination Package&#10;Submission" camunda:candidateGroups="vendor-response">
+    <bpmn:userTask id="Task_VendorDeployCoordination" name="Vendor Deployment&#10;Coordination" camunda:candidateGroups="vendor-response">
       <bpmn:incoming>Flow_VendorStart_Coord</bpmn:incoming>
       <bpmn:outgoing>Flow_VendorCoord_End</bpmn:outgoing>
     </bpmn:userTask>
@@ -237,9 +237,9 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_ReadinessSLAEscalated_di" bpmnElement="EndEvent_ReadinessSLAEscalated">
-        <dc:Bounds x="344" y="710" width="36" height="36" />
+        <dc:Bounds x="344" y="670" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="320" y="753" width="84" height="27" />
+          <dc:Bounds x="320" y="710" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -391,7 +391,7 @@
 
       <bpmndi:BPMNEdge id="Flow_ReadinessSLAEscalate_di" bpmnElement="Flow_ReadinessSLAEscalate">
         <di:waypoint x="360" y="665" />
-        <di:waypoint x="362" y="710" />
+        <di:waypoint x="362" y="670" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_DORA_di" bpmnElement="Assoc_DORA">

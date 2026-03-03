@@ -19,33 +19,33 @@
   <bpmn:process id="Process_GovernanceReview" name="Phase 4: Governance Review and Approval" isExecutable="false" camunda:historyTimeToLive="180">
 
     <bpmn:laneSet id="LaneSet_Phase4">
-      <bpmn:lane id="Lane_Business" name="Business Lane">
+      <bpmn:lane id="Lane_Business" name="Business">
         <bpmn:flowNodeRef>StartEvent_Phase4Initiated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_FastPathReview</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_FastPathSLAEscalated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Phase5Approved</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Phase5ApprovedConditions</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Governance" name="Governance Lane">
+      <bpmn:lane id="Lane_Governance" name="Governance">
         <bpmn:flowNodeRef>Task_AdvisoryBoardReview</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_AdvisorySLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Contracting" name="Contracting Lane">
+      <bpmn:lane id="Lane_Contracting" name="Contracting">
       </bpmn:lane>
       <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
       </bpmn:lane>
-      <bpmn:lane id="Lane_AIReview" name="AI Review Lane">
+      <bpmn:lane id="Lane_AIReview" name="AI Review">
         <bpmn:flowNodeRef>Task_EthicalImpactAssessment</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_AIReviewSLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Compliance" name="Compliance Lane">
+      <bpmn:lane id="Lane_Compliance" name="Compliance">
         <bpmn:flowNodeRef>Task_GovernanceCommitteeReview</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_CommitteeSLAEscalated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Rejected</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Oversight" name="Oversight Lane">
+      <bpmn:lane id="Lane_Oversight" name="Oversight">
       </bpmn:lane>
-      <bpmn:lane id="Lane_Automation" name="Automation Lane">
+      <bpmn:lane id="Lane_Automation" name="Automation">
         <bpmn:flowNodeRef>Task_AssessmentPackageAssembly</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_RiskTieredReviewRouting</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_ReviewAuthority</bpmn:flowNodeRef>
@@ -74,7 +74,7 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
 
-    <bpmn:businessRuleTask id="Task_RiskTieredReviewRouting" name="4.2 Risk-Tiered Review&#10;Routing (DMN-3 Governance&#10;Review Routing)" camunda:decisionRef="DMN_GovernanceReviewRouting" camunda:resultVariable="reviewAuthority" camunda:mapDecisionResult="singleResult">
+    <bpmn:businessRuleTask id="Task_RiskTieredReviewRouting" name="4.2 Risk-Tiered&#10;Review Routing" camunda:decisionRef="DMN_GovernanceReviewRouting" camunda:resultVariable="reviewAuthority" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_Assembly_Routing</bpmn:incoming>
       <bpmn:outgoing>Flow_Routing_AuthGateway</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -86,7 +86,7 @@
       <bpmn:outgoing>Flow_AuthGateway_Advisory</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_FastPathReview" name="4.3a Fast Path Review&#10;(Minimal Risk — Single&#10;Reviewer, 1-2 Days)" camunda:candidateGroups="business-lane">
+    <bpmn:userTask id="Task_FastPathReview" name="4.3a Fast Path&#10;Review" camunda:candidateGroups="business-lane">
       <bpmn:incoming>Flow_AuthGateway_FastPath</bpmn:incoming>
       <bpmn:outgoing>Flow_FastPath_Merge</bpmn:outgoing>
     </bpmn:userTask>
@@ -98,7 +98,7 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
 
-    <bpmn:userTask id="Task_GovernanceCommitteeReview" name="4.3b Governance Committee&#10;Review (Limited Risk —&#10;Committee, 3-5 Days)" camunda:candidateGroups="compliance-lane">
+    <bpmn:userTask id="Task_GovernanceCommitteeReview" name="4.3b Committee&#10;Review" camunda:candidateGroups="compliance-lane">
       <bpmn:incoming>Flow_AuthGateway_Committee</bpmn:incoming>
       <bpmn:outgoing>Flow_Committee_Merge</bpmn:outgoing>
     </bpmn:userTask>
@@ -110,7 +110,7 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
 
-    <bpmn:userTask id="Task_AdvisoryBoardReview" name="4.3c Advisory Board Review&#10;(High Risk — Board Session,&#10;5-10 Days)" camunda:candidateGroups="governance-lane">
+    <bpmn:userTask id="Task_AdvisoryBoardReview" name="4.3c Advisory&#10;Board Review" camunda:candidateGroups="governance-lane">
       <bpmn:incoming>Flow_AuthGateway_Advisory</bpmn:incoming>
       <bpmn:outgoing>Flow_Advisory_Merge</bpmn:outgoing>
     </bpmn:userTask>
@@ -135,7 +135,7 @@
       <bpmn:outgoing>Flow_AICheck_Skip</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_EthicalImpactAssessment" name="4.4 Ethical Impact Assessment&#10;(AI High/Critical — Ethics&#10;Committee, 3-5 Days)" camunda:candidateGroups="ai-review">
+    <bpmn:userTask id="Task_EthicalImpactAssessment" name="4.4 Ethical Impact&#10;Assessment" camunda:candidateGroups="ai-review">
       <bpmn:incoming>Flow_AICheck_Ethics</bpmn:incoming>
       <bpmn:outgoing>Flow_Ethics_AIMerge</bpmn:outgoing>
     </bpmn:userTask>
@@ -260,7 +260,7 @@
 
   <bpmn:process id="Process_VendorResponse" name="Vendor / Third Party Response" isExecutable="false" camunda:historyTimeToLive="180">
     <bpmn:laneSet id="LaneSet_Vendor">
-      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response Lane">
+      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response">
         <bpmn:flowNodeRef>StartEvent_VendorRequest</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_VendorResponseReceipt</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_VendorResponseSent</bpmn:flowNodeRef>
@@ -377,7 +377,7 @@
       <bpmndi:BPMNShape id="EndEvent_FastPathSLAEscalated_di" bpmnElement="EndEvent_FastPathSLAEscalated">
         <dc:Bounds x="876" y="149" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="852" y="192" width="84" height="27" />
+          <dc:Bounds x="852" y="122" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -395,7 +395,7 @@
       <bpmndi:BPMNShape id="EndEvent_AdvisorySLAEscalated_di" bpmnElement="EndEvent_AdvisorySLAEscalated">
         <dc:Bounds x="876" y="309" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="852" y="352" width="84" height="27" />
+          <dc:Bounds x="852" y="282" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -413,7 +413,7 @@
       <bpmndi:BPMNShape id="EndEvent_CommitteeSLAEscalated_di" bpmnElement="EndEvent_CommitteeSLAEscalated">
         <dc:Bounds x="876" y="949" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="852" y="992" width="84" height="27" />
+          <dc:Bounds x="852" y="922" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -431,7 +431,7 @@
       <bpmndi:BPMNShape id="EndEvent_AIReviewSLAEscalated_di" bpmnElement="EndEvent_AIReviewSLAEscalated">
         <dc:Bounds x="1240" y="789" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1216" y="832" width="84" height="27" />
+          <dc:Bounds x="1216" y="762" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
