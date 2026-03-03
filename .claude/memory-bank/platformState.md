@@ -1,19 +1,21 @@
 # Platform State
 
-**Current Version**: 2026.03.2
-**Last Release**: 2026-03-02
-**Total Releases**: 2
+**Current Version**: 2026.03.3
+**Last Release**: 2026-03-03
+**Total Releases**: 3
 
 ## Artifact Counts
 
 | Artifact | Count |
 |----------|-------|
-| DMN Decision Tables | 15 |
+| DMN Decision Tables | 8 |
 | BPMN Process Models | 10 |
+| Cross-Cutting Sub-Processes | 5 |
 | Presentation Slides | 34 |
 | Regulatory Frameworks | 13 |
-| Swim Lanes | 7 |
-| Governance Phases | 7 |
+| Pools | 2 |
+| Swim Lanes | 9+1 |
+| Governance Phases | 8 |
 
 ## Deployment
 
@@ -27,5 +29,6 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.3 | 2026-03-03 | #8 | 8-phase rebuild: PRD, 8 DMN tables, 10 BPMN models, 5 cross-cutting sub-processes |
 | 2026.03.2 | 2026-03-02 | #4 | Redesign master orchestrator — correct dimensions and parallel gateway |
 | 2026.03.1 | 2026-03-02 | #1 | Complete 7-phase governance framework build-out |

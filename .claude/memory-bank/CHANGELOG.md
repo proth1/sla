@@ -1,5 +1,24 @@
 # Changelog
 
+## [2026.03.3] - 2026-03-03
+
+### Added
+- 8 new DMN 1.3 decision tables (DMN-1 through DMN-8) per BPMN Conversion Prompt spec
+- 8 BPMN phase models (Phase 1-8) with 2-pool/9-lane schema, DMN-first routing, timer SLAs
+- 5 cross-cutting event sub-processes (SLA Monitoring, Vulnerability Remediation, Incident Response, Regulatory Change, Continuous Improvement)
+- Master orchestrator BPMN (8 sequential collapsed sub-processes, 3 end events)
+- Phase 6 SDLC with 6 nested sub-processes (Sprint, Dev, Test, DevSecOps, Compliance Gates, Review)
+- Phase 8 Operations with looping monitoring cycle, change management, and decommission paths
+- PRD updated for 8-phase/8-DMN/2-pool schema
+
+### Changed
+- Migrated from 7-phase/14-DMN/7-lane schema to 8-phase/8-DMN/2-pool-9+1-lane schema
+- Archived 15 legacy DMN tables to `decisions/archive/`
+- Archived legacy BPMN models to `processes/archive/`
+- Updated presentation template for 8-phase architecture
+- Updated BPMN modeling standards, governance standards, visual clarity rules for new schema
+- Aligned candidateGroups across all phases to 8-lane naming convention
+
 ## [2026.03.2] - 2026-03-02
 
 ### Changed
