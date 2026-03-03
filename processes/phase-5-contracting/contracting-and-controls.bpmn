@@ -67,7 +67,7 @@
       <bpmn:outgoing>Flow_Start_51</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:userTask id="Task_51_ContractNegotiation" name="5.1 Contract Negotiation&#10;(Terms, Pricing, SLA&#10;Commitments)" camunda:candidateGroups="procurement">
+    <bpmn:userTask id="Task_51_ContractNegotiation" name="5.1 Contract Negotiation&#10;(Terms, Pricing, SLA&#10;Commitments)" camunda:candidateGroups="contracting-lane">
       <bpmn:incoming>Flow_Start_51</bpmn:incoming>
       <bpmn:outgoing>Flow_51_52</bpmn:outgoing>
     </bpmn:userTask>
@@ -79,12 +79,12 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
 
-    <bpmn:userTask id="Task_52_MandatoryProvisions" name="5.2 Mandatory Provisions&#10;Integration (OCC, DORA,&#10;SOX Clauses)" camunda:candidateGroups="legal-compliance">
+    <bpmn:userTask id="Task_52_MandatoryProvisions" name="5.2 Mandatory Provisions&#10;Integration (OCC, DORA,&#10;SOX Clauses)" camunda:candidateGroups="compliance-lane">
       <bpmn:incoming>Flow_51_52</bpmn:incoming>
       <bpmn:outgoing>Flow_52_53</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_53_ControlsConfiguration" name="5.3 Controls Configuration&#10;(Security, Monitoring,&#10;Reporting)" camunda:candidateGroups="information-security">
+    <bpmn:userTask id="Task_53_ControlsConfiguration" name="5.3 Controls Configuration&#10;(Security, Monitoring,&#10;Reporting)" camunda:candidateGroups="technical-assessment">
       <bpmn:incoming>Flow_52_53</bpmn:incoming>
       <bpmn:outgoing>Flow_53_54</bpmn:outgoing>
     </bpmn:userTask>
@@ -107,12 +107,12 @@
       <bpmn:outgoing>Flow_ExitSplit_55b</bpmn:outgoing>
     </bpmn:parallelGateway>
 
-    <bpmn:userTask id="Task_55a_ExitPlanTechnical" name="5.5a Exit Plan Development&#10;(Data Return, Migration,&#10;Sunset Triggers)" camunda:candidateGroups="it-architecture">
+    <bpmn:userTask id="Task_55a_ExitPlanTechnical" name="5.5a Exit Plan Development&#10;(Data Return, Migration,&#10;Sunset Triggers)" camunda:candidateGroups="technical-assessment">
       <bpmn:incoming>Flow_ExitSplit_55a</bpmn:incoming>
       <bpmn:outgoing>Flow_55a_ExitJoin</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_55b_ExitPlanBusiness" name="5.5b Exit Plan Development&#10;(Business Continuity,&#10;Transition Plan)" camunda:candidateGroups="business-owner">
+    <bpmn:userTask id="Task_55b_ExitPlanBusiness" name="5.5b Exit Plan Development&#10;(Business Continuity,&#10;Transition Plan)" camunda:candidateGroups="business-lane">
       <bpmn:incoming>Flow_ExitSplit_55b</bpmn:incoming>
       <bpmn:outgoing>Flow_55b_ExitJoin</bpmn:outgoing>
     </bpmn:userTask>
@@ -128,7 +128,7 @@
       <bpmn:outgoing>Flow_56_QualityGate</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:userTask id="Task_PhaseQualityGate" name="Phase 5 Quality Gate&#10;(Compliance Review&#10;and Approval)" camunda:candidateGroups="sla-governance-board">
+    <bpmn:userTask id="Task_PhaseQualityGate" name="Phase 5 Quality Gate&#10;(Compliance Review&#10;and Approval)" camunda:candidateGroups="governance-lane">
       <bpmn:incoming>Flow_56_QualityGate</bpmn:incoming>
       <bpmn:outgoing>Flow_QualityGate_End</bpmn:outgoing>
     </bpmn:userTask>
@@ -215,12 +215,12 @@
       <bpmn:outgoing>Flow_VendorStart_Review</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:userTask id="Task_VendorContractReview" name="Contract Review&#10;and Redline Submission" camunda:candidateGroups="vendor-management">
+    <bpmn:userTask id="Task_VendorContractReview" name="Contract Review&#10;and Redline Submission" camunda:candidateGroups="vendor-response">
       <bpmn:incoming>Flow_VendorStart_Review</bpmn:incoming>
       <bpmn:outgoing>Flow_VendorReview_Signature</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_VendorContractSignature" name="Contract Execution&#10;and Signature" camunda:candidateGroups="vendor-management">
+    <bpmn:userTask id="Task_VendorContractSignature" name="Contract Execution&#10;and Signature" camunda:candidateGroups="vendor-response">
       <bpmn:incoming>Flow_VendorReview_Signature</bpmn:incoming>
       <bpmn:outgoing>Flow_VendorSignature_End</bpmn:outgoing>
     </bpmn:userTask>

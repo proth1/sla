@@ -246,7 +246,7 @@
 
   <bpmn:process id="Process_VendorPhase6" name="Vendor / Third Party" isExecutable="false">
     <bpmn:laneSet id="LaneSet_VendorPhase6">
-      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response" camunda:candidateGroups="vendor-management">
+      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response" camunda:candidateGroups="vendor-response">
         <bpmn:flowNodeRef>StartEvent_Vendor_Phase6</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_Vendor_ProvideBuildArtifacts</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Vendor_Phase6</bpmn:flowNodeRef>
@@ -255,7 +255,7 @@
     <bpmn:startEvent id="StartEvent_Vendor_Phase6" name="Vendor&#10;Engaged">
       <bpmn:outgoing>Flow_Vendor_Start_Task</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="Task_Vendor_ProvideBuildArtifacts" name="Provide Build&#10;Artifacts &amp; Evidence" camunda:candidateGroups="vendor-management">
+    <bpmn:userTask id="Task_Vendor_ProvideBuildArtifacts" name="Provide Build&#10;Artifacts &amp; Evidence" camunda:candidateGroups="vendor-response">
       <bpmn:incoming>Flow_Vendor_Start_Task</bpmn:incoming>
       <bpmn:outgoing>Flow_Vendor_Task_End</bpmn:outgoing>
     </bpmn:userTask>

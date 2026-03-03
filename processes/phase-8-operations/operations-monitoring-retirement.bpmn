@@ -139,7 +139,7 @@
       <bpmn:outgoing>Flow_84_Join</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:userTask id="Task_85_VendorPerformance" name="8.5 Vendor Performance&#10;Management (Scorecard&#10;Reviews, SLA Tracking)" camunda:candidateGroups="business-owner">
+    <bpmn:userTask id="Task_85_VendorPerformance" name="8.5 Vendor Performance&#10;Management (Scorecard&#10;Reviews, SLA Tracking)" camunda:candidateGroups="business-lane">
       <bpmn:incoming>Flow_Split_85</bpmn:incoming>
       <bpmn:outgoing>Flow_85_Join</bpmn:outgoing>
     </bpmn:userTask>
@@ -174,7 +174,7 @@
       <bpmn:outgoing>Flow_88_CadenceDMN</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:businessRuleTask id="Task_MonitoringCadence" name="Monitoring Cadence&#10;Assignment (DMN-8&#10;Cadence Decision)" camunda:decisionRef="DMN_MonitoringCadence" camunda:resultVariable="monitoringCadence" camunda:mapDecisionResult="singleResult">
+    <bpmn:businessRuleTask id="Task_MonitoringCadence" name="Monitoring Cadence&#10;Assignment (DMN-8&#10;Cadence Decision)" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:resultVariable="monitoringCadence" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_88_CadenceDMN</bpmn:incoming>
       <bpmn:outgoing>Flow_CadenceDMN_OutcomeGateway</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -205,17 +205,17 @@
         <bpmn:outgoing>Flow_8C_ChangeRisk_Impact</bpmn:outgoing>
       </bpmn:businessRuleTask>
 
-      <bpmn:userTask id="Task_8C1_ChangeImpact" name="8C.1 Change Impact&#10;Assessment" camunda:candidateGroups="it-architecture">
+      <bpmn:userTask id="Task_8C1_ChangeImpact" name="8C.1 Change Impact&#10;Assessment" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_8C_ChangeRisk_Impact</bpmn:incoming>
         <bpmn:outgoing>Flow_8C_Impact_Approval</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="Task_8C2_ChangeApproval" name="8C.2 Change Approval" camunda:candidateGroups="sla-governance-board">
+      <bpmn:userTask id="Task_8C2_ChangeApproval" name="8C.2 Change Approval" camunda:candidateGroups="governance-lane">
         <bpmn:incoming>Flow_8C_Impact_Approval</bpmn:incoming>
         <bpmn:outgoing>Flow_8C_Approval_Impl</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="Task_8C3_ChangeImpl" name="8C.3 Change&#10;Implementation" camunda:candidateGroups="it-architecture">
+      <bpmn:userTask id="Task_8C3_ChangeImpl" name="8C.3 Change&#10;Implementation" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_8C_Approval_Impl</bpmn:incoming>
         <bpmn:outgoing>Flow_8C_Impl_End</bpmn:outgoing>
       </bpmn:userTask>
@@ -240,17 +240,17 @@
         <bpmn:outgoing>Flow_8R_Start_Assessment</bpmn:outgoing>
       </bpmn:startEvent>
 
-      <bpmn:userTask id="Task_8R1_RetirementAssessment" name="8R.1 Retirement&#10;Assessment" camunda:candidateGroups="business-owner">
+      <bpmn:userTask id="Task_8R1_RetirementAssessment" name="8R.1 Retirement&#10;Assessment" camunda:candidateGroups="business-lane">
         <bpmn:incoming>Flow_8R_Start_Assessment</bpmn:incoming>
         <bpmn:outgoing>Flow_8R1_DataMigration</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="Task_8R2_DataMigrationPlan" name="8R.2 Data Migration&#10;Plan" camunda:candidateGroups="it-architecture">
+      <bpmn:userTask id="Task_8R2_DataMigrationPlan" name="8R.2 Data Migration&#10;Plan" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_8R1_DataMigration</bpmn:incoming>
         <bpmn:outgoing>Flow_8R2_VendorNotify</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="Task_8R3_VendorNotification" name="8R.3 Vendor Notification&#10;(Buy Pathway)" camunda:candidateGroups="procurement">
+      <bpmn:userTask id="Task_8R3_VendorNotification" name="8R.3 Vendor Notification&#10;(Buy Pathway)" camunda:candidateGroups="contracting-lane">
         <bpmn:incoming>Flow_8R2_VendorNotify</bpmn:incoming>
         <bpmn:outgoing>Flow_8R3_ArchivePurge</bpmn:outgoing>
       </bpmn:userTask>
@@ -261,12 +261,12 @@
         <bpmn:outgoing>Flow_8R_Archive_Compliance</bpmn:outgoing>
       </bpmn:parallelGateway>
 
-      <bpmn:userTask id="Task_8R4_DataArchivePurge" name="8R.4 Data Archive&#10;/ Purge (Technical)" camunda:candidateGroups="it-architecture">
+      <bpmn:userTask id="Task_8R4_DataArchivePurge" name="8R.4 Data Archive&#10;/ Purge (Technical)" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_8R_Archive_Tech</bpmn:incoming>
         <bpmn:outgoing>Flow_8R4_ArchiveJoin</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="Task_8R4b_ComplianceArchive" name="8R.4b Compliance&#10;Data Archive / Purge" camunda:candidateGroups="legal-compliance">
+      <bpmn:userTask id="Task_8R4b_ComplianceArchive" name="8R.4b Compliance&#10;Data Archive / Purge" camunda:candidateGroups="compliance-lane">
         <bpmn:incoming>Flow_8R_Archive_Compliance</bpmn:incoming>
         <bpmn:outgoing>Flow_8R4b_ArchiveJoin</bpmn:outgoing>
       </bpmn:userTask>
@@ -282,12 +282,12 @@
         <bpmn:outgoing>Flow_8R5_StakeholderComm</bpmn:outgoing>
       </bpmn:serviceTask>
 
-      <bpmn:userTask id="Task_8R6_StakeholderComm" name="8R.6 Stakeholder&#10;Communication" camunda:candidateGroups="business-owner">
+      <bpmn:userTask id="Task_8R6_StakeholderComm" name="8R.6 Stakeholder&#10;Communication" camunda:candidateGroups="business-lane">
         <bpmn:incoming>Flow_8R5_StakeholderComm</bpmn:incoming>
         <bpmn:outgoing>Flow_8R6_FinalAudit</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="Task_8R7_FinalAudit" name="8R.7 Final Audit&#10;(Governance Board)" camunda:candidateGroups="sla-governance-board">
+      <bpmn:userTask id="Task_8R7_FinalAudit" name="8R.7 Final Audit&#10;(Governance Board)" camunda:candidateGroups="governance-lane">
         <bpmn:incoming>Flow_8R6_FinalAudit</bpmn:incoming>
         <bpmn:outgoing>Flow_8R7_End</bpmn:outgoing>
       </bpmn:userTask>
@@ -317,22 +317,22 @@
       <bpmn:outgoing>Flow_EmgNo_Skip</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_EmgContainment" name="Emergency&#10;Containment" camunda:candidateGroups="it-architecture">
+    <bpmn:userTask id="Task_EmgContainment" name="Emergency&#10;Containment" camunda:candidateGroups="technical-assessment">
       <bpmn:incoming>Flow_EmgYes_Contain</bpmn:incoming>
       <bpmn:outgoing>Flow_Emg_Contain_Impact</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_EmgImpactAssessment" name="Emergency Impact&#10;Assessment" camunda:candidateGroups="sla-governance-board">
+    <bpmn:userTask id="Task_EmgImpactAssessment" name="Emergency Impact&#10;Assessment" camunda:candidateGroups="governance-lane">
       <bpmn:incoming>Flow_Emg_Contain_Impact</bpmn:incoming>
       <bpmn:outgoing>Flow_Emg_Impact_Notify</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_EmgStakeholderNotify" name="Emergency Stakeholder&#10;Notification" camunda:candidateGroups="business-owner">
+    <bpmn:userTask id="Task_EmgStakeholderNotify" name="Emergency Stakeholder&#10;Notification" camunda:candidateGroups="business-lane">
       <bpmn:incoming>Flow_Emg_Impact_Notify</bpmn:incoming>
       <bpmn:outgoing>Flow_Emg_Notify_Shutdown</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_EmgShutdown" name="Emergency&#10;Shutdown" camunda:candidateGroups="it-architecture">
+    <bpmn:userTask id="Task_EmgShutdown" name="Emergency&#10;Shutdown" camunda:candidateGroups="technical-assessment">
       <bpmn:incoming>Flow_Emg_Notify_Shutdown</bpmn:incoming>
       <bpmn:outgoing>Flow_Emg_Shutdown_End</bpmn:outgoing>
     </bpmn:userTask>
@@ -439,12 +439,12 @@
       <bpmn:outgoing>Flow_VendorStart_SLA</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:userTask id="Task_VendorSLADataSubmission" name="SLA Performance&#10;Data Submission" camunda:candidateGroups="vendor-management">
+    <bpmn:userTask id="Task_VendorSLADataSubmission" name="SLA Performance&#10;Data Submission" camunda:candidateGroups="vendor-response">
       <bpmn:incoming>Flow_VendorStart_SLA</bpmn:incoming>
       <bpmn:outgoing>Flow_VendorSLA_RetireAck</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_VendorRetireAck" name="Retirement&#10;Acknowledgement" camunda:candidateGroups="vendor-management">
+    <bpmn:userTask id="Task_VendorRetireAck" name="Retirement&#10;Acknowledgement" camunda:candidateGroups="vendor-response">
       <bpmn:incoming>Flow_VendorSLA_RetireAck</bpmn:incoming>
       <bpmn:outgoing>Flow_VendorRetire_End</bpmn:outgoing>
     </bpmn:userTask>

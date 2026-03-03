@@ -17,26 +17,26 @@
   <bpmn:process id="Process_CrossCuttingEvents" name="Cross-Cutting Event Sub-Processes" isExecutable="false" camunda:historyTimeToLive="180">
 
     <bpmn:laneSet id="LaneSet_CrossCutting">
-      <bpmn:lane id="Lane_Business" name="Business Lane" camunda:candidateGroups="business-owner">
+      <bpmn:lane id="Lane_Business" name="Business Lane" camunda:candidateGroups="business-lane">
         <bpmn:flowNodeRef>StartEvent_CrossCuttingInit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SubProcess_SP1_SLAMonitoring</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP1_Complete</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SubProcess_SP3_IncidentResponse</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP3_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Governance" name="Governance Lane" camunda:candidateGroups="sla-governance-board">
+      <bpmn:lane id="Lane_Governance" name="Governance Lane" camunda:candidateGroups="governance-lane">
         <bpmn:flowNodeRef>SubProcess_SP4_RegulatoryChange</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP4_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment Lane" camunda:candidateGroups="it-architecture">
+      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment Lane" camunda:candidateGroups="technical-assessment">
         <bpmn:flowNodeRef>SubProcess_SP2_VulnerabilityRemediation</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP2_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Compliance" name="Compliance Lane" camunda:candidateGroups="legal-compliance">
+      <bpmn:lane id="Lane_Compliance" name="Compliance Lane" camunda:candidateGroups="compliance-lane">
         <bpmn:flowNodeRef>SubProcess_SP5_ContinuousImprovement</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP5_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_Automation" name="Automation Lane" camunda:candidateGroups="vendor-management">
+      <bpmn:lane id="Lane_Automation" name="Automation Lane" camunda:candidateGroups="vendor-response">
       </bpmn:lane>
     </bpmn:laneSet>
 
@@ -64,7 +64,7 @@
         <bpmn:outgoing>Flow_SP1_Monitor_DMN</bpmn:outgoing>
       </bpmn:serviceTask>
 
-      <bpmn:businessRuleTask id="SP1_Task_ThresholdCheck" name="Check SLA Threshold&#10;(DMN-8 Monitoring&#10;Cadence)" camunda:decisionRef="DMN_MonitoringCadence" camunda:resultVariable="thresholdLevel" camunda:mapDecisionResult="singleResult">
+      <bpmn:businessRuleTask id="SP1_Task_ThresholdCheck" name="Check SLA Threshold&#10;(DMN-8 Monitoring&#10;Cadence)" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:resultVariable="thresholdLevel" camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_SP1_Monitor_DMN</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_DMN_Gateway</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -83,17 +83,17 @@
         <bpmn:outgoing>Flow_SP1_50_Merge</bpmn:outgoing>
       </bpmn:serviceTask>
 
-      <bpmn:userTask id="SP1_Task_Escalate75" name="75% Alert:&#10;Escalate to&#10;Management" camunda:candidateGroups="business-owner">
+      <bpmn:userTask id="SP1_Task_Escalate75" name="75% Alert:&#10;Escalate to&#10;Management" camunda:candidateGroups="business-lane">
         <bpmn:incoming>Flow_SP1_Alert75</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_75_Merge</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP1_Task_Emergency90" name="90% Critical:&#10;Emergency Review" camunda:candidateGroups="sla-governance-board">
+      <bpmn:userTask id="SP1_Task_Emergency90" name="90% Critical:&#10;Emergency Review" camunda:candidateGroups="governance-lane">
         <bpmn:incoming>Flow_SP1_Critical90</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_90_Merge</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP1_Task_Breach100" name="100% Breach:&#10;Root Cause +&#10;Remediation Plan" camunda:candidateGroups="sla-governance-board">
+      <bpmn:userTask id="SP1_Task_Breach100" name="100% Breach:&#10;Root Cause +&#10;Remediation Plan" camunda:candidateGroups="governance-lane">
         <bpmn:incoming>Flow_SP1_Breach100</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_100_Merge</bpmn:outgoing>
       </bpmn:userTask>
@@ -161,7 +161,7 @@
         <bpmn:outgoing>Flow_SP2_TierLow</bpmn:outgoing>
       </bpmn:exclusiveGateway>
 
-      <bpmn:userTask id="SP2_Task_Critical" name="Critical: 24h&#10;Emergency Fix" camunda:candidateGroups="information-security">
+      <bpmn:userTask id="SP2_Task_Critical" name="Critical: 24h&#10;Emergency Fix" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP2_TierCritical</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_Critical_Merge</bpmn:outgoing>
       </bpmn:userTask>
@@ -177,7 +177,7 @@
         <bpmn:incoming>Flow_SP2_CriticalSLA</bpmn:incoming>
       </bpmn:endEvent>
 
-      <bpmn:userTask id="SP2_Task_High" name="High: 7-Day&#10;Remediation" camunda:candidateGroups="information-security">
+      <bpmn:userTask id="SP2_Task_High" name="High: 7-Day&#10;Remediation" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP2_TierHigh</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_High_Merge</bpmn:outgoing>
       </bpmn:userTask>
@@ -193,12 +193,12 @@
         <bpmn:incoming>Flow_SP2_HighSLA</bpmn:incoming>
       </bpmn:endEvent>
 
-      <bpmn:userTask id="SP2_Task_Medium" name="Medium: 30-Day&#10;Remediation" camunda:candidateGroups="it-architecture">
+      <bpmn:userTask id="SP2_Task_Medium" name="Medium: 30-Day&#10;Remediation" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP2_TierMedium</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_Medium_Merge</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP2_Task_Low" name="Low: 90-Day&#10;Remediation" camunda:candidateGroups="it-architecture">
+      <bpmn:userTask id="SP2_Task_Low" name="Low: 90-Day&#10;Remediation" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP2_TierLow</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_Low_Merge</bpmn:outgoing>
       </bpmn:userTask>
@@ -216,7 +216,7 @@
         <bpmn:outgoing>Flow_SP2_Fix_Verify</bpmn:outgoing>
       </bpmn:serviceTask>
 
-      <bpmn:userTask id="SP2_Task_Verify" name="Verify&#10;Remediation" camunda:candidateGroups="information-security">
+      <bpmn:userTask id="SP2_Task_Verify" name="Verify&#10;Remediation" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP2_Fix_Verify</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_Verify_Close</bpmn:outgoing>
       </bpmn:userTask>
@@ -275,7 +275,7 @@
         <bpmn:outgoing>Flow_SP3_P4</bpmn:outgoing>
       </bpmn:exclusiveGateway>
 
-      <bpmn:userTask id="SP3_Task_P1Response" name="P1: 15-Min&#10;Response (Critical)" camunda:candidateGroups="sla-governance-board">
+      <bpmn:userTask id="SP3_Task_P1Response" name="P1: 15-Min&#10;Response (Critical)" camunda:candidateGroups="governance-lane">
         <bpmn:incoming>Flow_SP3_P1</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_P1_Merge</bpmn:outgoing>
       </bpmn:userTask>
@@ -291,7 +291,7 @@
         <bpmn:incoming>Flow_SP3_P1SLA</bpmn:incoming>
       </bpmn:endEvent>
 
-      <bpmn:userTask id="SP3_Task_P2Response" name="P2: 1-Hour&#10;Response (High)" camunda:candidateGroups="information-security">
+      <bpmn:userTask id="SP3_Task_P2Response" name="P2: 1-Hour&#10;Response (High)" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP3_P2</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_P2_Merge</bpmn:outgoing>
       </bpmn:userTask>
@@ -307,12 +307,12 @@
         <bpmn:incoming>Flow_SP3_P2SLA</bpmn:incoming>
       </bpmn:endEvent>
 
-      <bpmn:userTask id="SP3_Task_P3Response" name="P3: 4-Hour&#10;Response (Medium)" camunda:candidateGroups="it-architecture">
+      <bpmn:userTask id="SP3_Task_P3Response" name="P3: 4-Hour&#10;Response (Medium)" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP3_P3</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_P3_Merge</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP3_Task_P4Response" name="P4: 24-Hour&#10;Response (Low)" camunda:candidateGroups="vendor-management">
+      <bpmn:userTask id="SP3_Task_P4Response" name="P4: 24-Hour&#10;Response (Low)" camunda:candidateGroups="vendor-response">
         <bpmn:incoming>Flow_SP3_P4</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_P4_Merge</bpmn:outgoing>
       </bpmn:userTask>
@@ -325,22 +325,22 @@
         <bpmn:outgoing>Flow_SP3_Merge_Contain</bpmn:outgoing>
       </bpmn:exclusiveGateway>
 
-      <bpmn:userTask id="SP3_Task_Containment" name="Containment" camunda:candidateGroups="information-security">
+      <bpmn:userTask id="SP3_Task_Containment" name="Containment" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP3_Merge_Contain</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_Contain_Investigate</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP3_Task_Investigation" name="Investigation" camunda:candidateGroups="information-security">
+      <bpmn:userTask id="SP3_Task_Investigation" name="Investigation" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP3_Contain_Investigate</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_Investigate_Resolve</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP3_Task_Resolution" name="Resolution" camunda:candidateGroups="it-architecture">
+      <bpmn:userTask id="SP3_Task_Resolution" name="Resolution" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP3_Investigate_Resolve</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_Resolve_PostMortem</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP3_Task_PostMortem" name="Post-Mortem&#10;Review" camunda:candidateGroups="sla-governance-board">
+      <bpmn:userTask id="SP3_Task_PostMortem" name="Post-Mortem&#10;Review" camunda:candidateGroups="governance-lane">
         <bpmn:incoming>Flow_SP3_Resolve_PostMortem</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_PostMortem_End</bpmn:outgoing>
       </bpmn:userTask>
@@ -388,12 +388,12 @@
         <bpmn:messageEventDefinition id="SP4_MsgDef" messageRef="Message_RegulatoryUpdate" />
       </bpmn:startEvent>
 
-      <bpmn:userTask id="SP4_Task_ReceiveNotice" name="Receive &amp; Log&#10;Regulatory Notice" camunda:candidateGroups="legal-compliance">
+      <bpmn:userTask id="SP4_Task_ReceiveNotice" name="Receive &amp; Log&#10;Regulatory Notice" camunda:candidateGroups="compliance-lane">
         <bpmn:incoming>Flow_SP4_Start_Notice</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_Notice_Impact</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP4_Task_ImpactAssessment" name="Impact&#10;Assessment" camunda:candidateGroups="legal-compliance">
+      <bpmn:userTask id="SP4_Task_ImpactAssessment" name="Impact&#10;Assessment" camunda:candidateGroups="compliance-lane">
         <bpmn:incoming>Flow_SP4_Notice_Impact</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_Impact_Gap</bpmn:outgoing>
       </bpmn:userTask>
@@ -409,17 +409,17 @@
         <bpmn:incoming>Flow_SP4_AssessmentSLA</bpmn:incoming>
       </bpmn:endEvent>
 
-      <bpmn:userTask id="SP4_Task_GapAnalysis" name="Gap Analysis&#10;vs Current Controls" camunda:candidateGroups="legal-compliance">
+      <bpmn:userTask id="SP4_Task_GapAnalysis" name="Gap Analysis&#10;vs Current Controls" camunda:candidateGroups="compliance-lane">
         <bpmn:incoming>Flow_SP4_Impact_Gap</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_Gap_Plan</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP4_Task_RemediationPlan" name="Remediation Plan&#10;(Board Approval)" camunda:candidateGroups="sla-governance-board">
+      <bpmn:userTask id="SP4_Task_RemediationPlan" name="Remediation Plan&#10;(Board Approval)" camunda:candidateGroups="governance-lane">
         <bpmn:incoming>Flow_SP4_Gap_Plan</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_Plan_Implement</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP4_Task_Implementation" name="Implementation&#10;(90-Day Workflow)" camunda:candidateGroups="it-architecture">
+      <bpmn:userTask id="SP4_Task_Implementation" name="Implementation&#10;(90-Day Workflow)" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP4_Plan_Implement</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_Implement_Validate</bpmn:outgoing>
       </bpmn:userTask>
@@ -435,7 +435,7 @@
         <bpmn:incoming>Flow_SP4_ImplementSLA</bpmn:incoming>
       </bpmn:endEvent>
 
-      <bpmn:userTask id="SP4_Task_Validation" name="Validation &amp;&#10;Attestation" camunda:candidateGroups="legal-compliance">
+      <bpmn:userTask id="SP4_Task_Validation" name="Validation &amp;&#10;Attestation" camunda:candidateGroups="compliance-lane">
         <bpmn:incoming>Flow_SP4_Implement_Validate</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_Validate_End</bpmn:outgoing>
       </bpmn:userTask>
@@ -481,17 +481,17 @@
         <bpmn:outgoing>Flow_SP5_Analyze_Identify</bpmn:outgoing>
       </bpmn:serviceTask>
 
-      <bpmn:userTask id="SP5_Task_IdentifyImprovements" name="Identify&#10;Improvements" camunda:candidateGroups="business-owner">
+      <bpmn:userTask id="SP5_Task_IdentifyImprovements" name="Identify&#10;Improvements" camunda:candidateGroups="business-lane">
         <bpmn:incoming>Flow_SP5_Analyze_Identify</bpmn:incoming>
         <bpmn:outgoing>Flow_SP5_Identify_Prioritize</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP5_Task_Prioritize" name="Prioritize&#10;Improvements" camunda:candidateGroups="sla-governance-board">
+      <bpmn:userTask id="SP5_Task_Prioritize" name="Prioritize&#10;Improvements" camunda:candidateGroups="governance-lane">
         <bpmn:incoming>Flow_SP5_Identify_Prioritize</bpmn:incoming>
         <bpmn:outgoing>Flow_SP5_Prioritize_Implement</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP5_Task_Implement" name="Implement&#10;Process Changes" camunda:candidateGroups="it-architecture">
+      <bpmn:userTask id="SP5_Task_Implement" name="Implement&#10;Process Changes" camunda:candidateGroups="technical-assessment">
         <bpmn:incoming>Flow_SP5_Prioritize_Implement</bpmn:incoming>
         <bpmn:outgoing>Flow_SP5_Implement_Measure</bpmn:outgoing>
       </bpmn:userTask>
@@ -501,12 +501,12 @@
         <bpmn:outgoing>Flow_SP5_Measure_Report</bpmn:outgoing>
       </bpmn:serviceTask>
 
-      <bpmn:userTask id="SP5_Task_Report" name="Report to&#10;Governance Board" camunda:candidateGroups="sla-governance-board">
+      <bpmn:userTask id="SP5_Task_Report" name="Report to&#10;Governance Board" camunda:candidateGroups="governance-lane">
         <bpmn:incoming>Flow_SP5_Measure_Report</bpmn:incoming>
         <bpmn:outgoing>Flow_SP5_Report_Recalibrate</bpmn:outgoing>
       </bpmn:userTask>
 
-      <bpmn:userTask id="SP5_Task_Recalibrate" name="Recalibrate&#10;Process Targets" camunda:candidateGroups="legal-compliance">
+      <bpmn:userTask id="SP5_Task_Recalibrate" name="Recalibrate&#10;Process Targets" camunda:candidateGroups="compliance-lane">
         <bpmn:incoming>Flow_SP5_Report_Recalibrate</bpmn:incoming>
         <bpmn:outgoing>Flow_SP5_Recalibrate_End</bpmn:outgoing>
       </bpmn:userTask>

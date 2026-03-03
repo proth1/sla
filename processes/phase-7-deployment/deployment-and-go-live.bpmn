@@ -52,7 +52,7 @@
       <bpmn:outgoing>Flow_Start_Readiness</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:userTask id="Task_71_ReadinessAssessment" name="7.1 Deployment Readiness&#10;Assessment (Review Phase 6&#10;Artifacts, Compliance Gates,&#10;Security Clearances)" camunda:candidateGroups="it-architecture">
+    <bpmn:userTask id="Task_71_ReadinessAssessment" name="7.1 Deployment Readiness&#10;Assessment (Review Phase 6&#10;Artifacts, Compliance Gates,&#10;Security Clearances)" camunda:candidateGroups="technical-assessment">
       <bpmn:incoming>Flow_Start_Readiness</bpmn:incoming>
       <bpmn:outgoing>Flow_Readiness_Decision</bpmn:outgoing>
     </bpmn:userTask>
@@ -161,7 +161,7 @@
       <bpmn:outgoing>Flow_VendorStart_Coord</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:userTask id="Task_VendorDeployCoordination" name="Vendor Deployment&#10;Coordination Package&#10;Submission" camunda:candidateGroups="vendor-management">
+    <bpmn:userTask id="Task_VendorDeployCoordination" name="Vendor Deployment&#10;Coordination Package&#10;Submission" camunda:candidateGroups="vendor-response">
       <bpmn:incoming>Flow_VendorStart_Coord</bpmn:incoming>
       <bpmn:outgoing>Flow_VendorCoord_End</bpmn:outgoing>
     </bpmn:userTask>
