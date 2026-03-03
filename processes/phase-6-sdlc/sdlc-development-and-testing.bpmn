@@ -1,0 +1,903 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Phase6SDLC"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="Collaboration_Phase6SDLC">
+    <bpmn:participant id="Participant_EnterpriseGovernance" name="Enterprise Governance" processRef="Process_Phase6SDLC" />
+    <bpmn:participant id="Participant_VendorThirdParty" name="Vendor / Third Party" processRef="Process_VendorPhase6" />
+    <bpmn:messageFlow id="MsgFlow_VendorFeedback" sourceRef="Participant_VendorThirdParty" targetRef="Participant_EnterpriseGovernance" name="Vendor Build Artifacts" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_Phase6SDLC" name="Phase 6: SDLC Development and Testing" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_Phase6SDLC">
+      <bpmn:lane id="Lane_Business" name="Business Lane" camunda:candidateGroups="business-lane">
+        <bpmn:flowNodeRef>StartEvent_Phase6Initiated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_6A_SprintLifecycle</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_SP6A_SLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP6A_SLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_Phase6_Timer</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase6TimerEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_6F_SprintReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_SP6F_SLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP6F_SLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_QualityGate_Merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase6Complete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Governance" name="Governance Lane" camunda:candidateGroups="governance-lane">
+        <bpmn:flowNodeRef>Gateway_QualityGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_QualityGateRejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Contracting" name="Contracting Lane" camunda:candidateGroups="contracting-lane">
+      </bpmn:lane>
+      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment" camunda:candidateGroups="technical-assessment">
+        <bpmn:flowNodeRef>SubProcess_6B_DevPipeline</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_SP6B_SLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP6B_SLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Parallel_Split_TC</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_6C_TestingPipeline</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_SP6C_SLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP6C_SLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Parallel_Join_TC</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_AIReview" name="AI Review Lane" camunda:candidateGroups="ai-review">
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Compliance" name="Compliance Lane" camunda:candidateGroups="compliance-lane">
+        <bpmn:flowNodeRef>SubProcess_6E_ComplianceGates</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_SP6E_SLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP6E_SLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Oversight" name="Oversight Lane" camunda:candidateGroups="oversight-lane">
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Automation" name="Automation Lane" camunda:candidateGroups="automation-lane">
+        <bpmn:flowNodeRef>SubProcess_6D_DevSecOps</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_SP6D_SLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP6D_SLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="StartEvent_Phase6Initiated" name="Phase 6&#10;SDLC Initiated">
+      <bpmn:outgoing>Flow_Start_SP6A</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:subProcess id="SubProcess_6A_SprintLifecycle" name="SP-6A: Sprint&#10;Lifecycle">
+      <bpmn:incoming>Flow_Start_SP6A</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP6A_SP6B</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="BoundaryEvent_SP6A_SLA" name="2 Day&#10;SLA" attachedToRef="SubProcess_6A_SprintLifecycle" cancelActivity="false">
+      <bpmn:outgoing>Flow_SP6A_SLA_End</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_SP6A">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_SP6A_SLAEscalated" name="Sprint Lifecycle&#10;SLA Escalated">
+      <bpmn:incoming>Flow_SP6A_SLA_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:boundaryEvent id="BoundaryEvent_Phase6_Timer" name="15 Day&#10;Phase SLA" attachedToRef="SubProcess_6A_SprintLifecycle" cancelActivity="false">
+      <bpmn:outgoing>Flow_Phase6_Timer_End</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Phase6">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P15D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_Phase6TimerEscalated" name="Phase 6&#10;Timer Escalated">
+      <bpmn:incoming>Flow_Phase6_Timer_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:subProcess id="SubProcess_6B_DevPipeline" name="SP-6B: Development&#10;Pipeline">
+      <bpmn:incoming>Flow_SP6A_SP6B</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP6B_Split</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="BoundaryEvent_SP6B_SLA" name="5 Day&#10;SLA" attachedToRef="SubProcess_6B_DevPipeline" cancelActivity="false">
+      <bpmn:outgoing>Flow_SP6B_SLA_End</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_SP6B">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_SP6B_SLAEscalated" name="Dev Pipeline&#10;SLA Escalated">
+      <bpmn:incoming>Flow_SP6B_SLA_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:parallelGateway id="Gateway_Parallel_Split_TC" name="">
+      <bpmn:incoming>Flow_SP6B_Split</bpmn:incoming>
+      <bpmn:outgoing>Flow_Split_SP6C</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Split_SP6D</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:subProcess id="SubProcess_6C_TestingPipeline" name="SP-6C: Testing&#10;Pipeline">
+      <bpmn:incoming>Flow_Split_SP6C</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP6C_Join</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="BoundaryEvent_SP6C_SLA" name="3 Day&#10;SLA" attachedToRef="SubProcess_6C_TestingPipeline" cancelActivity="false">
+      <bpmn:outgoing>Flow_SP6C_SLA_End</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_SP6C">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_SP6C_SLAEscalated" name="Testing Pipeline&#10;SLA Escalated">
+      <bpmn:incoming>Flow_SP6C_SLA_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:subProcess id="SubProcess_6D_DevSecOps" name="SP-6D: DevSecOps&#10;Security Pipeline">
+      <bpmn:incoming>Flow_Split_SP6D</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP6D_Join</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="BoundaryEvent_SP6D_SLA" name="3 Day&#10;SLA" attachedToRef="SubProcess_6D_DevSecOps" cancelActivity="false">
+      <bpmn:outgoing>Flow_SP6D_SLA_End</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_SP6D">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_SP6D_SLAEscalated" name="DevSecOps&#10;SLA Escalated">
+      <bpmn:incoming>Flow_SP6D_SLA_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:parallelGateway id="Gateway_Parallel_Join_TC" name="">
+      <bpmn:incoming>Flow_SP6C_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_SP6D_Join</bpmn:incoming>
+      <bpmn:outgoing>Flow_Join_SP6E</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:subProcess id="SubProcess_6E_ComplianceGates" name="SP-6E: Compliance&#10;Validation Gates">
+      <bpmn:incoming>Flow_Join_SP6E</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP6E_SP6F</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="BoundaryEvent_SP6E_SLA" name="2 Day&#10;SLA" attachedToRef="SubProcess_6E_ComplianceGates" cancelActivity="false">
+      <bpmn:outgoing>Flow_SP6E_SLA_End</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_SP6E">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_SP6E_SLAEscalated" name="Compliance Gates&#10;SLA Escalated">
+      <bpmn:incoming>Flow_SP6E_SLA_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:subProcess id="SubProcess_6F_SprintReview" name="SP-6F: Sprint&#10;Review">
+      <bpmn:incoming>Flow_SP6E_SP6F</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP6F_QGMerge</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="BoundaryEvent_SP6F_SLA" name="1 Day&#10;SLA" attachedToRef="SubProcess_6F_SprintReview" cancelActivity="false">
+      <bpmn:outgoing>Flow_SP6F_SLA_End</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_SP6F">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P1D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_SP6F_SLAEscalated" name="Sprint Review&#10;SLA Escalated">
+      <bpmn:incoming>Flow_SP6F_SLA_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:exclusiveGateway id="Gateway_QualityGate_Merge" name="">
+      <bpmn:incoming>Flow_SP6F_QGMerge</bpmn:incoming>
+      <bpmn:incoming>Flow_QGRejected_Merge</bpmn:incoming>
+      <bpmn:outgoing>Flow_QGMerge_QG</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:exclusiveGateway id="Gateway_QualityGate" name="Quality&#10;Gate?" default="Flow_QGPassed">
+      <bpmn:incoming>Flow_QGMerge_QG</bpmn:incoming>
+      <bpmn:outgoing>Flow_QGPassed</bpmn:outgoing>
+      <bpmn:outgoing>Flow_QGRejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="EndEvent_QualityGateRejected" name="Quality Gate&#10;Rejected&#10;(Return to SP-6A)">
+      <bpmn:incoming>Flow_QGRejected</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_Phase6Complete" name="Phase 6 Complete&#10;(SDLC Ready for&#10;Deployment)">
+      <bpmn:incoming>Flow_QGPassed</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:textAnnotation id="Annotation_OCC_DORA">
+      <bpmn:text>OCC 2023-17: SDLC controls embedded in development pipeline. DORA: Resilience testing via DevSecOps pipeline. SR 11-7: AI Model Validation conditional on AI initiative type.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_OCC_DORA" sourceRef="SubProcess_6D_DevSecOps" targetRef="Annotation_OCC_DORA" />
+
+    <bpmn:textAnnotation id="Annotation_SOX_Compliance">
+      <bpmn:text>SOX: Compliance validation gates mandatory for financial application changes. GDPR/CCPA: Privacy controls validated at Post-Code Gate. EU AI Act: AI model validation at SP-6C testing phase.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_SOX_Compliance" sourceRef="SubProcess_6E_ComplianceGates" targetRef="Annotation_SOX_Compliance" />
+
+    <bpmn:sequenceFlow id="Flow_Start_SP6A" sourceRef="StartEvent_Phase6Initiated" targetRef="SubProcess_6A_SprintLifecycle" />
+    <bpmn:sequenceFlow id="Flow_SP6A_SLA_End" sourceRef="BoundaryEvent_SP6A_SLA" targetRef="EndEvent_SP6A_SLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_Phase6_Timer_End" sourceRef="BoundaryEvent_Phase6_Timer" targetRef="EndEvent_Phase6TimerEscalated" />
+    <bpmn:sequenceFlow id="Flow_SP6A_SP6B" sourceRef="SubProcess_6A_SprintLifecycle" targetRef="SubProcess_6B_DevPipeline" />
+    <bpmn:sequenceFlow id="Flow_SP6B_SLA_End" sourceRef="BoundaryEvent_SP6B_SLA" targetRef="EndEvent_SP6B_SLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_SP6B_Split" sourceRef="SubProcess_6B_DevPipeline" targetRef="Gateway_Parallel_Split_TC" />
+    <bpmn:sequenceFlow id="Flow_Split_SP6C" sourceRef="Gateway_Parallel_Split_TC" targetRef="SubProcess_6C_TestingPipeline" />
+    <bpmn:sequenceFlow id="Flow_Split_SP6D" sourceRef="Gateway_Parallel_Split_TC" targetRef="SubProcess_6D_DevSecOps" />
+    <bpmn:sequenceFlow id="Flow_SP6C_SLA_End" sourceRef="BoundaryEvent_SP6C_SLA" targetRef="EndEvent_SP6C_SLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_SP6D_SLA_End" sourceRef="BoundaryEvent_SP6D_SLA" targetRef="EndEvent_SP6D_SLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_SP6C_Join" sourceRef="SubProcess_6C_TestingPipeline" targetRef="Gateway_Parallel_Join_TC" />
+    <bpmn:sequenceFlow id="Flow_SP6D_Join" sourceRef="SubProcess_6D_DevSecOps" targetRef="Gateway_Parallel_Join_TC" />
+    <bpmn:sequenceFlow id="Flow_Join_SP6E" sourceRef="Gateway_Parallel_Join_TC" targetRef="SubProcess_6E_ComplianceGates" />
+    <bpmn:sequenceFlow id="Flow_SP6E_SLA_End" sourceRef="BoundaryEvent_SP6E_SLA" targetRef="EndEvent_SP6E_SLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_SP6E_SP6F" sourceRef="SubProcess_6E_ComplianceGates" targetRef="SubProcess_6F_SprintReview" />
+    <bpmn:sequenceFlow id="Flow_SP6F_SLA_End" sourceRef="BoundaryEvent_SP6F_SLA" targetRef="EndEvent_SP6F_SLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_SP6F_QGMerge" sourceRef="SubProcess_6F_SprintReview" targetRef="Gateway_QualityGate_Merge" />
+    <bpmn:sequenceFlow id="Flow_QGRejected_Merge" sourceRef="EndEvent_QualityGateRejected" targetRef="Gateway_QualityGate_Merge">
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_QGMerge_QG" sourceRef="Gateway_QualityGate_Merge" targetRef="Gateway_QualityGate" />
+    <bpmn:sequenceFlow id="Flow_QGPassed" name="Yes" sourceRef="Gateway_QualityGate" targetRef="EndEvent_Phase6Complete" />
+    <bpmn:sequenceFlow id="Flow_QGRejected" name="No" sourceRef="Gateway_QualityGate" targetRef="EndEvent_QualityGateRejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${qualityGatePassed == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+  </bpmn:process>
+
+  <bpmn:process id="Process_VendorPhase6" name="Vendor / Third Party" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_VendorPhase6">
+      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response" camunda:candidateGroups="vendor-management">
+        <bpmn:flowNodeRef>StartEvent_Vendor_Phase6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Vendor_ProvideBuildArtifacts</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Vendor_Phase6</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_Vendor_Phase6" name="Vendor&#10;Engaged">
+      <bpmn:outgoing>Flow_Vendor_Start_Task</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_Vendor_ProvideBuildArtifacts" name="Provide Build&#10;Artifacts &amp; Evidence" camunda:candidateGroups="vendor-management">
+      <bpmn:incoming>Flow_Vendor_Start_Task</bpmn:incoming>
+      <bpmn:outgoing>Flow_Vendor_Task_End</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_Vendor_Phase6" name="Vendor&#10;Contribution Complete">
+      <bpmn:incoming>Flow_Vendor_Task_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Vendor_Start_Task" sourceRef="StartEvent_Vendor_Phase6" targetRef="Task_Vendor_ProvideBuildArtifacts" />
+    <bpmn:sequenceFlow id="Flow_Vendor_Task_End" sourceRef="Task_Vendor_ProvideBuildArtifacts" targetRef="EndEvent_Vendor_Phase6" />
+  </bpmn:process>
+
+  <bpmn:process id="SubProcess_6A_SprintLifecycle_Proc" name="SP-6A Sprint Lifecycle" isExecutable="false">
+    <bpmn:startEvent id="SP6A_Start" name="Sprint&#10;Initiated">
+      <bpmn:outgoing>Flow_6A_Start_Plan</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="SP6A_Task_SprintPlanning" name="Sprint Planning&#10;(Business + Technical)" camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_6A_Start_Plan</bpmn:incoming>
+      <bpmn:outgoing>Flow_6A_Plan_Backlog</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="SP6A_Task_BacklogPrioritization" name="Backlog&#10;Prioritization" camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_6A_Plan_Backlog</bpmn:incoming>
+      <bpmn:outgoing>Flow_6A_Backlog_Goal</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="SP6A_Task_SprintGoalDefinition" name="Sprint Goal&#10;Definition" camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_6A_Backlog_Goal</bpmn:incoming>
+      <bpmn:outgoing>Flow_6A_Goal_End</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="SP6A_End" name="Sprint&#10;Lifecycle Complete">
+      <bpmn:incoming>Flow_6A_Goal_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_6A_Start_Plan" sourceRef="SP6A_Start" targetRef="SP6A_Task_SprintPlanning" />
+    <bpmn:sequenceFlow id="Flow_6A_Plan_Backlog" sourceRef="SP6A_Task_SprintPlanning" targetRef="SP6A_Task_BacklogPrioritization" />
+    <bpmn:sequenceFlow id="Flow_6A_Backlog_Goal" sourceRef="SP6A_Task_BacklogPrioritization" targetRef="SP6A_Task_SprintGoalDefinition" />
+    <bpmn:sequenceFlow id="Flow_6A_Goal_End" sourceRef="SP6A_Task_SprintGoalDefinition" targetRef="SP6A_End" />
+  </bpmn:process>
+
+  <bpmn:process id="SubProcess_6B_DevPipeline_Proc" name="SP-6B Development Pipeline" isExecutable="false">
+    <bpmn:startEvent id="SP6B_Start" name="Dev Pipeline&#10;Initiated">
+      <bpmn:outgoing>Flow_6B_Start_Code</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="SP6B_Task_CodeDevelopment" name="Code Development" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_6B_Start_Code</bpmn:incoming>
+      <bpmn:incoming>Flow_6B_SelfHeal_Code</bpmn:incoming>
+      <bpmn:outgoing>Flow_6B_Code_AIReview</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="SP6B_Task_AICodeReview" name="AI-Assisted&#10;Code Review" camunda:type="external" camunda:topic="ai-code-review">
+      <bpmn:incoming>Flow_6B_Code_AIReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_6B_AIReview_Gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="SP6B_Gateway_QualityCheck" name="Quality&#10;Acceptable?" default="Flow_6B_QualityOK">
+      <bpmn:incoming>Flow_6B_AIReview_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_6B_QualityOK</bpmn:outgoing>
+      <bpmn:outgoing>Flow_6B_QualityIssues</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="SP6B_Task_SelfHealingLoop" name="Self-Healing Loop&#10;(Quality Issues)" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_6B_QualityIssues</bpmn:incoming>
+      <bpmn:outgoing>Flow_6B_SelfHeal_Code</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="SP6B_Task_CodeIntegration" name="Code Integration" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_6B_QualityOK</bpmn:incoming>
+      <bpmn:outgoing>Flow_6B_Integration_End</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="SP6B_End" name="Dev Pipeline&#10;Complete">
+      <bpmn:incoming>Flow_6B_Integration_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_6B_Start_Code" sourceRef="SP6B_Start" targetRef="SP6B_Task_CodeDevelopment" />
+    <bpmn:sequenceFlow id="Flow_6B_Code_AIReview" sourceRef="SP6B_Task_CodeDevelopment" targetRef="SP6B_Task_AICodeReview" />
+    <bpmn:sequenceFlow id="Flow_6B_AIReview_Gateway" sourceRef="SP6B_Task_AICodeReview" targetRef="SP6B_Gateway_QualityCheck" />
+    <bpmn:sequenceFlow id="Flow_6B_QualityOK" name="Yes" sourceRef="SP6B_Gateway_QualityCheck" targetRef="SP6B_Task_CodeIntegration" />
+    <bpmn:sequenceFlow id="Flow_6B_QualityIssues" name="No" sourceRef="SP6B_Gateway_QualityCheck" targetRef="SP6B_Task_SelfHealingLoop">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${codeQualityAcceptable == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_6B_SelfHeal_Code" sourceRef="SP6B_Task_SelfHealingLoop" targetRef="SP6B_Task_CodeDevelopment" />
+    <bpmn:sequenceFlow id="Flow_6B_Integration_End" sourceRef="SP6B_Task_CodeIntegration" targetRef="SP6B_End" />
+  </bpmn:process>
+
+  <bpmn:process id="SubProcess_6C_TestingPipeline_Proc" name="SP-6C Testing Pipeline" isExecutable="false">
+    <bpmn:startEvent id="SP6C_Start" name="Testing&#10;Initiated">
+      <bpmn:outgoing>Flow_6C_Start_Unit</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="SP6C_Task_UnitTesting" name="Unit Testing" camunda:type="external" camunda:topic="unit-testing">
+      <bpmn:incoming>Flow_6C_Start_Unit</bpmn:incoming>
+      <bpmn:outgoing>Flow_6C_Unit_Integration</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="SP6C_Task_IntegrationTesting" name="Integration Testing" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_6C_Unit_Integration</bpmn:incoming>
+      <bpmn:outgoing>Flow_6C_Integration_Perf</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="SP6C_Task_PerformanceTesting" name="Performance Testing" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_6C_Integration_Perf</bpmn:incoming>
+      <bpmn:outgoing>Flow_6C_Perf_AIGateway</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="SP6C_Gateway_AIInitiative" name="AI&#10;Initiative?" default="Flow_6C_NotAI">
+      <bpmn:incoming>Flow_6C_Perf_AIGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_6C_IsAI</bpmn:outgoing>
+      <bpmn:outgoing>Flow_6C_NotAI</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="SP6C_Task_AIModelValidation" name="AI Model Validation&#10;(SR 11-7)" camunda:candidateGroups="ai-review">
+      <bpmn:incoming>Flow_6C_IsAI</bpmn:incoming>
+      <bpmn:outgoing>Flow_6C_AIVal_Merge</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="SP6C_Gateway_AIMerge" name="">
+      <bpmn:incoming>Flow_6C_AIVal_Merge</bpmn:incoming>
+      <bpmn:incoming>Flow_6C_NotAI</bpmn:incoming>
+      <bpmn:outgoing>Flow_6C_AIMerge_UAT</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="SP6C_Task_UATSignOff" name="UAT Sign-off" camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_6C_AIMerge_UAT</bpmn:incoming>
+      <bpmn:outgoing>Flow_6C_UAT_End</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="SP6C_End" name="Testing Pipeline&#10;Complete">
+      <bpmn:incoming>Flow_6C_UAT_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_6C_Start_Unit" sourceRef="SP6C_Start" targetRef="SP6C_Task_UnitTesting" />
+    <bpmn:sequenceFlow id="Flow_6C_Unit_Integration" sourceRef="SP6C_Task_UnitTesting" targetRef="SP6C_Task_IntegrationTesting" />
+    <bpmn:sequenceFlow id="Flow_6C_Integration_Perf" sourceRef="SP6C_Task_IntegrationTesting" targetRef="SP6C_Task_PerformanceTesting" />
+    <bpmn:sequenceFlow id="Flow_6C_Perf_AIGateway" sourceRef="SP6C_Task_PerformanceTesting" targetRef="SP6C_Gateway_AIInitiative" />
+    <bpmn:sequenceFlow id="Flow_6C_IsAI" name="Yes" sourceRef="SP6C_Gateway_AIInitiative" targetRef="SP6C_Task_AIModelValidation">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isAIInitiative == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_6C_NotAI" name="No" sourceRef="SP6C_Gateway_AIInitiative" targetRef="SP6C_Gateway_AIMerge" />
+    <bpmn:sequenceFlow id="Flow_6C_AIVal_Merge" sourceRef="SP6C_Task_AIModelValidation" targetRef="SP6C_Gateway_AIMerge" />
+    <bpmn:sequenceFlow id="Flow_6C_AIMerge_UAT" sourceRef="SP6C_Gateway_AIMerge" targetRef="SP6C_Task_UATSignOff" />
+    <bpmn:sequenceFlow id="Flow_6C_UAT_End" sourceRef="SP6C_Task_UATSignOff" targetRef="SP6C_End" />
+  </bpmn:process>
+
+  <bpmn:process id="SubProcess_6D_DevSecOps_Proc" name="SP-6D DevSecOps Security Pipeline" isExecutable="false">
+    <bpmn:startEvent id="SP6D_Start" name="Security Pipeline&#10;Initiated">
+      <bpmn:outgoing>Flow_6D_Start_Split</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:parallelGateway id="SP6D_Gateway_Split" name="">
+      <bpmn:incoming>Flow_6D_Start_Split</bpmn:incoming>
+      <bpmn:outgoing>Flow_6D_Split_PreCommit</bpmn:outgoing>
+      <bpmn:outgoing>Flow_6D_Split_SAST</bpmn:outgoing>
+      <bpmn:outgoing>Flow_6D_Split_SCA</bpmn:outgoing>
+      <bpmn:outgoing>Flow_6D_Split_DAST</bpmn:outgoing>
+      <bpmn:outgoing>Flow_6D_Split_Container</bpmn:outgoing>
+      <bpmn:outgoing>Flow_6D_Split_IaC</bpmn:outgoing>
+      <bpmn:outgoing>Flow_6D_Split_ProdMon</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:serviceTask id="SP6D_Task_PreCommitScan" name="Pre-Commit&#10;Security Scan" camunda:type="external" camunda:topic="pre-commit-security-scan">
+      <bpmn:incoming>Flow_6D_Split_PreCommit</bpmn:incoming>
+      <bpmn:outgoing>Flow_6D_PreCommit_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="SP6D_Task_SAST" name="SAST&#10;(Static Analysis)" camunda:type="external" camunda:topic="sast-analysis">
+      <bpmn:incoming>Flow_6D_Split_SAST</bpmn:incoming>
+      <bpmn:outgoing>Flow_6D_SAST_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="SP6D_Task_SCA" name="SCA (Software&#10;Composition Analysis)" camunda:type="external" camunda:topic="sca-analysis">
+      <bpmn:incoming>Flow_6D_Split_SCA</bpmn:incoming>
+      <bpmn:outgoing>Flow_6D_SCA_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="SP6D_Task_DAST" name="DAST&#10;(Dynamic Analysis)" camunda:type="external" camunda:topic="dast-analysis">
+      <bpmn:incoming>Flow_6D_Split_DAST</bpmn:incoming>
+      <bpmn:outgoing>Flow_6D_DAST_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="SP6D_Task_ContainerSecurity" name="Container&#10;Security Scan" camunda:type="external" camunda:topic="container-security-scan">
+      <bpmn:incoming>Flow_6D_Split_Container</bpmn:incoming>
+      <bpmn:outgoing>Flow_6D_Container_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="SP6D_Task_IaCsecurity" name="Infrastructure as Code&#10;Security" camunda:type="external" camunda:topic="iac-security-scan">
+      <bpmn:incoming>Flow_6D_Split_IaC</bpmn:incoming>
+      <bpmn:outgoing>Flow_6D_IaC_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="SP6D_Task_ProdSecMonitoring" name="Production Security&#10;Monitoring" camunda:type="external" camunda:topic="production-security-monitoring">
+      <bpmn:incoming>Flow_6D_Split_ProdMon</bpmn:incoming>
+      <bpmn:outgoing>Flow_6D_ProdMon_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:parallelGateway id="SP6D_Gateway_Join" name="">
+      <bpmn:incoming>Flow_6D_PreCommit_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_6D_SAST_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_6D_SCA_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_6D_DAST_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_6D_Container_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_6D_IaC_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_6D_ProdMon_Join</bpmn:incoming>
+      <bpmn:outgoing>Flow_6D_Join_End</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:endEvent id="SP6D_End" name="DevSecOps Pipeline&#10;Complete">
+      <bpmn:incoming>Flow_6D_Join_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_6D_Start_Split" sourceRef="SP6D_Start" targetRef="SP6D_Gateway_Split" />
+    <bpmn:sequenceFlow id="Flow_6D_Split_PreCommit" sourceRef="SP6D_Gateway_Split" targetRef="SP6D_Task_PreCommitScan" />
+    <bpmn:sequenceFlow id="Flow_6D_Split_SAST" sourceRef="SP6D_Gateway_Split" targetRef="SP6D_Task_SAST" />
+    <bpmn:sequenceFlow id="Flow_6D_Split_SCA" sourceRef="SP6D_Gateway_Split" targetRef="SP6D_Task_SCA" />
+    <bpmn:sequenceFlow id="Flow_6D_Split_DAST" sourceRef="SP6D_Gateway_Split" targetRef="SP6D_Task_DAST" />
+    <bpmn:sequenceFlow id="Flow_6D_Split_Container" sourceRef="SP6D_Gateway_Split" targetRef="SP6D_Task_ContainerSecurity" />
+    <bpmn:sequenceFlow id="Flow_6D_Split_IaC" sourceRef="SP6D_Gateway_Split" targetRef="SP6D_Task_IaCsecurity" />
+    <bpmn:sequenceFlow id="Flow_6D_Split_ProdMon" sourceRef="SP6D_Gateway_Split" targetRef="SP6D_Task_ProdSecMonitoring" />
+    <bpmn:sequenceFlow id="Flow_6D_PreCommit_Join" sourceRef="SP6D_Task_PreCommitScan" targetRef="SP6D_Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_6D_SAST_Join" sourceRef="SP6D_Task_SAST" targetRef="SP6D_Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_6D_SCA_Join" sourceRef="SP6D_Task_SCA" targetRef="SP6D_Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_6D_DAST_Join" sourceRef="SP6D_Task_DAST" targetRef="SP6D_Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_6D_Container_Join" sourceRef="SP6D_Task_ContainerSecurity" targetRef="SP6D_Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_6D_IaC_Join" sourceRef="SP6D_Task_IaCsecurity" targetRef="SP6D_Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_6D_ProdMon_Join" sourceRef="SP6D_Task_ProdSecMonitoring" targetRef="SP6D_Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_6D_Join_End" sourceRef="SP6D_Gateway_Join" targetRef="SP6D_End" />
+  </bpmn:process>
+
+  <bpmn:process id="SubProcess_6E_ComplianceGates_Proc" name="SP-6E Compliance Validation Gates" isExecutable="false">
+    <bpmn:startEvent id="SP6E_Start" name="Compliance Gates&#10;Initiated">
+      <bpmn:outgoing>Flow_6E_Start_PostReq</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="SP6E_Task_PostRequirementsGate" name="Post-Requirements&#10;Gate" camunda:candidateGroups="compliance-lane">
+      <bpmn:incoming>Flow_6E_Start_PostReq</bpmn:incoming>
+      <bpmn:outgoing>Flow_6E_PostReq_PostDesign</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="SP6E_Task_PostDesignGate" name="Post-Design Gate" camunda:candidateGroups="compliance-lane">
+      <bpmn:incoming>Flow_6E_PostReq_PostDesign</bpmn:incoming>
+      <bpmn:outgoing>Flow_6E_PostDesign_PostCode</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="SP6E_Task_PostCodeGate" name="Post-Code Gate" camunda:candidateGroups="compliance-lane">
+      <bpmn:incoming>Flow_6E_PostDesign_PostCode</bpmn:incoming>
+      <bpmn:outgoing>Flow_6E_PostCode_PostTest</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="SP6E_Task_PostTestGate" name="Post-Test Gate" camunda:candidateGroups="compliance-lane">
+      <bpmn:incoming>Flow_6E_PostCode_PostTest</bpmn:incoming>
+      <bpmn:outgoing>Flow_6E_PostTest_PreDeploy</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="SP6E_Task_PreDeploymentGate" name="Pre-Deployment Gate" camunda:candidateGroups="compliance-lane">
+      <bpmn:incoming>Flow_6E_PostTest_PreDeploy</bpmn:incoming>
+      <bpmn:outgoing>Flow_6E_PreDeploy_End</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="SP6E_End" name="Compliance Gates&#10;Complete">
+      <bpmn:incoming>Flow_6E_PreDeploy_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_6E_Start_PostReq" sourceRef="SP6E_Start" targetRef="SP6E_Task_PostRequirementsGate" />
+    <bpmn:sequenceFlow id="Flow_6E_PostReq_PostDesign" sourceRef="SP6E_Task_PostRequirementsGate" targetRef="SP6E_Task_PostDesignGate" />
+    <bpmn:sequenceFlow id="Flow_6E_PostDesign_PostCode" sourceRef="SP6E_Task_PostDesignGate" targetRef="SP6E_Task_PostCodeGate" />
+    <bpmn:sequenceFlow id="Flow_6E_PostCode_PostTest" sourceRef="SP6E_Task_PostCodeGate" targetRef="SP6E_Task_PostTestGate" />
+    <bpmn:sequenceFlow id="Flow_6E_PostTest_PreDeploy" sourceRef="SP6E_Task_PostTestGate" targetRef="SP6E_Task_PreDeploymentGate" />
+    <bpmn:sequenceFlow id="Flow_6E_PreDeploy_End" sourceRef="SP6E_Task_PreDeploymentGate" targetRef="SP6E_End" />
+  </bpmn:process>
+
+  <bpmn:process id="SubProcess_6F_SprintReview_Proc" name="SP-6F Sprint Review" isExecutable="false">
+    <bpmn:startEvent id="SP6F_Start" name="Sprint Review&#10;Initiated">
+      <bpmn:outgoing>Flow_6F_Start_Demo</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="SP6F_Task_SprintDemo" name="Sprint Demo" camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_6F_Start_Demo</bpmn:incoming>
+      <bpmn:outgoing>Flow_6F_Demo_Retro</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="SP6F_Task_Retrospective" name="Retrospective" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_6F_Demo_Retro</bpmn:incoming>
+      <bpmn:outgoing>Flow_6F_Retro_Metrics</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="SP6F_Task_SprintMetrics" name="Sprint Metrics&#10;Collection" camunda:type="external" camunda:topic="sprint-metrics-collection">
+      <bpmn:incoming>Flow_6F_Retro_Metrics</bpmn:incoming>
+      <bpmn:outgoing>Flow_6F_Metrics_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="SP6F_End" name="Sprint Review&#10;Complete">
+      <bpmn:incoming>Flow_6F_Metrics_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_6F_Start_Demo" sourceRef="SP6F_Start" targetRef="SP6F_Task_SprintDemo" />
+    <bpmn:sequenceFlow id="Flow_6F_Demo_Retro" sourceRef="SP6F_Task_SprintDemo" targetRef="SP6F_Task_Retrospective" />
+    <bpmn:sequenceFlow id="Flow_6F_Retro_Metrics" sourceRef="SP6F_Task_Retrospective" targetRef="SP6F_Task_SprintMetrics" />
+    <bpmn:sequenceFlow id="Flow_6F_Metrics_End" sourceRef="SP6F_Task_SprintMetrics" targetRef="SP6F_End" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Phase6SDLC">
+    <bpmndi:BPMNPlane id="BPMNPlane_Phase6SDLC" bpmnElement="Collaboration_Phase6SDLC">
+
+      <bpmndi:BPMNShape id="Participant_EnterpriseGovernance_di" bpmnElement="Participant_EnterpriseGovernance" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="2380" height="1125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="2350" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
+        <dc:Bounds x="185" y="172" width="2350" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Contracting_di" bpmnElement="Lane_Contracting" isHorizontal="true">
+        <dc:Bounds x="185" y="297" width="2350" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_TechnicalAssessment_di" bpmnElement="Lane_TechnicalAssessment" isHorizontal="true">
+        <dc:Bounds x="185" y="422" width="2350" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_AIReview_di" bpmnElement="Lane_AIReview" isHorizontal="true">
+        <dc:Bounds x="185" y="547" width="2350" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
+        <dc:Bounds x="185" y="672" width="2350" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
+        <dc:Bounds x="185" y="797" width="2350" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
+        <dc:Bounds x="185" y="922" width="2350" height="250" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Participant_VendorThirdParty_di" bpmnElement="Participant_VendorThirdParty" isHorizontal="true">
+        <dc:Bounds x="155" y="1202" width="2380" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_VendorResponse_di" bpmnElement="Lane_VendorResponse" isHorizontal="true">
+        <dc:Bounds x="185" y="1202" width="2350" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="StartEvent_Phase6Initiated_di" bpmnElement="StartEvent_Phase6Initiated">
+        <dc:Bounds x="248" y="91" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="225" y="134" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_6A_SprintLifecycle_di" bpmnElement="SubProcess_6A_SprintLifecycle" isExpanded="false">
+        <dc:Bounds x="340" y="69" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="BoundaryEvent_SP6A_SLA_di" bpmnElement="BoundaryEvent_SP6A_SLA">
+        <dc:Bounds x="372" y="131" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="416" y="135" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP6A_SLAEscalated_di" bpmnElement="EndEvent_SP6A_SLAEscalated">
+        <dc:Bounds x="372" y="185" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="350" y="228" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="BoundaryEvent_Phase6_Timer_di" bpmnElement="BoundaryEvent_Phase6_Timer">
+        <dc:Bounds x="408" y="131" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="452" y="135" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_Phase6TimerEscalated_di" bpmnElement="EndEvent_Phase6TimerEscalated">
+        <dc:Bounds x="408" y="185" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="387" y="228" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_6B_DevPipeline_di" bpmnElement="SubProcess_6B_DevPipeline" isExpanded="false">
+        <dc:Bounds x="530" y="442" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="BoundaryEvent_SP6B_SLA_di" bpmnElement="BoundaryEvent_SP6B_SLA">
+        <dc:Bounds x="562" y="504" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="606" y="508" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP6B_SLAEscalated_di" bpmnElement="EndEvent_SP6B_SLAEscalated">
+        <dc:Bounds x="562" y="558" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="541" y="601" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Gateway_Parallel_Split_TC_di" bpmnElement="Gateway_Parallel_Split_TC">
+        <dc:Bounds x="705" y="457" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_6C_TestingPipeline_di" bpmnElement="SubProcess_6C_TestingPipeline" isExpanded="false">
+        <dc:Bounds x="850" y="442" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="BoundaryEvent_SP6C_SLA_di" bpmnElement="BoundaryEvent_SP6C_SLA">
+        <dc:Bounds x="882" y="504" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="926" y="508" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP6C_SLAEscalated_di" bpmnElement="EndEvent_SP6C_SLAEscalated">
+        <dc:Bounds x="882" y="558" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="858" y="601" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_6D_DevSecOps_di" bpmnElement="SubProcess_6D_DevSecOps" isExpanded="false">
+        <dc:Bounds x="850" y="962" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="BoundaryEvent_SP6D_SLA_di" bpmnElement="BoundaryEvent_SP6D_SLA">
+        <dc:Bounds x="882" y="1024" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="926" y="1028" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP6D_SLAEscalated_di" bpmnElement="EndEvent_SP6D_SLAEscalated">
+        <dc:Bounds x="882" y="1078" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="860" y="1121" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Gateway_Parallel_Join_TC_di" bpmnElement="Gateway_Parallel_Join_TC">
+        <dc:Bounds x="1025" y="457" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_6E_ComplianceGates_di" bpmnElement="SubProcess_6E_ComplianceGates" isExpanded="false">
+        <dc:Bounds x="1160" y="692" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="BoundaryEvent_SP6E_SLA_di" bpmnElement="BoundaryEvent_SP6E_SLA">
+        <dc:Bounds x="1192" y="754" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1236" y="758" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP6E_SLAEscalated_di" bpmnElement="EndEvent_SP6E_SLAEscalated">
+        <dc:Bounds x="1192" y="808" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1170" y="851" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_6F_SprintReview_di" bpmnElement="SubProcess_6F_SprintReview" isExpanded="false">
+        <dc:Bounds x="1380" y="69" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="BoundaryEvent_SP6F_SLA_di" bpmnElement="BoundaryEvent_SP6F_SLA">
+        <dc:Bounds x="1412" y="131" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1456" y="135" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP6F_SLAEscalated_di" bpmnElement="EndEvent_SP6F_SLAEscalated">
+        <dc:Bounds x="1412" y="185" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1390" y="228" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Gateway_QualityGate_Merge_di" bpmnElement="Gateway_QualityGate_Merge" isMarkerVisible="true">
+        <dc:Bounds x="1565" y="84" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Gateway_QualityGate_di" bpmnElement="Gateway_QualityGate" isMarkerVisible="true">
+        <dc:Bounds x="1705" y="187" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1690" y="244" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_QualityGateRejected_di" bpmnElement="EndEvent_QualityGateRejected">
+        <dc:Bounds x="1837" y="194" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1812" y="237" width="86" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_Phase6Complete_di" bpmnElement="EndEvent_Phase6Complete">
+        <dc:Bounds x="1837" y="91" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1812" y="134" width="86" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="StartEvent_Vendor_Phase6_di" bpmnElement="StartEvent_Vendor_Phase6">
+        <dc:Bounds x="720" y="1246" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="706" y="1289" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Vendor_ProvideBuildArtifacts_di" bpmnElement="Task_Vendor_ProvideBuildArtifacts">
+        <dc:Bounds x="820" y="1224" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_Vendor_Phase6_di" bpmnElement="EndEvent_Vendor_Phase6">
+        <dc:Bounds x="992" y="1246" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="969" y="1289" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Annotation_OCC_DORA_di" bpmnElement="Annotation_OCC_DORA">
+        <dc:Bounds x="960" y="962" width="550" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Annotation_SOX_Compliance_di" bpmnElement="Annotation_SOX_Compliance">
+        <dc:Bounds x="1270" y="692" width="550" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Start_SP6A_di" bpmnElement="Flow_Start_SP6A">
+        <di:waypoint x="284" y="109" />
+        <di:waypoint x="340" y="109" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6A_SLA_End_di" bpmnElement="Flow_SP6A_SLA_End">
+        <di:waypoint x="390" y="167" />
+        <di:waypoint x="390" y="185" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase6_Timer_End_di" bpmnElement="Flow_Phase6_Timer_End">
+        <di:waypoint x="426" y="167" />
+        <di:waypoint x="426" y="185" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6A_SP6B_di" bpmnElement="Flow_SP6A_SP6B">
+        <di:waypoint x="440" y="109" />
+        <di:waypoint x="485" y="109" />
+        <di:waypoint x="485" y="482" />
+        <di:waypoint x="530" y="482" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6B_SLA_End_di" bpmnElement="Flow_SP6B_SLA_End">
+        <di:waypoint x="580" y="540" />
+        <di:waypoint x="580" y="558" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6B_Split_di" bpmnElement="Flow_SP6B_Split">
+        <di:waypoint x="630" y="482" />
+        <di:waypoint x="705" y="482" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Split_SP6C_di" bpmnElement="Flow_Split_SP6C">
+        <di:waypoint x="755" y="482" />
+        <di:waypoint x="850" y="482" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Split_SP6D_di" bpmnElement="Flow_Split_SP6D">
+        <di:waypoint x="730" y="507" />
+        <di:waypoint x="730" y="1002" />
+        <di:waypoint x="850" y="1002" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6C_SLA_End_di" bpmnElement="Flow_SP6C_SLA_End">
+        <di:waypoint x="900" y="540" />
+        <di:waypoint x="900" y="558" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6D_SLA_End_di" bpmnElement="Flow_SP6D_SLA_End">
+        <di:waypoint x="900" y="1060" />
+        <di:waypoint x="900" y="1078" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6C_Join_di" bpmnElement="Flow_SP6C_Join">
+        <di:waypoint x="950" y="482" />
+        <di:waypoint x="1025" y="482" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6D_Join_di" bpmnElement="Flow_SP6D_Join">
+        <di:waypoint x="950" y="1002" />
+        <di:waypoint x="1050" y="1002" />
+        <di:waypoint x="1050" y="507" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Join_SP6E_di" bpmnElement="Flow_Join_SP6E">
+        <di:waypoint x="1075" y="482" />
+        <di:waypoint x="1117" y="482" />
+        <di:waypoint x="1117" y="732" />
+        <di:waypoint x="1160" y="732" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6E_SLA_End_di" bpmnElement="Flow_SP6E_SLA_End">
+        <di:waypoint x="1210" y="790" />
+        <di:waypoint x="1210" y="808" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6E_SP6F_di" bpmnElement="Flow_SP6E_SP6F">
+        <di:waypoint x="1260" y="732" />
+        <di:waypoint x="1320" y="732" />
+        <di:waypoint x="1320" y="109" />
+        <di:waypoint x="1380" y="109" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6F_SLA_End_di" bpmnElement="Flow_SP6F_SLA_End">
+        <di:waypoint x="1430" y="167" />
+        <di:waypoint x="1430" y="185" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP6F_QGMerge_di" bpmnElement="Flow_SP6F_QGMerge">
+        <di:waypoint x="1480" y="109" />
+        <di:waypoint x="1565" y="109" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_QGRejected_Merge_di" bpmnElement="Flow_QGRejected_Merge">
+        <di:waypoint x="1855" y="194" />
+        <di:waypoint x="1855" y="160" />
+        <di:waypoint x="1590" y="160" />
+        <di:waypoint x="1590" y="134" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_QGMerge_QG_di" bpmnElement="Flow_QGMerge_QG">
+        <di:waypoint x="1615" y="109" />
+        <di:waypoint x="1660" y="109" />
+        <di:waypoint x="1660" y="212" />
+        <di:waypoint x="1705" y="212" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_QGPassed_di" bpmnElement="Flow_QGPassed">
+        <di:waypoint x="1730" y="187" />
+        <di:waypoint x="1730" y="109" />
+        <di:waypoint x="1837" y="109" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1738" y="143" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_QGRejected_di" bpmnElement="Flow_QGRejected">
+        <di:waypoint x="1755" y="212" />
+        <di:waypoint x="1837" y="212" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1787" y="194" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_OCC_DORA_di" bpmnElement="Assoc_OCC_DORA">
+        <di:waypoint x="950" y="1002" />
+        <di:waypoint x="960" y="989" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_SOX_Compliance_di" bpmnElement="Assoc_SOX_Compliance">
+        <di:waypoint x="1260" y="732" />
+        <di:waypoint x="1270" y="719" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Vendor_Start_Task_di" bpmnElement="Flow_Vendor_Start_Task">
+        <di:waypoint x="756" y="1264" />
+        <di:waypoint x="820" y="1264" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Vendor_Task_End_di" bpmnElement="Flow_Vendor_Task_End">
+        <di:waypoint x="920" y="1264" />
+        <di:waypoint x="992" y="1264" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="MsgFlow_VendorFeedback_di" bpmnElement="MsgFlow_VendorFeedback">
+        <di:waypoint x="870" y="1224" />
+        <di:waypoint x="870" y="1172" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
