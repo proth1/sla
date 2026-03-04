@@ -40,6 +40,12 @@ function escapeHtml(unsafe: string): string {
     .replace(/'/g, '&#039;');
 }
 
+function sanitizeRedirect(redirect: string | null): string {
+  if (!redirect) return '/';
+  if (redirect.startsWith('/') && !redirect.startsWith('//')) return redirect;
+  return '/';
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -354,7 +360,7 @@ async function handleSendOTP(request: Request, env: Env, url: URL): Promise<Resp
   try {
     const formData = await request.formData();
     const email = formData.get('email') as string;
-    const redirect = formData.get('redirect') as string || '/';
+    const redirect = sanitizeRedirect(formData.get('redirect') as string);
 
     if (!email) {
       return redirectToLoginWithError(url, 'Email is required', redirect);
@@ -400,7 +406,7 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
   try {
     const formData = await request.formData();
     const code = formData.get('code') as string;
-    const redirect = formData.get('redirect') as string || '/';
+    const redirect = sanitizeRedirect(formData.get('redirect') as string);
 
     const cookie = request.headers.get('Cookie') || '';
     const emailMatch = cookie.match(new RegExp(`${PENDING_EMAIL_COOKIE}=([^;]+)`));
@@ -474,7 +480,7 @@ function redirectToLoginWithError(url: URL, error: string, redirect: string, ste
  * Render the SLA Governance-branded login page with OTP authentication
  */
 function renderLoginPage(env: Env, url: URL, request: Request): Response {
-  const redirect = url.searchParams.get('redirect') || '/';
+  const redirect = sanitizeRedirect(url.searchParams.get('redirect'));
   const error = url.searchParams.get('error') || '';
   const step = url.searchParams.get('step') || 'email';
 
