@@ -176,7 +176,7 @@
     </bpmn:exclusiveGateway>
 
     <bpmn:exclusiveGateway id="Gateway_ContinueMerge">
-      <bpmn:incoming>Flow_LoopBack_Merge</bpmn:incoming>
+      <bpmn:incoming>Flow_Outcome_Continue</bpmn:incoming>
       <bpmn:incoming>Flow_8C_LoopBack</bpmn:incoming>
       <bpmn:outgoing>Flow_ContinueMerge_81</bpmn:outgoing>
     </bpmn:exclusiveGateway>
@@ -390,9 +390,6 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${monitoringCadence == 'RETIRE'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
 
-    <bpmn:sequenceFlow id="Flow_LoopBack_Merge" sourceRef="Gateway_MonitoringOutcome" targetRef="Gateway_ContinueMerge">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${monitoringCadence == 'CONTINUE'}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_8C_LoopBack" sourceRef="SubProcess_8C" targetRef="Gateway_ContinueMerge" />
     <bpmn:sequenceFlow id="Flow_ContinueMerge_81" sourceRef="Gateway_ContinueMerge" targetRef="Task_81_ControlMonitoring" />
 
@@ -793,13 +790,6 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1554" y="554" width="30" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge id="Flow_LoopBack_Merge_di" bpmnElement="Flow_LoopBack_Merge">
-        <di:waypoint x="1550" y="872" />
-        <di:waypoint x="1550" y="830" />
-        <di:waypoint x="320" y="830" />
-        <di:waypoint x="320" y="872" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_8C_LoopBack_di" bpmnElement="Flow_8C_LoopBack">

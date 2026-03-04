@@ -607,9 +607,9 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP6B_SLAEscalated_di" bpmnElement="EndEvent_SP6B_SLAEscalated">
-        <dc:Bounds x="562" y="504" width="36" height="36" />
+        <dc:Bounds x="660" y="454" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="541" y="543" width="78" height="27" />
+          <dc:Bounds x="639" y="497" width="78" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -630,9 +630,9 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP6C_SLAEscalated_di" bpmnElement="EndEvent_SP6C_SLAEscalated">
-        <dc:Bounds x="862" y="504" width="36" height="36" />
+        <dc:Bounds x="960" y="454" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="838" y="543" width="84" height="27" />
+          <dc:Bounds x="936" y="497" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -649,9 +649,9 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP6D_SLAEscalated_di" bpmnElement="EndEvent_SP6D_SLAEscalated">
-        <dc:Bounds x="862" y="889" width="36" height="36" />
+        <dc:Bounds x="960" y="849" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="840" y="893" width="80" height="27" />
+          <dc:Bounds x="938" y="892" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -773,8 +773,8 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6B_SLA_End_di" bpmnElement="Flow_SP6B_SLA_End">
-        <di:waypoint x="580" y="490" />
-        <di:waypoint x="580" y="504" />
+        <di:waypoint x="598" y="472" />
+        <di:waypoint x="660" y="472" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6B_Split_di" bpmnElement="Flow_SP6B_Split">
@@ -794,13 +794,13 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6C_SLA_End_di" bpmnElement="Flow_SP6C_SLA_End">
-        <di:waypoint x="880" y="490" />
-        <di:waypoint x="880" y="504" />
+        <di:waypoint x="898" y="472" />
+        <di:waypoint x="960" y="472" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6D_SLA_End_di" bpmnElement="Flow_SP6D_SLA_End">
-        <di:waypoint x="880" y="885" />
-        <di:waypoint x="880" y="889" />
+        <di:waypoint x="898" y="867" />
+        <di:waypoint x="960" y="867" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6C_Join_di" bpmnElement="Flow_SP6C_Join">
