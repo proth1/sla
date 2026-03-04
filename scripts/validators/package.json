@@ -9,6 +9,9 @@
     "check-overlaps": "node visual-overlap-checker.js",
     "validate-all": "bash validate-bpmn.sh"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "bpmn-moddle": "^9.0.1",
     "camunda-bpmn-moddle": "^7.0.1"

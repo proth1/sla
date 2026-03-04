@@ -2,7 +2,7 @@
 # Validate all BPMN files in the SLA project
 # Usage: ./validate-bpmn.sh [specific-file.bpmn]
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
@@ -32,28 +32,38 @@ validate_file() {
     echo -e "${BLUE}Validating: $filename${NC}"
 
     # Run security scanner (first gate — blocks before any other validation)
-    if node "$SCRIPT_DIR/security-scanner.js" "$file" 2>/dev/null; then
+    if node "$SCRIPT_DIR/security-scanner.js" "$file"; then
         true
     else
         file_failed=1
     fi
 
     # Run BPMN validator
-    if node "$SCRIPT_DIR/bpmn-validator.js" "$file" 2>/dev/null; then
+    if node "$SCRIPT_DIR/bpmn-validator.js" "$file"; then
         true
     else
         file_failed=1
     fi
 
     # Run visual overlap checker (blocking gate)
-    if node "$SCRIPT_DIR/visual-overlap-checker.js" "$file" 2>/dev/null; then
+    if node "$SCRIPT_DIR/visual-overlap-checker.js" "$file"; then
         true
     else
         file_failed=1
     fi
 
+    # Flow direction checker
+    if [ -f "$SCRIPT_DIR/flow-direction-checker.js" ]; then
+      if node "$SCRIPT_DIR/flow-direction-checker.js" "$file"; then
+        echo "  ✓ Flow direction check passed"
+      else
+        file_failed=1
+        echo "  ✗ Flow direction check failed"
+      fi
+    fi
+
     # Run element checker
-    if node "$SCRIPT_DIR/element-checker.js" "$(dirname "$file")" 2>/dev/null; then
+    if node "$SCRIPT_DIR/element-checker.js" "$(dirname "$file")"; then
         true
     else
         echo -e "${YELLOW}  Element checker warning for $filename${NC}"
@@ -68,7 +78,7 @@ validate_file() {
     echo ""
 }
 
-if [ -n "$1" ]; then
+if [ -n "${1:-}" ]; then
     # Validate specific file
     validate_file "$1"
 else
@@ -84,7 +94,7 @@ DMN_FAILED=0
 while IFS= read -r -d '' file; do
     local_filename=$(basename "$file")
     echo -e "${BLUE}Security scan: $local_filename${NC}"
-    if node "$SCRIPT_DIR/security-scanner.js" "$file" 2>/dev/null; then
+    if node "$SCRIPT_DIR/security-scanner.js" "$file"; then
         ((DMN_PASSED++))
     else
         ((DMN_FAILED++))

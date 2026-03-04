@@ -211,7 +211,8 @@ function runPatternChecks(xml, checks, severity) {
       continue;
     }
 
-    const regex = new RegExp(check.pattern.source, check.pattern.flags);
+    const regex = check.pattern;
+    regex.lastIndex = 0;
     let match;
     while ((match = regex.exec(xml)) !== null) {
       const elementId = check.extractId
@@ -239,7 +240,13 @@ function scan(filePath) {
   const isDMN = ext === '.dmn';
   const fileType = isDMN ? 'DMN' : 'BPMN';
 
-  const xml = fs.readFileSync(path.resolve(filePath), 'utf-8');
+  let xml;
+  try {
+    xml = fs.readFileSync(path.resolve(filePath), 'utf-8');
+  } catch (err) {
+    console.error(`Error: Failed to read file '${filePath}': ${err.message}`);
+    process.exit(1);
+  }
   const filename = path.basename(filePath);
 
   console.log('\n=== Security Scan Results ===');

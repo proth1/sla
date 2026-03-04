@@ -374,14 +374,20 @@ function validateElement(element, result) {
 }
 
 function validateServiceTask(task, result) {
-  // Check for topic or delegate configuration
-  const hasConfig = task.extensionElements?.values?.some(
-    ext => ext.$type === 'sla:taskConfig' || ext.$type === 'zeebe:taskDefinition'
-  );
+  // Check for Camunda 7 external task or delegate configuration
+  const hasConfig =
+    task.$attrs?.['camunda:type'] ||
+    task.$attrs?.['camunda:class'] ||
+    task.$attrs?.['camunda:delegateExpression'] ||
+    task.$attrs?.['camunda:expression'] ||
+    task.$attrs?.['camunda:topic'] ||
+    task.extensionElements?.values?.some(
+      ext => ext.$type === 'camunda:connector'
+    );
 
   if (!hasConfig) {
     result.addWarning(
-      'Service task has no configuration - will need runtime configuration',
+      'Service task has no Camunda 7 configuration (camunda:type, camunda:class, or camunda:topic) - will need runtime configuration',
       task.id
     );
   }
@@ -482,7 +488,7 @@ function validateConnectivity(elements, result) {
   for (const nodeId of nodes) {
     if (!reachable.has(nodeId)) {
       const element = elements.find(e => e.id === nodeId);
-      if (element && element.$type !== 'bpmn:StartEvent') {
+      if (element && element.$type !== 'bpmn:StartEvent' && element.$type !== 'bpmn:BoundaryEvent') {
         result.addWarning(`Element is not reachable from start event`, nodeId);
       }
     }
@@ -500,4 +506,4 @@ const filePath = args[0];
 validateBpmn(filePath).then(result => {
   const passed = result.print();
   process.exit(passed ? 0 : 1);
-});
+}).catch(err => { console.error(err.message); process.exit(1); });
