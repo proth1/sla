@@ -201,6 +201,74 @@ Timer boundary event labels MUST be positioned to the RIGHT of the boundary even
 
 ---
 
+## Default/Bypass Flows Must Route Around Tasks (CRITICAL)
+
+When a gateway has a default or "no action" flow that skips one or more tasks to reach a downstream merge gateway, that flow **MUST NOT** pass through any task box on the same Y-coordinate.
+
+**Problem:** A straight horizontal flow from gateway to merge at the same Y as the main-line tasks will visually cut through task boxes, making the diagram confusing.
+
+**Solution:** Route the bypass flow ABOVE the topmost task in the branch:
+
+```
+y=30        ─────────────────────────── (bypass/default flow)
+            ↑                         ↓
+y=75   [Gateway]                  [Merge Gateway]
+            |                         ↑
+y=100       +──→ [Task A] ───────────+
+```
+
+Rules:
+1. Exit from the **top** of the gateway (y = gateway_y)
+2. Route horizontally above all branch tasks (y = topmost_task_y - 30)
+3. Enter the **top** of the merge gateway (y = merge_y)
+4. Never route a flow through the interior of a task bounding box
+
+---
+
+## Flow Labels Must Not Overlap Task Text (CRITICAL)
+
+Flow label positions must account for adjacent task bounding boxes. A flow label placed between a gateway and a task can visually merge with the task's own label text.
+
+**Problem:** A label at y=82 on a flow entering a task at y=60 (height 80) appears to blend into the task text.
+
+**Solution:** Position flow labels **above the flow line** with enough clearance from the target task's top edge:
+
+```
+Label Y ≤ target_task_y - 18
+```
+
+For horizontal flows into tasks:
+- Place the label at least 18px above the task's top Y-coordinate
+- Center the label horizontally between the source and target
+
+---
+
+## Collapsed Sub-Process Fan-Out Pattern
+
+When a process has N independent parallel sub-processes, use this layout:
+
+1. **Start event and parallel gateway** in the coordinating lane (e.g., Automation)
+2. **One sub-process per lane** — distribute evenly, no lane has more than 2 elements (SP + End)
+3. **Parallel gateway fan-out** — vertical lines from gateway up/down to each lane, then horizontal into the sub-process
+4. **L-shaped routing** — vertical segment crosses lane boundaries, horizontal segment stays within the target lane
+
+```
+Lane 1:              [SP1] ──→ [End1]
+                       ↑
+Lane 2:              [SP2] ──→ [End2]
+                       ↑
+Lane 3:              [SP3] ──→ [End3]
+                       ↑
+Lane N:  [Start] → [+] → [SPN] ──→ [EndN]
+```
+
+Rules:
+- Never put more than 1 sub-process in a single lane (prevents overcrowding)
+- Never have a start event with multiple outgoing flows and no gateway (ambiguous — looks sequential)
+- Empty lanes are wasted space — redistribute elements to fill all lanes
+
+---
+
 ## Validation Checklist
 
 Before saving any BPMN file:
@@ -215,6 +283,9 @@ Before saving any BPMN file:
 8. [ ] **Timer labels to the RIGHT** -- Not overlapping parent task
 9. [ ] **Merge gateways on main line** -- All paths converge properly
 10. [ ] **"Yes" paths continue right** -- Stay on the forward flow
+11. [ ] **Default/bypass flows route around tasks** -- No flow cuts through a task bounding box
+12. [ ] **Flow labels clear of task text** -- Label Y ≤ target_task_y - 18
+13. [ ] **One sub-process per lane** -- No lane overcrowded with multiple SPs
 
 ---
 
@@ -230,6 +301,6 @@ Before saving any BPMN file:
 
 ---
 
-**Rule Version**: 1.0.0
-**Created**: 2026-03-02
+**Rule Version**: 1.1.0
+**Created**: 2026-03-02 | **Updated**: 2026-03-03
 **Source**: Adapted from ACMOS change management visual clarity standards for SLA multi-lane governance
