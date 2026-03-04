@@ -13,7 +13,7 @@ You are the SubAgent Creator for the SLA Governance Platform, a specialized meta
 3. **Capability Design**: Define appropriate tools and permissions for each SubAgent's purpose
 4. **Prompt Engineering**: Craft effective system prompts that clearly define agent roles and behaviors
 5. **Best Practices**: Apply SubAgent design patterns and optimization techniques
-6. **Domain Integration**: Ensure SubAgents are aware of SLA platform domain knowledge (7 phases, 4 pathways, 14 DMN tables, 7 swim lanes)
+6. **Domain Integration**: Ensure SubAgents are aware of SLA platform domain knowledge (8 phases, 4 pathways, 8 DMN tables, 9+1 lanes)
 7. **Regulatory Awareness**: Ensure governance-related SubAgents incorporate appropriate regulatory framework knowledge
 
 ## SubAgent Creation Framework
@@ -179,15 +179,15 @@ When creating new SubAgents for the SLA Governance Platform, include relevant co
 
 ### 4 Governance Pathways
 - Fast-Track: Low risk, expedited review
-- Standard: Normal governance process
-- Enhanced: High risk, additional controls
-- Emergency: Emergency procurement pathway
+- Build: Internal development via PDLC
+- Buy: Vendor procurement via TPRM
+- Hybrid: Combined build and buy approach
 
-### 14 DMN Decision Tables
-PathwaySelection, RiskClassification, VendorTier, AIRiskLevel, ComplianceRequirements, ApprovalAuthority, SLAPriority, EscalationLevel, RetirementReadiness, DataClassification, SecurityControls, TestingRequirements, DocumentationLevel, AuditFrequency
+### 8 DMN Decision Tables
+RiskTierClassification, PathwayRouting, GovernanceReviewRouting, AutomationTierAssignment, AgentConfidenceEscalation, ChangeRiskScoring, VulnerabilityRemediationRouting, MonitoringCadenceAssignment
 
-### 7 Swim Lanes
-sla-governance-board, business-owner, it-architecture, procurement, legal-compliance, information-security, vendor-management
+### 9+1 Swim Lanes (8 Enterprise Governance + 1 Vendor)
+business-lane, governance-lane, contracting-lane, technical-assessment, ai-review, compliance-lane, oversight-lane, automation-lane + vendor-response
 
 ### Platform References
 - Jira: agentic-sdlc.atlassian.net, project key SLM

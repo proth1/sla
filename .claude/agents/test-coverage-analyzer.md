@@ -48,7 +48,7 @@ You are a Test Coverage Analysis specialist for the SLA Governance Platform. You
 - [ ] VendorTier DMN: Tier 1-4 classifications validated
 - [ ] BPMN element IDs: Test that all IDs follow convention
 - [ ] Swim lane assignments: Test that tasks are in correct lanes
-- [ ] Phase transitions: Test that process flows correctly through all 7 phases
+- [ ] Phase transitions: Test that process flows correctly through all 8 phases
 
 ## Coverage Thresholds
 
