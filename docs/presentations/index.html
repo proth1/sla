@@ -1319,7 +1319,13 @@ const updateActiveDot = () => {
   document.getElementById('slideCounter').textContent = (activeIndex + 1) + ' / ' + totalSlides;
 };
 
-slidesContainer.addEventListener('scroll', updateActiveDot);
+let scrollTicking = false;
+slidesContainer.addEventListener('scroll', () => {
+  if (!scrollTicking) {
+    requestAnimationFrame(() => { updateActiveDot(); scrollTicking = false; });
+    scrollTicking = true;
+  }
+});
 updateActiveDot();
 
 // goToSlide for nav-bar and TOC links
@@ -1355,7 +1361,7 @@ const chartObserver = new IntersectionObserver((entries) => {
       if (chartId === 'chartWaterfall') renderWaterfallChart();
     }
   });
-}, { threshold: 0.3 });
+}, { root: slidesContainer, threshold: 0.3 });
 
 document.querySelectorAll('.chart-container[id]').forEach(el => chartObserver.observe(el));
 
