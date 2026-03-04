@@ -21,16 +21,26 @@
   --sla-border: #E2E8F0;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; scroll-behavior: smooth; }
-body { font-family: 'Open Sans', sans-serif; background: var(--sla-light); color: #1E293B; }
+html { font-size: 16px; scroll-behavior: smooth; overflow: hidden; height: 100%; }
+body { font-family: 'Open Sans', sans-serif; background: var(--sla-light); color: #1E293B; overflow: hidden; height: 100%; }
 h1, h2, h3, h4, h5, h6 { font-family: 'Open Sans Condensed', sans-serif; font-weight: 700; }
 
-/* Slide System */
-.slide { display: none; min-height: 100vh; padding: 60px 40px; max-width: 1280px; margin: 0 auto; }
-.slide.active { display: flex; flex-direction: column; justify-content: center; }
-.slide-hero { background: linear-gradient(135deg, var(--sla-navy), var(--sla-deep-blue)); color: white; max-width: 100%; padding: 80px 60px; }
+/* Slide System — scroll-snap */
+.slides-container {
+  scroll-snap-type: y proximity;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 100vh;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+.slides-container::-webkit-scrollbar { width: 0; background: transparent; }
+.slides-container { scrollbar-width: none; -ms-overflow-style: none; }
+
+.slide { min-height: 100vh; height: auto; scroll-snap-align: start; padding: 80px 4rem 4rem; display: flex; flex-direction: column; position: relative; overflow-y: visible; max-width: 1280px; margin: 0 auto; }
+.slide-hero { background: linear-gradient(135deg, var(--sla-navy), var(--sla-deep-blue)); color: white; max-width: 100%; padding: 80px 60px; justify-content: center; }
 .slide-hero h1 { font-size: 3rem; margin-bottom: 0.5rem; }
-.slide-hero h2 { font-size: 1.5rem; font-weight: 300; opacity: 0.9; margin-bottom: 1.5rem; }
+.slide-hero h2 { font-size: 1.75rem; font-weight: 700; color: white; opacity: 1; margin-bottom: 1.5rem; }
 .slide-hero .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
 .slide-hero .badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 4px 10px; font-size: 0.7rem; letter-spacing: 0.5px; }
 .slide-section { background: linear-gradient(135deg, var(--sla-deep-blue), var(--sla-navy)); color: white; max-width: 100%; padding: 80px 60px; }
@@ -79,9 +89,12 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Open Sans Condensed', sans-serif; font-we
 .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; cursor: pointer; }
 .nav-links a:hover { color: white; }
 .slide-counter { position: fixed; bottom: 20px; right: 20px; background: var(--sla-navy); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; z-index: 1000; }
-.nav-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; z-index: 1000; }
-.nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(15,33,55,0.25); cursor: pointer; transition: background 0.2s; }
-.nav-dot.active { background: var(--sla-gold); }
+
+/* Slide indicator — right-side dots (kmflow style) */
+.slide-indicator { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 999; }
+.slide-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(13,33,55,0.3); cursor: pointer; transition: all 0.3s; }
+.slide-dot:hover { background: var(--sla-teal); transform: scale(1.3); }
+.slide-dot.active { background: var(--sla-gold); transform: scale(1.2); }
 
 /* Pathway colors */
 .path-fast { color: var(--sla-emerald); }
@@ -139,14 +152,16 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Open Sans Condensed', sans-serif; font-we
   </div>
 </div>
 
-<!-- Slide Dots -->
-<div class="nav-dots" id="navDots"></div>
+<!-- Slide Indicator (right-side dots) -->
+<div class="slide-indicator" id="slideIndicator"></div>
 <div class="slide-counter" id="slideCounter">1 / 35</div>
+
+<main class="slides-container" id="slidesContainer">
 
 <!-- ============================================================ -->
 <!-- SLIDE 1: Hero -->
 <!-- ============================================================ -->
-<div class="slide slide-hero active" data-slide="0">
+<div class="slide slide-hero" data-slide="0">
   <h1>Enterprise Software Governance</h1>
   <h2>SLA Platform &mdash; 8-Phase Lifecycle for Financial Services</h2>
   <p style="opacity:0.85; max-width:700px;">A comprehensive, risk-tiered governance framework spanning Initiation through Operations &amp; Retirement. Built on BPMN 2.0, DMN 1.3, and Camunda Platform 7.</p>
@@ -1264,47 +1279,71 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Open Sans Condensed', sans-serif; font-we
   <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
 </div>
 
+</main>
+
 <!-- ============================================================ -->
 <!-- JavaScript: Navigation + D3 Visualizations -->
 <!-- ============================================================ -->
 <script>
-// Slide navigation
+// Scroll-snap navigation (kmflow style)
+const slidesContainer = document.getElementById('slidesContainer');
 const slides = document.querySelectorAll('.slide');
 const totalSlides = slides.length;
-let currentSlide = 0;
+const slideIndicator = document.getElementById('slideIndicator');
 
+// Create right-side dot indicators
+slides.forEach((slide, index) => {
+  const dot = document.createElement('div');
+  dot.className = 'slide-dot';
+  dot.addEventListener('click', () => {
+    slide.scrollIntoView({ behavior: 'smooth' });
+  });
+  slideIndicator.appendChild(dot);
+});
+
+// Track active slide on scroll
+let currentSlide = 0;
+const updateActiveDot = () => {
+  const scrollPosition = slidesContainer.scrollTop;
+  const windowHeight = window.innerHeight;
+  let activeIndex = 0;
+  slides.forEach((slide, index) => {
+    if (scrollPosition >= slide.offsetTop - windowHeight / 2) {
+      activeIndex = index;
+    }
+  });
+  currentSlide = activeIndex;
+  document.querySelectorAll('.slide-dot').forEach((dot, index) => {
+    dot.classList.toggle('active', index === activeIndex);
+  });
+  document.getElementById('slideCounter').textContent = (activeIndex + 1) + ' / ' + totalSlides;
+};
+
+let scrollTicking = false;
+slidesContainer.addEventListener('scroll', () => {
+  if (!scrollTicking) {
+    requestAnimationFrame(() => { updateActiveDot(); scrollTicking = false; });
+    scrollTicking = true;
+  }
+});
+updateActiveDot();
+
+// goToSlide for nav-bar and TOC links
 function goToSlide(n) {
   if (n < 0 || n >= totalSlides) return;
-  slides[currentSlide].classList.remove('active');
-  currentSlide = n;
-  slides[currentSlide].classList.add('active');
-  updateCounter();
-  updateDots();
-}
-
-function updateCounter() {
-  document.getElementById('slideCounter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
-}
-
-function updateDots() {
-  document.querySelectorAll('.nav-dot').forEach((dot, i) => {
-    dot.classList.toggle('active', i === currentSlide);
-  });
-}
-
-// Create nav dots
-const dotsContainer = document.getElementById('navDots');
-for (let i = 0; i < totalSlides; i++) {
-  const dot = document.createElement('div');
-  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-  dot.onclick = () => goToSlide(i);
-  dotsContainer.appendChild(dot);
+  slides[n].scrollIntoView({ behavior: 'smooth' });
 }
 
 // Keyboard navigation
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
-  if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentSlide - 1); }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+    e.preventDefault();
+    slidesContainer.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+  }
+  if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+    e.preventDefault();
+    slidesContainer.scrollBy({ top: -window.innerHeight, behavior: 'smooth' });
+  }
   if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
   if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
 });
@@ -1322,7 +1361,7 @@ const chartObserver = new IntersectionObserver((entries) => {
       if (chartId === 'chartWaterfall') renderWaterfallChart();
     }
   });
-}, { threshold: 0.3 });
+}, { root: slidesContainer, threshold: 0.3 });
 
 document.querySelectorAll('.chart-container[id]').forEach(el => chartObserver.observe(el));
 
