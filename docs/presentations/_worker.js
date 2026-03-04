@@ -1,6 +1,6 @@
 export default {
   async fetch(request, env) {
-    const PROXY_SECRET = "sla-proxy-7f3a9b2e1d5c8k4m6n0p";
+    const PROXY_SECRET = env.PROXY_SECRET;
     const AUTH_DOMAIN = "https://sla.agentic-innovations.com";
 
     const authHeader = request.headers.get("X-SLA-Auth-Proxy");
