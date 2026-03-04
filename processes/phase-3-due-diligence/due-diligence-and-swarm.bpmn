@@ -69,6 +69,7 @@
         <bpmn:flowNodeRef>Gateway_ParallelSplit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_ParallelJoin</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_38_SwarmResultsAggregation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ConfidenceCheck</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_BuildPathway</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_310_TPRMBuildMapping</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_PathwayMerge</bpmn:flowNodeRef>
@@ -189,11 +190,16 @@
 
     <bpmn:serviceTask id="Task_38_SwarmResultsAggregation" name="3.8 Swarm Results&#10;Aggregation (Swarm Coordinator)" camunda:type="external" camunda:topic="swarm-aggregation">
       <bpmn:incoming>Flow_Join_38</bpmn:incoming>
-      <bpmn:outgoing>Flow_38_BuildGateway</bpmn:outgoing>
+      <bpmn:outgoing>Flow_38_ConfidenceCheck</bpmn:outgoing>
     </bpmn:serviceTask>
 
+    <bpmn:businessRuleTask id="Task_ConfidenceCheck" name="3.8a Agent Confidence&#10;Escalation Check" camunda:decisionRef="DMN_AgentConfidenceEscalation" camunda:decisionRefBinding="latest" camunda:resultVariable="escalationResult" camunda:mapDecisionResult="singleResult" camunda:candidateGroups="automation-lane">
+      <bpmn:incoming>Flow_38_ConfidenceCheck</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConfidenceCheck_BuildGateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
     <bpmn:exclusiveGateway id="Gateway_BuildPathway" name="Build&#10;Pathway?" default="Flow_NoBuildPath">
-      <bpmn:incoming>Flow_38_BuildGateway</bpmn:incoming>
+      <bpmn:incoming>Flow_ConfidenceCheck_BuildGateway</bpmn:incoming>
       <bpmn:outgoing>Flow_YesBuildPath</bpmn:outgoing>
       <bpmn:outgoing>Flow_NoBuildPath</bpmn:outgoing>
     </bpmn:exclusiveGateway>
@@ -323,7 +329,8 @@
     <bpmn:sequenceFlow id="Flow_AIBranchMerge_Join" sourceRef="Gateway_AIBranchMerge" targetRef="Gateway_ParallelJoin" />
     <bpmn:sequenceFlow id="Flow_36_Join" sourceRef="Task_36_FinancialStabilityReview" targetRef="Gateway_ParallelJoin" />
     <bpmn:sequenceFlow id="Flow_Join_38" sourceRef="Gateway_ParallelJoin" targetRef="Task_38_SwarmResultsAggregation" />
-    <bpmn:sequenceFlow id="Flow_38_BuildGateway" sourceRef="Task_38_SwarmResultsAggregation" targetRef="Gateway_BuildPathway" />
+    <bpmn:sequenceFlow id="Flow_38_ConfidenceCheck" sourceRef="Task_38_SwarmResultsAggregation" targetRef="Task_ConfidenceCheck" />
+    <bpmn:sequenceFlow id="Flow_ConfidenceCheck_BuildGateway" sourceRef="Task_ConfidenceCheck" targetRef="Gateway_BuildPathway" />
     <bpmn:sequenceFlow id="Flow_YesBuildPath" name="Yes" sourceRef="Gateway_BuildPathway" targetRef="Task_39_ArchitectureFeasibility">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'BUILD' || selectedPathway == 'HYBRID'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -566,69 +573,73 @@
         <dc:Bounds x="1290" y="962" width="100" height="80" />
       </bpmndi:BPMNShape>
 
+      <bpmndi:BPMNShape id="Task_ConfidenceCheck_di" bpmnElement="Task_ConfidenceCheck">
+        <dc:Bounds x="1420" y="962" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="Gateway_BuildPathway_di" bpmnElement="Gateway_BuildPathway" isMarkerVisible="true">
-        <dc:Bounds x="1440" y="977" width="50" height="50" />
+        <dc:Bounds x="1550" y="977" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1428" y="1034" width="74" height="27" />
+          <dc:Bounds x="1538" y="1034" width="74" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_39_ArchitectureFeasibility_di" bpmnElement="Task_39_ArchitectureFeasibility">
-        <dc:Bounds x="1540" y="444" width="100" height="80" />
+        <dc:Bounds x="1650" y="444" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Timer_39_SLA_di" bpmnElement="Timer_39_SLA">
-        <dc:Bounds x="1594" y="506" width="36" height="36" />
+        <dc:Bounds x="1704" y="506" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1638" y="510" width="46" height="27" />
+          <dc:Bounds x="1748" y="510" width="46" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_39SLAEscalated_di" bpmnElement="EndEvent_39SLAEscalated">
-        <dc:Bounds x="1692" y="424" width="36" height="36" />
+        <dc:Bounds x="1802" y="424" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1668" y="464" width="84" height="27" />
+          <dc:Bounds x="1778" y="464" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_310_TPRMBuildMapping_di" bpmnElement="Task_310_TPRMBuildMapping">
-        <dc:Bounds x="1690" y="962" width="100" height="80" />
+        <dc:Bounds x="1800" y="962" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_PathwayMerge_di" bpmnElement="Gateway_PathwayMerge" isMarkerVisible="true">
-        <dc:Bounds x="1840" y="977" width="50" height="50" />
+        <dc:Bounds x="1950" y="977" width="50" height="50" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_OversightReview_di" bpmnElement="Task_OversightReview">
-        <dc:Bounds x="1940" y="819" width="100" height="80" />
+        <dc:Bounds x="2050" y="819" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_ContractingReview_di" bpmnElement="Task_ContractingReview">
-        <dc:Bounds x="1990" y="319" width="100" height="80" />
+        <dc:Bounds x="2100" y="319" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_PhaseQualityGate_di" bpmnElement="Task_PhaseQualityGate">
-        <dc:Bounds x="2140" y="194" width="100" height="80" />
+        <dc:Bounds x="2250" y="194" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Timer_QualityGateSLA_di" bpmnElement="Timer_QualityGateSLA">
-        <dc:Bounds x="2194" y="256" width="36" height="36" />
+        <dc:Bounds x="2304" y="256" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2238" y="260" width="46" height="27" />
+          <dc:Bounds x="2348" y="260" width="46" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_QGSLAEscalated_di" bpmnElement="EndEvent_QGSLAEscalated">
-        <dc:Bounds x="2294" y="142" width="36" height="36" />
+        <dc:Bounds x="2404" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2270" y="115" width="84" height="27" />
+          <dc:Bounds x="2380" y="115" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Phase3Complete_di" bpmnElement="EndEvent_Phase3Complete">
-        <dc:Bounds x="2294" y="216" width="36" height="36" />
+        <dc:Bounds x="2404" y="216" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2270" y="259" width="84" height="27" />
+          <dc:Bounds x="2380" y="259" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -778,72 +789,77 @@
         <di:waypoint x="1290" y="1002" />
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_38_BuildGateway_di" bpmnElement="Flow_38_BuildGateway">
+      <bpmndi:BPMNEdge id="Flow_38_ConfidenceCheck_di" bpmnElement="Flow_38_ConfidenceCheck">
         <di:waypoint x="1390" y="1002" />
-        <di:waypoint x="1440" y="1002" />
+        <di:waypoint x="1420" y="1002" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ConfidenceCheck_BuildGateway_di" bpmnElement="Flow_ConfidenceCheck_BuildGateway">
+        <di:waypoint x="1520" y="1002" />
+        <di:waypoint x="1550" y="1002" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_YesBuildPath_di" bpmnElement="Flow_YesBuildPath">
-        <di:waypoint x="1465" y="977" />
-        <di:waypoint x="1465" y="484" />
-        <di:waypoint x="1540" y="484" />
+        <di:waypoint x="1575" y="977" />
+        <di:waypoint x="1575" y="484" />
+        <di:waypoint x="1650" y="484" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1471" y="728" width="20" height="14" />
+          <dc:Bounds x="1581" y="728" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_NoBuildPath_di" bpmnElement="Flow_NoBuildPath">
-        <di:waypoint x="1490" y="1002" />
-        <di:waypoint x="1840" y="1002" />
+        <di:waypoint x="1600" y="1002" />
+        <di:waypoint x="1950" y="1002" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1638" y="984" width="36" height="14" />
+          <dc:Bounds x="1748" y="984" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_39_310_di" bpmnElement="Flow_39_310">
-        <di:waypoint x="1640" y="484" />
-        <di:waypoint x="1740" y="484" />
-        <di:waypoint x="1740" y="1002" />
-        <di:waypoint x="1690" y="1002" />
+        <di:waypoint x="1750" y="484" />
+        <di:waypoint x="1850" y="484" />
+        <di:waypoint x="1850" y="1002" />
+        <di:waypoint x="1800" y="1002" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_39SLAEscalate_di" bpmnElement="Flow_39SLAEscalate">
-        <di:waypoint x="1612" y="506" />
-        <di:waypoint x="1692" y="442" />
+        <di:waypoint x="1722" y="506" />
+        <di:waypoint x="1802" y="442" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_310_OversightMerge_di" bpmnElement="Flow_310_OversightMerge">
-        <di:waypoint x="1790" y="1002" />
-        <di:waypoint x="1840" y="1002" />
+        <di:waypoint x="1900" y="1002" />
+        <di:waypoint x="1950" y="1002" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_PathwayMerge_Oversight_di" bpmnElement="Flow_PathwayMerge_Oversight">
-        <di:waypoint x="1865" y="977" />
-        <di:waypoint x="1865" y="859" />
-        <di:waypoint x="1940" y="859" />
+        <di:waypoint x="1975" y="977" />
+        <di:waypoint x="1975" y="859" />
+        <di:waypoint x="2050" y="859" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Oversight_Contracting_di" bpmnElement="Flow_Oversight_Contracting">
-        <di:waypoint x="1990" y="819" />
-        <di:waypoint x="1990" y="359" />
-        <di:waypoint x="2090" y="359" />
+        <di:waypoint x="2100" y="819" />
+        <di:waypoint x="2100" y="359" />
+        <di:waypoint x="2200" y="359" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Contracting_QualityGate_di" bpmnElement="Flow_Contracting_QualityGate">
-        <di:waypoint x="2090" y="359" />
-        <di:waypoint x="2190" y="359" />
-        <di:waypoint x="2190" y="274" />
+        <di:waypoint x="2200" y="359" />
+        <di:waypoint x="2300" y="359" />
+        <di:waypoint x="2300" y="274" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QualityGate_End_di" bpmnElement="Flow_QualityGate_End">
-        <di:waypoint x="2240" y="234" />
-        <di:waypoint x="2294" y="234" />
+        <di:waypoint x="2350" y="234" />
+        <di:waypoint x="2404" y="234" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QGSLAEscalate_di" bpmnElement="Flow_QGSLAEscalate">
-        <di:waypoint x="2212" y="256" />
-        <di:waypoint x="2212" y="160" />
-        <di:waypoint x="2294" y="160" />
+        <di:waypoint x="2322" y="256" />
+        <di:waypoint x="2322" y="160" />
+        <di:waypoint x="2404" y="160" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_OCC_di" bpmnElement="Assoc_OCC">
