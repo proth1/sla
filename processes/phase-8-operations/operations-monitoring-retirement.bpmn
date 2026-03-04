@@ -163,7 +163,7 @@
       <bpmn:outgoing>Flow_88_CadenceDMN</bpmn:outgoing>
     </bpmn:serviceTask>
 
-    <bpmn:businessRuleTask id="Task_MonitoringCadence" name="Monitoring Cadence&#10;Assignment" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:resultVariable="monitoringCadence" camunda:mapDecisionResult="singleResult">
+    <bpmn:businessRuleTask id="Task_MonitoringCadence" name="Monitoring Cadence&#10;Assignment" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:decisionRefBinding="latest" camunda:resultVariable="monitoringCadence" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_88_CadenceDMN</bpmn:incoming>
       <bpmn:outgoing>Flow_CadenceDMN_OutcomeGateway</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -189,7 +189,7 @@
         <bpmn:outgoing>Flow_8C_Start_ChangeImpact</bpmn:outgoing>
       </bpmn:startEvent>
 
-      <bpmn:businessRuleTask id="Task_8C_ChangeRisk" name="Change Risk&#10;Scoring" camunda:decisionRef="DMN_ChangeRiskScoring" camunda:resultVariable="changeRiskScore" camunda:mapDecisionResult="singleResult">
+      <bpmn:businessRuleTask id="Task_8C_ChangeRisk" name="Change Risk&#10;Scoring" camunda:decisionRef="DMN_ChangeRiskScoring" camunda:decisionRefBinding="latest" camunda:resultVariable="changeRiskScore" camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_8C_Start_ChangeImpact</bpmn:incoming>
         <bpmn:outgoing>Flow_8C_ChangeRisk_Impact</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -382,7 +382,7 @@
     <bpmn:sequenceFlow id="Flow_88_CadenceDMN" sourceRef="Task_88_BenchmarkRecal" targetRef="Task_MonitoringCadence" />
     <bpmn:sequenceFlow id="Flow_CadenceDMN_OutcomeGateway" sourceRef="Task_MonitoringCadence" targetRef="Gateway_MonitoringOutcome" />
 
-    <bpmn:sequenceFlow id="Flow_Outcome_Continue" name="Continue Operations" sourceRef="Gateway_MonitoringOutcome" targetRef="Gateway_ContinueMerge" />
+    <bpmn:sequenceFlow id="Flow_Outcome_Continue" name="Loop: Continue Operations" sourceRef="Gateway_MonitoringOutcome" targetRef="Gateway_ContinueMerge" />
     <bpmn:sequenceFlow id="Flow_Outcome_Change" name="Change Required" sourceRef="Gateway_MonitoringOutcome" targetRef="SubProcess_8C">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${monitoringCadence == 'CHANGE_REQUIRED'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -390,7 +390,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${monitoringCadence == 'RETIRE'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
 
-    <bpmn:sequenceFlow id="Flow_8C_LoopBack" sourceRef="SubProcess_8C" targetRef="Gateway_ContinueMerge" />
+    <bpmn:sequenceFlow id="Flow_8C_LoopBack" name="Loop: Return to Monitoring" sourceRef="SubProcess_8C" targetRef="Gateway_ContinueMerge" />
     <bpmn:sequenceFlow id="Flow_ContinueMerge_81" sourceRef="Gateway_ContinueMerge" targetRef="Task_81_ControlMonitoring" />
 
     <bpmn:sequenceFlow id="Flow_8R_End" sourceRef="SubProcess_8R" targetRef="EndEvent_Retired" />

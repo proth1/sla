@@ -50,6 +50,7 @@
         <bpmn:flowNodeRef>Task_RiskTieredReviewRouting</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_ReviewAuthority</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_ReviewMerge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_AIReviewRouting</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_AICheck</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_AIMerge</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_DecisionDocumentation</bpmn:flowNodeRef>
@@ -74,7 +75,7 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
 
-    <bpmn:businessRuleTask id="Task_RiskTieredReviewRouting" name="4.2 Risk-Tiered&#10;Review Routing" camunda:decisionRef="DMN_GovernanceReviewRouting" camunda:resultVariable="reviewAuthority" camunda:mapDecisionResult="singleResult">
+    <bpmn:businessRuleTask id="Task_RiskTieredReviewRouting" name="4.2 Risk-Tiered&#10;Review Routing" camunda:decisionRef="DMN_GovernanceReviewRouting" camunda:decisionRefBinding="latest" camunda:resultVariable="reviewAuthority" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_Assembly_Routing</bpmn:incoming>
       <bpmn:outgoing>Flow_Routing_AuthGateway</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -129,8 +130,17 @@
       <bpmn:outgoing>Flow_ReviewMerge_AICheck</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:exclusiveGateway id="Gateway_AICheck" name="AI High /&#10;Critical?" default="Flow_AICheck_Skip">
+    <bpmn:businessRuleTask id="Task_AIReviewRouting" name="AI Review Routing"
+      camunda:decisionRef="DMN_GovernanceReviewRouting"
+      camunda:decisionRefBinding="latest"
+      camunda:resultVariable="requiresEthicsReview"
+      camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_ReviewMerge_AICheck</bpmn:incoming>
+      <bpmn:outgoing>Flow_AIRouting_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:exclusiveGateway id="Gateway_AICheck" name="AI High /&#10;Critical?" default="Flow_AICheck_Skip">
+      <bpmn:incoming>Flow_AIRouting_Gateway</bpmn:incoming>
       <bpmn:outgoing>Flow_AICheck_Ethics</bpmn:outgoing>
       <bpmn:outgoing>Flow_AICheck_Skip</bpmn:outgoing>
     </bpmn:exclusiveGateway>
@@ -231,10 +241,11 @@
     <bpmn:sequenceFlow id="Flow_Committee_Merge" sourceRef="Task_GovernanceCommitteeReview" targetRef="Gateway_ReviewMerge" />
     <bpmn:sequenceFlow id="Flow_Advisory_Merge" sourceRef="Task_AdvisoryBoardReview" targetRef="Gateway_ReviewMerge" />
 
-    <bpmn:sequenceFlow id="Flow_ReviewMerge_AICheck" sourceRef="Gateway_ReviewMerge" targetRef="Gateway_AICheck" />
+    <bpmn:sequenceFlow id="Flow_ReviewMerge_AICheck" sourceRef="Gateway_ReviewMerge" targetRef="Task_AIReviewRouting" />
+    <bpmn:sequenceFlow id="Flow_AIRouting_Gateway" sourceRef="Task_AIReviewRouting" targetRef="Gateway_AICheck" />
 
     <bpmn:sequenceFlow id="Flow_AICheck_Ethics" name="Yes" sourceRef="Gateway_AICheck" targetRef="Task_EthicalImpactAssessment">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${aiRiskLevel == 'HIGH' || aiRiskLevel == 'CRITICAL'}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${requiresEthicsReview == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_AICheck_Skip" name="No" sourceRef="Gateway_AICheck" targetRef="Gateway_AIMerge" />
 
@@ -439,10 +450,14 @@
         <dc:Bounds x="905" y="1222" width="50" height="50" />
       </bpmndi:BPMNShape>
 
+      <bpmndi:BPMNShape id="Task_AIReviewRouting_di" bpmnElement="Task_AIReviewRouting">
+        <dc:Bounds x="1015" y="1207" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="Gateway_AICheck_di" bpmnElement="Gateway_AICheck" isMarkerVisible="true">
-        <dc:Bounds x="1015" y="1222" width="50" height="50" />
+        <dc:Bounds x="1175" y="1222" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="999" y="1279" width="82" height="27" />
+          <dc:Bounds x="1159" y="1279" width="82" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -577,20 +592,25 @@
         <di:waypoint x="1015" y="1247" />
       </bpmndi:BPMNEdge>
 
+      <bpmndi:BPMNEdge id="Flow_AIRouting_Gateway_di" bpmnElement="Flow_AIRouting_Gateway">
+        <di:waypoint x="1115" y="1247" />
+        <di:waypoint x="1175" y="1247" />
+      </bpmndi:BPMNEdge>
+
       <bpmndi:BPMNEdge id="Flow_AICheck_Ethics_di" bpmnElement="Flow_AICheck_Ethics">
-        <di:waypoint x="1040" y="1222" />
-        <di:waypoint x="1040" y="767" />
+        <di:waypoint x="1200" y="1222" />
+        <di:waypoint x="1200" y="767" />
         <di:waypoint x="1090" y="767" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1048" y="991" width="22" height="14" />
+          <dc:Bounds x="1208" y="991" width="22" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_AICheck_Skip_di" bpmnElement="Flow_AICheck_Skip">
-        <di:waypoint x="1065" y="1247" />
+        <di:waypoint x="1225" y="1247" />
         <di:waypoint x="1255" y="1247" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1153" y="1229" width="15" height="14" />
+          <dc:Bounds x="1233" y="1229" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
