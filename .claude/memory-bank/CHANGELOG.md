@@ -1,5 +1,30 @@
 # Changelog
 
+## [2026.03.16] - 2026-03-04
+
+### Fixed
+- 4 CRITICAL: Unhandled promise rejections in bpmn-validator.js and element-checker.js, suppressed stderr in validate-bpmn.sh, shell strictness (set -euo pipefail)
+- 6 HIGH: File I/O error handling in security-scanner.js and fix-diagonal-flows.js, glob safety in check-decision-log.sh, unchecked git pull in load-memory-bank-light.sh, pipefail in hook scripts
+- 2 HIGH BPMN: DMN-first violation in Phase 4 governance review, missing phase boundary pattern in Phase 7
+
+### Changed
+- Added `camunda:decisionRefBinding="latest"` to all 7 business rule tasks across 5 BPMN files
+- Replaced wrong Zeebe/SLA automation attribute checks with Camunda 7 attributes (camunda:type, camunda:class)
+- Labeled backward flows with "Loop:" prefix for visual clarity compliance
+- Fixed 8 flow label y-positions in cross-cutting subprocesses to avoid task text overlap
+- Moved Phase 6 timer label to the right of boundary event
+- Derive Descope project ID from env binding instead of hardcoding in auth worker
+- Rewrite logout cookie clearing to use headers.append() per RFC 6265
+
+### Security
+- Added security headers (X-Content-Type-Options, X-Frame-Options, CSP, HSTS, Referrer-Policy) to login and unauthorized pages
+- Clear PENDING_EMAIL cookie on logout with Secure/HttpOnly flags
+- Integrated flow-direction-checker.js into validation pipeline
+
+### Removed
+- Dead `rebuildEdgeXml` function from fix-diagonal-flows.js
+- Extra `docs/presentations/prd.html` build artifact
+
 ## [2026.03.15] - 2026-03-04
 
 ### Fixed

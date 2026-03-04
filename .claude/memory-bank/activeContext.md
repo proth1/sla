@@ -4,14 +4,17 @@
 
 **Date**: 2026-03-04
 **Branch**: main
-**Release Version**: 2026.03.15
+**Release Version**: 2026.03.16
+
+### Completed — Code Audit Sweep (3 PRs merged)
+- **PR #22**: Validator & Script Quality Fixes (17 findings: 4C, 6H, 7M) → merged
+- **PR #23**: Infrastructure Security Fixes (6M findings) → merged
+- **PR #24**: BPMN Governance Compliance Fixes (10 findings: 2H, 8M) → merged
+- All 3 PRs reviewed by pr-orchestrator: APPROVE across the board
+- Combined release 2026.03.16
 
 ### Completed — Phase 8 Operations Layout Fix
 - **PR #21**: Phase 8 Operations BPMN layout cleanup → release 2026.03.15
-- Expanded Automation lane (160→200px) to contain emergency path elements
-- Simplified start event flow from 4-waypoint up-and-over to 2-waypoint horizontal
-- Shifted Vendor pool and elements +40px to maintain inter-pool gap
-- PR reviewed by pr-orchestrator: APPROVE recommendation, all checks passed
 
 ### Completed — Presentation Upgrades (WP3)
 - **PR #20**: Presentation upgrades → release 2026.03.14
