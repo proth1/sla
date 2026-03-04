@@ -18,38 +18,44 @@
 
     <bpmn:laneSet id="LaneSet_CrossCutting">
       <bpmn:lane id="Lane_Business" name="Business">
-        <bpmn:flowNodeRef>StartEvent_CrossCuttingInit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SubProcess_SP1_SLAMonitoring</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP1_Complete</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>SubProcess_SP3_IncidentResponse</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>EndEvent_SP3_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_Governance" name="Governance">
-        <bpmn:flowNodeRef>SubProcess_SP4_RegulatoryChange</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>EndEvent_SP4_Complete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_SP3_IncidentResponse</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP3_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
         <bpmn:flowNodeRef>SubProcess_SP2_VulnerabilityRemediation</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP2_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_Compliance" name="Compliance">
-        <bpmn:flowNodeRef>SubProcess_SP5_ContinuousImprovement</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>EndEvent_SP5_Complete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_SP4_RegulatoryChange</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP4_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_Automation" name="Automation">
+        <bpmn:flowNodeRef>StartEvent_CrossCuttingInit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ParallelFork</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_SP5_ContinuousImprovement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SP5_Complete</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
 
     <bpmn:startEvent id="StartEvent_CrossCuttingInit" name="Governance&#10;Platform&#10;Active">
-      <bpmn:outgoing>Flow_Start_SP1</bpmn:outgoing>
-      <bpmn:outgoing>Flow_Start_SP2</bpmn:outgoing>
-      <bpmn:outgoing>Flow_Start_SP3</bpmn:outgoing>
-      <bpmn:outgoing>Flow_Start_SP4</bpmn:outgoing>
-      <bpmn:outgoing>Flow_Start_SP5</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Start_Fork</bpmn:outgoing>
     </bpmn:startEvent>
 
+    <bpmn:parallelGateway id="Gateway_ParallelFork">
+      <bpmn:incoming>Flow_Start_Fork</bpmn:incoming>
+      <bpmn:outgoing>Flow_Fork_SP1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Fork_SP2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Fork_SP3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Fork_SP4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Fork_SP5</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
     <bpmn:subProcess id="SubProcess_SP1_SLAMonitoring" name="SP-Cross-1: SLA Monitoring&#10;&amp; Breach Management">
-      <bpmn:incoming>Flow_Start_SP1</bpmn:incoming>
+      <bpmn:incoming>Flow_Fork_SP1</bpmn:incoming>
       <bpmn:outgoing>Flow_SP1_End</bpmn:outgoing>
 
       <bpmn:startEvent id="SP1_Start_Timer" name="Monitoring&#10;Cycle Timer">
@@ -140,7 +146,7 @@
     </bpmn:subProcess>
 
     <bpmn:subProcess id="SubProcess_SP2_VulnerabilityRemediation" name="SP-Cross-2: Vulnerability&#10;Remediation Lifecycle">
-      <bpmn:incoming>Flow_Start_SP2</bpmn:incoming>
+      <bpmn:incoming>Flow_Fork_SP2</bpmn:incoming>
       <bpmn:outgoing>Flow_SP2_End</bpmn:outgoing>
 
       <bpmn:startEvent id="SP2_Start_Message" name="Vulnerability&#10;Detected">
@@ -254,7 +260,7 @@
     </bpmn:subProcess>
 
     <bpmn:subProcess id="SubProcess_SP3_IncidentResponse" name="SP-Cross-3: Incident&#10;Response">
-      <bpmn:incoming>Flow_Start_SP3</bpmn:incoming>
+      <bpmn:incoming>Flow_Fork_SP3</bpmn:incoming>
       <bpmn:outgoing>Flow_SP3_End</bpmn:outgoing>
 
       <bpmn:startEvent id="SP3_Start_Message" name="Incident&#10;Detected">
@@ -380,7 +386,7 @@
     </bpmn:subProcess>
 
     <bpmn:subProcess id="SubProcess_SP4_RegulatoryChange" name="SP-Cross-4: Regulatory&#10;Change Management">
-      <bpmn:incoming>Flow_Start_SP4</bpmn:incoming>
+      <bpmn:incoming>Flow_Fork_SP4</bpmn:incoming>
       <bpmn:outgoing>Flow_SP4_End</bpmn:outgoing>
 
       <bpmn:startEvent id="SP4_Start_Message" name="Regulatory&#10;Update Received">
@@ -461,7 +467,7 @@
     </bpmn:subProcess>
 
     <bpmn:subProcess id="SubProcess_SP5_ContinuousImprovement" name="SP-Cross-5: Continuous Improvement&#10;&amp; Process Mining">
-      <bpmn:incoming>Flow_Start_SP5</bpmn:incoming>
+      <bpmn:incoming>Flow_Fork_SP5</bpmn:incoming>
       <bpmn:outgoing>Flow_SP5_End</bpmn:outgoing>
 
       <bpmn:startEvent id="SP5_Start_Timer" name="Quarterly&#10;Review Cycle">
@@ -551,11 +557,12 @@
       <bpmn:incoming>Flow_SP5_End</bpmn:incoming>
     </bpmn:endEvent>
 
-    <bpmn:sequenceFlow id="Flow_Start_SP1" sourceRef="StartEvent_CrossCuttingInit" targetRef="SubProcess_SP1_SLAMonitoring" />
-    <bpmn:sequenceFlow id="Flow_Start_SP2" sourceRef="StartEvent_CrossCuttingInit" targetRef="SubProcess_SP2_VulnerabilityRemediation" />
-    <bpmn:sequenceFlow id="Flow_Start_SP3" sourceRef="StartEvent_CrossCuttingInit" targetRef="SubProcess_SP3_IncidentResponse" />
-    <bpmn:sequenceFlow id="Flow_Start_SP4" sourceRef="StartEvent_CrossCuttingInit" targetRef="SubProcess_SP4_RegulatoryChange" />
-    <bpmn:sequenceFlow id="Flow_Start_SP5" sourceRef="StartEvent_CrossCuttingInit" targetRef="SubProcess_SP5_ContinuousImprovement" />
+    <bpmn:sequenceFlow id="Flow_Start_Fork" sourceRef="StartEvent_CrossCuttingInit" targetRef="Gateway_ParallelFork" />
+    <bpmn:sequenceFlow id="Flow_Fork_SP1" sourceRef="Gateway_ParallelFork" targetRef="SubProcess_SP1_SLAMonitoring" />
+    <bpmn:sequenceFlow id="Flow_Fork_SP2" sourceRef="Gateway_ParallelFork" targetRef="SubProcess_SP2_VulnerabilityRemediation" />
+    <bpmn:sequenceFlow id="Flow_Fork_SP3" sourceRef="Gateway_ParallelFork" targetRef="SubProcess_SP3_IncidentResponse" />
+    <bpmn:sequenceFlow id="Flow_Fork_SP4" sourceRef="Gateway_ParallelFork" targetRef="SubProcess_SP4_RegulatoryChange" />
+    <bpmn:sequenceFlow id="Flow_Fork_SP5" sourceRef="Gateway_ParallelFork" targetRef="SubProcess_SP5_ContinuousImprovement" />
     <bpmn:sequenceFlow id="Flow_SP1_End" sourceRef="SubProcess_SP1_SLAMonitoring" targetRef="EndEvent_SP1_Complete" />
     <bpmn:sequenceFlow id="Flow_SP2_End" sourceRef="SubProcess_SP2_VulnerabilityRemediation" targetRef="EndEvent_SP2_Complete" />
     <bpmn:sequenceFlow id="Flow_SP3_End" sourceRef="SubProcess_SP3_IncidentResponse" targetRef="EndEvent_SP3_Complete" />
@@ -572,149 +579,157 @@
     <bpmndi:BPMNPlane id="BPMNPlane_CrossCutting" bpmnElement="Collaboration_CrossCutting">
 
       <bpmndi:BPMNShape id="Participant_EnterpriseGovernance_di" bpmnElement="Participant_EnterpriseGovernance" isHorizontal="true">
-        <dc:Bounds x="155" y="47" width="1620" height="660" />
+        <dc:Bounds x="155" y="47" width="620" height="660" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
-        <dc:Bounds x="185" y="47" width="1590" height="165" />
+        <dc:Bounds x="185" y="47" width="590" height="165" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
-        <dc:Bounds x="185" y="212" width="1590" height="130" />
+        <dc:Bounds x="185" y="212" width="590" height="130" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_TechnicalAssessment_di" bpmnElement="Lane_TechnicalAssessment" isHorizontal="true">
-        <dc:Bounds x="185" y="342" width="1590" height="130" />
+        <dc:Bounds x="185" y="342" width="590" height="130" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
-        <dc:Bounds x="185" y="472" width="1590" height="130" />
+        <dc:Bounds x="185" y="472" width="590" height="130" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
-        <dc:Bounds x="185" y="602" width="1590" height="105" />
+        <dc:Bounds x="185" y="602" width="590" height="105" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_CrossCuttingInit_di" bpmnElement="StartEvent_CrossCuttingInit">
-        <dc:Bounds x="248" y="111" width="36" height="36" />
+        <dc:Bounds x="248" y="636" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="226" y="154" width="80" height="40" />
+          <dc:Bounds x="226" y="679" width="80" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
+      <bpmndi:BPMNShape id="Gateway_ParallelFork_di" bpmnElement="Gateway_ParallelFork">
+        <dc:Bounds x="330" y="629" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="SubProcess_SP1_SLAMonitoring_di" bpmnElement="SubProcess_SP1_SLAMonitoring" isExpanded="false">
-        <dc:Bounds x="360" y="89" width="100" height="80" />
+        <dc:Bounds x="450" y="89" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP1_Complete_di" bpmnElement="EndEvent_SP1_Complete">
-        <dc:Bounds x="532" y="111" width="36" height="36" />
+        <dc:Bounds x="620" y="111" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="516" y="154" width="68" height="27" />
+          <dc:Bounds x="604" y="154" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SubProcess_SP3_IncidentResponse_di" bpmnElement="SubProcess_SP3_IncidentResponse" isExpanded="false">
-        <dc:Bounds x="640" y="89" width="100" height="80" />
+        <dc:Bounds x="450" y="237" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP3_Complete_di" bpmnElement="EndEvent_SP3_Complete">
-        <dc:Bounds x="812" y="111" width="36" height="36" />
+        <dc:Bounds x="620" y="259" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="796" y="154" width="68" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="SubProcess_SP4_RegulatoryChange_di" bpmnElement="SubProcess_SP4_RegulatoryChange" isExpanded="false">
-        <dc:Bounds x="360" y="237" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="EndEvent_SP4_Complete_di" bpmnElement="EndEvent_SP4_Complete">
-        <dc:Bounds x="532" y="259" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="516" y="302" width="68" height="27" />
+          <dc:Bounds x="604" y="302" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SubProcess_SP2_VulnerabilityRemediation_di" bpmnElement="SubProcess_SP2_VulnerabilityRemediation" isExpanded="false">
-        <dc:Bounds x="360" y="367" width="100" height="80" />
+        <dc:Bounds x="450" y="367" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP2_Complete_di" bpmnElement="EndEvent_SP2_Complete">
-        <dc:Bounds x="532" y="389" width="36" height="36" />
+        <dc:Bounds x="620" y="389" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="516" y="432" width="68" height="27" />
+          <dc:Bounds x="604" y="432" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SubProcess_SP4_RegulatoryChange_di" bpmnElement="SubProcess_SP4_RegulatoryChange" isExpanded="false">
+        <dc:Bounds x="450" y="497" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_SP4_Complete_di" bpmnElement="EndEvent_SP4_Complete">
+        <dc:Bounds x="620" y="519" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="604" y="562" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SubProcess_SP5_ContinuousImprovement_di" bpmnElement="SubProcess_SP5_ContinuousImprovement" isExpanded="false">
-        <dc:Bounds x="360" y="497" width="100" height="80" />
+        <dc:Bounds x="450" y="614" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP5_Complete_di" bpmnElement="EndEvent_SP5_Complete">
-        <dc:Bounds x="532" y="519" width="36" height="36" />
+        <dc:Bounds x="620" y="636" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="516" y="562" width="68" height="27" />
+          <dc:Bounds x="604" y="679" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
-      <bpmndi:BPMNEdge id="Flow_Start_SP1_di" bpmnElement="Flow_Start_SP1">
-        <di:waypoint x="284" y="129" />
-        <di:waypoint x="360" y="129" />
+      <bpmndi:BPMNEdge id="Flow_Start_Fork_di" bpmnElement="Flow_Start_Fork">
+        <di:waypoint x="284" y="654" />
+        <di:waypoint x="330" y="654" />
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_Start_SP2_di" bpmnElement="Flow_Start_SP2">
-        <di:waypoint x="266" y="147" />
-        <di:waypoint x="266" y="407" />
-        <di:waypoint x="360" y="407" />
+      <bpmndi:BPMNEdge id="Flow_Fork_SP1_di" bpmnElement="Flow_Fork_SP1">
+        <di:waypoint x="355" y="629" />
+        <di:waypoint x="355" y="129" />
+        <di:waypoint x="450" y="129" />
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_Start_SP3_di" bpmnElement="Flow_Start_SP3">
-        <di:waypoint x="284" y="129" />
-        <di:waypoint x="312" y="129" />
-        <di:waypoint x="312" y="129" />
-        <di:waypoint x="640" y="129" />
+      <bpmndi:BPMNEdge id="Flow_Fork_SP3_di" bpmnElement="Flow_Fork_SP3">
+        <di:waypoint x="355" y="629" />
+        <di:waypoint x="355" y="277" />
+        <di:waypoint x="450" y="277" />
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_Start_SP4_di" bpmnElement="Flow_Start_SP4">
-        <di:waypoint x="266" y="147" />
-        <di:waypoint x="266" y="277" />
-        <di:waypoint x="360" y="277" />
+      <bpmndi:BPMNEdge id="Flow_Fork_SP2_di" bpmnElement="Flow_Fork_SP2">
+        <di:waypoint x="355" y="629" />
+        <di:waypoint x="355" y="407" />
+        <di:waypoint x="450" y="407" />
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_Start_SP5_di" bpmnElement="Flow_Start_SP5">
-        <di:waypoint x="266" y="147" />
-        <di:waypoint x="266" y="537" />
-        <di:waypoint x="360" y="537" />
+      <bpmndi:BPMNEdge id="Flow_Fork_SP4_di" bpmnElement="Flow_Fork_SP4">
+        <di:waypoint x="355" y="629" />
+        <di:waypoint x="355" y="537" />
+        <di:waypoint x="450" y="537" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Fork_SP5_di" bpmnElement="Flow_Fork_SP5">
+        <di:waypoint x="380" y="654" />
+        <di:waypoint x="450" y="654" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP1_End_di" bpmnElement="Flow_SP1_End">
-        <di:waypoint x="460" y="129" />
-        <di:waypoint x="532" y="129" />
-      </bpmndi:BPMNEdge>
-
-      <bpmndi:BPMNEdge id="Flow_SP2_End_di" bpmnElement="Flow_SP2_End">
-        <di:waypoint x="460" y="407" />
-        <di:waypoint x="532" y="407" />
+        <di:waypoint x="550" y="129" />
+        <di:waypoint x="620" y="129" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP3_End_di" bpmnElement="Flow_SP3_End">
-        <di:waypoint x="740" y="129" />
-        <di:waypoint x="812" y="129" />
+        <di:waypoint x="550" y="277" />
+        <di:waypoint x="620" y="277" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP2_End_di" bpmnElement="Flow_SP2_End">
+        <di:waypoint x="550" y="407" />
+        <di:waypoint x="620" y="407" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP4_End_di" bpmnElement="Flow_SP4_End">
-        <di:waypoint x="460" y="277" />
-        <di:waypoint x="532" y="277" />
+        <di:waypoint x="550" y="537" />
+        <di:waypoint x="620" y="537" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP5_End_di" bpmnElement="Flow_SP5_End">
-        <di:waypoint x="460" y="537" />
-        <di:waypoint x="532" y="537" />
+        <di:waypoint x="550" y="654" />
+        <di:waypoint x="620" y="654" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>
@@ -801,7 +816,7 @@
         <di:waypoint x="605" y="100" />
         <di:waypoint x="670" y="100" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="614" y="82" width="57" height="14" />
+          <dc:Bounds x="610" y="42" width="57" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
@@ -833,8 +848,10 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP1_NoAction_di" bpmnElement="Flow_SP1_NoAction">
-        <di:waypoint x="605" y="100" />
-        <di:waypoint x="835" y="100" />
+        <di:waypoint x="580" y="75" />
+        <di:waypoint x="580" y="30" />
+        <di:waypoint x="860" y="30" />
+        <di:waypoint x="860" y="75" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP1_50_Merge_di" bpmnElement="Flow_SP1_50_Merge">
