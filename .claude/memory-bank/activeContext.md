@@ -4,7 +4,14 @@
 
 **Date**: 2026-03-04
 **Branch**: main
-**Release Version**: 2026.03.16
+**Release Version**: 2026.03.17
+
+### Completed — Onboarding-Only Customer Project
+- **PR #26**: First customer-specific project in mono-repo → merged, release 2026.03.17
+- 4 OB-specific DMN tables (risk tier, pathway routing, governance routing, SLA breach escalation)
+- 7 BPMN process models (5 phases + orchestrator + post-onboarding summary)
+- 22-slide HTML presentation with D3 charts
+- All validations passed, pr-orchestrator APPROVED
 
 ### Completed — Code Audit Sweep (3 PRs merged)
 - **PR #22**: Validator & Script Quality Fixes (17 findings: 4C, 6H, 7M) → merged
@@ -40,7 +47,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.15 |
+| Release Version | 2026.03.17 |
 | DMN Tables | 8 |
 | BPMN Models | 10 |
 | BPMN SVG Diagrams | 10 |

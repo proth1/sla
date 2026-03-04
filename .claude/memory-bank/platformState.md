@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.16
+**Current Version**: 2026.03.17
 **Last Release**: 2026-03-04
-**Total Releases**: 16
+**Total Releases**: 17
 
 ## Artifact Counts
 
@@ -30,6 +30,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.17 | 2026-03-04 | #26 | Onboarding-only customer project: 4 DMN tables, 7 BPMNs, 22-slide presentation |
 | 2026.03.16 | 2026-03-04 | #22,#23,#24 | Code audit fixes: 33 findings across validators, BPMN governance, infra security |
 | 2026.03.15 | 2026-03-04 | #21 | Phase 8 Operations BPMN layout fix: expanded Automation lane, fixed start event routing |
 | 2026.03.14 | 2026-03-04 | #20 | Presentation upgrades: CTA rewrite, competitive positioning, BPMN legend, persona anchors |

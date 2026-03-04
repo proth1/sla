@@ -1,5 +1,14 @@
 # Changelog
 
+## [2026.03.17] - 2026-03-04
+
+### Added
+- Onboarding-only customer project: first customer-specific engagement in mono-repo
+- 4 OB-specific DMN tables (OB-DMN-1 risk tier, OB-DMN-2 pathway routing, OB-DMN-3 governance routing, OB-DMN-4 SLA breach escalation)
+- 7 BPMN process models: 5 phase models (Intake → Contracting), orchestrator (25-day SLA), post-onboarding summary
+- 22-slide HTML presentation with D3 charts for cycle time and automation targets
+- OB_ namespace prefix pattern for customer-specific Camunda deployments
+
 ## [2026.03.16] - 2026-03-04
 
 ### Fixed
