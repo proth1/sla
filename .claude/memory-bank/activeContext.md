@@ -4,7 +4,13 @@
 
 **Date**: 2026-03-04
 **Branch**: main
-**Release Version**: 2026.03.13
+**Release Version**: 2026.03.14
+
+### Completed — Presentation Upgrades (WP3)
+- **PR #20**: Presentation upgrades → release 2026.03.14
+- 2 new slides: competitive positioning, BPMN notation guide (35→37 slides)
+- CTA rewrite with CRO/CTO/CCO decision requests and deployment timeline
+- 6 persona value anchors, 5 chart annotations, automation % qualified as targets
 
 ### Completed — DMN Quality Fixes (WP4)
 - **PR #19**: DMN quality fixes and governance metadata → release 2026.03.13

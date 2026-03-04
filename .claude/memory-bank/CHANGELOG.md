@@ -1,5 +1,19 @@
 # Changelog
 
+## [2026.03.14] - 2026-03-04
+
+### Added
+- Competitive positioning slide: SLA vs ServiceNow GRC vs OneTrust vs ProcessUnity comparison matrix
+- BPMN notation guide slide: events, gateways, activities, and structural element legend
+- Persona value anchors for 6 under-served personas on relevant phase slides
+- Key insight annotations below all 5 D3 charts
+- Structured CTA slide with CRO/CTO/CCO decision requests, ROI projections, deployment timeline
+
+### Changed
+- All automation percentages labeled "Automation Target" with Horizon 3 design-state footnotes
+- Slide count 35 → 37 with full navigation renumbering
+- DMN table details slide updated with FIRST hit policies for DMN-1, DMN-2, DMN-6
+
 ## [2026.03.13] - 2026-03-04
 
 ### Fixed
