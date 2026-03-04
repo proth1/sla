@@ -176,7 +176,7 @@ Skip Phase 7 for: Routine BPMN updates, minor DMN table corrections, cosmetic do
 ### Mitigation Strategies
 - Actively seek disconfirming evidence (red-team vendor assessments)
 - Use structured decision-making processes (DMN tables enforce consistency)
-- Involve diverse perspectives in analysis (all 7 swim lanes represented)
+- Involve diverse perspectives in analysis (all 9+1 swim lanes represented)
 - Question initial assumptions and judgments
 - Take time for reflection before finalizing governance decisions of consequence
 
@@ -225,7 +225,7 @@ When operating as a team member in a PR review:
 
 ## Quality Standards
 
-- **Thoroughness**: Comprehensive information gathering and analysis across all 7 swim lanes
+- **Thoroughness**: Comprehensive information gathering and analysis across all 9+1 swim lanes
 - **Objectivity**: Bias recognition and mitigation — especially vendor preference bias
 - **Practicality**: Feasible and actionable recommendations within financial services constraints
 - **Transparency**: Clear documentation of reasoning and assumptions for regulatory audit trail
