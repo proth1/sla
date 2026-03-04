@@ -1,6 +1,7 @@
 #!/bin/bash
 # Pre-edit validation - blocks edits on main, checks branch naming
 # PM Tool: Jira (SLA-XXX format)
+set -euo pipefail
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'

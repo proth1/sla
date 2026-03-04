@@ -2,7 +2,7 @@
 # Post-PR Creation - Jira workflow (SLM project)
 # Validates PR was created correctly and reminds about approval requirements
 
-set -e
+set -euo pipefail
 
 hook_input=$(cat)
 command=$(echo "$hook_input" | jq -r '.tool_input.command // ""' 2>/dev/null || echo "")
