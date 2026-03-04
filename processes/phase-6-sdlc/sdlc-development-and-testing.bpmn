@@ -518,384 +518,385 @@
     <bpmndi:BPMNPlane id="BPMNPlane_Phase6SDLC" bpmnElement="Collaboration_Phase6SDLC">
 
       <bpmndi:BPMNShape id="Participant_EnterpriseGovernance_di" bpmnElement="Participant_EnterpriseGovernance" isHorizontal="true">
-        <dc:Bounds x="155" y="47" width="2380" height="1125" />
+        <dc:Bounds x="155" y="47" width="1900" height="860" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
-        <dc:Bounds x="185" y="47" width="2350" height="125" />
+        <dc:Bounds x="185" y="47" width="1870" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
-        <dc:Bounds x="185" y="172" width="2350" height="125" />
+        <dc:Bounds x="185" y="177" width="1870" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Contracting_di" bpmnElement="Lane_Contracting" isHorizontal="true">
-        <dc:Bounds x="185" y="297" width="2350" height="125" />
+        <dc:Bounds x="185" y="307" width="1870" height="60" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_TechnicalAssessment_di" bpmnElement="Lane_TechnicalAssessment" isHorizontal="true">
-        <dc:Bounds x="185" y="422" width="2350" height="125" />
+        <dc:Bounds x="185" y="367" width="1870" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_AIReview_di" bpmnElement="Lane_AIReview" isHorizontal="true">
-        <dc:Bounds x="185" y="547" width="2350" height="125" />
+        <dc:Bounds x="185" y="497" width="1870" height="60" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
-        <dc:Bounds x="185" y="672" width="2350" height="125" />
+        <dc:Bounds x="185" y="557" width="1870" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
-        <dc:Bounds x="185" y="797" width="2350" height="125" />
+        <dc:Bounds x="185" y="687" width="1870" height="60" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
-        <dc:Bounds x="185" y="922" width="2350" height="250" />
+        <dc:Bounds x="185" y="747" width="1870" height="160" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Participant_VendorThirdParty_di" bpmnElement="Participant_VendorThirdParty" isHorizontal="true">
-        <dc:Bounds x="155" y="1202" width="2380" height="125" />
+        <dc:Bounds x="155" y="937" width="1900" height="130" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_VendorResponse_di" bpmnElement="Lane_VendorResponse" isHorizontal="true">
-        <dc:Bounds x="185" y="1202" width="2350" height="125" />
+        <dc:Bounds x="185" y="937" width="1870" height="130" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_Phase6Initiated_di" bpmnElement="StartEvent_Phase6Initiated">
-        <dc:Bounds x="248" y="91" width="36" height="36" />
+        <dc:Bounds x="248" y="94" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="225" y="134" width="83" height="27" />
+          <dc:Bounds x="225" y="137" width="83" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SubProcess_6A_SprintLifecycle_di" bpmnElement="SubProcess_6A_SprintLifecycle" isExpanded="false">
-        <dc:Bounds x="340" y="69" width="100" height="80" />
+        <dc:Bounds x="340" y="72" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="BoundaryEvent_SP6A_SLA_di" bpmnElement="BoundaryEvent_SP6A_SLA">
-        <dc:Bounds x="372" y="131" width="36" height="36" />
+        <dc:Bounds x="372" y="134" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="416" y="135" width="48" height="27" />
+          <dc:Bounds x="416" y="138" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP6A_SLAEscalated_di" bpmnElement="EndEvent_SP6A_SLAEscalated">
-        <dc:Bounds x="372" y="185" width="36" height="36" />
+        <dc:Bounds x="472" y="134" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="350" y="228" width="81" height="27" />
+          <dc:Bounds x="450" y="105" width="81" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="BoundaryEvent_Phase6_Timer_di" bpmnElement="BoundaryEvent_Phase6_Timer">
-        <dc:Bounds x="432" y="131" width="36" height="36" />
+        <dc:Bounds x="422" y="134" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="476" y="135" width="65" height="27" />
+          <dc:Bounds x="416" y="173" width="65" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Phase6TimerEscalated_di" bpmnElement="EndEvent_Phase6TimerEscalated">
-        <dc:Bounds x="432" y="185" width="36" height="36" />
+        <dc:Bounds x="472" y="173" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="411" y="228" width="78" height="27" />
+          <dc:Bounds x="516" y="177" width="78" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SubProcess_6B_DevPipeline_di" bpmnElement="SubProcess_6B_DevPipeline" isExpanded="false">
-        <dc:Bounds x="530" y="442" width="100" height="80" />
+        <dc:Bounds x="530" y="392" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="BoundaryEvent_SP6B_SLA_di" bpmnElement="BoundaryEvent_SP6B_SLA">
-        <dc:Bounds x="562" y="504" width="36" height="36" />
+        <dc:Bounds x="562" y="454" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="606" y="508" width="48" height="27" />
+          <dc:Bounds x="606" y="458" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP6B_SLAEscalated_di" bpmnElement="EndEvent_SP6B_SLAEscalated">
-        <dc:Bounds x="562" y="558" width="36" height="36" />
+        <dc:Bounds x="660" y="454" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="541" y="601" width="78" height="27" />
+          <dc:Bounds x="639" y="497" width="78" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_Parallel_Split_TC_di" bpmnElement="Gateway_Parallel_Split_TC">
-        <dc:Bounds x="705" y="457" width="50" height="50" />
+        <dc:Bounds x="705" y="407" width="50" height="50" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SubProcess_6C_TestingPipeline_di" bpmnElement="SubProcess_6C_TestingPipeline" isExpanded="false">
-        <dc:Bounds x="850" y="442" width="100" height="80" />
+        <dc:Bounds x="830" y="392" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="BoundaryEvent_SP6C_SLA_di" bpmnElement="BoundaryEvent_SP6C_SLA">
-        <dc:Bounds x="882" y="504" width="36" height="36" />
+        <dc:Bounds x="862" y="454" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="926" y="508" width="48" height="27" />
+          <dc:Bounds x="906" y="458" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP6C_SLAEscalated_di" bpmnElement="EndEvent_SP6C_SLAEscalated">
-        <dc:Bounds x="882" y="558" width="36" height="36" />
+        <dc:Bounds x="960" y="454" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="858" y="601" width="84" height="27" />
+          <dc:Bounds x="936" y="497" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SubProcess_6D_DevSecOps_di" bpmnElement="SubProcess_6D_DevSecOps" isExpanded="false">
-        <dc:Bounds x="850" y="962" width="100" height="80" />
+        <dc:Bounds x="830" y="787" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="BoundaryEvent_SP6D_SLA_di" bpmnElement="BoundaryEvent_SP6D_SLA">
-        <dc:Bounds x="882" y="1024" width="36" height="36" />
+        <dc:Bounds x="862" y="849" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="926" y="1028" width="48" height="27" />
+          <dc:Bounds x="906" y="853" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP6D_SLAEscalated_di" bpmnElement="EndEvent_SP6D_SLAEscalated">
-        <dc:Bounds x="882" y="1078" width="36" height="36" />
+        <dc:Bounds x="960" y="849" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="860" y="1121" width="80" height="27" />
+          <dc:Bounds x="938" y="892" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_Parallel_Join_TC_di" bpmnElement="Gateway_Parallel_Join_TC">
-        <dc:Bounds x="1025" y="457" width="50" height="50" />
+        <dc:Bounds x="1005" y="407" width="50" height="50" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SubProcess_6E_ComplianceGates_di" bpmnElement="SubProcess_6E_ComplianceGates" isExpanded="false">
-        <dc:Bounds x="1160" y="692" width="100" height="80" />
+        <dc:Bounds x="1130" y="582" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="BoundaryEvent_SP6E_SLA_di" bpmnElement="BoundaryEvent_SP6E_SLA">
-        <dc:Bounds x="1192" y="754" width="36" height="36" />
+        <dc:Bounds x="1162" y="644" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1236" y="758" width="48" height="27" />
+          <dc:Bounds x="1206" y="648" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP6E_SLAEscalated_di" bpmnElement="EndEvent_SP6E_SLAEscalated">
-        <dc:Bounds x="1192" y="808" width="36" height="36" />
+        <dc:Bounds x="1262" y="644" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1170" y="851" width="80" height="27" />
+          <dc:Bounds x="1240" y="615" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SubProcess_6F_SprintReview_di" bpmnElement="SubProcess_6F_SprintReview" isExpanded="false">
-        <dc:Bounds x="1380" y="69" width="100" height="80" />
+        <dc:Bounds x="1330" y="72" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="BoundaryEvent_SP6F_SLA_di" bpmnElement="BoundaryEvent_SP6F_SLA">
-        <dc:Bounds x="1412" y="131" width="36" height="36" />
+        <dc:Bounds x="1362" y="134" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1456" y="135" width="48" height="27" />
+          <dc:Bounds x="1406" y="138" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_SP6F_SLAEscalated_di" bpmnElement="EndEvent_SP6F_SLAEscalated">
-        <dc:Bounds x="1412" y="185" width="36" height="36" />
+        <dc:Bounds x="1462" y="134" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1390" y="228" width="80" height="27" />
+          <dc:Bounds x="1440" y="105" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_QualityGate_Merge_di" bpmnElement="Gateway_QualityGate_Merge" isMarkerVisible="true">
-        <dc:Bounds x="1565" y="84" width="50" height="50" />
+        <dc:Bounds x="1515" y="87" width="50" height="50" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_QualityGate_di" bpmnElement="Gateway_QualityGate" isMarkerVisible="true">
-        <dc:Bounds x="1705" y="187" width="50" height="50" />
+        <dc:Bounds x="1625" y="197" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1690" y="244" width="79" height="27" />
+          <dc:Bounds x="1610" y="254" width="79" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_QualityGateRejected_di" bpmnElement="EndEvent_QualityGateRejected">
-        <dc:Bounds x="1837" y="194" width="36" height="36" />
+        <dc:Bounds x="1757" y="204" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1812" y="237" width="86" height="40" />
+          <dc:Bounds x="1732" y="247" width="86" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Phase6Complete_di" bpmnElement="EndEvent_Phase6Complete">
-        <dc:Bounds x="1837" y="91" width="36" height="36" />
+        <dc:Bounds x="1757" y="94" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1812" y="134" width="86" height="40" />
+          <dc:Bounds x="1732" y="137" width="86" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_Vendor_Phase6_di" bpmnElement="StartEvent_Vendor_Phase6">
-        <dc:Bounds x="720" y="1246" width="36" height="36" />
+        <dc:Bounds x="720" y="984" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="706" y="1289" width="64" height="27" />
+          <dc:Bounds x="706" y="1027" width="64" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_Vendor_ProvideBuildArtifacts_di" bpmnElement="Task_Vendor_ProvideBuildArtifacts">
-        <dc:Bounds x="820" y="1224" width="100" height="80" />
+        <dc:Bounds x="820" y="962" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Vendor_Phase6_di" bpmnElement="EndEvent_Vendor_Phase6">
-        <dc:Bounds x="992" y="1246" width="36" height="36" />
+        <dc:Bounds x="992" y="984" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="969" y="1289" width="82" height="27" />
+          <dc:Bounds x="969" y="1027" width="82" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Annotation_OCC_DORA_di" bpmnElement="Annotation_OCC_DORA">
-        <dc:Bounds x="960" y="962" width="550" height="55" />
+        <dc:Bounds x="200" y="1097" width="550" height="55" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Annotation_SOX_Compliance_di" bpmnElement="Annotation_SOX_Compliance">
-        <dc:Bounds x="1270" y="692" width="550" height="55" />
+        <dc:Bounds x="770" y="1097" width="550" height="55" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Flow_Start_SP6A_di" bpmnElement="Flow_Start_SP6A">
-        <di:waypoint x="284" y="109" />
-        <di:waypoint x="340" y="109" />
+        <di:waypoint x="284" y="112" />
+        <di:waypoint x="340" y="112" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6A_SLA_End_di" bpmnElement="Flow_SP6A_SLA_End">
-        <di:waypoint x="390" y="167" />
-        <di:waypoint x="390" y="185" />
+        <di:waypoint x="408" y="152" />
+        <di:waypoint x="472" y="152" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Phase6_Timer_End_di" bpmnElement="Flow_Phase6_Timer_End">
-        <di:waypoint x="450" y="167" />
-        <di:waypoint x="450" y="185" />
+        <di:waypoint x="450" y="170" />
+        <di:waypoint x="450" y="191" />
+        <di:waypoint x="472" y="191" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6A_SP6B_di" bpmnElement="Flow_SP6A_SP6B">
-        <di:waypoint x="440" y="109" />
-        <di:waypoint x="485" y="109" />
-        <di:waypoint x="485" y="482" />
-        <di:waypoint x="530" y="482" />
+        <di:waypoint x="440" y="112" />
+        <di:waypoint x="485" y="112" />
+        <di:waypoint x="485" y="432" />
+        <di:waypoint x="530" y="432" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6B_SLA_End_di" bpmnElement="Flow_SP6B_SLA_End">
-        <di:waypoint x="580" y="540" />
-        <di:waypoint x="580" y="558" />
+        <di:waypoint x="598" y="472" />
+        <di:waypoint x="660" y="472" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6B_Split_di" bpmnElement="Flow_SP6B_Split">
-        <di:waypoint x="630" y="482" />
-        <di:waypoint x="705" y="482" />
+        <di:waypoint x="630" y="432" />
+        <di:waypoint x="705" y="432" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Split_SP6C_di" bpmnElement="Flow_Split_SP6C">
-        <di:waypoint x="755" y="482" />
-        <di:waypoint x="850" y="482" />
+        <di:waypoint x="755" y="432" />
+        <di:waypoint x="830" y="432" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Split_SP6D_di" bpmnElement="Flow_Split_SP6D">
-        <di:waypoint x="730" y="507" />
-        <di:waypoint x="730" y="1002" />
-        <di:waypoint x="850" y="1002" />
+        <di:waypoint x="730" y="457" />
+        <di:waypoint x="730" y="827" />
+        <di:waypoint x="830" y="827" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6C_SLA_End_di" bpmnElement="Flow_SP6C_SLA_End">
-        <di:waypoint x="900" y="540" />
-        <di:waypoint x="900" y="558" />
+        <di:waypoint x="898" y="472" />
+        <di:waypoint x="960" y="472" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6D_SLA_End_di" bpmnElement="Flow_SP6D_SLA_End">
-        <di:waypoint x="900" y="1060" />
-        <di:waypoint x="900" y="1078" />
+        <di:waypoint x="898" y="867" />
+        <di:waypoint x="960" y="867" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6C_Join_di" bpmnElement="Flow_SP6C_Join">
-        <di:waypoint x="950" y="482" />
-        <di:waypoint x="1025" y="482" />
+        <di:waypoint x="930" y="432" />
+        <di:waypoint x="1005" y="432" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6D_Join_di" bpmnElement="Flow_SP6D_Join">
-        <di:waypoint x="950" y="1002" />
-        <di:waypoint x="1050" y="1002" />
-        <di:waypoint x="1050" y="507" />
+        <di:waypoint x="930" y="827" />
+        <di:waypoint x="1030" y="827" />
+        <di:waypoint x="1030" y="457" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Join_SP6E_di" bpmnElement="Flow_Join_SP6E">
-        <di:waypoint x="1075" y="482" />
-        <di:waypoint x="1117" y="482" />
-        <di:waypoint x="1117" y="732" />
-        <di:waypoint x="1160" y="732" />
+        <di:waypoint x="1055" y="432" />
+        <di:waypoint x="1092" y="432" />
+        <di:waypoint x="1092" y="622" />
+        <di:waypoint x="1130" y="622" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6E_SLA_End_di" bpmnElement="Flow_SP6E_SLA_End">
-        <di:waypoint x="1210" y="790" />
-        <di:waypoint x="1210" y="808" />
+        <di:waypoint x="1198" y="662" />
+        <di:waypoint x="1262" y="662" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6E_SP6F_di" bpmnElement="Flow_SP6E_SP6F">
-        <di:waypoint x="1260" y="732" />
-        <di:waypoint x="1320" y="732" />
-        <di:waypoint x="1320" y="109" />
-        <di:waypoint x="1380" y="109" />
+        <di:waypoint x="1230" y="622" />
+        <di:waypoint x="1280" y="622" />
+        <di:waypoint x="1280" y="112" />
+        <di:waypoint x="1330" y="112" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6F_SLA_End_di" bpmnElement="Flow_SP6F_SLA_End">
-        <di:waypoint x="1430" y="167" />
-        <di:waypoint x="1430" y="185" />
+        <di:waypoint x="1398" y="152" />
+        <di:waypoint x="1462" y="152" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP6F_QGMerge_di" bpmnElement="Flow_SP6F_QGMerge">
-        <di:waypoint x="1480" y="109" />
-        <di:waypoint x="1565" y="109" />
+        <di:waypoint x="1430" y="112" />
+        <di:waypoint x="1515" y="112" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QGRejected_Merge_di" bpmnElement="Flow_QGRejected_Merge">
-        <di:waypoint x="1855" y="194" />
-        <di:waypoint x="1855" y="160" />
-        <di:waypoint x="1590" y="160" />
-        <di:waypoint x="1590" y="134" />
+        <di:waypoint x="1775" y="204" />
+        <di:waypoint x="1775" y="160" />
+        <di:waypoint x="1540" y="160" />
+        <di:waypoint x="1540" y="137" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QGMerge_QG_di" bpmnElement="Flow_QGMerge_QG">
-        <di:waypoint x="1615" y="109" />
-        <di:waypoint x="1660" y="109" />
-        <di:waypoint x="1660" y="212" />
-        <di:waypoint x="1705" y="212" />
+        <di:waypoint x="1565" y="112" />
+        <di:waypoint x="1595" y="112" />
+        <di:waypoint x="1595" y="222" />
+        <di:waypoint x="1625" y="222" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QGPassed_di" bpmnElement="Flow_QGPassed">
-        <di:waypoint x="1730" y="187" />
-        <di:waypoint x="1730" y="109" />
-        <di:waypoint x="1837" y="109" />
+        <di:waypoint x="1650" y="197" />
+        <di:waypoint x="1650" y="112" />
+        <di:waypoint x="1757" y="112" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1738" y="143" width="19" height="14" />
+          <dc:Bounds x="1658" y="150" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QGRejected_di" bpmnElement="Flow_QGRejected">
-        <di:waypoint x="1755" y="212" />
-        <di:waypoint x="1837" y="212" />
+        <di:waypoint x="1675" y="222" />
+        <di:waypoint x="1757" y="222" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1787" y="194" width="15" height="14" />
+          <dc:Bounds x="1707" y="204" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_OCC_DORA_di" bpmnElement="Assoc_OCC_DORA">
-        <di:waypoint x="950" y="1002" />
-        <di:waypoint x="960" y="989" />
+        <di:waypoint x="880" y="867" />
+        <di:waypoint x="475" y="1097" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_SOX_Compliance_di" bpmnElement="Assoc_SOX_Compliance">
-        <di:waypoint x="1260" y="732" />
-        <di:waypoint x="1270" y="719" />
+        <di:waypoint x="1180" y="662" />
+        <di:waypoint x="1045" y="1097" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Vendor_Start_Task_di" bpmnElement="Flow_Vendor_Start_Task">
-        <di:waypoint x="756" y="1264" />
-        <di:waypoint x="820" y="1264" />
+        <di:waypoint x="756" y="1002" />
+        <di:waypoint x="820" y="1002" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Vendor_Task_End_di" bpmnElement="Flow_Vendor_Task_End">
-        <di:waypoint x="920" y="1264" />
-        <di:waypoint x="992" y="1264" />
+        <di:waypoint x="920" y="1002" />
+        <di:waypoint x="992" y="1002" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="MsgFlow_VendorFeedback_di" bpmnElement="MsgFlow_VendorFeedback">
-        <di:waypoint x="870" y="1224" />
-        <di:waypoint x="870" y="1172" />
+        <di:waypoint x="870" y="962" />
+        <di:waypoint x="870" y="907" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>
