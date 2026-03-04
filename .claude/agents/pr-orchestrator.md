@@ -16,6 +16,12 @@ Master orchestrator that coordinates all 9 PR review agents as a structured team
 - TypeScript type checking
 - Secrets scanning (gitleaks)
 
+**Phase 0.5: Content-Aware Security Validation** (BLOCKING, CONDITIONAL)
+- BPMN/DMN validation pipeline (`validate-bpmn.sh` with security scanner first gate)
+- Targeted security scan for auth worker, `_worker.js`, presentation files
+- Hardcoded secret detection, open redirect checks
+- Skipped when PR has no BPMN/DMN/security-sensitive files
+
 **Phase 1: Build & Test** (< 5 min, BLOCKING)
 - Project build
 - Unit tests with coverage
@@ -97,6 +103,82 @@ else
 fi
 
 echo "Fast feedback phase: PASSED"
+```
+
+### Phase 0.5: Content-Aware Security Validation (BLOCKING, CONDITIONAL)
+
+Run BPMN/DMN validation and security scanning based on changed files in the PR.
+
+**This phase is MANDATORY when PR touches any of:** `.bpmn`, `.dmn`, `_worker.js`, `wrangler.toml`, auth worker TypeScript files, or presentation HTML.
+
+```bash
+SCRIPT_DIR="scripts/validators"
+PR_FILES=$(git diff --name-only origin/main...HEAD)
+
+# 1. BPMN/DMN files: run full validation pipeline (includes security scanner as first gate)
+BPMN_FILES=$(echo "$PR_FILES" | grep -E '\.(bpmn|dmn)$' || true)
+if [ -n "$BPMN_FILES" ]; then
+  echo "BPMN/DMN files detected — running validation pipeline..."
+
+  # Install validator dependencies if needed
+  if [ ! -d "$SCRIPT_DIR/node_modules" ]; then
+    cd "$SCRIPT_DIR" && npm install && cd -
+  fi
+
+  # Run full pipeline (security scanner + BPMN validator + overlap checker + element checker + DMN scan)
+  if ! bash "$SCRIPT_DIR/validate-bpmn.sh"; then
+    echo "ERROR: BPMN/DMN validation failed"
+    exit 1
+  fi
+  echo "BPMN/DMN validation: PASSED"
+fi
+
+# 2. Security-sensitive files: run security scanner directly
+SECURITY_FILES=$(echo "$PR_FILES" | grep -E '(_worker\.(js|ts)|wrangler\.toml|index\.ts|index\.html)$' || true)
+if [ -n "$SECURITY_FILES" ]; then
+  echo "Security-sensitive files detected — running targeted security scan..."
+
+  # Install validator dependencies if needed
+  if [ ! -d "$SCRIPT_DIR/node_modules" ]; then
+    cd "$SCRIPT_DIR" && npm install && cd -
+  fi
+
+  SCAN_FAILED=0
+  for f in $SECURITY_FILES; do
+    EXT="${f##*.}"
+    if [ "$EXT" = "bpmn" ] || [ "$EXT" = "dmn" ]; then
+      # Already covered by BPMN pipeline above
+      continue
+    fi
+    # Check for XXE/injection patterns in XML-like files
+    if [ "$EXT" = "ts" ] || [ "$EXT" = "js" ] || [ "$EXT" = "html" ]; then
+      echo "  Checking: $f"
+      # Check for hardcoded secrets
+      if grep -qE '(sla-proxy-|PROXY_SECRET\s*=\s*"[^"]+")' "$f" 2>/dev/null; then
+        echo "  x CRITICAL: Hardcoded secret detected in $f"
+        SCAN_FAILED=1
+      fi
+      # Check for open redirect patterns (unvalidated redirect params)
+      if grep -qE 'Location.*redirect|formData\.get\(.redirect.\)' "$f" 2>/dev/null; then
+        if ! grep -q 'sanitizeRedirect' "$f" 2>/dev/null; then
+          echo "  x HIGH: Unsanitized redirect parameter in $f"
+          SCAN_FAILED=1
+        fi
+      fi
+    fi
+  done
+
+  if [ "$SCAN_FAILED" -eq 1 ]; then
+    echo "ERROR: Security scan failed for sensitive files"
+    exit 1
+  fi
+  echo "Security-sensitive file scan: PASSED"
+fi
+
+# 3. Skip if no relevant files changed
+if [ -z "$BPMN_FILES" ] && [ -z "$SECURITY_FILES" ]; then
+  echo "INFO: No BPMN/DMN or security-sensitive files in this PR — skipping content-aware validation"
+fi
 ```
 
 ### Phase 1: Build & Test (< 5 min, BLOCKING)
@@ -564,6 +646,11 @@ These conditions MUST be met before PR can be approved:
 | Lint Check | pnpm lint passes | YES |
 | TypeScript Check | pnpm typecheck passes | YES |
 | Dependencies | pnpm install succeeds | YES |
+| **Phase 0.5: Content-Aware Security** | | |
+| BPMN/DMN Validation | validate-bpmn.sh passes (if BPMN/DMN files changed) | YES |
+| Security Scanner | No CRITICAL/HIGH findings in BPMN/DMN XML | YES |
+| Hardcoded Secrets | No secrets in auth worker/presentation files | YES |
+| Open Redirect | sanitizeRedirect() present where redirects used | YES |
 | **Phase 1: Build & Test** | | |
 | Build | pnpm build passes | YES |
 | Unit Tests | pnpm test passes | YES |
