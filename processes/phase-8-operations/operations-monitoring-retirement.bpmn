@@ -14,7 +14,7 @@
     <bpmn:participant id="Participant_EnterpriseGov" name="Phase 8: Production Operations and Retirement — Enterprise Governance Pool" processRef="Process_Phase8Operations" />
     <bpmn:participant id="Participant_VendorParty" name="Vendor / Third Party" processRef="Process_VendorResponse" />
     <bpmn:messageFlow id="MsgFlow_VendorSLAData" name="SLA Performance Data" sourceRef="Task_VendorSLADataSubmission" targetRef="Task_81_ControlMonitoring" />
-    <bpmn:messageFlow id="MsgFlow_VendorRetireNotice" name="Retirement Acknowledgement" sourceRef="Task_VendorRetireAck" targetRef="Task_8R3_VendorNotification" />
+    <bpmn:messageFlow id="MsgFlow_VendorRetireNotice" name="Retirement Acknowledgement" sourceRef="Task_VendorRetireAck" targetRef="SubProcess_8R" />
   </bpmn:collaboration>
 
   <bpmn:process id="Process_Phase8Operations" name="Phase 8: Production Operations and Retirement" isExecutable="false" camunda:historyTimeToLive="180">
@@ -24,28 +24,19 @@
       <bpmn:lane id="Lane_Business" name="Business">
         <bpmn:flowNodeRef>Task_85_VendorPerformance</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_85SLAEscalated</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_8R1_RetirementAssessment</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_8R6_StakeholderComm</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_EmgStakeholderNotify</bpmn:flowNodeRef>
       </bpmn:lane>
 
       <bpmn:lane id="Lane_Governance" name="Governance">
         <bpmn:flowNodeRef>StartEvent_Phase8Initiated</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_8C2_ChangeApproval</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_8R7_FinalAudit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Retired</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_EmgImpactAssessment</bpmn:flowNodeRef>
       </bpmn:lane>
 
       <bpmn:lane id="Lane_Contracting" name="Contracting">
-        <bpmn:flowNodeRef>Task_8R3_VendorNotification</bpmn:flowNodeRef>
       </bpmn:lane>
 
       <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
-        <bpmn:flowNodeRef>Task_8C1_ChangeImpact</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_8C3_ChangeImpl</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_8R2_DataMigrationPlan</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_8R4_DataArchivePurge</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_EmgContainment</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_EmgShutdown</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Terminated</bpmn:flowNodeRef>
@@ -57,7 +48,6 @@
       </bpmn:lane>
 
       <bpmn:lane id="Lane_Compliance" name="Compliance">
-        <bpmn:flowNodeRef>Task_8R4b_ComplianceArchive</bpmn:flowNodeRef>
       </bpmn:lane>
 
       <bpmn:lane id="Lane_Oversight" name="Oversight">
@@ -80,7 +70,6 @@
         <bpmn:flowNodeRef>SubProcess_8R</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_EmgDetect</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_ProcessSLAEscalated</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_8R5_KnowledgePreserve</bpmn:flowNodeRef>
       </bpmn:lane>
 
     </bpmn:laneSet>
@@ -911,7 +900,9 @@
 
       <bpmndi:BPMNEdge id="MsgFlow_VendorRetireNotice_di" bpmnElement="MsgFlow_VendorRetireNotice">
         <di:waypoint x="510" y="1407" />
-        <di:waypoint x="510" y="1287" />
+        <di:waypoint x="510" y="1350" />
+        <di:waypoint x="1810" y="1350" />
+        <di:waypoint x="1810" y="1287" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>
