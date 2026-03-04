@@ -115,15 +115,15 @@ Run BPMN/DMN validation and security scanning based on changed files in the PR.
 SCRIPT_DIR="scripts/validators"
 PR_FILES=$(git diff --name-only origin/main...HEAD)
 
+# Install validator dependencies if needed (once for all checks)
+if [ ! -d "$SCRIPT_DIR/node_modules" ]; then
+  (cd "$SCRIPT_DIR" && npm install)
+fi
+
 # 1. BPMN/DMN files: run full validation pipeline (includes security scanner as first gate)
 BPMN_FILES=$(echo "$PR_FILES" | grep -E '\.(bpmn|dmn)$' || true)
 if [ -n "$BPMN_FILES" ]; then
   echo "BPMN/DMN files detected — running validation pipeline..."
-
-  # Install validator dependencies if needed
-  if [ ! -d "$SCRIPT_DIR/node_modules" ]; then
-    cd "$SCRIPT_DIR" && npm install && cd -
-  fi
 
   # Run full pipeline (security scanner + BPMN validator + overlap checker + element checker + DMN scan)
   if ! bash "$SCRIPT_DIR/validate-bpmn.sh"; then
@@ -133,15 +133,10 @@ if [ -n "$BPMN_FILES" ]; then
   echo "BPMN/DMN validation: PASSED"
 fi
 
-# 2. Security-sensitive files: run security scanner directly
+# 2. Security-sensitive files: check for hardcoded secrets and open redirects
 SECURITY_FILES=$(echo "$PR_FILES" | grep -E '(_worker\.(js|ts)|wrangler\.toml|index\.ts|index\.html)$' || true)
 if [ -n "$SECURITY_FILES" ]; then
   echo "Security-sensitive files detected — running targeted security scan..."
-
-  # Install validator dependencies if needed
-  if [ ! -d "$SCRIPT_DIR/node_modules" ]; then
-    cd "$SCRIPT_DIR" && npm install && cd -
-  fi
 
   SCAN_FAILED=0
   for f in $SECURITY_FILES; do
@@ -150,20 +145,17 @@ if [ -n "$SECURITY_FILES" ]; then
       # Already covered by BPMN pipeline above
       continue
     fi
-    # Check for XXE/injection patterns in XML-like files
-    if [ "$EXT" = "ts" ] || [ "$EXT" = "js" ] || [ "$EXT" = "html" ]; then
-      echo "  Checking: $f"
-      # Check for hardcoded secrets
-      if grep -qE '(sla-proxy-|PROXY_SECRET\s*=\s*"[^"]+")' "$f" 2>/dev/null; then
-        echo "  x CRITICAL: Hardcoded secret detected in $f"
+    echo "  Checking: $f"
+    # Check for hardcoded secrets in code and config files
+    if grep -qE '(sla-proxy-|PROXY_SECRET\s*=\s*"[^"]+")' "$f" 2>/dev/null; then
+      echo "  x CRITICAL: Hardcoded secret detected in $f"
+      SCAN_FAILED=1
+    fi
+    # Check for open redirect patterns (unvalidated redirect params)
+    if grep -qE 'Location.*redirect|formData\.get\(.redirect.\)|searchParams\.get\(.redirect.\)' "$f" 2>/dev/null; then
+      if ! grep -q 'sanitizeRedirect' "$f" 2>/dev/null; then
+        echo "  x HIGH: Unsanitized redirect parameter in $f"
         SCAN_FAILED=1
-      fi
-      # Check for open redirect patterns (unvalidated redirect params)
-      if grep -qE 'Location.*redirect|formData\.get\(.redirect.\)' "$f" 2>/dev/null; then
-        if ! grep -q 'sanitizeRedirect' "$f" 2>/dev/null; then
-          echo "  x HIGH: Unsanitized redirect parameter in $f"
-          SCAN_FAILED=1
-        fi
       fi
     fi
   done
