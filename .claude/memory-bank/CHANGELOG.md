@@ -1,5 +1,18 @@
 # Changelog
 
+## [2026.03.9] - 2026-03-04
+
+### Added
+- `security-scanner.js` validator detecting XXE injection, ScriptTask RCE, JUEL expression injection, Java class loading, external script references, CDATA executable patterns, DMN FEEL injection
+- Security scanner integrated as first blocking gate in `validate-bpmn.sh` with DMN scan pass
+
+### Fixed
+- Open redirect in auth worker — `sanitizeRedirect()` applied to 3 form/query param locations
+- Hardcoded `PROXY_SECRET` removed from `_worker.js` and `wrangler.toml` (now Wrangler secrets)
+
+### Security
+- D3 pinned to jsDelivr 7.9.0 with SRI integrity hash
+
 ## [2026.03.8] - 2026-03-04
 
 ### Fixed

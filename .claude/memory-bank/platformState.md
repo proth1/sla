@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.8
+**Current Version**: 2026.03.9
 **Last Release**: 2026-03-04
-**Total Releases**: 8
+**Total Releases**: 9
 
 ## Artifact Counts
 
@@ -30,6 +30,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.9 | 2026-03-04 | #14 | Security scanning & hardening for BPMN/DMN pipeline |
 | 2026.03.8 | 2026-03-04 | #13 | Fix cross-cutting lane ordering + operations message flow error |
 | 2026.03.7 | 2026-03-03 | #12 | Cross-cutting BPMN redesign — 1 SP per lane + parallel gateway |
 | 2026.03.6 | 2026-03-03 | #11 | BPMN infrastructure remediation — 32 files aligned with 8-phase schema |

@@ -4,14 +4,15 @@
 
 **Date**: 2026-03-04
 **Branch**: main
-**Release Version**: 2026.03.8
+**Release Version**: 2026.03.9
 
-### Completed — BPMN Lane Ordering & Operations Message Flow Fix
-- **PR #13** (SLA-5): Fix cross-cutting lane ordering + operations message flow error → release 2026.03.8
-- Cross-cutting: swapped SP2/SP3 lane assignments so numbering is sequential 1,2,3,4,5
-- Cross-cutting: expanded pool height (660→690) and Automation lane (105→135) for start event label clearance
-- Operations: fixed MsgFlow_VendorRetireNotice targeting internal collapsed subprocess task → now targets SubProcess_8R
-- Operations: removed 11 invalid lane flowNodeRef entries for internal subprocess tasks
+### Completed — Security Scanning & Hardening
+- **PR #14**: Security scanning & hardening for BPMN/DMN pipeline → release 2026.03.9
+- Created `security-scanner.js`: XXE, scriptTask, JUEL injection, class loading, external scripts, CDATA, DMN FEEL checks
+- Integrated as first blocking gate in `validate-bpmn.sh` + DMN scan pass
+- Fixed open redirect in auth worker (`sanitizeRedirect()` on 3 surfaces)
+- Added SRI hash to D3 CDN (pinned jsDelivr 7.9.0)
+- Removed hardcoded PROXY_SECRET from source (now Wrangler secrets)
 - PR orchestrator approved with 0 findings
 
 ### 8-Phase Governance Framework — Complete
@@ -32,7 +33,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.8 |
+| Release Version | 2026.03.9 |
 | DMN Tables | 8 |
 | BPMN Models | 10 |
 | BPMN SVG Diagrams | 10 |
@@ -40,7 +41,9 @@
 | Presentation Slides | 32 |
 
 ## Recommended Next Steps
+- Rotate PROXY_SECRET (old value in git history) — generate new secret, update both Wrangler secrets, redeploy
+- Integrate security scanner into pr-orchestrator for conditional execution on BPMN/DMN PRs
+- Redeploy auth worker to clear old PROXY_SECRET [vars] binding, then set as secret
 - Address Phase 3 candidateGroups/lane placement mismatch (PR #11 advisory finding)
 - End-to-end OTP verification at sla.agentic-innovations.com (human test)
-- Consider adding more D3 visualizations (risk radar, regulatory force graph)
 - Address DMN-1/DMN-2 UNIQUE hit policy overlaps flagged in PR #6 review
