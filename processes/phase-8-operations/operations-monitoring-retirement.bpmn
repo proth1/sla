@@ -449,7 +449,7 @@
     <bpmndi:BPMNPlane id="BPMNPlane_Phase8" bpmnElement="Collaboration_Phase8">
 
       <bpmndi:BPMNShape id="Participant_EnterpriseGov_di" bpmnElement="Participant_EnterpriseGov" isHorizontal="true">
-        <dc:Bounds x="155" y="47" width="2100" height="930" />
+        <dc:Bounds x="155" y="47" width="2100" height="970" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
@@ -474,14 +474,14 @@
         <dc:Bounds x="185" y="687" width="2070" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
-        <dc:Bounds x="185" y="817" width="2070" height="160" />
+        <dc:Bounds x="185" y="817" width="2070" height="200" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Participant_VendorParty_di" bpmnElement="Participant_VendorParty" isHorizontal="true">
-        <dc:Bounds x="155" y="1007" width="2100" height="130" />
+        <dc:Bounds x="155" y="1047" width="2100" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_VendorResponse_di" bpmnElement="Lane_VendorResponse" isHorizontal="true">
-        <dc:Bounds x="185" y="1007" width="2070" height="130" />
+        <dc:Bounds x="185" y="1047" width="2070" height="130" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_Phase8Initiated_di" bpmnElement="StartEvent_Phase8Initiated">
@@ -651,42 +651,40 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Annotation_DORA_di" bpmnElement="Annotation_DORA">
-        <dc:Bounds x="200" y="1167" width="560" height="68" />
+        <dc:Bounds x="200" y="1207" width="560" height="68" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Annotation_OCC_di" bpmnElement="Annotation_OCC">
-        <dc:Bounds x="780" y="1167" width="560" height="68" />
+        <dc:Bounds x="780" y="1207" width="560" height="68" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Annotation_NIST_di" bpmnElement="Annotation_NIST">
-        <dc:Bounds x="1360" y="1167" width="560" height="68" />
+        <dc:Bounds x="1360" y="1207" width="560" height="68" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_VendorEngaged_di" bpmnElement="StartEvent_VendorEngaged">
-        <dc:Bounds x="222" y="1054" width="36" height="36" />
+        <dc:Bounds x="222" y="1094" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="200" y="1097" width="80" height="27" />
+          <dc:Bounds x="200" y="1137" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_VendorSLADataSubmission_di" bpmnElement="Task_VendorSLADataSubmission">
-        <dc:Bounds x="310" y="1032" width="100" height="80" />
+        <dc:Bounds x="310" y="1072" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_VendorRetireAck_di" bpmnElement="Task_VendorRetireAck">
-        <dc:Bounds x="460" y="1032" width="100" height="80" />
+        <dc:Bounds x="460" y="1072" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_VendorComplete_di" bpmnElement="EndEvent_VendorComplete">
-        <dc:Bounds x="612" y="1054" width="36" height="36" />
+        <dc:Bounds x="612" y="1094" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="590" y="1097" width="80" height="27" />
+          <dc:Bounds x="590" y="1137" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Flow_Start_81_di" bpmnElement="Flow_Start_81">
         <di:waypoint x="258" y="897" />
-        <di:waypoint x="258" y="840" />
-        <di:waypoint x="420" y="840" />
-        <di:waypoint x="420" y="857" />
+        <di:waypoint x="295" y="897" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_81_ParallelSplit_di" bpmnElement="Flow_81_ParallelSplit">
@@ -873,47 +871,47 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_VendorStart_SLA_di" bpmnElement="Flow_VendorStart_SLA">
-        <di:waypoint x="258" y="1072" />
-        <di:waypoint x="310" y="1072" />
+        <di:waypoint x="258" y="1112" />
+        <di:waypoint x="310" y="1112" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_VendorSLA_RetireAck_di" bpmnElement="Flow_VendorSLA_RetireAck">
-        <di:waypoint x="410" y="1072" />
-        <di:waypoint x="460" y="1072" />
+        <di:waypoint x="410" y="1112" />
+        <di:waypoint x="460" y="1112" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_VendorRetire_End_di" bpmnElement="Flow_VendorRetire_End">
-        <di:waypoint x="560" y="1072" />
-        <di:waypoint x="612" y="1072" />
+        <di:waypoint x="560" y="1112" />
+        <di:waypoint x="612" y="1112" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="MsgFlow_VendorSLAData_di" bpmnElement="MsgFlow_VendorSLAData">
-        <di:waypoint x="360" y="1032" />
-        <di:waypoint x="360" y="977" />
-        <di:waypoint x="420" y="977" />
+        <di:waypoint x="360" y="1072" />
+        <di:waypoint x="360" y="1027" />
+        <di:waypoint x="420" y="1027" />
         <di:waypoint x="420" y="937" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="MsgFlow_VendorRetireNotice_di" bpmnElement="MsgFlow_VendorRetireNotice">
-        <di:waypoint x="510" y="1032" />
-        <di:waypoint x="510" y="990" />
-        <di:waypoint x="1710" y="990" />
+        <di:waypoint x="510" y="1072" />
+        <di:waypoint x="510" y="1030" />
+        <di:waypoint x="1710" y="1030" />
         <di:waypoint x="1710" y="282" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_DORA_di" bpmnElement="Assoc_DORA">
         <di:waypoint x="420" y="937" />
-        <di:waypoint x="420" y="1167" />
+        <di:waypoint x="420" y="1207" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_OCC_di" bpmnElement="Assoc_OCC">
         <di:waypoint x="690" y="152" />
-        <di:waypoint x="1060" y="1167" />
+        <di:waypoint x="1060" y="1207" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_NIST_di" bpmnElement="Assoc_NIST">
         <di:waypoint x="970" y="937" />
-        <di:waypoint x="1640" y="1167" />
+        <di:waypoint x="1640" y="1207" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>
