@@ -583,7 +583,7 @@
       <bpmndi:BPMNShape id="BoundaryEvent_Phase6_Timer_di" bpmnElement="BoundaryEvent_Phase6_Timer">
         <dc:Bounds x="422" y="134" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="416" y="173" width="65" height="27" />
+          <dc:Bounds x="466" y="173" width="65" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 

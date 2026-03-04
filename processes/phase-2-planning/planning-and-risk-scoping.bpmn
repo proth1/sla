@@ -80,7 +80,7 @@
       <bpmn:incoming>Flow_SLATimer_Escalated</bpmn:incoming>
     </bpmn:endEvent>
 
-    <bpmn:businessRuleTask id="Task_2_3_RiskTierAssignment" name="2.3 Risk Tier&#10;Assignment" camunda:decisionRef="DMN_RiskTierClassification" camunda:resultVariable="riskTier" camunda:mapDecisionResult="singleResult">
+    <bpmn:businessRuleTask id="Task_2_3_RiskTierAssignment" name="2.3 Risk Tier&#10;Assignment" camunda:decisionRef="DMN_RiskTierClassification" camunda:decisionRefBinding="latest" camunda:resultVariable="riskTier" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_RiskScoring_TierAssignment</bpmn:incoming>
       <bpmn:outgoing>Flow_TierAssignment_AIGateway</bpmn:outgoing>
     </bpmn:businessRuleTask>

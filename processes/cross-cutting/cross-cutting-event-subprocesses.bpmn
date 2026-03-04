@@ -70,7 +70,7 @@
         <bpmn:outgoing>Flow_SP1_Monitor_DMN</bpmn:outgoing>
       </bpmn:serviceTask>
 
-      <bpmn:businessRuleTask id="SP1_Task_ThresholdCheck" name="Check SLA&#10;Threshold" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:resultVariable="thresholdLevel" camunda:mapDecisionResult="singleResult">
+      <bpmn:businessRuleTask id="SP1_Task_ThresholdCheck" name="Check SLA&#10;Threshold" camunda:decisionRef="DMN_MonitoringCadenceAssignment" camunda:decisionRefBinding="latest" camunda:resultVariable="thresholdLevel" camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_SP1_Monitor_DMN</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_DMN_Gateway</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -154,7 +154,7 @@
         <bpmn:messageEventDefinition id="SP2_MsgDef" messageRef="Message_VulnerabilityDetected" />
       </bpmn:startEvent>
 
-      <bpmn:businessRuleTask id="SP2_Task_Classify" name="Classify&#10;Vulnerability" camunda:decisionRef="DMN_VulnerabilityRemediationRouting" camunda:resultVariable="vulnTier" camunda:mapDecisionResult="singleResult">
+      <bpmn:businessRuleTask id="SP2_Task_Classify" name="Classify&#10;Vulnerability" camunda:decisionRef="DMN_VulnerabilityRemediationRouting" camunda:decisionRefBinding="latest" camunda:resultVariable="vulnTier" camunda:mapDecisionResult="singleResult">
         <bpmn:incoming>Flow_SP2_Start_Classify</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_Classify_Tier</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -999,7 +999,7 @@
         <di:waypoint x="445" y="100" />
         <di:waypoint x="510" y="100" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="453" y="82" width="44" height="14" />
+          <dc:Bounds x="453" y="42" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
@@ -1008,7 +1008,7 @@
         <di:waypoint x="420" y="290" />
         <di:waypoint x="510" y="290" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="428" y="252" width="24" height="14" />
+          <dc:Bounds x="428" y="232" width="24" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
@@ -1017,7 +1017,7 @@
         <di:waypoint x="420" y="480" />
         <di:waypoint x="510" y="480" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="428" y="442" width="40" height="14" />
+          <dc:Bounds x="428" y="422" width="40" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
@@ -1026,7 +1026,7 @@
         <di:waypoint x="420" y="600" />
         <di:waypoint x="510" y="600" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="428" y="562" width="22" height="14" />
+          <dc:Bounds x="428" y="542" width="22" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
@@ -1205,7 +1205,7 @@
         <di:waypoint x="445" y="100" />
         <di:waypoint x="510" y="100" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="452" y="82" width="49" height="14" />
+          <dc:Bounds x="452" y="42" width="49" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
@@ -1214,7 +1214,7 @@
         <di:waypoint x="420" y="290" />
         <di:waypoint x="510" y="290" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="428" y="252" width="38" height="14" />
+          <dc:Bounds x="428" y="232" width="38" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
@@ -1223,7 +1223,7 @@
         <di:waypoint x="420" y="480" />
         <di:waypoint x="510" y="480" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="428" y="442" width="49" height="14" />
+          <dc:Bounds x="428" y="422" width="49" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
@@ -1232,7 +1232,7 @@
         <di:waypoint x="420" y="600" />
         <di:waypoint x="510" y="600" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="428" y="562" width="36" height="14" />
+          <dc:Bounds x="428" y="542" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 

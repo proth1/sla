@@ -228,26 +228,6 @@ function waypointsToXml(waypoints, indent = '        ') {
   ).join('\n');
 }
 
-/**
- * Rebuild the BPMNEdge XML with new waypoints
- */
-function rebuildEdgeXml(edgeId, bpmnElement, newWaypoints, labelBounds, originalXml) {
-  // Find the original edge in the XML
-  const edgePattern = new RegExp(
-    `(<bpmndi:BPMNEdge\\s+id="${escapeRegex(edgeId)}"[^>]*>)[\\s\\S]*?(<\\/bpmndi:BPMNEdge>)`,
-    'g'
-  );
-
-  const wpXml = waypointsToXml(newWaypoints);
-  let labelXml = '';
-  if (labelBounds) {
-    labelXml = `\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x="${labelBounds.x}" y="${labelBounds.y}" width="${labelBounds.width}" height="${labelBounds.height}" />\n        </bpmndi:BPMNLabel>`;
-  }
-
-  const newContent = `$1\n${wpXml}${labelXml}\n      $2`;
-  return originalXml.replace(edgePattern, newContent);
-}
-
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -317,8 +297,14 @@ function processFile(filePath, dryRun = false) {
   });
 
   if (!dryRun && fixCount > 0) {
-    fs.writeFileSync(filePath, modifiedXml, 'utf-8');
-    console.log(`  ✅ File updated with ${fixCount} fixes`);
+    try {
+      fs.writeFileSync(filePath + '.bak', xml, 'utf-8');
+      fs.writeFileSync(filePath, modifiedXml, 'utf-8');
+    } catch (err) {
+      console.error(`  ✗ Failed to write file: ${err.message}`);
+      process.exit(1);
+    }
+    console.log(`  ✅ File updated with ${fixCount} fixes (backup: ${path.basename(filePath)}.bak)`);
   } else if (dryRun && fixCount > 0) {
     console.log(`  [DRY RUN] Would fix ${fixCount} diagonal flows`);
   } else {
