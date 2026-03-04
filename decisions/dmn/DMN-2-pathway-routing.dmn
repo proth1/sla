@@ -10,12 +10,13 @@
   <decision id="DMN_PathwayRouting"
             name="Pathway Routing"
             camunda:historyTimeToLive="180">
-    <decisionTable id="DMN_PathwayRouting-table" hitPolicy="UNIQUE">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-04 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: OCC 2023-17, NIST CSF 2.0</description>
+    <decisionTable id="DMN_PathwayRouting-table" hitPolicy="FIRST">
 
       <!--
         DMN-2: Pathway Routing
         Phase: 1 (Initiation and Intake) — Task 1.6 Routing Assignment
-        Hit Policy: UNIQUE
+        Hit Policy: FIRST (most specific rule wins — evaluated top to bottom)
         Description: Routes an initiative to one of four development pathways:
           - Fast-Track: High capability reuse with minimal customization (reuse score >= 8, existing capability)
           - Build:      Build analysis selected, sufficient organizational capacity (>= 6)
@@ -209,6 +210,22 @@
         <inputEntry id="ie-12-4"><text>-</text></inputEntry>
         <inputEntry id="ie-12-5"><text>-</text></inputEntry>
         <outputEntry id="oe-12-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 13: CATCH-ALL DEFAULT — Hybrid (conservative)
+        Catches any input combination not matched by rules 1-12.
+        Hybrid is the safest default: combines build and buy governance controls.
+        Under FIRST hit policy, this only fires if no earlier rule matched.
+      -->
+      <rule id="rule-13">
+        <description>Default catch-all: Unclassified routing combination — assigned Hybrid pathway pending manual analysis by governance team</description>
+        <inputEntry id="ie-13-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"Hybrid"</text></outputEntry>
       </rule>
 
     </decisionTable>

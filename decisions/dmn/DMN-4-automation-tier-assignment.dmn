@@ -10,6 +10,7 @@
   <decision id="DMN_AutomationTierAssignment"
             name="Automation Tier Assignment"
             camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-04 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: OCC 2023-17, NIST CSF 2.0, SR 11-7</description>
     <decisionTable id="DMN_AutomationTierAssignment-table" hitPolicy="UNIQUE">
 
       <!--

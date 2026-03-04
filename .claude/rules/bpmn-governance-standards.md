@@ -73,12 +73,12 @@ Business Rule Tasks MUST reference one of these 8 DMN tables:
 
 | ID | Name | Hit Policy | Used In |
 |----|------|-----------|---------|
-| DMN_RiskTierClassification | Risk Tier Classification | UNIQUE | Phase 2 (Activity 2.3) |
-| DMN_PathwayRouting | Pathway Routing | UNIQUE | Phase 1 (Activity 1.6) |
+| DMN_RiskTierClassification | Risk Tier Classification | FIRST | Phase 2 (Activity 2.3) |
+| DMN_PathwayRouting | Pathway Routing | FIRST | Phase 1 (Activity 1.6) |
 | DMN_GovernanceReviewRouting | Governance Review Routing | UNIQUE | Phase 4 (Activity 4.2) |
 | DMN_AutomationTierAssignment | Automation Tier Assignment | UNIQUE | Cross-cutting |
 | DMN_AgentConfidenceEscalation | Agent Confidence Escalation | FIRST | Cross-cutting |
-| DMN_ChangeRiskScoring | Change Risk Scoring | UNIQUE | Phase 8 (Activity 8C.1) |
+| DMN_ChangeRiskScoring | Change Risk Scoring | FIRST | Phase 8 (Activity 8C.1) |
 | DMN_VulnerabilityRemediationRouting | Vulnerability Remediation Routing | UNIQUE | Cross-cutting (SP-Cross-2) |
 | DMN_MonitoringCadenceAssignment | Monitoring Cadence Assignment | UNIQUE | Phase 8 (Activity 8.1) |
 

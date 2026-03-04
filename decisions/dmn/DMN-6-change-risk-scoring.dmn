@@ -10,12 +10,13 @@
   <decision id="DMN_ChangeRiskScoring"
             name="Change Risk Scoring"
             camunda:historyTimeToLive="180">
-    <decisionTable id="DMN_ChangeRiskScoring-table" hitPolicy="UNIQUE">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-04 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: SOX, NIST CSF 2.0, DORA, BCBS d577</description>
+    <decisionTable id="DMN_ChangeRiskScoring-table" hitPolicy="FIRST">
 
       <!--
         DMN-6: Change Risk Scoring
         Phase: 8 (Production Operations) — Sub-Process 8-Change: Change Management, Task 8C.1
-        Hit Policy: UNIQUE
+        Hit Policy: FIRST (most specific rule wins — evaluated top to bottom)
         Description: Classifies a proposed production change into one of five change types
                      based on a composite risk score derived from five dimensions.
                      Implements the AI risk scoring described in task 8C.1:
@@ -266,6 +267,25 @@
         <outputEntry id="oe-12-1"><text>"Major"</text></outputEntry>
         <outputEntry id="oe-12-2"><text>"CAB + VP-level approval required; low historical success rate mandates enhanced risk mitigation; root cause analysis of prior failures required before approval; staged rollout with automated rollback triggers"</text></outputEntry>
         <outputEntry id="oe-12-3"><text>480</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 13: CATCH-ALL DEFAULT — Normal-Medium (conservative)
+        Catches any non-emergency input combination not matched by rules 2-12.
+        Normal-Medium is a conservative default requiring CAB review.
+        Under FIRST hit policy, this only fires if no earlier rule matched.
+      -->
+      <rule id="rule-13">
+        <description>Default catch-all: Unclassified change risk profile — assigned Normal-Medium pending CAB review and manual risk assessment</description>
+        <inputEntry id="ie-13-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-5"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-6"><text>-</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"Normal-Medium"</text></outputEntry>
+        <outputEntry id="oe-13-2"><text>"CAB review required: unclassified change risk profile — manual risk assessment required before approval; default to CAB review as conservative safeguard"</text></outputEntry>
+        <outputEntry id="oe-13-3"><text>240</text></outputEntry>
       </rule>
 
     </decisionTable>
