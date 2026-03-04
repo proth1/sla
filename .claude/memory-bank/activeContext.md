@@ -4,33 +4,20 @@
 
 **Date**: 2026-03-04
 **Branch**: main
-**Release Version**: 2026.03.14
+**Release Version**: 2026.03.15
+
+### Completed — Phase 8 Operations Layout Fix
+- **PR #21**: Phase 8 Operations BPMN layout cleanup → release 2026.03.15
+- Expanded Automation lane (160→200px) to contain emergency path elements
+- Simplified start event flow from 4-waypoint up-and-over to 2-waypoint horizontal
+- Shifted Vendor pool and elements +40px to maintain inter-pool gap
+- PR reviewed by pr-orchestrator: APPROVE recommendation, all checks passed
 
 ### Completed — Presentation Upgrades (WP3)
 - **PR #20**: Presentation upgrades → release 2026.03.14
-- 2 new slides: competitive positioning, BPMN notation guide (35→37 slides)
-- CTA rewrite with CRO/CTO/CCO decision requests and deployment timeline
-- 6 persona value anchors, 5 chart annotations, automation % qualified as targets
 
 ### Completed — DMN Quality Fixes (WP4)
 - **PR #19**: DMN quality fixes and governance metadata → release 2026.03.13
-- DMN-1, DMN-2, DMN-6: UNIQUE→FIRST with catch-all defaults
-- REQ-DMN-002 governance metadata added to all 8 DMN tables
-
-### Completed — Presentation UX Overhaul
-- **PR #17**: Fix hero subtitle visibility + scroll-snap navigation → release 2026.03.12
-- Converted navigation from display:none/active toggle to CSS scroll-snap (matching kmflow style)
-- Hero subtitle: font-weight 300→700, opacity 0.9→1.0, font-size 1.5rem→1.75rem
-- Right-side dot indicator replaces bottom-center dots
-- Keyboard: ArrowUp/Down, PageUp/Down, Home/End
-- Fixed IntersectionObserver root for D3 chart lazy rendering in scroll container
-- Added requestAnimationFrame throttle to scroll handler
-- PR reviewed by pr-orchestrator: 0 CRITICAL, 0 HIGH, 2 MEDIUM (both fixed), 2 LOW
-
-### Completed — Section 1 Strategic Foundation Integration
-- **PR #16**: Added 3 new slides (Strategic Vision, Bottleneck Mitigation, Compression Waterfall)
-- Enhanced 3 existing slides (Design Principles, Governance Pathways, KPIs)
-- Presentation now 35 slides (was 32)
 
 ### 8-Phase Governance Framework — Complete
 | Phase | File | Status |
@@ -50,12 +37,12 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.12 |
+| Release Version | 2026.03.15 |
 | DMN Tables | 8 |
 | BPMN Models | 10 |
 | BPMN SVG Diagrams | 10 |
 | Cross-Cutting Sub-Processes | 5 |
-| Presentation Slides | 35 |
+| Presentation Slides | 37 |
 
 ## Recommended Next Steps
 - Deploy updated presentation to Cloudflare Pages

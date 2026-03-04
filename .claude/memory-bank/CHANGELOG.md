@@ -1,5 +1,13 @@
 # Changelog
 
+## [2026.03.15] - 2026-03-04
+
+### Fixed
+- Phase 8 Operations BPMN layout: expanded Automation lane (160→200px), Enterprise Governance pool (930→970px)
+- Start event flow simplified from 4-waypoint up-and-over routing to 2-waypoint straight horizontal
+- Vendor pool and all vendor elements shifted +40px to maintain 30px inter-pool gap
+- Annotation and message flow waypoints adjusted for new pool positions
+
 ## [2026.03.14] - 2026-03-04
 
 ### Added
