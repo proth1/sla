@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.11
+**Current Version**: 2026.03.12
 **Last Release**: 2026-03-04
-**Total Releases**: 11
+**Total Releases**: 12
 
 ## Artifact Counts
 
@@ -11,7 +11,7 @@
 | DMN Decision Tables | 8 |
 | BPMN Process Models | 10 |
 | Cross-Cutting Sub-Processes | 5 |
-| Presentation Slides | 32 |
+| Presentation Slides | 35 |
 | BPMN SVG Diagrams | 10 |
 | Regulatory Frameworks | 13 |
 | Pools | 2 |
@@ -30,6 +30,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.12 | 2026-03-04 | #17 | Fix hero subtitle visibility + scroll-snap navigation conversion |
 | 2026.03.11 | 2026-03-04 | #16 | Layout rewrite: compact phases 2, 5-8 BPMN + project artifacts |
 | 2026.03.10 | 2026-03-04 | #15 | Integrate security scanner into pr-orchestrator Phase 0.5 |
 | 2026.03.9 | 2026-03-04 | #14 | Security scanning & hardening for BPMN/DMN pipeline |

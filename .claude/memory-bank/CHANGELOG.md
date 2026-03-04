@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026.03.12] - 2026-03-04
+
+### Changed
+- Converted presentation navigation from display:none/active toggle to scroll-snap vertical scrolling (matching kmflow style)
+- Hero subtitle: increased font-weight 300→700, opacity 0.9→1.0, font-size 1.5rem→1.75rem for visibility
+- Replaced bottom-center dot navigation with right-side slide indicator dots
+- Keyboard navigation: ArrowUp/ArrowDown + PageUp/PageDown + Home/End
+
+### Fixed
+- IntersectionObserver root set to scroll container so D3 charts render on scroll
+- Scroll event handler throttled via requestAnimationFrame
+
 ## [2026.03.11] - 2026-03-04
 
 ### Fixed

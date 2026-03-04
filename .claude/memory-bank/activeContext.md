@@ -4,18 +4,22 @@
 
 **Date**: 2026-03-04
 **Branch**: main
-**Release Version**: 2026.03.11
+**Release Version**: 2026.03.12
 
-### Completed — BPMN Layout Rewrite (Phases 2, 5-8)
-- **PR #16**: Layout rewrite for 5 BPMN models → release 2026.03.11
-- Phase 2 Planning: 1000px → 930px, 5 gateways moved from Automation to Technical lane, max jump 875px → 465px
-- Phase 5 Contracting: 1450px → 930px, split/join gateways to Contracting lane, candidateGroups fixed
-- Phase 6 SDLC: 1125px → 860px, SLA escalation end events repositioned horizontally
-- Phase 7 Deployment: backward flows fixed, rejection loops routed above main flow
-- Phase 8 Operations: 1290px → 790px, removed duplicate flow, emergency path simplified
-- All 10 governance BPMN models pass validation (security scan, structural, visual overlap)
-- PR approved by pr-orchestrator, all findings addressed before merge
-- Added SVG renders, screenshots, reference docs, validator scripts
+### Completed — Presentation UX Overhaul
+- **PR #17**: Fix hero subtitle visibility + scroll-snap navigation → release 2026.03.12
+- Converted navigation from display:none/active toggle to CSS scroll-snap (matching kmflow style)
+- Hero subtitle: font-weight 300→700, opacity 0.9→1.0, font-size 1.5rem→1.75rem
+- Right-side dot indicator replaces bottom-center dots
+- Keyboard: ArrowUp/Down, PageUp/Down, Home/End
+- Fixed IntersectionObserver root for D3 chart lazy rendering in scroll container
+- Added requestAnimationFrame throttle to scroll handler
+- PR reviewed by pr-orchestrator: 0 CRITICAL, 0 HIGH, 2 MEDIUM (both fixed), 2 LOW
+
+### Completed — Section 1 Strategic Foundation Integration
+- **PR #16**: Added 3 new slides (Strategic Vision, Bottleneck Mitigation, Compression Waterfall)
+- Enhanced 3 existing slides (Design Principles, Governance Pathways, KPIs)
+- Presentation now 35 slides (was 32)
 
 ### 8-Phase Governance Framework — Complete
 | Phase | File | Status |
@@ -35,14 +39,15 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.11 |
+| Release Version | 2026.03.12 |
 | DMN Tables | 8 |
 | BPMN Models | 10 |
 | BPMN SVG Diagrams | 10 |
 | Cross-Cutting Sub-Processes | 5 |
-| Presentation Slides | 32 |
+| Presentation Slides | 35 |
 
 ## Recommended Next Steps
+- Deploy updated presentation to Cloudflare Pages
 - Review Phases 1, 3, 4 layouts for similar compaction opportunities
 - Rotate PROXY_SECRET (old value in git history)
 - Address Phase 3 candidateGroups/lane placement mismatch (PR #11 advisory)
