@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="OB-DMN4-OnboardingSLABreach-definitions"
+             name="OB-DMN-4: Onboarding SLA Breach Escalation"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="OB_DMN_OnboardingSLABreach"
+            name="Onboarding SLA Breach Escalation"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="OB_DMN_OnboardingSLABreach-table" hitPolicy="FIRST">
+
+      <!--
+        OB-DMN-4: Onboarding SLA Breach Escalation Routing
+        Hit Policy: FIRST (ordered by severity — most critical escalation matched first)
+        Description: Routes SLA breach events to the appropriate escalation action based on
+                     breached phase, days beyond SLA, and risk tier. Implements a 4-level
+                     escalation ladder: Notify-Sponsor → Escalate-Governance → Board-Alert → Auto-Reject.
+      -->
+
+      <input id="ob4-input-breachedPhase" label="Breached Phase">
+        <inputExpression id="ob4-inputExpr-breachedPhase" typeRef="string">
+          <text>breachedPhase</text>
+        </inputExpression>
+        <inputValues id="ob4-inputVals-breachedPhase">
+          <text>"Phase1","Phase2","Phase3","Phase4","Phase5"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob4-input-daysBeyondSLA" label="Days Beyond SLA">
+        <inputExpression id="ob4-inputExpr-daysBeyondSLA" typeRef="integer">
+          <text>daysBeyondSLA</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob4-input-riskTier" label="Risk Tier">
+        <inputExpression id="ob4-inputExpr-riskTier" typeRef="string">
+          <text>riskTier</text>
+        </inputExpression>
+        <inputValues id="ob4-inputVals-riskTier">
+          <text>"High","Limited","Minimal"</text>
+        </inputValues>
+      </input>
+
+      <output id="ob4-output-escalationAction"
+              label="Escalation Action"
+              name="escalationAction"
+              typeRef="string" />
+
+      <output id="ob4-output-maxExtensionDays"
+              label="Max Extension (Days)"
+              name="maxExtensionDays"
+              typeRef="integer" />
+
+      <output id="ob4-output-notificationTargets"
+              label="Notification Targets"
+              name="notificationTargets"
+              typeRef="string" />
+
+      <!-- LEVEL 4: Auto-Reject — any phase, High risk, 10+ days beyond SLA -->
+      <rule id="ob4-rule-1">
+        <description>Auto-Reject: High risk initiative 10+ days beyond SLA — terminate onboarding</description>
+        <inputEntry id="ob4-ie-1-1"><text>-</text></inputEntry>
+        <inputEntry id="ob4-ie-1-2"><text>&gt;= 10</text></inputEntry>
+        <inputEntry id="ob4-ie-1-3"><text>"High"</text></inputEntry>
+        <outputEntry id="ob4-oe-1-1"><text>"Auto-Reject"</text></outputEntry>
+        <outputEntry id="ob4-oe-1-2"><text>0</text></outputEntry>
+        <outputEntry id="ob4-oe-1-3"><text>"Business Owner, Governance Board, Compliance Officer, Executive Sponsor"</text></outputEntry>
+      </rule>
+
+      <!-- LEVEL 4: Auto-Reject — any phase, Limited/Minimal risk, 15+ days beyond SLA -->
+      <rule id="ob4-rule-2">
+        <description>Auto-Reject: Limited/Minimal risk 15+ days beyond SLA — terminate onboarding</description>
+        <inputEntry id="ob4-ie-2-1"><text>-</text></inputEntry>
+        <inputEntry id="ob4-ie-2-2"><text>&gt;= 15</text></inputEntry>
+        <inputEntry id="ob4-ie-2-3"><text>"Limited","Minimal"</text></inputEntry>
+        <outputEntry id="ob4-oe-2-1"><text>"Auto-Reject"</text></outputEntry>
+        <outputEntry id="ob4-oe-2-2"><text>0</text></outputEntry>
+        <outputEntry id="ob4-oe-2-3"><text>"Business Owner, Governance Board, Compliance Officer"</text></outputEntry>
+      </rule>
+
+      <!-- LEVEL 3: Board-Alert — Phase 3-5, High risk, 5-9 days beyond -->
+      <rule id="ob4-rule-3">
+        <description>Board-Alert: High risk in DD/Governance/Contracting 5-9 days beyond — advisory board notification</description>
+        <inputEntry id="ob4-ie-3-1"><text>"Phase3","Phase4","Phase5"</text></inputEntry>
+        <inputEntry id="ob4-ie-3-2"><text>[5..9]</text></inputEntry>
+        <inputEntry id="ob4-ie-3-3"><text>"High"</text></inputEntry>
+        <outputEntry id="ob4-oe-3-1"><text>"Board-Alert"</text></outputEntry>
+        <outputEntry id="ob4-oe-3-2"><text>3</text></outputEntry>
+        <outputEntry id="ob4-oe-3-3"><text>"Governance Board, Executive Sponsor, Business Owner"</text></outputEntry>
+      </rule>
+
+      <!-- LEVEL 3: Board-Alert — Phase 1-2, High risk, 5-9 days beyond -->
+      <rule id="ob4-rule-4">
+        <description>Board-Alert: High risk in Intake/Planning 5-9 days beyond — advisory board notification</description>
+        <inputEntry id="ob4-ie-4-1"><text>"Phase1","Phase2"</text></inputEntry>
+        <inputEntry id="ob4-ie-4-2"><text>[5..9]</text></inputEntry>
+        <inputEntry id="ob4-ie-4-3"><text>"High"</text></inputEntry>
+        <outputEntry id="ob4-oe-4-1"><text>"Board-Alert"</text></outputEntry>
+        <outputEntry id="ob4-oe-4-2"><text>2</text></outputEntry>
+        <outputEntry id="ob4-oe-4-3"><text>"Governance Board, Business Owner"</text></outputEntry>
+      </rule>
+
+      <!-- LEVEL 3: Board-Alert — any phase, Limited/Minimal, 10-14 days beyond -->
+      <rule id="ob4-rule-5">
+        <description>Board-Alert: Limited/Minimal risk 10-14 days beyond SLA — advisory board notification</description>
+        <inputEntry id="ob4-ie-5-1"><text>-</text></inputEntry>
+        <inputEntry id="ob4-ie-5-2"><text>[10..14]</text></inputEntry>
+        <inputEntry id="ob4-ie-5-3"><text>"Limited","Minimal"</text></inputEntry>
+        <outputEntry id="ob4-oe-5-1"><text>"Board-Alert"</text></outputEntry>
+        <outputEntry id="ob4-oe-5-2"><text>3</text></outputEntry>
+        <outputEntry id="ob4-oe-5-3"><text>"Governance Board, Business Owner, Compliance Officer"</text></outputEntry>
+      </rule>
+
+      <!-- LEVEL 2: Escalate-Governance — Phase 3-5, High risk, 2-4 days beyond -->
+      <rule id="ob4-rule-6">
+        <description>Escalate-Governance: High risk in DD/Governance/Contracting 2-4 days beyond — governance team escalation</description>
+        <inputEntry id="ob4-ie-6-1"><text>"Phase3","Phase4","Phase5"</text></inputEntry>
+        <inputEntry id="ob4-ie-6-2"><text>[2..4]</text></inputEntry>
+        <inputEntry id="ob4-ie-6-3"><text>"High"</text></inputEntry>
+        <outputEntry id="ob4-oe-6-1"><text>"Escalate-Governance"</text></outputEntry>
+        <outputEntry id="ob4-oe-6-2"><text>3</text></outputEntry>
+        <outputEntry id="ob4-oe-6-3"><text>"Governance Team, Business Owner"</text></outputEntry>
+      </rule>
+
+      <!-- LEVEL 2: Escalate-Governance — Phase 1-2, High risk, 2-4 days beyond -->
+      <rule id="ob4-rule-7">
+        <description>Escalate-Governance: High risk in Intake/Planning 2-4 days beyond — governance team escalation</description>
+        <inputEntry id="ob4-ie-7-1"><text>"Phase1","Phase2"</text></inputEntry>
+        <inputEntry id="ob4-ie-7-2"><text>[2..4]</text></inputEntry>
+        <inputEntry id="ob4-ie-7-3"><text>"High"</text></inputEntry>
+        <outputEntry id="ob4-oe-7-1"><text>"Escalate-Governance"</text></outputEntry>
+        <outputEntry id="ob4-oe-7-2"><text>2</text></outputEntry>
+        <outputEntry id="ob4-oe-7-3"><text>"Governance Team, Business Owner"</text></outputEntry>
+      </rule>
+
+      <!-- LEVEL 2: Escalate-Governance — any phase, Limited/Minimal, 5-9 days beyond -->
+      <rule id="ob4-rule-8">
+        <description>Escalate-Governance: Limited/Minimal risk 5-9 days beyond — governance team escalation</description>
+        <inputEntry id="ob4-ie-8-1"><text>-</text></inputEntry>
+        <inputEntry id="ob4-ie-8-2"><text>[5..9]</text></inputEntry>
+        <inputEntry id="ob4-ie-8-3"><text>"Limited","Minimal"</text></inputEntry>
+        <outputEntry id="ob4-oe-8-1"><text>"Escalate-Governance"</text></outputEntry>
+        <outputEntry id="ob4-oe-8-2"><text>5</text></outputEntry>
+        <outputEntry id="ob4-oe-8-3"><text>"Governance Team, Business Owner"</text></outputEntry>
+      </rule>
+
+      <!-- LEVEL 1: Notify-Sponsor — High risk, 1 day beyond -->
+      <rule id="ob4-rule-9">
+        <description>Notify-Sponsor: High risk initiative 1 day beyond SLA — sponsor notification</description>
+        <inputEntry id="ob4-ie-9-1"><text>-</text></inputEntry>
+        <inputEntry id="ob4-ie-9-2"><text>1</text></inputEntry>
+        <inputEntry id="ob4-ie-9-3"><text>"High"</text></inputEntry>
+        <outputEntry id="ob4-oe-9-1"><text>"Notify-Sponsor"</text></outputEntry>
+        <outputEntry id="ob4-oe-9-2"><text>2</text></outputEntry>
+        <outputEntry id="ob4-oe-9-3"><text>"Business Owner"</text></outputEntry>
+      </rule>
+
+      <!-- LEVEL 1: Notify-Sponsor — Limited/Minimal risk, 1-4 days beyond -->
+      <rule id="ob4-rule-10">
+        <description>Notify-Sponsor: Limited/Minimal risk 1-4 days beyond SLA — sponsor notification</description>
+        <inputEntry id="ob4-ie-10-1"><text>-</text></inputEntry>
+        <inputEntry id="ob4-ie-10-2"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ob4-ie-10-3"><text>"Limited","Minimal"</text></inputEntry>
+        <outputEntry id="ob4-oe-10-1"><text>"Notify-Sponsor"</text></outputEntry>
+        <outputEntry id="ob4-oe-10-2"><text>3</text></outputEntry>
+        <outputEntry id="ob4-oe-10-3"><text>"Business Owner"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="OB-DMN4-diagram">
+      <dmndi:DMNShape id="OB-DMN4-shape" dmnElementRef="OB_DMN_OnboardingSLABreach">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
