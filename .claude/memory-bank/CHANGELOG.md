@@ -1,5 +1,14 @@
 # Changelog
 
+## [2026.03.8] - 2026-03-04
+
+### Fixed
+- Cross-cutting BPMN: lane ordering corrected from 1,3,2,4,5 to sequential 1,2,3,4,5 (swapped SP2/SP3 lane assignments and DI positions)
+- Cross-cutting BPMN: expanded pool height (660→690) and Automation lane (105→135) for start event label clearance
+- Operations BPMN: `MsgFlow_VendorRetireNotice` targetRef changed from `Task_8R3_VendorNotification` (inside collapsed SubProcess_8R) to `SubProcess_8R` — resolves Camunda "not yet drawn" warning
+- Operations BPMN: removed 11 invalid lane `flowNodeRef` entries referencing internal subprocess tasks
+- Operations BPMN: fixed message flow DI waypoints with L-shaped routing to SubProcess_8R
+
 ## [2026.03.7] - 2026-03-03
 
 ### Changed

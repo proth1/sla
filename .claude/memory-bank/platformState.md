@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.7
-**Last Release**: 2026-03-03
-**Total Releases**: 7
+**Current Version**: 2026.03.8
+**Last Release**: 2026-03-04
+**Total Releases**: 8
 
 ## Artifact Counts
 
@@ -30,6 +30,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.8 | 2026-03-04 | #13 | Fix cross-cutting lane ordering + operations message flow error |
 | 2026.03.7 | 2026-03-03 | #12 | Cross-cutting BPMN redesign — 1 SP per lane + parallel gateway |
 | 2026.03.6 | 2026-03-03 | #11 | BPMN infrastructure remediation — 32 files aligned with 8-phase schema |
 | 2026.03.5 | 2026-03-03 | #10 | Fix Phase 2 Planning BPMN layout for human readability |

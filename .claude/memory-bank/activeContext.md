@@ -2,17 +2,17 @@
 
 ## Last Session Summary
 
-**Date**: 2026-03-03
+**Date**: 2026-03-04
 **Branch**: main
-**Release Version**: 2026.03.7
+**Release Version**: 2026.03.8
 
-### Completed — Cross-Cutting BPMN Redesign
-- **PR #12** (SLA-12): Cross-cutting BPMN redesign → release 2026.03.7
-- Redistributed 5 sub-processes: 1 per lane (was 3 in Business, 0 in Automation)
-- Added parallel gateway for explicit fork (was 5 implicit flows from Start)
-- Fixed NoAction flow cutting through task + label overlap
-- Codified 3 new visual clarity rules in bpmn-visual-clarity.md v1.1.0
-- PR orchestrator approved with 2 LOW non-blocking findings
+### Completed — BPMN Lane Ordering & Operations Message Flow Fix
+- **PR #13** (SLA-5): Fix cross-cutting lane ordering + operations message flow error → release 2026.03.8
+- Cross-cutting: swapped SP2/SP3 lane assignments so numbering is sequential 1,2,3,4,5
+- Cross-cutting: expanded pool height (660→690) and Automation lane (105→135) for start event label clearance
+- Operations: fixed MsgFlow_VendorRetireNotice targeting internal collapsed subprocess task → now targets SubProcess_8R
+- Operations: removed 11 invalid lane flowNodeRef entries for internal subprocess tasks
+- PR orchestrator approved with 0 findings
 
 ### 8-Phase Governance Framework — Complete
 | Phase | File | Status |
@@ -32,7 +32,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.7 |
+| Release Version | 2026.03.8 |
 | DMN Tables | 8 |
 | BPMN Models | 10 |
 | BPMN SVG Diagrams | 10 |
