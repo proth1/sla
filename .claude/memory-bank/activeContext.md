@@ -4,15 +4,15 @@
 
 **Date**: 2026-03-03
 **Branch**: main
-**Release Version**: 2026.03.6
+**Release Version**: 2026.03.7
 
-### Completed — BPMN Infrastructure Remediation
-- **PR #11** (SLA-11): BPMN infrastructure remediation → release 2026.03.6
-- 3-agent critical analysis swarm identified 105 findings from incomplete schema migration
-- 9 work streams: validators, context files, agents, skills, rules, hooks, master BPMN, BPMN 2.0 patterns, memory
-- 32 files changed (2,031 insertions, 1,692 deletions)
-- All 10 BPMN files pass validators with 0 failures
-- PR orchestrator approved with 2 non-blocking advisory findings
+### Completed — Cross-Cutting BPMN Redesign
+- **PR #12** (SLA-12): Cross-cutting BPMN redesign → release 2026.03.7
+- Redistributed 5 sub-processes: 1 per lane (was 3 in Business, 0 in Automation)
+- Added parallel gateway for explicit fork (was 5 implicit flows from Start)
+- Fixed NoAction flow cutting through task + label overlap
+- Codified 3 new visual clarity rules in bpmn-visual-clarity.md v1.1.0
+- PR orchestrator approved with 2 LOW non-blocking findings
 
 ### 8-Phase Governance Framework — Complete
 | Phase | File | Status |
@@ -32,7 +32,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.6 |
+| Release Version | 2026.03.7 |
 | DMN Tables | 8 |
 | BPMN Models | 10 |
 | BPMN SVG Diagrams | 10 |

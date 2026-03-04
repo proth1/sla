@@ -1,5 +1,21 @@
 # Changelog
 
+## [2026.03.7] - 2026-03-03
+
+### Changed
+- Cross-cutting BPMN redesign: redistributed 5 sub-processes across 5 lanes (1 SP per lane) — fixes overcrowded Business lane and empty Automation lane
+- Added parallel gateway for explicit fork semantics replacing 5 implicit start event flows
+- Start event and SP5 (Continuous Improvement) moved to Automation lane (system-triggered)
+- SP3 (Incident Response) moved to Governance lane; SP4 (Regulatory Change) moved to Compliance lane
+
+### Fixed
+- NoAction default flow in SP1 now routes above task bounding boxes instead of cutting through 50% Warning task
+- 50% Warning flow label repositioned above task clearance zone to prevent text overlap
+
+### Added
+- 3 new visual clarity rules in `bpmn-visual-clarity.md` v1.1.0: default/bypass flow routing, flow label clearance, collapsed sub-process fan-out pattern
+- 3 new validation checklist items (items 11-13)
+
 ## [2026.03.6] - 2026-03-03
 
 ### Fixed
