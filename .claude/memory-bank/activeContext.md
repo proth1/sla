@@ -4,38 +4,38 @@
 
 **Date**: 2026-03-04
 **Branch**: main
-**Release Version**: 2026.03.10
+**Release Version**: 2026.03.11
 
-### Completed — Security Scanning & PR-Orchestrator Integration
-- **PR #14**: Security scanning & hardening for BPMN/DMN pipeline → release 2026.03.9
-- **PR #15**: Integrate security scanner into pr-orchestrator Phase 0.5 → release 2026.03.10
-- Created `security-scanner.js`: XXE, scriptTask, JUEL injection, class loading, external scripts, CDATA, DMN FEEL checks
-- Integrated as first blocking gate in `validate-bpmn.sh` + DMN scan pass
-- Fixed open redirect in auth worker (`sanitizeRedirect()` on 3 surfaces)
-- Added SRI hash to D3 CDN (pinned jsDelivr 7.9.0)
-- Removed hardcoded PROXY_SECRET from source (now Wrangler secrets)
-- Added Phase 0.5 to pr-orchestrator: conditional BPMN/DMN validation + security-sensitive file scanning
-- Both PRs approved by pr-orchestrator with 0 blocking findings
+### Completed — BPMN Layout Rewrite (Phases 2, 5-8)
+- **PR #16**: Layout rewrite for 5 BPMN models → release 2026.03.11
+- Phase 2 Planning: 1000px → 930px, 5 gateways moved from Automation to Technical lane, max jump 875px → 465px
+- Phase 5 Contracting: 1450px → 930px, split/join gateways to Contracting lane, candidateGroups fixed
+- Phase 6 SDLC: 1125px → 860px, SLA escalation end events repositioned horizontally
+- Phase 7 Deployment: backward flows fixed, rejection loops routed above main flow
+- Phase 8 Operations: 1290px → 790px, removed duplicate flow, emergency path simplified
+- All 10 governance BPMN models pass validation (security scan, structural, visual overlap)
+- PR approved by pr-orchestrator, all findings addressed before merge
+- Added SVG renders, screenshots, reference docs, validator scripts
 
 ### 8-Phase Governance Framework — Complete
 | Phase | File | Status |
 |-------|------|--------|
 | Master | `processes/master/sla-governance-master.bpmn` | Deployed |
 | Phase 1 | `processes/phase-1-intake/initiation-and-intake.bpmn` | Deployed |
-| Phase 2 | `processes/phase-2-planning/planning-and-risk-scoping.bpmn` | Deployed |
+| Phase 2 | `processes/phase-2-planning/planning-and-risk-scoping.bpmn` | Layout fixed |
 | Phase 3 | `processes/phase-3-due-diligence/due-diligence-and-swarm.bpmn` | Deployed |
 | Phase 4 | `processes/phase-4-governance/governance-review-and-approval.bpmn` | Deployed |
-| Phase 5 | `processes/phase-5-contracting/contracting-and-controls.bpmn` | Deployed |
-| Phase 6 | `processes/phase-6-sdlc/sdlc-development-and-testing.bpmn` | Deployed |
-| Phase 7 | `processes/phase-7-deployment/deployment-and-go-live.bpmn` | Deployed |
-| Phase 8 | `processes/phase-8-operations/operations-monitoring-retirement.bpmn` | Deployed |
+| Phase 5 | `processes/phase-5-contracting/contracting-and-controls.bpmn` | Layout fixed |
+| Phase 6 | `processes/phase-6-sdlc/sdlc-development-and-testing.bpmn` | Layout fixed |
+| Phase 7 | `processes/phase-7-deployment/deployment-and-go-live.bpmn` | Layout fixed |
+| Phase 8 | `processes/phase-8-operations/operations-monitoring-retirement.bpmn` | Layout fixed |
 | Cross-Cutting | `processes/cross-cutting/cross-cutting-event-subprocesses.bpmn` | Deployed |
 
 ## Platform Stats
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.10 |
+| Release Version | 2026.03.11 |
 | DMN Tables | 8 |
 | BPMN Models | 10 |
 | BPMN SVG Diagrams | 10 |
@@ -43,23 +43,7 @@
 | Presentation Slides | 32 |
 
 ## Recommended Next Steps
-- Rotate PROXY_SECRET (old value in git history) — generate new secret, update both Wrangler secrets, redeploy
-- Redeploy auth worker to clear old PROXY_SECRET [vars] binding, then set as secret
-- Address Phase 3 candidateGroups/lane placement mismatch (PR #11 advisory finding)
-- End-to-end OTP verification at sla.agentic-innovations.com (human test)
-- Address DMN-1/DMN-2 UNIQUE hit policy overlaps flagged in PR #6 review
-
----
-
-## SESSION END WARNING (Auto-generated)
-
-**Session ended**: 2026-03-04T04:47:03Z
-**activeContext.md was NOT updated** before session ended.
-
-The previous Claude may not have documented:
-- What was accomplished
-- Current blockers
-- Recommended next steps
-
-Please review git log and recent changes to reconstruct context.
-
+- Review Phases 1, 3, 4 layouts for similar compaction opportunities
+- Rotate PROXY_SECRET (old value in git history)
+- Address Phase 3 candidateGroups/lane placement mismatch (PR #11 advisory)
+- End-to-end OTP verification at sla.agentic-innovations.com

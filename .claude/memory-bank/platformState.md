@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.10
+**Current Version**: 2026.03.11
 **Last Release**: 2026-03-04
-**Total Releases**: 10
+**Total Releases**: 11
 
 ## Artifact Counts
 
@@ -30,6 +30,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.11 | 2026-03-04 | #16 | Layout rewrite: compact phases 2, 5-8 BPMN + project artifacts |
 | 2026.03.10 | 2026-03-04 | #15 | Integrate security scanner into pr-orchestrator Phase 0.5 |
 | 2026.03.9 | 2026-03-04 | #14 | Security scanning & hardening for BPMN/DMN pipeline |
 | 2026.03.8 | 2026-03-04 | #13 | Fix cross-cutting lane ordering + operations message flow error |

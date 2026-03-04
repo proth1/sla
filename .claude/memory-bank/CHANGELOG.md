@@ -1,5 +1,25 @@
 # Changelog
 
+## [2026.03.11] - 2026-03-04
+
+### Fixed
+- Phase 2 Planning: compact layout — gateways moved from Automation to Technical lane, pool 1000px → 930px, max vertical jump 875px → 465px
+- Phase 5 Contracting: compact layout — pool 1450px → 930px, split/join gateways to Contracting lane, max jump 1115px → 260px, candidateGroups corrected
+- Phase 6 SDLC: compact layout — pool 1125px → 860px, SLA escalation end events positioned horizontally
+- Phase 7 Deployment: compact layout — backward flows fixed, rejection loops routed above
+- Phase 8 Operations: compact layout — pool 1290px → 790px, removed duplicate flow, emergency path simplified
+
+### Added
+- BPMN SVG renders for all 8 phases + master + cross-cutting
+- Camunda Modeler screenshots for all phases
+- BPMN/Camunda7 reference guides and requirement docs
+- Validator scripts (fix-diagonal-flows, flow-direction-checker)
+- Deployment security rules and full-sdlc command
+
+### Removed
+- Superseded .docx requirement files
+- Onboarding-only backup file (.bpmn.original)
+
 ## [2026.03.10] - 2026-03-04
 
 ### Added
