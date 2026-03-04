@@ -38,4 +38,3 @@
 | 2026.03.4 | 2026-03-03 | #9 | Presentation build with BPMN SVG rendering |
 | 2026.03.3 | 2026-03-03 | #8 | 8-phase rebuild: PRD, 8 DMN tables, 10 BPMN models, 5 cross-cutting sub-processes |
 | 2026.03.2 | 2026-03-02 | #4 | Redesign master orchestrator — correct dimensions and parallel gateway |
-| 2026.03.1 | 2026-03-02 | #1 | Complete 7-phase governance framework build-out |
