@@ -31,6 +31,11 @@
       </bpmn:lane>
       <bpmn:lane id="Lane_Technical" name="Technical Assessment" camunda:candidateGroups="technical-assessment">
         <bpmn:flowNodeRef>Task_2_5_ScopeDefinitionTech</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_AIInitiative</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ParallelSplitAI</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ParallelSplitMain</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_MainBranchJoin</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_FinalJoin</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_AIReview" name="AI Review" camunda:candidateGroups="ai-review">
         <bpmn:flowNodeRef>Task_2_4_AIRiskClassification</bpmn:flowNodeRef>
@@ -45,11 +50,6 @@
         <bpmn:flowNodeRef>Task_2_2_InherentRiskScoring</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>BoundaryEvent_Phase2SLATimer</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_2_3_RiskTierAssignment</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gateway_AIInitiative</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gateway_ParallelSplitAI</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gateway_ParallelSplitMain</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gateway_MainBranchJoin</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gateway_FinalJoin</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_2_7_KnowledgeBasePrePopulation</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_RiskTierDecision</bpmn:flowNodeRef>
       </bpmn:lane>
@@ -253,363 +253,317 @@
     <bpmndi:BPMNPlane id="BPMNPlane_Phase2Planning" bpmnElement="Collaboration_Phase2Planning">
 
       <bpmndi:BPMNShape id="Participant_EnterpriseGov_di" bpmnElement="Participant_EnterpriseGov" isHorizontal="true">
-        <dc:Bounds x="155" y="47" width="1850" height="1000" />
+        <dc:Bounds x="155" y="47" width="1750" height="930" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
-        <dc:Bounds x="185" y="47" width="1820" height="125" />
+        <dc:Bounds x="185" y="47" width="1720" height="130" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
-        <dc:Bounds x="185" y="172" width="1820" height="125" />
+        <dc:Bounds x="185" y="177" width="1720" height="130" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Lane_Contracting_di" bpmnElement="Lane_Contracting" isHorizontal="true">
-        <dc:Bounds x="185" y="297" width="1820" height="125" />
+        <dc:Bounds x="185" y="307" width="1720" height="60" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Lane_Technical_di" bpmnElement="Lane_Technical" isHorizontal="true">
-        <dc:Bounds x="185" y="422" width="1820" height="125" />
+        <dc:Bounds x="185" y="367" width="1720" height="130" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Lane_AIReview_di" bpmnElement="Lane_AIReview" isHorizontal="true">
-        <dc:Bounds x="185" y="547" width="1820" height="125" />
+        <dc:Bounds x="185" y="497" width="1720" height="130" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
-        <dc:Bounds x="185" y="672" width="1820" height="125" />
+        <dc:Bounds x="185" y="627" width="1720" height="130" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
-        <dc:Bounds x="185" y="797" width="1820" height="125" />
+        <dc:Bounds x="185" y="757" width="1720" height="60" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
-        <dc:Bounds x="185" y="922" width="1820" height="125" />
+        <dc:Bounds x="185" y="817" width="1720" height="160" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_Phase2Initiated_di" bpmnElement="StartEvent_Phase2Initiated">
-        <dc:Bounds x="247" y="91" width="36" height="36" />
+        <dc:Bounds x="247" y="94" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="232" y="134" width="66" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Task_2_1_BusinessCaseValidation_di" bpmnElement="Task_2_1_BusinessCaseValidation">
-        <dc:Bounds x="330" y="69" width="100" height="80" />
+        <dc:Bounds x="330" y="72" width="100" height="80" />
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Task_2_2_InherentRiskScoring_di" bpmnElement="Task_2_2_InherentRiskScoring">
-        <dc:Bounds x="500" y="944" width="100" height="80" />
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="BoundaryEvent_Phase2SLATimer_di" bpmnElement="BoundaryEvent_Phase2SLATimer">
-        <dc:Bounds x="518" y="1006" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="562" y="1010" width="46" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="EndEvent_SLAEscalated_di" bpmnElement="EndEvent_SLAEscalated">
-        <dc:Bounds x="622" y="1006" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="597" y="979" width="86" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Task_2_3_RiskTierAssignment_di" bpmnElement="Task_2_3_RiskTierAssignment">
-        <dc:Bounds x="680" y="944" width="100" height="80" />
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Gateway_AIInitiative_di" bpmnElement="Gateway_AIInitiative" isMarkerVisible="true">
-        <dc:Bounds x="840" y="959" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="825" y="1016" width="80" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Gateway_ParallelSplitAI_di" bpmnElement="Gateway_ParallelSplitAI">
-        <dc:Bounds x="960" y="959" width="50" height="50" />
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Gateway_ParallelSplitMain_di" bpmnElement="Gateway_ParallelSplitMain">
-        <dc:Bounds x="1050" y="959" width="50" height="50" />
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Task_2_4_AIRiskClassification_di" bpmnElement="Task_2_4_AIRiskClassification">
-        <dc:Bounds x="1150" y="569" width="100" height="80" />
-      </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Task_2_5_ScopeDefinitionBusiness_di" bpmnElement="Task_2_5_ScopeDefinitionBusiness">
-        <dc:Bounds x="1150" y="69" width="100" height="80" />
+        <dc:Bounds x="1180" y="72" width="100" height="80" />
       </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Task_2_5_ScopeDefinitionTech_di" bpmnElement="Task_2_5_ScopeDefinitionTech">
-        <dc:Bounds x="1150" y="444" width="100" height="80" />
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Task_2_6_RegulatoryMapping_di" bpmnElement="Task_2_6_RegulatoryMapping">
-        <dc:Bounds x="1150" y="694" width="100" height="80" />
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Gateway_MainBranchJoin_di" bpmnElement="Gateway_MainBranchJoin">
-        <dc:Bounds x="1310" y="959" width="50" height="50" />
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Gateway_FinalJoin_di" bpmnElement="Gateway_FinalJoin">
-        <dc:Bounds x="1410" y="959" width="50" height="50" />
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Task_2_7_KnowledgeBasePrePopulation_di" bpmnElement="Task_2_7_KnowledgeBasePrePopulation">
-        <dc:Bounds x="1520" y="944" width="100" height="80" />
-      </bpmndi:BPMNShape>
-
-      <bpmndi:BPMNShape id="Gateway_RiskTierDecision_di" bpmnElement="Gateway_RiskTierDecision" isMarkerVisible="true">
-        <dc:Bounds x="1680" y="959" width="50" height="50" />
+      <bpmndi:BPMNShape id="EndEvent_Phase2Complete_di" bpmnElement="EndEvent_Phase2Complete">
+        <dc:Bounds x="1810" y="94" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1663" y="1016" width="84" height="27" />
+          <dc:Bounds x="1853" y="95" width="84" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Rejected_di" bpmnElement="EndEvent_Rejected">
-        <dc:Bounds x="1800" y="216" width="36" height="36" />
+        <dc:Bounds x="1810" y="224" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1843" y="220" width="84" height="27" />
+          <dc:Bounds x="1853" y="224" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
-      <bpmndi:BPMNShape id="EndEvent_Phase2Complete_di" bpmnElement="EndEvent_Phase2Complete">
-        <dc:Bounds x="1800" y="91" width="36" height="36" />
+      <bpmndi:BPMNShape id="Task_2_5_ScopeDefinitionTech_di" bpmnElement="Task_2_5_ScopeDefinitionTech">
+        <dc:Bounds x="1180" y="392" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AIInitiative_di" bpmnElement="Gateway_AIInitiative" isMarkerVisible="true">
+        <dc:Bounds x="860" y="407" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1843" y="95" width="84" height="40" />
+          <dc:Bounds x="845" y="464" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ParallelSplitAI_di" bpmnElement="Gateway_ParallelSplitAI">
+        <dc:Bounds x="960" y="407" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ParallelSplitMain_di" bpmnElement="Gateway_ParallelSplitMain">
+        <dc:Bounds x="1060" y="407" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_MainBranchJoin_di" bpmnElement="Gateway_MainBranchJoin">
+        <dc:Bounds x="1340" y="407" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_FinalJoin_di" bpmnElement="Gateway_FinalJoin">
+        <dc:Bounds x="1440" y="407" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_2_4_AIRiskClassification_di" bpmnElement="Task_2_4_AIRiskClassification">
+        <dc:Bounds x="1180" y="522" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_2_6_RegulatoryMapping_di" bpmnElement="Task_2_6_RegulatoryMapping">
+        <dc:Bounds x="1180" y="652" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_2_2_InherentRiskScoring_di" bpmnElement="Task_2_2_InherentRiskScoring">
+        <dc:Bounds x="500" y="857" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BoundaryEvent_Phase2SLATimer_di" bpmnElement="BoundaryEvent_Phase2SLATimer">
+        <dc:Bounds x="532" y="919" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="576" y="923" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_SLAEscalated_di" bpmnElement="EndEvent_SLAEscalated">
+        <dc:Bounds x="630" y="919" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="606" y="892" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_2_3_RiskTierAssignment_di" bpmnElement="Task_2_3_RiskTierAssignment">
+        <dc:Bounds x="700" y="857" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_2_7_KnowledgeBasePrePopulation_di" bpmnElement="Task_2_7_KnowledgeBasePrePopulation">
+        <dc:Bounds x="1540" y="857" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_RiskTierDecision_di" bpmnElement="Gateway_RiskTierDecision" isMarkerVisible="true">
+        <dc:Bounds x="1700" y="872" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1683" y="929" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Annotation_OCC_di" bpmnElement="Annotation_OCC">
-        <dc:Bounds x="200" y="1220" width="420" height="55" />
+        <dc:Bounds x="200" y="1167" width="420" height="55" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Annotation_SR117_di" bpmnElement="Annotation_SR117">
-        <dc:Bounds x="640" y="1220" width="420" height="55" />
+        <dc:Bounds x="640" y="1167" width="420" height="55" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Annotation_GDPR_di" bpmnElement="Annotation_GDPR">
-        <dc:Bounds x="1080" y="1220" width="420" height="55" />
+        <dc:Bounds x="1080" y="1167" width="420" height="55" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Annotation_EUAI_di" bpmnElement="Annotation_EUAI">
-        <dc:Bounds x="1520" y="1220" width="420" height="55" />
+        <dc:Bounds x="1520" y="1167" width="420" height="55" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Flow_Start_BusinessCase_di" bpmnElement="Flow_Start_BusinessCase">
-        <di:waypoint x="283" y="109" />
-        <di:waypoint x="330" y="109" />
+        <di:waypoint x="283" y="112" />
+        <di:waypoint x="330" y="112" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_BusinessCase_RiskScoring_di" bpmnElement="Flow_BusinessCase_RiskScoring">
-        <di:waypoint x="430" y="109" />
-        <di:waypoint x="460" y="109" />
-        <di:waypoint x="460" y="984" />
-        <di:waypoint x="500" y="984" />
+        <di:waypoint x="430" y="112" />
+        <di:waypoint x="465" y="112" />
+        <di:waypoint x="465" y="897" />
+        <di:waypoint x="500" y="897" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_RiskScoring_TierAssignment_di" bpmnElement="Flow_RiskScoring_TierAssignment">
-        <di:waypoint x="600" y="984" />
-        <di:waypoint x="680" y="984" />
+        <di:waypoint x="600" y="897" />
+        <di:waypoint x="700" y="897" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_TierAssignment_AIGateway_di" bpmnElement="Flow_TierAssignment_AIGateway">
-        <di:waypoint x="780" y="984" />
-        <di:waypoint x="840" y="984" />
+        <di:waypoint x="800" y="897" />
+        <di:waypoint x="830" y="897" />
+        <di:waypoint x="830" y="432" />
+        <di:waypoint x="860" y="432" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_YesAI_SplitAI_di" bpmnElement="Flow_YesAI_SplitAI">
-        <di:waypoint x="890" y="984" />
-        <di:waypoint x="960" y="984" />
+        <di:waypoint x="910" y="432" />
+        <di:waypoint x="960" y="432" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="915" y="966" width="22" height="14" />
+          <dc:Bounds x="925" y="414" width="22" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_NotAI_SplitMain_di" bpmnElement="Flow_NotAI_SplitMain">
-        <di:waypoint x="865" y="1009" />
-        <di:waypoint x="865" y="1025" />
-        <di:waypoint x="1075" y="1025" />
-        <di:waypoint x="1075" y="1009" />
+        <di:waypoint x="885" y="457" />
+        <di:waypoint x="885" y="480" />
+        <di:waypoint x="1085" y="480" />
+        <di:waypoint x="1085" y="457" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="878" y="1028" width="15" height="14" />
+          <dc:Bounds x="898" y="483" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SplitAI_Task24_di" bpmnElement="Flow_SplitAI_Task24">
-        <di:waypoint x="985" y="959" />
-        <di:waypoint x="985" y="609" />
-        <di:waypoint x="1150" y="609" />
+        <di:waypoint x="985" y="457" />
+        <di:waypoint x="985" y="562" />
+        <di:waypoint x="1180" y="562" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_SplitAI_Task25Bus_di" bpmnElement="Flow_SplitAI_Task25Bus">
-        <di:waypoint x="985" y="959" />
-        <di:waypoint x="985" y="109" />
-        <di:waypoint x="1150" y="109" />
+        <di:waypoint x="985" y="407" />
+        <di:waypoint x="985" y="112" />
+        <di:waypoint x="1180" y="112" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_SplitAI_Task25Tech_di" bpmnElement="Flow_SplitAI_Task25Tech">
-        <di:waypoint x="985" y="959" />
-        <di:waypoint x="985" y="484" />
-        <di:waypoint x="1150" y="484" />
+        <di:waypoint x="1010" y="432" />
+        <di:waypoint x="1180" y="432" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_SplitAI_Task26_di" bpmnElement="Flow_SplitAI_Task26">
-        <di:waypoint x="985" y="959" />
-        <di:waypoint x="985" y="734" />
-        <di:waypoint x="1150" y="734" />
+        <di:waypoint x="985" y="457" />
+        <di:waypoint x="985" y="692" />
+        <di:waypoint x="1180" y="692" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SplitMain_Task25Bus_di" bpmnElement="Flow_SplitMain_Task25Bus">
-        <di:waypoint x="1075" y="959" />
-        <di:waypoint x="1075" y="109" />
-        <di:waypoint x="1150" y="109" />
+        <di:waypoint x="1085" y="407" />
+        <di:waypoint x="1085" y="112" />
+        <di:waypoint x="1180" y="112" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_SplitMain_Task25Tech_di" bpmnElement="Flow_SplitMain_Task25Tech">
-        <di:waypoint x="1075" y="959" />
-        <di:waypoint x="1075" y="484" />
-        <di:waypoint x="1150" y="484" />
+        <di:waypoint x="1110" y="432" />
+        <di:waypoint x="1180" y="432" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_SplitMain_Task26_di" bpmnElement="Flow_SplitMain_Task26">
-        <di:waypoint x="1075" y="959" />
-        <di:waypoint x="1075" y="734" />
-        <di:waypoint x="1150" y="734" />
+        <di:waypoint x="1085" y="457" />
+        <di:waypoint x="1085" y="692" />
+        <di:waypoint x="1180" y="692" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Task24_FinalJoin_di" bpmnElement="Flow_Task24_FinalJoin">
-        <di:waypoint x="1250" y="609" />
-        <di:waypoint x="1435" y="609" />
-        <di:waypoint x="1435" y="959" />
+        <di:waypoint x="1280" y="562" />
+        <di:waypoint x="1465" y="562" />
+        <di:waypoint x="1465" y="457" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_Task25Bus_MainJoin_di" bpmnElement="Flow_Task25Bus_MainJoin">
-        <di:waypoint x="1250" y="109" />
-        <di:waypoint x="1335" y="109" />
-        <di:waypoint x="1335" y="959" />
+        <di:waypoint x="1280" y="112" />
+        <di:waypoint x="1365" y="112" />
+        <di:waypoint x="1365" y="407" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_Task25Tech_MainJoin_di" bpmnElement="Flow_Task25Tech_MainJoin">
-        <di:waypoint x="1250" y="484" />
-        <di:waypoint x="1335" y="484" />
-        <di:waypoint x="1335" y="959" />
+        <di:waypoint x="1280" y="432" />
+        <di:waypoint x="1340" y="432" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_Task26_MainJoin_di" bpmnElement="Flow_Task26_MainJoin">
-        <di:waypoint x="1250" y="734" />
-        <di:waypoint x="1335" y="734" />
-        <di:waypoint x="1335" y="959" />
+        <di:waypoint x="1280" y="692" />
+        <di:waypoint x="1365" y="692" />
+        <di:waypoint x="1365" y="457" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_MainJoin_FinalJoin_di" bpmnElement="Flow_MainJoin_FinalJoin">
-        <di:waypoint x="1360" y="984" />
-        <di:waypoint x="1410" y="984" />
+        <di:waypoint x="1390" y="432" />
+        <di:waypoint x="1440" y="432" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_FinalJoin_KnowledgeBase_di" bpmnElement="Flow_FinalJoin_KnowledgeBase">
-        <di:waypoint x="1460" y="984" />
-        <di:waypoint x="1520" y="984" />
+        <di:waypoint x="1490" y="432" />
+        <di:waypoint x="1510" y="432" />
+        <di:waypoint x="1510" y="897" />
+        <di:waypoint x="1540" y="897" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_KnowledgeBase_RiskTierDecision_di" bpmnElement="Flow_KnowledgeBase_RiskTierDecision">
-        <di:waypoint x="1620" y="984" />
-        <di:waypoint x="1680" y="984" />
+        <di:waypoint x="1640" y="897" />
+        <di:waypoint x="1700" y="897" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_UnacceptableRisk_di" bpmnElement="Flow_UnacceptableRisk">
-        <di:waypoint x="1705" y="959" />
-        <di:waypoint x="1705" y="234" />
-        <di:waypoint x="1800" y="234" />
+        <di:waypoint x="1725" y="872" />
+        <di:waypoint x="1725" y="242" />
+        <di:waypoint x="1810" y="242" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1713" y="590" width="86" height="27" />
+          <dc:Bounds x="1728" y="550" width="86" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_HighRisk_di" bpmnElement="Flow_HighRisk">
-        <di:waypoint x="1690" y="959" />
-        <di:waypoint x="1690" y="109" />
-        <di:waypoint x="1800" y="109" />
+        <di:waypoint x="1750" y="897" />
+        <di:waypoint x="1770" y="897" />
+        <di:waypoint x="1770" y="112" />
+        <di:waypoint x="1810" y="112" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1698" y="527" width="44" height="14" />
+          <dc:Bounds x="1773" y="490" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_StandardRisk_di" bpmnElement="Flow_StandardRisk">
-        <di:waypoint x="1730" y="984" />
-        <di:waypoint x="1770" y="984" />
-        <di:waypoint x="1770" y="109" />
-        <di:waypoint x="1800" y="109" />
+        <di:waypoint x="1750" y="897" />
+        <di:waypoint x="1790" y="897" />
+        <di:waypoint x="1790" y="112" />
+        <di:waypoint x="1810" y="112" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1737" y="966" width="55" height="14" />
+          <dc:Bounds x="1793" y="540" width="55" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Flow_MinimalRisk_di" bpmnElement="Flow_MinimalRisk">
-        <di:waypoint x="1730" y="984" />
-        <di:waypoint x="1785" y="984" />
-        <di:waypoint x="1785" y="109" />
-        <di:waypoint x="1800" y="109" />
+        <di:waypoint x="1750" y="897" />
+        <di:waypoint x="1805" y="897" />
+        <di:waypoint x="1805" y="112" />
+        <di:waypoint x="1810" y="112" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1737" y="950" width="63" height="14" />
+          <dc:Bounds x="1808" y="590" width="63" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SLATimer_Escalated_di" bpmnElement="Flow_SLATimer_Escalated">
-        <di:waypoint x="554" y="1024" />
-        <di:waypoint x="622" y="1024" />
+        <di:waypoint x="568" y="937" />
+        <di:waypoint x="630" y="937" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_OCC_di" bpmnElement="Assoc_OCC">
-        <di:waypoint x="550" y="1024" />
-        <di:waypoint x="410" y="1220" />
+        <di:waypoint x="550" y="937" />
+        <di:waypoint x="410" y="1167" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Assoc_SR117_di" bpmnElement="Assoc_SR117">
-        <di:waypoint x="1200" y="649" />
-        <di:waypoint x="850" y="1220" />
+        <di:waypoint x="1230" y="602" />
+        <di:waypoint x="850" y="1167" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Assoc_GDPR_di" bpmnElement="Assoc_GDPR">
-        <di:waypoint x="1200" y="774" />
-        <di:waypoint x="1290" y="1220" />
+        <di:waypoint x="1230" y="732" />
+        <di:waypoint x="1290" y="1167" />
       </bpmndi:BPMNEdge>
-
       <bpmndi:BPMNEdge id="Assoc_EUAI_di" bpmnElement="Assoc_EUAI">
-        <di:waypoint x="865" y="1009" />
-        <di:waypoint x="1730" y="1220" />
+        <di:waypoint x="885" y="457" />
+        <di:waypoint x="1730" y="1167" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNShape id="Participant_VendorThirdParty_di" bpmnElement="Participant_VendorThirdParty" isHorizontal="true">
-        <dc:Bounds x="155" y="1077" width="1850" height="125" />
+        <dc:Bounds x="155" y="1007" width="1750" height="130" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="Lane_VendorResponse_di" bpmnElement="Lane_VendorResponse" isHorizontal="true">
-        <dc:Bounds x="185" y="1077" width="1820" height="125" />
+        <dc:Bounds x="185" y="1007" width="1720" height="130" />
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="StartEvent_VendorPhase2_di" bpmnElement="StartEvent_VendorPhase2">
-        <dc:Bounds x="247" y="1121" width="36" height="36" />
+        <dc:Bounds x="247" y="1054" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="225" y="1164" width="80" height="27" />
+          <dc:Bounds x="225" y="1097" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNShape id="EndEvent_VendorPhase2_di" bpmnElement="EndEvent_VendorPhase2">
-        <dc:Bounds x="352" y="1121" width="36" height="36" />
+        <dc:Bounds x="352" y="1054" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="330" y="1164" width="80" height="27" />
+          <dc:Bounds x="330" y="1097" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
       <bpmndi:BPMNEdge id="Flow_Vendor_Start_End_di" bpmnElement="Flow_Vendor_Start_End">
-        <di:waypoint x="283" y="1139" />
-        <di:waypoint x="352" y="1139" />
+        <di:waypoint x="283" y="1072" />
+        <di:waypoint x="352" y="1072" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>
