@@ -434,7 +434,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{deploymentDecision == 'rejected'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_Phase8_MonitoringGateway" sourceRef="SP_Phase8_Operations" targetRef="Gateway_Monitoring" />
-    <bpmn:sequenceFlow id="Flow_Monitor_Continue" name="Continue Operations" sourceRef="Gateway_Monitoring" targetRef="SP_Phase8_Operations" />
+    <bpmn:sequenceFlow id="Flow_Monitor_Continue" name="Loop: Continue Operations" sourceRef="Gateway_Monitoring" targetRef="SP_Phase8_Operations" />
     <bpmn:sequenceFlow id="Flow_Monitor_Retire" name="Retire" sourceRef="Gateway_Monitoring" targetRef="EndEvent_Retired">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{monitoringOutcome == 'retire'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
