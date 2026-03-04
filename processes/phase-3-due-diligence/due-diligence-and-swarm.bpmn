@@ -796,7 +796,7 @@
         <di:waypoint x="1490" y="1002" />
         <di:waypoint x="1840" y="1002" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1638" y="984" width="36" height="14" />
+          <dc:Bounds x="1638" y="959" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 

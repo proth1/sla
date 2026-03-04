@@ -103,7 +103,6 @@
 
     <bpmn:endEvent id="EndEvent_Escalation_P1" name="Phase 1&#10;SLA Escalation">
       <bpmn:incoming>Flow_P1_SLA_Escalation</bpmn:incoming>
-      <bpmn:escalationEventDefinition id="EscDef_P1" />
     </bpmn:endEvent>
 
     <bpmn:subProcess id="SP_Phase2_Planning" name="Phase 2: Planning &amp; Risk Scoping">
@@ -398,6 +397,11 @@
       <bpmn:incoming>Flow_Oversight_Task_End</bpmn:incoming>
     </bpmn:endEvent>
 
+    <bpmn:textAnnotation id="Annotation_MultiStart">
+      <bpmn:text>Dual start events: Each creates an independent process instance per Camunda 7 multi-start-event semantics</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_MultiStart" sourceRef="StartEvent_OversightAudit" targetRef="Annotation_MultiStart" />
+
     <bpmn:textAnnotation id="TextAnnotation_Regulatory">
       <bpmn:text>Regulatory Alignment: OCC Bulletin 2023-17 (Third-Party Risk) | SR 11-7 (Model Risk Management) | SOX (Financial Controls) | GDPR/CCPA (Data Privacy) | EU AI Act (AI System Risk) | DORA (Digital Operational Resilience)</bpmn:text>
     </bpmn:textAnnotation>
@@ -651,6 +655,15 @@
           <dc:Bounds x="204" y="874" width="72" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Annotation_MultiStart_di" bpmnElement="Annotation_MultiStart">
+        <dc:Bounds x="200" y="1100" width="300" height="40" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Assoc_MultiStart_di" bpmnElement="Assoc_MultiStart">
+        <di:waypoint x="240" y="867" />
+        <di:waypoint x="240" y="1100" />
+      </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNShape id="Task_OversightPlaceholder_di" bpmnElement="Task_OversightPlaceholder">
         <dc:Bounds x="320" y="817" width="100" height="80" />
