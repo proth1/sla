@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.12
+**Current Version**: 2026.03.13
 **Last Release**: 2026-03-04
-**Total Releases**: 12
+**Total Releases**: 13
 
 ## Artifact Counts
 
@@ -30,6 +30,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.13 | 2026-03-04 | #19 | DMN quality fixes: UNIQUE→FIRST for DMN-1/2/6, catch-all defaults, governance metadata |
 | 2026.03.12 | 2026-03-04 | #17 | Fix hero subtitle visibility + scroll-snap navigation conversion |
 | 2026.03.11 | 2026-03-04 | #16 | Layout rewrite: compact phases 2, 5-8 BPMN + project artifacts |
 | 2026.03.10 | 2026-03-04 | #15 | Integrate security scanner into pr-orchestrator Phase 0.5 |

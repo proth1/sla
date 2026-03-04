@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026.03.13] - 2026-03-04
+
+### Fixed
+- DMN-1, DMN-2, DMN-6: Changed hit policy from UNIQUE to FIRST to resolve coverage gaps and overlapping rules in multi-dimensional input spaces
+- DMN-1: Added catch-all rule-17 defaulting to "Limited" risk tier for unclassified input combinations
+- DMN-2: Added catch-all rule-13 defaulting to "Hybrid" pathway for unclassified routing scenarios
+- DMN-6: Added catch-all rule-13 defaulting to "Normal-Medium" change type requiring CAB review
+
+### Added
+- REQ-DMN-002 governance metadata (version, effective date, approving authority, review cycle, regulatory basis) to all 8 DMN tables
+- Updated bpmn-governance-standards.md hit policy reference table
+
 ## [2026.03.12] - 2026-03-04
 
 ### Changed

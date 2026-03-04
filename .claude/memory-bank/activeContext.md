@@ -4,7 +4,12 @@
 
 **Date**: 2026-03-04
 **Branch**: main
-**Release Version**: 2026.03.12
+**Release Version**: 2026.03.13
+
+### Completed — DMN Quality Fixes (WP4)
+- **PR #19**: DMN quality fixes and governance metadata → release 2026.03.13
+- DMN-1, DMN-2, DMN-6: UNIQUE→FIRST with catch-all defaults
+- REQ-DMN-002 governance metadata added to all 8 DMN tables
 
 ### Completed — Presentation UX Overhaul
 - **PR #17**: Fix hero subtitle visibility + scroll-snap navigation → release 2026.03.12
@@ -52,3 +57,18 @@
 - Rotate PROXY_SECRET (old value in git history)
 - Address Phase 3 candidateGroups/lane placement mismatch (PR #11 advisory)
 - End-to-end OTP verification at sla.agentic-innovations.com
+
+---
+
+## SESSION END WARNING (Auto-generated)
+
+**Session ended**: 2026-03-04T06:52:10Z
+**activeContext.md was NOT updated** before session ended.
+
+The previous Claude may not have documented:
+- What was accomplished
+- Current blockers
+- Recommended next steps
+
+Please review git log and recent changes to reconstruct context.
+
