@@ -79,14 +79,14 @@ export default {
     }
 
     // Validate JWT
-    let validation = sessionToken ? await validateDescopeJWT(sessionToken) : { valid: false, reason: 'No session token' };
+    let validation = sessionToken ? await validateDescopeJWT(sessionToken, env.DESCOPE_PROJECT_ID) : { valid: false, reason: 'No session token' };
 
     // If session expired but we have refresh token, try server-side refresh
     if (!validation.valid && refreshToken) {
       const refreshResult = await refreshSessionServerSide(refreshToken, env);
 
       if (refreshResult.success && refreshResult.sessionJwt) {
-        validation = await validateDescopeJWT(refreshResult.sessionJwt);
+        validation = await validateDescopeJWT(refreshResult.sessionJwt, env.DESCOPE_PROJECT_ID);
 
         if (validation.valid) {
           const email = validation.payload?.email as string | undefined;
@@ -208,7 +208,15 @@ function renderUnauthorizedPage(email: string | undefined): Response {
 
   return new Response(html, {
     status: 403,
-    headers: { 'Content-Type': 'text/html;charset=UTF-8' },
+    headers: {
+      'Content-Type': 'text/html;charset=UTF-8',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;",
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Cache-Control': 'no-store',
+    },
   });
 }
 
@@ -299,16 +307,27 @@ function redirectToLogin(originalUrl: URL): Response {
   return Response.redirect(loginUrl.toString(), 302);
 }
 
-// JWKS endpoint for Descope JWT signature verification
-const DESCOPE_JWKS_URL = 'https://api.descope.com/P3AN0dLWf9ZTyBi3vF6xaDbThO8q/.well-known/jwks.json';
-const JWKS = createRemoteJWKSet(new URL(DESCOPE_JWKS_URL));
+// JWKS cache: keyed by project ID so we create one set per ID
+const JWKS_CACHE = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
+
+function getJWKS(projectId: string): ReturnType<typeof createRemoteJWKSet> {
+  let jwks = JWKS_CACHE.get(projectId);
+  if (!jwks) {
+    const jwksUrl = `https://api.descope.com/${projectId}/.well-known/jwks.json`;
+    jwks = createRemoteJWKSet(new URL(jwksUrl));
+    JWKS_CACHE.set(projectId, jwks);
+  }
+  return jwks;
+}
 
 async function validateDescopeJWT(
-  token: string
+  token: string,
+  projectId: string
 ): Promise<{ valid: boolean; reason?: string; payload?: Record<string, unknown> }> {
   try {
-    const { payload } = await jwtVerify(token, JWKS, {
-      issuer: 'https://api.descope.com/v1/apps/P3AN0dLWf9ZTyBi3vF6xaDbThO8q',
+    const jwks = getJWKS(projectId);
+    const { payload } = await jwtVerify(token, jwks, {
+      issuer: `https://api.descope.com/v1/apps/${projectId}`,
     });
 
     return { valid: true, payload: payload as unknown as Record<string, unknown> };
@@ -344,16 +363,14 @@ async function proxyToPages(request: Request, env: Env, url: URL): Promise<Respo
 function handleLogout(url: URL): Response {
   const loginUrl = new URL(LOGIN_PATH, url.origin);
 
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: loginUrl.toString(),
-      'Set-Cookie': [
-        `${SESSION_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
-        `${REFRESH_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
-      ].join(', '),
-    },
+  const headers = new Headers({
+    'Location': loginUrl.toString(),
   });
+  headers.append('Set-Cookie', `${SESSION_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
+  headers.append('Set-Cookie', `${REFRESH_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
+  headers.append('Set-Cookie', `${PENDING_EMAIL_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
+
+  return new Response(null, { status: 302, headers });
 }
 
 async function handleSendOTP(request: Request, env: Env, url: URL): Promise<Response> {
@@ -450,7 +467,7 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
     const headers = new Headers();
     headers.set('Location', redirect);
 
-    headers.append('Set-Cookie', `${PENDING_EMAIL_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`);
+    headers.append('Set-Cookie', `${PENDING_EMAIL_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
 
     if (data.sessionJwt) {
       headers.append('Set-Cookie', `${SESSION_COOKIE}=${data.sessionJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=28800`);
@@ -705,6 +722,11 @@ function renderLoginPage(env: Env, url: URL, request: Request): Response {
     headers: {
       'Content-Type': 'text/html;charset=UTF-8',
       'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.descope.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.descope.com; frame-src https://auth.descope.com; img-src 'self' data:;",
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
     },
   });
 }
