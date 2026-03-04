@@ -1,0 +1,1479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+  id="Definitions_IdealState"
+  targetNamespace="http://sla.governance/bpmn/onboarding"
+  exporter="Camunda Modeler"
+  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="Collaboration_IdealState">
+    <bpmn:participant id="Participant_Requester" name="Software Requester" processRef="Process_Requester" />
+    <bpmn:participant id="Participant_ProductMgmt" name="Product Management" processRef="Process_ProductMgmt" />
+    <bpmn:participant id="Participant_Vendor" name="Vendor / Third Party — External Software or Contracting" processRef="Process_Vendor" />
+    <bpmn:messageFlow id="MsgFlow_SubmitRequest" name="Software Request" sourceRef="Task_SubmitRequest" targetRef="Start_RequestReceived" />
+    <bpmn:messageFlow id="MsgFlow_DDRequest" name="Due Diligence Request" sourceRef="Task_VendorDueDiligence" targetRef="Start_VendorEngagement" />
+    <bpmn:messageFlow id="MsgFlow_VendorResponse" name="Vendor Response" sourceRef="Task_VendorProposal" targetRef="Task_EvaluateVendorResponse" />
+    <bpmn:messageFlow id="MsgFlow_ContractDraft" name="Contract Draft" sourceRef="Task_NegotiateContract" targetRef="Task_VendorContractReview" />
+    <bpmn:messageFlow id="MsgFlow_SignedContract" name="Signed Contract" sourceRef="Task_VendorContractSign" targetRef="Task_FinalizeContract" />
+  </bpmn:collaboration>
+
+  <!-- ============================================================ -->
+  <!-- POOL 1: SOFTWARE REQUESTER                                   -->
+  <!-- ============================================================ -->
+  <bpmn:process id="Process_Requester" name="Software Requester" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:startEvent id="Start_SoftwareNeed" name="Software need&#10;defined">
+      <bpmn:outgoing>Flow_R1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_ReviewExisting" name="Review existing&#10;solutions"
+        camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_R1</bpmn:incoming>
+      <bpmn:outgoing>Flow_R2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_BypassProcess" name="Bypass formal&#10;process?">
+      <bpmn:incoming>Flow_R2</bpmn:incoming>
+      <bpmn:outgoing>Flow_R_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_R_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_LeverageExisting" name="Leverage existing&#10;software"
+        camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_R_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_R_EndLeverage</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_Leveraged" name="Software&#10;Leveraged">
+      <bpmn:incoming>Flow_R_EndLeverage</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_GatherDocs" name="Gather&#10;documentation"
+        camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_R_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_R3</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_SubmitRequest" name="Submit software&#10;request"
+        camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_R3</bpmn:incoming>
+      <bpmn:outgoing>Flow_R_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_Submitted" name="Request&#10;Submitted">
+      <bpmn:incoming>Flow_R_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_R1" sourceRef="Start_SoftwareNeed" targetRef="Task_ReviewExisting" />
+    <bpmn:sequenceFlow id="Flow_R2" sourceRef="Task_ReviewExisting" targetRef="GW_BypassProcess" />
+    <bpmn:sequenceFlow id="Flow_R_Yes" name="Yes" sourceRef="GW_BypassProcess" targetRef="Task_LeverageExisting" />
+    <bpmn:sequenceFlow id="Flow_R_No" name="No" sourceRef="GW_BypassProcess" targetRef="Task_GatherDocs" />
+    <bpmn:sequenceFlow id="Flow_R_EndLeverage" sourceRef="Task_LeverageExisting" targetRef="End_Leveraged" />
+    <bpmn:sequenceFlow id="Flow_R3" sourceRef="Task_GatherDocs" targetRef="Task_SubmitRequest" />
+    <bpmn:sequenceFlow id="Flow_R_End" sourceRef="Task_SubmitRequest" targetRef="End_Submitted" />
+
+    <bpmn:textAnnotation id="Annot_EntryCriteria">
+      <bpmn:text>Entry/Exit Criteria: Tracked, standardized intake requirements with no exceptions. Data collected in standardized formats to maximize reuse, accuracy, and quality. Integrated with asset management for portfolio and tracking across categories, groups, and architecture classifications, workloads, and domains.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Entry" sourceRef="Start_SoftwareNeed" targetRef="Annot_EntryCriteria" />
+
+    <bpmn:textAnnotation id="Annot_KnowledgeMgmt">
+      <bpmn:text>Knowledge is captured and updated throughout the process. For cases moving through the full process, they don't have to re-enter information, but they may be asked to add or update details as needed. Information is centralized and can be used across portfolios and backlog systems to support decision-making, performance and quality metrics in a time-proactive management of the process.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Knowledge" sourceRef="Task_ReviewExisting" targetRef="Annot_KnowledgeMgmt" />
+  </bpmn:process>
+
+  <!-- ============================================================ -->
+  <!-- POOL 2: PRODUCT MANAGEMENT                                   -->
+  <!-- ============================================================ -->
+  <bpmn:process id="Process_ProductMgmt" name="Product Management — Software Onboarding" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:startEvent id="Start_RequestReceived" name="Request&#10;Received">
+      <bpmn:outgoing>Flow_PM1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_RequestReceived" />
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_InitialTriage" name="Initial Triage&#10;and Evaluation"
+        camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_PM1</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_TriageDecision" name="Triage&#10;Decision">
+      <bpmn:incoming>Flow_PM2</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_Reject</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PM_Approve</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="End_Rejected" name="Request&#10;Rejected">
+      <bpmn:incoming>Flow_PM_Reject</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_PrelimAnalysis" name="Preliminary&#10;Analysis"
+        camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_PM_Approve</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM3</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_NeedsAssessment" name="Needs further&#10;assessment?">
+      <bpmn:incoming>Flow_PM3</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_ToBacklog</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PM_ToPathway</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_Backlog" name="Backlog&#10;Prioritization"
+        camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_PM_ToBacklog</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_BacklogOut</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_MergeBacklog">
+      <bpmn:incoming>Flow_PM_ToPathway</bpmn:incoming>
+      <bpmn:incoming>Flow_PM_BacklogOut</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:businessRuleTask id="Task_PathwayRouting" name="Pathway&#10;Routing"
+        camunda:decisionRef="OB_DMN_PathwayRouting"
+        camunda:decisionRefBinding="latest"
+        camunda:resultVariable="selectedPathway"
+        camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_PM4</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM5</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:exclusiveGateway id="GW_BuyVsBuild" name="Buy vs.&#10;Build">
+      <bpmn:incoming>Flow_PM5</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_Buy</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PM_Build</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_AssessVendorLandscape" name="Assess Vendor&#10;Landscape (Buy)"
+        camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_PM_Buy</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_BuyMerge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_DefineBuildReqs" name="Define Build&#10;Requirements"
+        camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_PM_Build</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_BuildMerge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_MergeBuyBuild">
+      <bpmn:incoming>Flow_PM_BuyMerge</bpmn:incoming>
+      <bpmn:incoming>Flow_PM_BuildMerge</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:parallelGateway id="GW_ParallelSplit" name="Parallel&#10;Evaluation">
+      <bpmn:incoming>Flow_PM6</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_Par1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PM_Par2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PM_Par3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PM_Par4</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="Task_TechArchReview" name="Technical&#10;Architecture Review"
+        camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_PM_Par1</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_Par1J</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_SecurityAssessment" name="Security&#10;Assessment"
+        camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_PM_Par2</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_Par2J</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_RiskCompliance" name="Risk &amp;&#10;Compliance Eval"
+        camunda:candidateGroups="compliance-lane">
+      <bpmn:incoming>Flow_PM_Par3</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_Par3J</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_FinancialAnalysis" name="Financial&#10;Analysis"
+        camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_PM_Par4</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_Par4J</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:parallelGateway id="GW_ParallelJoin">
+      <bpmn:incoming>Flow_PM_Par1J</bpmn:incoming>
+      <bpmn:incoming>Flow_PM_Par2J</bpmn:incoming>
+      <bpmn:incoming>Flow_PM_Par3J</bpmn:incoming>
+      <bpmn:incoming>Flow_PM_Par4J</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM7</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="Task_EvaluateVendorResponse" name="Evaluate Vendor&#10;Response"
+        camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_PM7</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM8</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_VendorDueDiligence" name="Vendor Due&#10;Diligence"
+        camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_PM8</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM9</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_RefineRequirements" name="Refine&#10;Requirements"
+        camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_PM9</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM10</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_PerformPoC" name="Perform Proof&#10;of Concept (PoC)"
+        camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_PM10</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM11</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_TechRiskEval" name="Technology and&#10;Risk Evaluation"
+        camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_PM11</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM12</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_EvalApproved" name="Evaluation&#10;Approved?">
+      <bpmn:incoming>Flow_PM12</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_EvalYes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PM_EvalNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="End_EvalRejected" name="Evaluation&#10;Failed">
+      <bpmn:incoming>Flow_PM_EvalNo</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:exclusiveGateway id="GW_PathwayExec" name="Pathway&#10;Execution">
+      <bpmn:incoming>Flow_PM_EvalYes</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_ToBuyExec</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PM_ToBuildExec</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_NegotiateContract" name="Negotiate&#10;Contract"
+        camunda:candidateGroups="contracting-lane">
+      <bpmn:incoming>Flow_PM_ToBuyExec</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM13</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_FinalizeContract" name="Finalize&#10;Contract"
+        camunda:candidateGroups="contracting-lane">
+      <bpmn:incoming>Flow_PM13</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_BuyExecMerge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:subProcess id="SP_PDLC" name="Product Development&#10;Life Cycle">
+      <bpmn:incoming>Flow_PM_ToBuildExec</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_BuildExecMerge</bpmn:outgoing>
+
+      <bpmn:startEvent id="PDLC_Start" name="Start">
+        <bpmn:outgoing>Flow_PDLC1</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:userTask id="PDLC_ArchReview" name="Architecture&#10;Review"
+          camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_PDLC1</bpmn:incoming>
+        <bpmn:outgoing>Flow_PDLC2</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:userTask id="PDLC_Development" name="Development&#10;and Build"
+          camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_PDLC2</bpmn:incoming>
+        <bpmn:outgoing>Flow_PDLC3</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:userTask id="PDLC_Testing" name="Testing and&#10;Quality Assurance"
+          camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_PDLC3</bpmn:incoming>
+        <bpmn:outgoing>Flow_PDLC4</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:exclusiveGateway id="PDLC_GW_TestResult" name="Tests&#10;Passed?">
+        <bpmn:incoming>Flow_PDLC4</bpmn:incoming>
+        <bpmn:outgoing>Flow_PDLC_Yes</bpmn:outgoing>
+        <bpmn:outgoing>Flow_PDLC_No</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:userTask id="PDLC_Integration" name="Integration&#10;and Deployment"
+          camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>Flow_PDLC_Yes</bpmn:incoming>
+        <bpmn:outgoing>Flow_PDLC5</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:endEvent id="PDLC_End" name="PDLC&#10;Complete">
+        <bpmn:incoming>Flow_PDLC5</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_PDLC1" sourceRef="PDLC_Start" targetRef="PDLC_ArchReview" />
+      <bpmn:sequenceFlow id="Flow_PDLC2" sourceRef="PDLC_ArchReview" targetRef="PDLC_Development" />
+      <bpmn:sequenceFlow id="Flow_PDLC3" sourceRef="PDLC_Development" targetRef="PDLC_Testing" />
+      <bpmn:sequenceFlow id="Flow_PDLC4" sourceRef="PDLC_Testing" targetRef="PDLC_GW_TestResult" />
+      <bpmn:sequenceFlow id="Flow_PDLC_Yes" name="Yes" sourceRef="PDLC_GW_TestResult" targetRef="PDLC_Integration" />
+      <bpmn:sequenceFlow id="Flow_PDLC_No" name="No" sourceRef="PDLC_GW_TestResult" targetRef="PDLC_Development" />
+      <bpmn:sequenceFlow id="Flow_PDLC5" sourceRef="PDLC_Integration" targetRef="PDLC_End" />
+    </bpmn:subProcess>
+
+    <bpmn:exclusiveGateway id="GW_MergeExec">
+      <bpmn:incoming>Flow_PM_BuyExecMerge</bpmn:incoming>
+      <bpmn:incoming>Flow_PM_BuildExecMerge</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM14</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_PerformUAT" name="Perform&#10;Pilot / UAT"
+        camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_PM14</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM15</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_FinalApproval" name="Provide Final&#10;Approval"
+        camunda:candidateGroups="oversight-lane">
+      <bpmn:incoming>Flow_PM15</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM16</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_FinalDecision" name="Approved?">
+      <bpmn:incoming>Flow_PM16</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_FinalYes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PM_FinalNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_OnboardSoftware" name="Onboard&#10;Software"
+        camunda:candidateGroups="automation-lane">
+      <bpmn:incoming>Flow_PM_FinalYes</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM17</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_CloseRequest" name="Close Request"
+        camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_PM17</bpmn:incoming>
+      <bpmn:outgoing>Flow_PM_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_SoftwareOnboarded" name="Software&#10;Onboarded">
+      <bpmn:incoming>Flow_PM_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="End_FinalRejected" name="Request&#10;Denied">
+      <bpmn:incoming>Flow_PM_FinalNo</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:boundaryEvent id="Timer_TriageSLA" name="2 Day&#10;SLA" attachedToRef="Task_InitialTriage" cancelActivity="false">
+      <bpmn:outgoing>Flow_PM_SLAEsc</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Triage">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="End_TriageSLAEscalation" name="Triage SLA&#10;Escalation">
+      <bpmn:incoming>Flow_PM_SLAEsc</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_PM1" sourceRef="Start_RequestReceived" targetRef="Task_InitialTriage" />
+    <bpmn:sequenceFlow id="Flow_PM2" sourceRef="Task_InitialTriage" targetRef="GW_TriageDecision" />
+    <bpmn:sequenceFlow id="Flow_PM_Reject" name="Reject" sourceRef="GW_TriageDecision" targetRef="End_Rejected" />
+    <bpmn:sequenceFlow id="Flow_PM_Approve" name="Approve" sourceRef="GW_TriageDecision" targetRef="Task_PrelimAnalysis" />
+    <bpmn:sequenceFlow id="Flow_PM3" sourceRef="Task_PrelimAnalysis" targetRef="GW_NeedsAssessment" />
+    <bpmn:sequenceFlow id="Flow_PM_ToBacklog" name="Yes" sourceRef="GW_NeedsAssessment" targetRef="Task_Backlog" />
+    <bpmn:sequenceFlow id="Flow_PM_ToPathway" name="No" sourceRef="GW_NeedsAssessment" targetRef="GW_MergeBacklog" />
+    <bpmn:sequenceFlow id="Flow_PM_BacklogOut" sourceRef="Task_Backlog" targetRef="GW_MergeBacklog" />
+    <bpmn:sequenceFlow id="Flow_PM4" sourceRef="GW_MergeBacklog" targetRef="Task_PathwayRouting" />
+    <bpmn:sequenceFlow id="Flow_PM5" sourceRef="Task_PathwayRouting" targetRef="GW_BuyVsBuild" />
+    <bpmn:sequenceFlow id="Flow_PM_Buy" name="Buy" sourceRef="GW_BuyVsBuild" targetRef="Task_AssessVendorLandscape" />
+    <bpmn:sequenceFlow id="Flow_PM_Build" name="Build" sourceRef="GW_BuyVsBuild" targetRef="Task_DefineBuildReqs" />
+    <bpmn:sequenceFlow id="Flow_PM_BuyMerge" sourceRef="Task_AssessVendorLandscape" targetRef="GW_MergeBuyBuild" />
+    <bpmn:sequenceFlow id="Flow_PM_BuildMerge" sourceRef="Task_DefineBuildReqs" targetRef="GW_MergeBuyBuild" />
+    <bpmn:sequenceFlow id="Flow_PM6" sourceRef="GW_MergeBuyBuild" targetRef="GW_ParallelSplit" />
+    <bpmn:sequenceFlow id="Flow_PM_Par1" sourceRef="GW_ParallelSplit" targetRef="Task_TechArchReview" />
+    <bpmn:sequenceFlow id="Flow_PM_Par2" sourceRef="GW_ParallelSplit" targetRef="Task_SecurityAssessment" />
+    <bpmn:sequenceFlow id="Flow_PM_Par3" sourceRef="GW_ParallelSplit" targetRef="Task_RiskCompliance" />
+    <bpmn:sequenceFlow id="Flow_PM_Par4" sourceRef="GW_ParallelSplit" targetRef="Task_FinancialAnalysis" />
+    <bpmn:sequenceFlow id="Flow_PM_Par1J" sourceRef="Task_TechArchReview" targetRef="GW_ParallelJoin" />
+    <bpmn:sequenceFlow id="Flow_PM_Par2J" sourceRef="Task_SecurityAssessment" targetRef="GW_ParallelJoin" />
+    <bpmn:sequenceFlow id="Flow_PM_Par3J" sourceRef="Task_RiskCompliance" targetRef="GW_ParallelJoin" />
+    <bpmn:sequenceFlow id="Flow_PM_Par4J" sourceRef="Task_FinancialAnalysis" targetRef="GW_ParallelJoin" />
+    <bpmn:sequenceFlow id="Flow_PM7" sourceRef="GW_ParallelJoin" targetRef="Task_EvaluateVendorResponse" />
+    <bpmn:sequenceFlow id="Flow_PM8" sourceRef="Task_EvaluateVendorResponse" targetRef="Task_VendorDueDiligence" />
+    <bpmn:sequenceFlow id="Flow_PM9" sourceRef="Task_VendorDueDiligence" targetRef="Task_RefineRequirements" />
+    <bpmn:sequenceFlow id="Flow_PM10" sourceRef="Task_RefineRequirements" targetRef="Task_PerformPoC" />
+    <bpmn:sequenceFlow id="Flow_PM11" sourceRef="Task_PerformPoC" targetRef="Task_TechRiskEval" />
+    <bpmn:sequenceFlow id="Flow_PM12" sourceRef="Task_TechRiskEval" targetRef="GW_EvalApproved" />
+    <bpmn:sequenceFlow id="Flow_PM_EvalYes" name="Yes" sourceRef="GW_EvalApproved" targetRef="GW_PathwayExec" />
+    <bpmn:sequenceFlow id="Flow_PM_EvalNo" name="No" sourceRef="GW_EvalApproved" targetRef="End_EvalRejected" />
+    <bpmn:sequenceFlow id="Flow_PM_ToBuyExec" name="Buy" sourceRef="GW_PathwayExec" targetRef="Task_NegotiateContract" />
+    <bpmn:sequenceFlow id="Flow_PM_ToBuildExec" name="Build" sourceRef="GW_PathwayExec" targetRef="SP_PDLC" />
+    <bpmn:sequenceFlow id="Flow_PM13" sourceRef="Task_NegotiateContract" targetRef="Task_FinalizeContract" />
+    <bpmn:sequenceFlow id="Flow_PM_BuyExecMerge" sourceRef="Task_FinalizeContract" targetRef="GW_MergeExec" />
+    <bpmn:sequenceFlow id="Flow_PM_BuildExecMerge" sourceRef="SP_PDLC" targetRef="GW_MergeExec" />
+    <bpmn:sequenceFlow id="Flow_PM14" sourceRef="GW_MergeExec" targetRef="Task_PerformUAT" />
+    <bpmn:sequenceFlow id="Flow_PM15" sourceRef="Task_PerformUAT" targetRef="Task_FinalApproval" />
+    <bpmn:sequenceFlow id="Flow_PM16" sourceRef="Task_FinalApproval" targetRef="GW_FinalDecision" />
+    <bpmn:sequenceFlow id="Flow_PM_FinalYes" name="Yes" sourceRef="GW_FinalDecision" targetRef="Task_OnboardSoftware" />
+    <bpmn:sequenceFlow id="Flow_PM_FinalNo" name="No" sourceRef="GW_FinalDecision" targetRef="End_FinalRejected" />
+    <bpmn:sequenceFlow id="Flow_PM17" sourceRef="Task_OnboardSoftware" targetRef="Task_CloseRequest" />
+    <bpmn:sequenceFlow id="Flow_PM_End" sourceRef="Task_CloseRequest" targetRef="End_SoftwareOnboarded" />
+    <bpmn:sequenceFlow id="Flow_PM_SLAEsc" sourceRef="Timer_TriageSLA" targetRef="End_TriageSLAEscalation" />
+
+    <bpmn:textAnnotation id="Annot_Triage">
+      <bpmn:text>Initial triage evaluates: feasibility, strategic alignment, duplicate detection, resource availability. Includes automated pre-screening for known vendor matches and existing capability overlap.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Triage" sourceRef="Task_InitialTriage" targetRef="Annot_Triage" />
+
+    <bpmn:textAnnotation id="Annot_PrelimAnalysis">
+      <bpmn:text>There is no flat experience in this software onboarding process; product management and tracking forecasting potential failure risks or outcomes. Leverage AI systems to automate preliminary review, market search and tracking. Routing, explore new capabilities, share and publish data, data analytics, preliminary architecture analysis (e.g. a market business case analysis from research, features, or capabilities currently in use in the backlog).</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_PrelimAnalysis" sourceRef="Task_PrelimAnalysis" targetRef="Annot_PrelimAnalysis" />
+
+    <bpmn:textAnnotation id="Annot_ParallelEval">
+      <bpmn:text>Parallel evaluation streams: Technical Architecture (scalability, integration), Security (vulnerability, compliance), Risk and Compliance (regulatory, data protection), Financial (TCO, ROI, licensing). All streams feed consolidated evaluation report.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_ParallelEval" sourceRef="GW_ParallelSplit" targetRef="Annot_ParallelEval" />
+
+    <bpmn:textAnnotation id="Annot_DueDiligence">
+      <bpmn:text>For high-priority items the process includes formal vendor due diligence, solution approach has risk management and risk management/compliance integration in the design consideration.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_DD" sourceRef="Task_VendorDueDiligence" targetRef="Annot_DueDiligence" />
+
+    <bpmn:textAnnotation id="Annot_PDLC">
+      <bpmn:text>Product Development Life Cycle: Architecture review, development and build, testing and QA, integration and deployment. Includes automated CI/CD pipelines, code review gates, and quality assurance checkpoints.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_PDLC" sourceRef="SP_PDLC" targetRef="Annot_PDLC" />
+
+    <bpmn:textAnnotation id="Annot_CloseRequest">
+      <bpmn:text>Includes archiving decisions for integration and tracking record in a proactive role date.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Close" sourceRef="Task_CloseRequest" targetRef="Annot_CloseRequest" />
+  </bpmn:process>
+
+  <!-- ============================================================ -->
+  <!-- POOL 3: VENDOR / THIRD PARTY                                 -->
+  <!-- ============================================================ -->
+  <bpmn:process id="Process_Vendor" name="Vendor / Third Party" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:startEvent id="Start_VendorEngagement" name="Vendor&#10;Engagement&#10;Initiated">
+      <bpmn:outgoing>Flow_V1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_VendorEngagement" />
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_VendorIntake" name="Vendor&#10;Intake and&#10;Qualification"
+        camunda:candidateGroups="vendor-response">
+      <bpmn:documentation>Screen vendor eligibility and establish baseline qualification before any substantive information exchange begins. Collect vendor legal entity details, ownership structure, financial stability indicators, geographic footprint, and existing certifications. Perform conflict-of-interest screening and preliminary risk tier classification. Verify the vendor is not on any sanctions or exclusion lists. Establish the lawful basis for data collection under applicable privacy regulations.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Sections 30-35: Pre-engagement due diligence requirements — verify vendor identity, assess concentration risk, determine if vendor is critical or significant. (2) NIST CSF 2.0 GV.OC-05: Supply chain risk identification at initial onboarding — document risk factors in the vendor risk register. (3) GDPR Article 6/CCPA: Establish lawful basis before collecting any personal data from or about the vendor; document the legal basis in the processing activities register. EVIDENCE COLLECTION: (a) Completed vendor qualification form with legal entity name, DUNS number, jurisdiction of incorporation. (b) Risk tier pre-assessment worksheet (feeds into DMN_RiskTierClassification). (c) Signed conflict-of-interest declaration from the requesting business unit. (d) Sanctions screening result (OFAC, EU consolidated list). (e) Vendor financial stability indicators (credit rating, annual revenue, years in operation). (f) Proof of insurance certificates (E&amp;O, cyber liability). DATA POINTS: Legal entity name, tax ID, DUNS, ownership structure (UBO disclosure for >25% holders), primary contact, geographic presence, industry certifications held, number of employees, annual revenue range, existing client references in financial services." />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V1</bpmn:incoming>
+      <bpmn:outgoing>Flow_V2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_VendorQualified" name="Vendor&#10;Qualified?">
+      <bpmn:incoming>Flow_V2</bpmn:incoming>
+      <bpmn:outgoing>Flow_V_QualYes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_V_QualNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="End_VendorDisqualified" name="Vendor&#10;Disqualified">
+      <bpmn:incoming>Flow_V_QualNo</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_VendorProposal" name="Vendor&#10;Proposal"
+        camunda:candidateGroups="vendor-response">
+      <bpmn:documentation>Vendor prepares and submits a formal commercial and technical proposal in response to the organization's requirements. The proposal must address functional requirements, technical architecture, SLA commitments, pricing model, implementation timeline, and support structure. Vendor should disclose financial stability information, sub-contractor dependencies, and data handling practices. This proposal triggers the parallel evaluation tracks (Security, Compliance, Technical Demo).</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 40: RFP/RFI requirements — vendor must demonstrate capability, financial stability, and willingness to comply with regulatory examination requirements. (2) SOX Section 404: Proposed financial controls and reporting capabilities must be documented in the proposal to ensure auditability of financial data flows. (3) DORA Article 28: ICT third-party provider must assert resilience capabilities, including recovery time objectives, availability targets, and incident notification commitments in the proposal. EVIDENCE COLLECTION: (a) Signed proposal document with commercial terms, technical specifications, and SLA commitments. (b) Vendor capability matrix mapping proposed features to stated requirements. (c) Financial stability disclosures (audited financials, credit references, or parent company guarantee if applicable). (d) Sub-contractor dependency disclosure listing all fourth parties involved in service delivery. (e) Data handling and residency commitments (where data will be processed, stored, and backed up). (f) Implementation timeline with milestones and resource commitments. DATA POINTS: Proposed pricing model (subscription, perpetual, consumption-based), total cost of ownership (TCO) estimate over 3-5 years, SLA targets (uptime, response time, resolution time), proposed technology stack, integration approach, data residency locations, sub-processor list, key personnel assigned, reference customers in regulated industries." />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V_QualYes</bpmn:incoming>
+      <bpmn:outgoing>Flow_V3</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:parallelGateway id="GW_VendorParSplit">
+      <bpmn:incoming>Flow_V3</bpmn:incoming>
+      <bpmn:outgoing>Flow_V_VP1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_V_VP2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_V_VP3</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="Task_VendorSecurityReview" name="Security&#10;Questionnaire"
+        camunda:candidateGroups="vendor-response">
+      <bpmn:documentation>Vendor completes a standardized security questionnaire (HECVAT, SIG, or equivalent) covering information security program maturity, access controls, encryption practices, incident response capabilities, vulnerability management, and business continuity planning. Vendor provides supporting evidence including SOC 2 Type II reports, penetration test summaries, and vulnerability disclosure policies. This runs in parallel with Compliance Documentation and Technical Demonstration.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Sections 50-55: Information security program assessment — evaluate vendor access controls, data handling procedures, encryption at rest and in transit, and incident response readiness. (2) NIST CSF 2.0 PR.AA (Identity Management and Access Control): Assess vendor authentication mechanisms, privileged access management, MFA enforcement. NIST PR.DS (Data Security): Evaluate encryption standards, key management, data classification practices. NIST DE.CM (Continuous Monitoring): Assess vendor logging, monitoring, and alerting capabilities. (3) ISO 27001 Annex A: Map vendor controls to relevant Annex A domains — A.9 Access Control, A.10 Cryptography, A.12 Operations Security, A.16 Incident Management, A.17 Business Continuity. (4) DORA Articles 9, 28: ICT security requirements assessment — verify vendor incident reporting capability within 24-hour notification windows, test resilience measures. EVIDENCE COLLECTION: (a) Completed HECVAT or SIG security questionnaire with all sections addressed. (b) SOC 2 Type II report (current year) or SOC 1 if financial data processing. (c) Most recent penetration test executive summary (within 12 months). (d) Vulnerability disclosure and patch management policy. (e) Business continuity and disaster recovery plan summary with RTO/RPO commitments. (f) Data encryption standards documentation (at rest, in transit, key management). (g) Security incident history disclosure (breaches in past 3 years). DATA POINTS: Security certifications held (ISO 27001, SOC 2, PCI DSS, FedRAMP), encryption algorithms and key lengths, MFA enforcement percentage, mean time to patch critical vulnerabilities, incident response SLA, backup frequency and retention, DR test frequency, security awareness training completion rate." />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V_VP1</bpmn:incoming>
+      <bpmn:outgoing>Flow_V_VP1J</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_VendorComplianceReview" name="Compliance&#10;Documentation"
+        camunda:candidateGroups="vendor-response">
+      <bpmn:documentation>Vendor submits regulatory certifications, compliance attestations, and data protection documentation. This includes proof of regulatory compliance relevant to the services being provided, audit rights confirmation, Data Processing Agreement (DPA) terms, sub-processor disclosures, and data residency documentation. Vendor must demonstrate compliance posture across all applicable regulatory frameworks for the engagement scope.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 55: Regulatory compliance certifications — vendor must confirm willingness to submit to regulatory examination, provide audit rights, and maintain compliance with applicable banking regulations. (2) GDPR Article 28: Data Processing Agreement requirements — vendor must provide draft or executed DPA covering processing purpose limitation, data minimization, security measures, sub-processor authorization, data subject rights support, breach notification obligations, and data return/deletion on termination. CCPA: Vendor must confirm service provider status and data handling restrictions. (3) SOX: External audit independence confirmation if vendor touches financial reporting data; financial controls attestation documenting how vendor safeguards data integrity in financial workflows. (4) DORA Article 30: Contractual arrangements documentation — vendor must disclose full sub-contracting chain, confirm exit strategy feasibility, and demonstrate ability to support regulatory reporting. (5) NIST CSF 2.0 GV.SC-07: Supplier compliance posture documentation — vendor provides evidence of supply chain risk management practices. EVIDENCE COLLECTION: (a) Regulatory certifications (ISO 27001 certificate, SOC 2 Type II report, PCI DSS AOC, FedRAMP authorization as applicable). (b) Signed or draft Data Processing Agreement with all GDPR Article 28(3) provisions addressed. (c) Complete sub-processor list with names, locations, and services provided. (d) Audit rights confirmation letter allowing organization and regulators to examine vendor operations. (e) Data residency documentation confirming where data will be stored, processed, and backed up. (f) Privacy impact assessment or DPIA if high-risk processing is involved. (g) Regulatory examination history disclosure (any enforcement actions, consent orders, or material findings in past 5 years). DATA POINTS: Certifications held and expiry dates, DPA execution status, sub-processor count and jurisdictions, data residency countries, audit rights scope (on-site, remote, frequency), regulatory examination history, privacy officer contact details, data breach notification timeline commitment, data retention and deletion policies." />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V_VP2</bpmn:incoming>
+      <bpmn:outgoing>Flow_V_VP2J</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_VendorTechDemo" name="Technical&#10;Demonstration"
+        camunda:candidateGroups="vendor-response">
+      <bpmn:documentation>Vendor conducts a structured technical demonstration of the proposed solution against predefined evaluation criteria. The demo must cover functional capabilities, integration points, security controls in action, performance under load, failover and recovery mechanisms, and administrative workflows. Evaluators score the demonstration using a standardized scorecard aligned with the requirements from the vendor proposal.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 40: Technology capability validation — demonstration must verify that the vendor's solution meets the stated technical requirements and can operate within the organization's technology environment without introducing unacceptable risk. (2) NIST CSF 2.0 PR.PS (Platform Security): Demonstrate secure configuration management, hardening practices, and change management controls during the live demonstration. (3) DORA Article 9: ICT resilience capabilities — vendor must demonstrate failover mechanisms, recovery procedures, and availability targets during the technical demonstration, including simulated failure scenarios where feasible. EVIDENCE COLLECTION: (a) Pre-defined demo script with evaluation criteria mapped to requirements. (b) Completed evaluation scorecard signed by all assessors (Technical Architecture, Security, Business). (c) Architecture diagram reviewed and annotated during the demonstration. (d) Availability and recovery time objective (RTO/RPO) verification results from demonstrated failover. (e) Integration compatibility assessment documenting API standards, authentication methods, and data format compatibility. (f) Performance benchmark results (response times, throughput, concurrent user capacity). (g) Screenshots or recording of key demo scenarios (with vendor consent). DATA POINTS: Demo completion percentage against script, evaluator scores by category (functionality, security, performance, usability, integration), identified gaps or limitations, questions raised and vendor responses, integration complexity assessment (low/medium/high), estimated customization effort, accessibility compliance status (WCAG 2.1 AA if applicable)." />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V_VP3</bpmn:incoming>
+      <bpmn:outgoing>Flow_V_VP3J</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:parallelGateway id="GW_VendorParJoin">
+      <bpmn:incoming>Flow_V_VP1J</bpmn:incoming>
+      <bpmn:incoming>Flow_V_VP2J</bpmn:incoming>
+      <bpmn:incoming>Flow_V_VP3J</bpmn:incoming>
+      <bpmn:outgoing>Flow_V4</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:exclusiveGateway id="GW_VendorSelected" name="Vendor&#10;Selected?">
+      <bpmn:incoming>Flow_V4</bpmn:incoming>
+      <bpmn:outgoing>Flow_V_SelYes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_V_SelNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="End_VendorNotSelected" name="Vendor&#10;Not Selected">
+      <bpmn:incoming>Flow_V_SelNo</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_VendorContractReview" name="Vendor Contract&#10;Review"
+        camunda:candidateGroups="vendor-response">
+      <bpmn:documentation>Vendor receives the draft contract from the organization's legal/contracting team and performs a thorough review of all terms, conditions, and obligations. The vendor reviews service level commitments, liability provisions, indemnification clauses, audit rights, data protection obligations, termination and exit provisions, intellectual property rights, and regulatory compliance requirements. Vendor provides redlined comments and negotiation positions on any terms requiring modification.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Sections 60-70: Required contractual provisions that must be present and accepted — includes audit rights for the institution and its regulators, subcontracting restrictions and approval requirements, data ownership and return provisions, business continuity and disaster recovery commitments, termination rights (for cause and for convenience), confidentiality obligations, and regulatory compliance representations. (2) SOX Section 302/404: Audit rights and financial controls provisions must be explicitly stated in the contract — vendor must agree to provide access to financial records and cooperate with external auditors as needed. (3) GDPR Article 28(3): Mandatory Data Processing Agreement provisions must be reviewed and confirmed — including processing only on documented instructions, confidentiality obligations, security measures, sub-processor management, data subject rights assistance, breach notification within 72 hours, and data deletion on termination. CCPA service provider contractual requirements. (4) DORA Article 30: Mandatory ICT contractual provisions — SLA definitions with measurable targets, availability guarantees, audit and access rights, exit strategy and transition assistance, incident notification within contractual timeframes, and sub-outsourcing governance. EVIDENCE COLLECTION: (a) Redlined contract document with vendor comments and negotiation positions. (b) Legal review checklist cross-referenced against OCC 2023-17 Section 60 required provisions (all provisions must be present or explicitly waived with justification). (c) DPA review sign-off confirming all GDPR Article 28(3) requirements are addressed. (d) SLA schedule review confirming measurable targets with defined remedies for non-performance. (e) Insurance requirements confirmation (vendor confirms ability to maintain required coverage levels). (f) Escalation matrix and governance structure for contract management. DATA POINTS: Number of redlined clauses, categories of requested changes (commercial, legal, operational, technical), negotiation risk assessment (high/medium/low impact items), estimated time to resolution, vendor authorized negotiator identity and authority level." />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V_SelYes</bpmn:incoming>
+      <bpmn:outgoing>Flow_V5</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_VendorContractSign" name="Contract&#10;Execution"
+        camunda:candidateGroups="vendor-response">
+      <bpmn:documentation>Vendor executes (counter-signs) the final negotiated contract, including the master services agreement, all schedules (SLA, DPA, SOW), and any side letters. The authorized signatory must be verified against the vendor's corporate authorization records. Execution must occur before any data processing, system access provisioning, or service delivery begins. The executed contract is the legal prerequisite for all subsequent onboarding activities.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 60: Executed contract must contain all required provisions — no services may commence until the contract is fully executed with all mandatory OCC provisions present. The executed contract becomes part of the regulatory examination file. (2) SOX Section 302: Authorized signatory confirmation — verify the person signing has corporate authority to bind the vendor. Financial controls terms become legally binding upon execution. (3) GDPR Article 28: Executed DPA is a legal prerequisite before any personal data processing begins — the DPA must be in force before data flows are established. CCPA service provider agreement must be executed. (4) DORA Article 30: Fully executed ICT contract with all mandatory DORA provisions — contract must be registered in the ICT third-party provider register upon execution. (5) SEC 17a-4: Records retention — the executed contract must be stored in a compliant, tamper-evident repository with guaranteed retention period (typically 7+ years for financial services). EVIDENCE COLLECTION: (a) Fully executed contract (wet signature or qualified e-signature with timestamp and audit trail). (b) Executed Data Processing Agreement as a separate schedule or standalone document. (c) Authorized signatory verification (corporate resolution, power of attorney, or certificate of authority). (d) Contract reference number assigned and logged in the contract management system. (e) Insurance certificates confirmed as current and meeting contractual minimums. (f) Executed NDA if not already covered by the master agreement. (g) Board or committee approval documentation if the contract exceeds delegated authority thresholds. DATA POINTS: Execution date, contract effective date, contract term (initial + renewal periods), total contract value, authorized signatories (both parties), contract reference number, DPA execution confirmation, insurance coverage verification date, repository location for original documents." />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V5</bpmn:incoming>
+      <bpmn:outgoing>Flow_V6</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_VendorOnboarding" name="Vendor&#10;Onboarding"
+        camunda:candidateGroups="vendor-response">
+      <bpmn:documentation>Vendor is formally onboarded into the organization's ecosystem. This includes provisioning system access on a least-privilege basis, establishing data flows per the DPA, adding the vendor to the third-party risk register and ICT provider inventory, configuring monitoring baselines, and completing knowledge transfer. Vendor completes onboarding checklist items including security awareness acknowledgment, acceptable use policy acceptance, and emergency contact registration.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 80: Ongoing monitoring baseline established — vendor must be added to the third-party inventory with risk tier, criticality designation, and monitoring cadence assigned (references DMN_MonitoringCadenceAssignment). Concentration risk assessment updated. (2) NIST CSF 2.0 PR.AA-05: Vendor access provisioned on least-privilege principle — access scoped strictly to what is required by the contract. Multi-factor authentication enforced for all vendor access. Access reviews scheduled per the monitoring cadence. (3) DORA Article 28: Vendor added to the ICT third-party provider register with all mandatory fields populated (provider name, services, criticality, contract reference, risk assessment date). (4) GDPR/CCPA: Data flows documented in the Record of Processing Activities (ROPA). Processing activities register updated to reflect the new vendor relationship. DPA controls activated and verified (encryption, access controls, breach notification procedures tested). (5) ISO 27001 A.15.1: Information security in supplier relationships — vendor formally enrolled in the supplier management program with defined security requirements, communication channels, and review schedule. EVIDENCE COLLECTION: (a) Vendor entry in the third-party risk register with complete metadata. (b) Access provisioning record documenting specific systems, roles, and permissions granted (least-privilege verification). (c) Updated data flow diagram showing vendor data ingress/egress points. (d) Supplier onboarding checklist signed off by Risk and Governance team. (e) Vendor security awareness acknowledgment and acceptable use policy acceptance. (f) Emergency contact and escalation path registration. (g) Monitoring baseline configuration (KRIs, thresholds, alert recipients). (h) Initial performance baseline metrics captured. DATA POINTS: Systems accessed (list), access level per system, data categories processed, data flow endpoints, monitoring cadence assigned, KRI thresholds configured, onboarding completion date, first scheduled review date, vendor relationship manager assigned, backup contact designated." />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V6</bpmn:incoming>
+      <bpmn:outgoing>Flow_V7</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_VendorDeploySupport" name="Deployment&#10;Support"
+        camunda:candidateGroups="vendor-response">
+      <bpmn:documentation>Vendor actively supports the deployment and go-live of their product or service within the organization's environment. This includes executing the deployment runbook, configuring production environments, performing data migration (if applicable), conducting smoke testing, establishing configuration baselines, verifying rollback procedures, and providing on-call support during the stabilization period. Vendor must document all deployment activities and configuration changes for audit purposes.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 80: Change management oversight for vendor-involved deployments — all deployment activities must follow the organization's change management process. Vendor changes are subject to the same approval and documentation requirements as internal changes. (2) NIST CSF 2.0 PR.PS-04: Audit logs generated during deployment — all configuration changes, access events, and deployment actions must be logged with timestamps, actor identification, and before/after state. Configuration baseline established post-deployment for drift detection. (3) DORA Article 12: ICT change management — vendor-supported changes must be covered under resilience testing requirements. Deployment must not compromise operational resilience. Rollback capability must be verified before go-live. (4) ISO 27001 A.12.1.2: Change management controls applied to vendor-assisted deployments — formal change request, impact assessment, approval, implementation, and post-implementation review. EVIDENCE COLLECTION: (a) Vendor-provided deployment runbook with step-by-step procedures. (b) Go-live sign-off record signed by Technical Assessment, Business Owner, and Vendor. (c) Configuration baseline snapshot captured immediately post-deployment. (d) Rollback plan confirmation — tested and verified before production deployment. (e) Deployment log artifact with timestamps, actions taken, personnel involved, and issues encountered. (f) Smoke test results confirming core functionality in production environment. (g) Data migration validation report (if applicable) confirming data integrity and completeness. (h) Post-deployment monitoring dashboard showing system health metrics. DATA POINTS: Deployment date and duration, deployment method (blue-green, rolling, big-bang), environments deployed to, configuration items changed, data migration volume and validation result, smoke test pass/fail results, issues encountered and resolution, rollback test result, stabilization period duration, on-call support contact and schedule." />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V7</bpmn:incoming>
+      <bpmn:outgoing>Flow_V8</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_VendorCloseRequest" name="Close Request"
+        camunda:candidateGroups="vendor-response">
+      <bpmn:documentation>Vendor confirms engagement completion and provides final deliverables for handoff to ongoing operations and monitoring. This includes archiving all security and compliance evidence, establishing vendor performance baselines for ongoing measurement, completing final documentation, confirming data handling obligations are met, and transitioning to the ongoing monitoring cadence. The vendor engagement moves from active onboarding to steady-state vendor management.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 80: Transition to ongoing monitoring — vendor performance baseline must be documented and the monitoring cadence formally established (references DMN_MonitoringCadenceAssignment output). The vendor relationship transitions from onboarding oversight to continuous monitoring with defined KRIs, review frequency, and escalation thresholds. (2) NIST CSF 2.0 GV.SC-09: Supplier performance debrief — conduct a lessons-learned review of the onboarding process. Document what worked well, what required remediation, and process improvement recommendations for future vendor onboardings. (3) GDPR/CCPA: Confirm all data processing activities are within contracted scope. Verify no unauthorized residual data is retained by the vendor beyond what is contractually permitted. Processing activities register reflects accurate current state. (4) SEC 17a-4: Engagement records must be closed and archived in a compliant retention system with tamper-evident storage. All onboarding artifacts (contract, assessments, approvals, evidence) must be indexed and retrievable for regulatory examination. Complete audit trail from intake through deployment must be preserved. EVIDENCE COLLECTION: (a) Vendor closure confirmation signed by both parties acknowledging successful onboarding completion. (b) Performance baseline scorecard with initial KRI values and targets. (c) Data handling confirmation letter from vendor attesting compliance with DPA obligations. (d) Complete engagement summary filed to the audit record (includes all artifacts from intake through deployment). (e) Transition to monitoring cadence documented with assigned reviewer, schedule, and escalation path. (f) Lessons learned document from the onboarding process. (g) Updated third-party risk register reflecting steady-state risk tier and monitoring assignment. (h) Contract governance handoff to the ongoing vendor management team. DATA POINTS: Onboarding completion date, total onboarding duration (days), onboarding cost, initial vendor performance score, assigned monitoring cadence (quarterly, semi-annual, annual per DMN output), next scheduled review date, vendor relationship manager for ongoing management, open action items (if any) with owners and due dates, process improvement recommendations count." />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V8</bpmn:incoming>
+      <bpmn:outgoing>Flow_V_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_VendorComplete" name="Vendor&#10;Software&#10;Deployed">
+      <bpmn:incoming>Flow_V_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_V1" sourceRef="Start_VendorEngagement" targetRef="Task_VendorIntake" />
+    <bpmn:sequenceFlow id="Flow_V2" sourceRef="Task_VendorIntake" targetRef="GW_VendorQualified" />
+    <bpmn:sequenceFlow id="Flow_V_QualYes" name="Yes" sourceRef="GW_VendorQualified" targetRef="Task_VendorProposal" />
+    <bpmn:sequenceFlow id="Flow_V_QualNo" name="No" sourceRef="GW_VendorQualified" targetRef="End_VendorDisqualified" />
+    <bpmn:sequenceFlow id="Flow_V3" sourceRef="Task_VendorProposal" targetRef="GW_VendorParSplit" />
+    <bpmn:sequenceFlow id="Flow_V_VP1" sourceRef="GW_VendorParSplit" targetRef="Task_VendorSecurityReview" />
+    <bpmn:sequenceFlow id="Flow_V_VP2" sourceRef="GW_VendorParSplit" targetRef="Task_VendorComplianceReview" />
+    <bpmn:sequenceFlow id="Flow_V_VP3" sourceRef="GW_VendorParSplit" targetRef="Task_VendorTechDemo" />
+    <bpmn:sequenceFlow id="Flow_V_VP1J" sourceRef="Task_VendorSecurityReview" targetRef="GW_VendorParJoin" />
+    <bpmn:sequenceFlow id="Flow_V_VP2J" sourceRef="Task_VendorComplianceReview" targetRef="GW_VendorParJoin" />
+    <bpmn:sequenceFlow id="Flow_V_VP3J" sourceRef="Task_VendorTechDemo" targetRef="GW_VendorParJoin" />
+    <bpmn:sequenceFlow id="Flow_V4" sourceRef="GW_VendorParJoin" targetRef="GW_VendorSelected" />
+    <bpmn:sequenceFlow id="Flow_V_SelYes" name="Yes" sourceRef="GW_VendorSelected" targetRef="Task_VendorContractReview" />
+    <bpmn:sequenceFlow id="Flow_V_SelNo" name="No" sourceRef="GW_VendorSelected" targetRef="End_VendorNotSelected" />
+    <bpmn:sequenceFlow id="Flow_V5" sourceRef="Task_VendorContractReview" targetRef="Task_VendorContractSign" />
+    <bpmn:sequenceFlow id="Flow_V6" sourceRef="Task_VendorContractSign" targetRef="Task_VendorOnboarding" />
+    <bpmn:sequenceFlow id="Flow_V7" sourceRef="Task_VendorOnboarding" targetRef="Task_VendorDeploySupport" />
+    <bpmn:sequenceFlow id="Flow_V8" sourceRef="Task_VendorDeploySupport" targetRef="Task_VendorCloseRequest" />
+    <bpmn:sequenceFlow id="Flow_V_End" sourceRef="Task_VendorCloseRequest" targetRef="End_VendorComplete" />
+
+    <bpmn:textAnnotation id="Annot_VendorEval">
+      <bpmn:text>Vendor evaluation process with thorough qualification, security and compliance review, and technical demonstration. Includes diligence-based vendor risk assessment and contract review before selection.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_VendorEval" sourceRef="Task_VendorIntake" targetRef="Annot_VendorEval" />
+
+    <bpmn:textAnnotation id="Annot_VendorClose">
+      <bpmn:text>Includes archiving security and compliance evidence. Vendor performance metrics tracked for ongoing management. Contract governance support is complete. Final vendor onboarding documentation archived.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_VendorClose" sourceRef="Task_VendorCloseRequest" targetRef="Annot_VendorClose" />
+  </bpmn:process>
+
+  <!-- ============================================================ -->
+  <!-- DIAGRAM INTERCHANGE                                          -->
+  <!-- ============================================================ -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_IdealState">
+
+      <!-- POOL 1: Software Requester -->
+      <bpmndi:BPMNShape id="Participant_Requester_di" bpmnElement="Participant_Requester" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1100" height="280" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_SoftwareNeed_di" bpmnElement="Start_SoftwareNeed">
+        <dc:Bounds x="222" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="202" y="245" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReviewExisting_di" bpmnElement="Task_ReviewExisting">
+        <dc:Bounds x="310" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_BypassProcess_di" bpmnElement="GW_BypassProcess" isMarkerVisible="true">
+        <dc:Bounds x="465" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="448" y="158" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_LeverageExisting_di" bpmnElement="Task_LeverageExisting">
+        <dc:Bounds x="580" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Leveraged_di" bpmnElement="End_Leveraged">
+        <dc:Bounds x="742" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="725" y="165" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GatherDocs_di" bpmnElement="Task_GatherDocs">
+        <dc:Bounds x="580" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SubmitRequest_di" bpmnElement="Task_SubmitRequest">
+        <dc:Bounds x="740" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Submitted_di" bpmnElement="End_Submitted">
+        <dc:Bounds x="902" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="890" y="315" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_EntryCriteria_di" bpmnElement="Annot_EntryCriteria">
+        <dc:Bounds x="210" y="90" width="350" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_KnowledgeMgmt_di" bpmnElement="Annot_KnowledgeMgmt">
+        <dc:Bounds x="950" y="90" width="300" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Pool 1 Edges -->
+      <bpmndi:BPMNEdge id="Flow_R1_di" bpmnElement="Flow_R1">
+        <di:waypoint x="258" y="220" />
+        <di:waypoint x="310" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R2_di" bpmnElement="Flow_R2">
+        <di:waypoint x="410" y="220" />
+        <di:waypoint x="465" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R_Yes_di" bpmnElement="Flow_R_Yes">
+        <di:waypoint x="490" y="195" />
+        <di:waypoint x="490" y="140" />
+        <di:waypoint x="580" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="498" y="165" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R_No_di" bpmnElement="Flow_R_No">
+        <di:waypoint x="490" y="245" />
+        <di:waypoint x="490" y="290" />
+        <di:waypoint x="580" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="499" y="265" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R_EndLeverage_di" bpmnElement="Flow_R_EndLeverage">
+        <di:waypoint x="680" y="140" />
+        <di:waypoint x="742" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R3_di" bpmnElement="Flow_R3">
+        <di:waypoint x="680" y="290" />
+        <di:waypoint x="740" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R_End_di" bpmnElement="Flow_R_End">
+        <di:waypoint x="840" y="290" />
+        <di:waypoint x="902" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Entry_di" bpmnElement="Assoc_Entry">
+        <di:waypoint x="240" y="202" />
+        <di:waypoint x="240" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Knowledge_di" bpmnElement="Assoc_Knowledge">
+        <di:waypoint x="410" y="180" />
+        <di:waypoint x="950" y="130" />
+      </bpmndi:BPMNEdge>
+
+      <!-- POOL 2: Product Management -->
+      <bpmndi:BPMNShape id="Participant_ProductMgmt_di" bpmnElement="Participant_ProductMgmt" isHorizontal="true">
+        <dc:Bounds x="160" y="410" width="3400" height="520" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_RequestReceived_di" bpmnElement="Start_RequestReceived">
+        <dc:Bounds x="222" y="642" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="210" y="685" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InitialTriage_di" bpmnElement="Task_InitialTriage">
+        <dc:Bounds x="310" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_TriageSLA_di" bpmnElement="Timer_TriageSLA">
+        <dc:Bounds x="342" y="682" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="386" y="686" width="38" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_TriageSLAEscalation_di" bpmnElement="End_TriageSLAEscalation">
+        <dc:Bounds x="342" y="752" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="320" y="795" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_TriageDecision_di" bpmnElement="GW_TriageDecision" isMarkerVisible="true">
+        <dc:Bounds x="465" y="635" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="460" y="598" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Rejected_di" bpmnElement="End_Rejected">
+        <dc:Bounds x="472" y="862" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="460" y="905" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PrelimAnalysis_di" bpmnElement="Task_PrelimAnalysis">
+        <dc:Bounds x="570" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_NeedsAssessment_di" bpmnElement="GW_NeedsAssessment" isMarkerVisible="true">
+        <dc:Bounds x="725" y="635" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="707" y="598" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Backlog_di" bpmnElement="Task_Backlog">
+        <dc:Bounds x="700" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_MergeBacklog_di" bpmnElement="GW_MergeBacklog" isMarkerVisible="true">
+        <dc:Bounds x="835" y="635" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PathwayRouting_di" bpmnElement="Task_PathwayRouting">
+        <dc:Bounds x="940" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_BuyVsBuild_di" bpmnElement="GW_BuyVsBuild" isMarkerVisible="true">
+        <dc:Bounds x="1095" y="635" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1088" y="598" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AssessVendorLandscape_di" bpmnElement="Task_AssessVendorLandscape">
+        <dc:Bounds x="1200" y="540" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DefineBuildReqs_di" bpmnElement="Task_DefineBuildReqs">
+        <dc:Bounds x="1200" y="730" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_MergeBuyBuild_di" bpmnElement="GW_MergeBuyBuild" isMarkerVisible="true">
+        <dc:Bounds x="1355" y="635" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_ParallelSplit_di" bpmnElement="GW_ParallelSplit">
+        <dc:Bounds x="1455" y="635" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_TechArchReview_di" bpmnElement="Task_TechArchReview">
+        <dc:Bounds x="1560" y="470" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SecurityAssessment_di" bpmnElement="Task_SecurityAssessment">
+        <dc:Bounds x="1560" y="570" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RiskCompliance_di" bpmnElement="Task_RiskCompliance">
+        <dc:Bounds x="1560" y="670" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FinancialAnalysis_di" bpmnElement="Task_FinancialAnalysis">
+        <dc:Bounds x="1560" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_ParallelJoin_di" bpmnElement="GW_ParallelJoin">
+        <dc:Bounds x="1715" y="635" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EvaluateVendorResponse_di" bpmnElement="Task_EvaluateVendorResponse">
+        <dc:Bounds x="1820" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorDueDiligence_di" bpmnElement="Task_VendorDueDiligence">
+        <dc:Bounds x="1980" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RefineRequirements_di" bpmnElement="Task_RefineRequirements">
+        <dc:Bounds x="1980" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PerformPoC_di" bpmnElement="Task_PerformPoC">
+        <dc:Bounds x="2140" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_TechRiskEval_di" bpmnElement="Task_TechRiskEval">
+        <dc:Bounds x="2300" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_EvalApproved_di" bpmnElement="GW_EvalApproved" isMarkerVisible="true">
+        <dc:Bounds x="2455" y="785" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2440" y="842" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_EvalRejected_di" bpmnElement="End_EvalRejected">
+        <dc:Bounds x="2462" y="892" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2445" y="935" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_PathwayExec_di" bpmnElement="GW_PathwayExec" isMarkerVisible="true">
+        <dc:Bounds x="2555" y="635" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2540" y="598" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_NegotiateContract_di" bpmnElement="Task_NegotiateContract">
+        <dc:Bounds x="2660" y="540" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FinalizeContract_di" bpmnElement="Task_FinalizeContract">
+        <dc:Bounds x="2820" y="540" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP_PDLC_di" bpmnElement="SP_PDLC" isExpanded="false">
+        <dc:Bounds x="2660" y="730" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_MergeExec_di" bpmnElement="GW_MergeExec" isMarkerVisible="true">
+        <dc:Bounds x="2975" y="635" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PerformUAT_di" bpmnElement="Task_PerformUAT">
+        <dc:Bounds x="3080" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FinalApproval_di" bpmnElement="Task_FinalApproval">
+        <dc:Bounds x="3080" y="470" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_FinalDecision_di" bpmnElement="GW_FinalDecision" isMarkerVisible="true">
+        <dc:Bounds x="3235" y="485" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3230" y="463" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_OnboardSoftware_di" bpmnElement="Task_OnboardSoftware">
+        <dc:Bounds x="3340" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CloseRequest_di" bpmnElement="Task_CloseRequest">
+        <dc:Bounds x="3340" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SoftwareOnboarded_di" bpmnElement="End_SoftwareOnboarded">
+        <dc:Bounds x="3492" y="792" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3476" y="835" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_FinalRejected_di" bpmnElement="End_FinalRejected">
+        <dc:Bounds x="3362" y="432" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3350" y="475" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Pool 2 Annotations -->
+      <bpmndi:BPMNShape id="Annot_Triage_di" bpmnElement="Annot_Triage">
+        <dc:Bounds x="280" y="430" width="300" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_PrelimAnalysis_di" bpmnElement="Annot_PrelimAnalysis">
+        <dc:Bounds x="540" y="430" width="350" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_ParallelEval_di" bpmnElement="Annot_ParallelEval">
+        <dc:Bounds x="1430" y="430" width="300" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_DueDiligence_di" bpmnElement="Annot_DueDiligence">
+        <dc:Bounds x="1950" y="430" width="300" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_PDLC_di" bpmnElement="Annot_PDLC">
+        <dc:Bounds x="2630" y="430" width="300" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_CloseRequest_di" bpmnElement="Annot_CloseRequest">
+        <dc:Bounds x="3310" y="870" width="200" height="40" />
+      </bpmndi:BPMNShape>
+
+      <!-- Pool 2 Edges -->
+      <bpmndi:BPMNEdge id="Flow_PM1_di" bpmnElement="Flow_PM1">
+        <di:waypoint x="258" y="660" />
+        <di:waypoint x="310" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM2_di" bpmnElement="Flow_PM2">
+        <di:waypoint x="410" y="660" />
+        <di:waypoint x="465" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Reject_di" bpmnElement="Flow_PM_Reject">
+        <di:waypoint x="490" y="685" />
+        <di:waypoint x="490" y="862" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="498" y="770" width="34" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Approve_di" bpmnElement="Flow_PM_Approve">
+        <di:waypoint x="515" y="660" />
+        <di:waypoint x="570" y="660" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="642" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM3_di" bpmnElement="Flow_PM3">
+        <di:waypoint x="670" y="660" />
+        <di:waypoint x="725" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_ToBacklog_di" bpmnElement="Flow_PM_ToBacklog">
+        <di:waypoint x="750" y="685" />
+        <di:waypoint x="750" y="770" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="758" y="725" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_ToPathway_di" bpmnElement="Flow_PM_ToPathway">
+        <di:waypoint x="775" y="660" />
+        <di:waypoint x="835" y="660" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="798" y="642" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_BacklogOut_di" bpmnElement="Flow_PM_BacklogOut">
+        <di:waypoint x="800" y="810" />
+        <di:waypoint x="860" y="810" />
+        <di:waypoint x="860" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM4_di" bpmnElement="Flow_PM4">
+        <di:waypoint x="885" y="660" />
+        <di:waypoint x="940" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM5_di" bpmnElement="Flow_PM5">
+        <di:waypoint x="1040" y="660" />
+        <di:waypoint x="1095" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Buy_di" bpmnElement="Flow_PM_Buy">
+        <di:waypoint x="1120" y="635" />
+        <di:waypoint x="1120" y="580" />
+        <di:waypoint x="1200" y="580" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1130" y="605" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Build_di" bpmnElement="Flow_PM_Build">
+        <di:waypoint x="1120" y="685" />
+        <di:waypoint x="1120" y="770" />
+        <di:waypoint x="1200" y="770" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1129" y="725" width="25" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_BuyMerge_di" bpmnElement="Flow_PM_BuyMerge">
+        <di:waypoint x="1300" y="580" />
+        <di:waypoint x="1380" y="580" />
+        <di:waypoint x="1380" y="635" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_BuildMerge_di" bpmnElement="Flow_PM_BuildMerge">
+        <di:waypoint x="1300" y="770" />
+        <di:waypoint x="1380" y="770" />
+        <di:waypoint x="1380" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM6_di" bpmnElement="Flow_PM6">
+        <di:waypoint x="1405" y="660" />
+        <di:waypoint x="1455" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Par1_di" bpmnElement="Flow_PM_Par1">
+        <di:waypoint x="1480" y="635" />
+        <di:waypoint x="1480" y="510" />
+        <di:waypoint x="1560" y="510" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Par2_di" bpmnElement="Flow_PM_Par2">
+        <di:waypoint x="1480" y="645" />
+        <di:waypoint x="1480" y="610" />
+        <di:waypoint x="1560" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Par3_di" bpmnElement="Flow_PM_Par3">
+        <di:waypoint x="1480" y="675" />
+        <di:waypoint x="1480" y="710" />
+        <di:waypoint x="1560" y="710" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Par4_di" bpmnElement="Flow_PM_Par4">
+        <di:waypoint x="1480" y="685" />
+        <di:waypoint x="1480" y="810" />
+        <di:waypoint x="1560" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Par1J_di" bpmnElement="Flow_PM_Par1J">
+        <di:waypoint x="1660" y="510" />
+        <di:waypoint x="1740" y="510" />
+        <di:waypoint x="1740" y="635" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Par2J_di" bpmnElement="Flow_PM_Par2J">
+        <di:waypoint x="1660" y="610" />
+        <di:waypoint x="1740" y="610" />
+        <di:waypoint x="1740" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Par3J_di" bpmnElement="Flow_PM_Par3J">
+        <di:waypoint x="1660" y="710" />
+        <di:waypoint x="1740" y="710" />
+        <di:waypoint x="1740" y="680" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Par4J_di" bpmnElement="Flow_PM_Par4J">
+        <di:waypoint x="1660" y="810" />
+        <di:waypoint x="1740" y="810" />
+        <di:waypoint x="1740" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM7_di" bpmnElement="Flow_PM7">
+        <di:waypoint x="1765" y="660" />
+        <di:waypoint x="1820" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM8_di" bpmnElement="Flow_PM8">
+        <di:waypoint x="1920" y="660" />
+        <di:waypoint x="1980" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM9_di" bpmnElement="Flow_PM9">
+        <di:waypoint x="2030" y="700" />
+        <di:waypoint x="2030" y="770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM10_di" bpmnElement="Flow_PM10">
+        <di:waypoint x="2080" y="810" />
+        <di:waypoint x="2140" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM11_di" bpmnElement="Flow_PM11">
+        <di:waypoint x="2240" y="810" />
+        <di:waypoint x="2300" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM12_di" bpmnElement="Flow_PM12">
+        <di:waypoint x="2400" y="810" />
+        <di:waypoint x="2455" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_EvalNo_di" bpmnElement="Flow_PM_EvalNo">
+        <di:waypoint x="2480" y="835" />
+        <di:waypoint x="2480" y="892" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2488" y="855" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_EvalYes_di" bpmnElement="Flow_PM_EvalYes">
+        <di:waypoint x="2505" y="810" />
+        <di:waypoint x="2580" y="810" />
+        <di:waypoint x="2580" y="685" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2535" y="792" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_ToBuyExec_di" bpmnElement="Flow_PM_ToBuyExec">
+        <di:waypoint x="2580" y="635" />
+        <di:waypoint x="2580" y="580" />
+        <di:waypoint x="2660" y="580" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2590" y="605" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_ToBuildExec_di" bpmnElement="Flow_PM_ToBuildExec">
+        <di:waypoint x="2580" y="685" />
+        <di:waypoint x="2580" y="770" />
+        <di:waypoint x="2660" y="770" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2589" y="725" width="25" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM13_di" bpmnElement="Flow_PM13">
+        <di:waypoint x="2760" y="580" />
+        <di:waypoint x="2820" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_BuyExecMerge_di" bpmnElement="Flow_PM_BuyExecMerge">
+        <di:waypoint x="2920" y="580" />
+        <di:waypoint x="3000" y="580" />
+        <di:waypoint x="3000" y="635" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_BuildExecMerge_di" bpmnElement="Flow_PM_BuildExecMerge">
+        <di:waypoint x="2760" y="770" />
+        <di:waypoint x="3000" y="770" />
+        <di:waypoint x="3000" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM14_di" bpmnElement="Flow_PM14">
+        <di:waypoint x="3025" y="660" />
+        <di:waypoint x="3080" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM15_di" bpmnElement="Flow_PM15">
+        <di:waypoint x="3130" y="620" />
+        <di:waypoint x="3130" y="550" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM16_di" bpmnElement="Flow_PM16">
+        <di:waypoint x="3180" y="510" />
+        <di:waypoint x="3235" y="510" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_FinalYes_di" bpmnElement="Flow_PM_FinalYes">
+        <di:waypoint x="3260" y="535" />
+        <di:waypoint x="3260" y="660" />
+        <di:waypoint x="3340" y="660" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3268" y="595" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_FinalNo_di" bpmnElement="Flow_PM_FinalNo">
+        <di:waypoint x="3260" y="485" />
+        <di:waypoint x="3260" y="450" />
+        <di:waypoint x="3362" y="450" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3268" y="458" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM17_di" bpmnElement="Flow_PM17">
+        <di:waypoint x="3390" y="700" />
+        <di:waypoint x="3390" y="770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_End_di" bpmnElement="Flow_PM_End">
+        <di:waypoint x="3440" y="810" />
+        <di:waypoint x="3492" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_SLAEsc_di" bpmnElement="Flow_PM_SLAEsc">
+        <di:waypoint x="360" y="718" />
+        <di:waypoint x="360" y="752" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Pool 2 Annotation Edges -->
+      <bpmndi:BPMNEdge id="Assoc_Triage_di" bpmnElement="Assoc_Triage">
+        <di:waypoint x="360" y="620" />
+        <di:waypoint x="360" y="485" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_PrelimAnalysis_di" bpmnElement="Assoc_PrelimAnalysis">
+        <di:waypoint x="620" y="620" />
+        <di:waypoint x="620" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_ParallelEval_di" bpmnElement="Assoc_ParallelEval">
+        <di:waypoint x="1480" y="635" />
+        <di:waypoint x="1480" y="485" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_DD_di" bpmnElement="Assoc_DD">
+        <di:waypoint x="2030" y="620" />
+        <di:waypoint x="2030" y="485" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_PDLC_di" bpmnElement="Assoc_PDLC">
+        <di:waypoint x="2710" y="730" />
+        <di:waypoint x="2710" y="485" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Close_di" bpmnElement="Assoc_Close">
+        <di:waypoint x="3390" y="850" />
+        <di:waypoint x="3390" y="870" />
+      </bpmndi:BPMNEdge>
+
+      <!-- POOL 3: Vendor / Third Party -->
+      <bpmndi:BPMNShape id="Participant_Vendor_di" bpmnElement="Participant_Vendor" isHorizontal="true">
+        <dc:Bounds x="160" y="980" width="3400" height="400" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_VendorEngagement_di" bpmnElement="Start_VendorEngagement">
+        <dc:Bounds x="222" y="1142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200" y="1185" width="80" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorIntake_di" bpmnElement="Task_VendorIntake">
+        <dc:Bounds x="310" y="1120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_VendorQualified_di" bpmnElement="GW_VendorQualified" isMarkerVisible="true">
+        <dc:Bounds x="465" y="1135" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="450" y="1098" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_VendorDisqualified_di" bpmnElement="End_VendorDisqualified">
+        <dc:Bounds x="472" y="1282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="450" y="1325" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorProposal_di" bpmnElement="Task_VendorProposal">
+        <dc:Bounds x="570" y="1120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_VendorParSplit_di" bpmnElement="GW_VendorParSplit">
+        <dc:Bounds x="725" y="1135" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorSecurityReview_di" bpmnElement="Task_VendorSecurityReview">
+        <dc:Bounds x="830" y="1020" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorComplianceReview_di" bpmnElement="Task_VendorComplianceReview">
+        <dc:Bounds x="830" y="1120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorTechDemo_di" bpmnElement="Task_VendorTechDemo">
+        <dc:Bounds x="830" y="1220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_VendorParJoin_di" bpmnElement="GW_VendorParJoin">
+        <dc:Bounds x="985" y="1135" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_VendorSelected_di" bpmnElement="GW_VendorSelected" isMarkerVisible="true">
+        <dc:Bounds x="1095" y="1135" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1080" y="1098" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_VendorNotSelected_di" bpmnElement="End_VendorNotSelected">
+        <dc:Bounds x="1102" y="1282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1080" y="1325" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorContractReview_di" bpmnElement="Task_VendorContractReview">
+        <dc:Bounds x="1200" y="1120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorContractSign_di" bpmnElement="Task_VendorContractSign">
+        <dc:Bounds x="1360" y="1120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorOnboarding_di" bpmnElement="Task_VendorOnboarding">
+        <dc:Bounds x="1520" y="1120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorDeploySupport_di" bpmnElement="Task_VendorDeploySupport">
+        <dc:Bounds x="1680" y="1120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorCloseRequest_di" bpmnElement="Task_VendorCloseRequest">
+        <dc:Bounds x="1840" y="1120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_VendorComplete_di" bpmnElement="End_VendorComplete">
+        <dc:Bounds x="2002" y="1142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1982" y="1185" width="76" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_VendorEval_di" bpmnElement="Annot_VendorEval">
+        <dc:Bounds x="280" y="1000" width="300" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_VendorClose_di" bpmnElement="Annot_VendorClose">
+        <dc:Bounds x="1810" y="1240" width="250" height="60" />
+      </bpmndi:BPMNShape>
+
+      <!-- Pool 3 Edges -->
+      <bpmndi:BPMNEdge id="Flow_V1_di" bpmnElement="Flow_V1">
+        <di:waypoint x="258" y="1160" />
+        <di:waypoint x="310" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V2_di" bpmnElement="Flow_V2">
+        <di:waypoint x="410" y="1160" />
+        <di:waypoint x="465" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_QualYes_di" bpmnElement="Flow_V_QualYes">
+        <di:waypoint x="515" y="1160" />
+        <di:waypoint x="570" y="1160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="535" y="1142" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_QualNo_di" bpmnElement="Flow_V_QualNo">
+        <di:waypoint x="490" y="1185" />
+        <di:waypoint x="490" y="1282" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="498" y="1230" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V3_di" bpmnElement="Flow_V3">
+        <di:waypoint x="670" y="1160" />
+        <di:waypoint x="725" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP1_di" bpmnElement="Flow_V_VP1">
+        <di:waypoint x="750" y="1135" />
+        <di:waypoint x="750" y="1060" />
+        <di:waypoint x="830" y="1060" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP2_di" bpmnElement="Flow_V_VP2">
+        <di:waypoint x="775" y="1160" />
+        <di:waypoint x="830" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP3_di" bpmnElement="Flow_V_VP3">
+        <di:waypoint x="750" y="1185" />
+        <di:waypoint x="750" y="1260" />
+        <di:waypoint x="830" y="1260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP1J_di" bpmnElement="Flow_V_VP1J">
+        <di:waypoint x="930" y="1060" />
+        <di:waypoint x="1010" y="1060" />
+        <di:waypoint x="1010" y="1135" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP2J_di" bpmnElement="Flow_V_VP2J">
+        <di:waypoint x="930" y="1160" />
+        <di:waypoint x="985" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP3J_di" bpmnElement="Flow_V_VP3J">
+        <di:waypoint x="930" y="1260" />
+        <di:waypoint x="1010" y="1260" />
+        <di:waypoint x="1010" y="1185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V4_di" bpmnElement="Flow_V4">
+        <di:waypoint x="1035" y="1160" />
+        <di:waypoint x="1095" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_SelYes_di" bpmnElement="Flow_V_SelYes">
+        <di:waypoint x="1145" y="1160" />
+        <di:waypoint x="1200" y="1160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1165" y="1142" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_SelNo_di" bpmnElement="Flow_V_SelNo">
+        <di:waypoint x="1120" y="1185" />
+        <di:waypoint x="1120" y="1282" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1128" y="1230" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V5_di" bpmnElement="Flow_V5">
+        <di:waypoint x="1300" y="1160" />
+        <di:waypoint x="1360" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V6_di" bpmnElement="Flow_V6">
+        <di:waypoint x="1460" y="1160" />
+        <di:waypoint x="1520" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V7_di" bpmnElement="Flow_V7">
+        <di:waypoint x="1620" y="1160" />
+        <di:waypoint x="1680" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V8_di" bpmnElement="Flow_V8">
+        <di:waypoint x="1780" y="1160" />
+        <di:waypoint x="1840" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_End_di" bpmnElement="Flow_V_End">
+        <di:waypoint x="1940" y="1160" />
+        <di:waypoint x="2002" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_VendorEval_di" bpmnElement="Assoc_VendorEval">
+        <di:waypoint x="360" y="1120" />
+        <di:waypoint x="360" y="1055" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_VendorClose_di" bpmnElement="Assoc_VendorClose">
+        <di:waypoint x="1890" y="1200" />
+        <di:waypoint x="1890" y="1240" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Message Flow Edges -->
+      <bpmndi:BPMNEdge id="MsgFlow_SubmitRequest_di" bpmnElement="MsgFlow_SubmitRequest">
+        <di:waypoint x="790" y="330" />
+        <di:waypoint x="790" y="400" />
+        <di:waypoint x="240" y="400" />
+        <di:waypoint x="240" y="642" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_DDRequest_di" bpmnElement="MsgFlow_DDRequest">
+        <di:waypoint x="2030" y="700" />
+        <di:waypoint x="2030" y="960" />
+        <di:waypoint x="240" y="960" />
+        <di:waypoint x="240" y="1142" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_VendorResponse_di" bpmnElement="MsgFlow_VendorResponse">
+        <di:waypoint x="620" y="1120" />
+        <di:waypoint x="620" y="960" />
+        <di:waypoint x="1870" y="960" />
+        <di:waypoint x="1870" y="700" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_ContractDraft_di" bpmnElement="MsgFlow_ContractDraft">
+        <di:waypoint x="2710" y="620" />
+        <di:waypoint x="2710" y="960" />
+        <di:waypoint x="1250" y="960" />
+        <di:waypoint x="1250" y="1120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_SignedContract_di" bpmnElement="MsgFlow_SignedContract">
+        <di:waypoint x="1410" y="1120" />
+        <di:waypoint x="1410" y="960" />
+        <di:waypoint x="2870" y="960" />
+        <di:waypoint x="2870" y="620" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <!-- PDLC Sub-Process Diagram -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_PDLC">
+    <bpmndi:BPMNPlane id="BPMNPlane_PDLC" bpmnElement="SP_PDLC">
+      <bpmndi:BPMNShape id="PDLC_Start_di" bpmnElement="PDLC_Start">
+        <dc:Bounds x="180" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="187" y="225" width="25" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PDLC_ArchReview_di" bpmnElement="PDLC_ArchReview">
+        <dc:Bounds x="270" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PDLC_Development_di" bpmnElement="PDLC_Development">
+        <dc:Bounds x="430" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PDLC_Testing_di" bpmnElement="PDLC_Testing">
+        <dc:Bounds x="590" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PDLC_GW_TestResult_di" bpmnElement="PDLC_GW_TestResult" isMarkerVisible="true">
+        <dc:Bounds x="745" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="740" y="232" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PDLC_Integration_di" bpmnElement="PDLC_Integration">
+        <dc:Bounds x="850" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PDLC_End_di" bpmnElement="PDLC_End">
+        <dc:Bounds x="1012" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1000" y="225" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_PDLC1_di" bpmnElement="Flow_PDLC1">
+        <di:waypoint x="216" y="200" />
+        <di:waypoint x="270" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PDLC2_di" bpmnElement="Flow_PDLC2">
+        <di:waypoint x="370" y="200" />
+        <di:waypoint x="430" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PDLC3_di" bpmnElement="Flow_PDLC3">
+        <di:waypoint x="530" y="200" />
+        <di:waypoint x="590" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PDLC4_di" bpmnElement="Flow_PDLC4">
+        <di:waypoint x="690" y="200" />
+        <di:waypoint x="745" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PDLC_Yes_di" bpmnElement="Flow_PDLC_Yes">
+        <di:waypoint x="795" y="200" />
+        <di:waypoint x="850" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="815" y="182" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PDLC_No_di" bpmnElement="Flow_PDLC_No">
+        <di:waypoint x="770" y="175" />
+        <di:waypoint x="770" y="120" />
+        <di:waypoint x="480" y="120" />
+        <di:waypoint x="480" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="618" y="102" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PDLC5_di" bpmnElement="Flow_PDLC5">
+        <di:waypoint x="950" y="200" />
+        <di:waypoint x="1012" y="200" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>
