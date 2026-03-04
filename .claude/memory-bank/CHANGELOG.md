@@ -1,5 +1,13 @@
 # Changelog
 
+## [2026.03.10] - 2026-03-04
+
+### Added
+- Phase 0.5 (Content-Aware Security Validation) in `pr-orchestrator.md` — conditional BPMN/DMN validation and security-sensitive file scanning
+- Security scanner runs as first gate when PR touches `.bpmn` or `.dmn` files
+- Hardcoded secret and open redirect detection for auth worker, `_worker.js`, and presentation files
+- 4 new quality gate conditions in pr-orchestrator pipeline
+
 ## [2026.03.9] - 2026-03-04
 
 ### Added

@@ -4,16 +4,18 @@
 
 **Date**: 2026-03-04
 **Branch**: main
-**Release Version**: 2026.03.9
+**Release Version**: 2026.03.10
 
-### Completed — Security Scanning & Hardening
+### Completed — Security Scanning & PR-Orchestrator Integration
 - **PR #14**: Security scanning & hardening for BPMN/DMN pipeline → release 2026.03.9
+- **PR #15**: Integrate security scanner into pr-orchestrator Phase 0.5 → release 2026.03.10
 - Created `security-scanner.js`: XXE, scriptTask, JUEL injection, class loading, external scripts, CDATA, DMN FEEL checks
 - Integrated as first blocking gate in `validate-bpmn.sh` + DMN scan pass
 - Fixed open redirect in auth worker (`sanitizeRedirect()` on 3 surfaces)
 - Added SRI hash to D3 CDN (pinned jsDelivr 7.9.0)
 - Removed hardcoded PROXY_SECRET from source (now Wrangler secrets)
-- PR orchestrator approved with 0 findings
+- Added Phase 0.5 to pr-orchestrator: conditional BPMN/DMN validation + security-sensitive file scanning
+- Both PRs approved by pr-orchestrator with 0 blocking findings
 
 ### 8-Phase Governance Framework — Complete
 | Phase | File | Status |
@@ -33,7 +35,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.9 |
+| Release Version | 2026.03.10 |
 | DMN Tables | 8 |
 | BPMN Models | 10 |
 | BPMN SVG Diagrams | 10 |
@@ -42,7 +44,6 @@
 
 ## Recommended Next Steps
 - Rotate PROXY_SECRET (old value in git history) — generate new secret, update both Wrangler secrets, redeploy
-- Integrate security scanner into pr-orchestrator for conditional execution on BPMN/DMN PRs
 - Redeploy auth worker to clear old PROXY_SECRET [vars] binding, then set as secret
 - Address Phase 3 candidateGroups/lane placement mismatch (PR #11 advisory finding)
 - End-to-end OTP verification at sla.agentic-innovations.com (human test)
