@@ -525,6 +525,30 @@
     <bpmn:sequenceFlow id="Flow_PM17" sourceRef="Task_OnboardSoftware" targetRef="Task_CloseRequest"/>
     <bpmn:sequenceFlow id="Flow_PM_End" sourceRef="Task_CloseRequest" targetRef="End_SoftwareOnboarded"/>
     <bpmn:sequenceFlow id="Flow_PM_SLAEsc" sourceRef="Timer_TriageSLA" targetRef="End_TriageSLAEscalation"/>
+    <bpmn:textAnnotation id="Annot_Triage">
+      <bpmn:text>Initial triage evaluates: feasibility, strategic alignment, duplicate detection, resource availability. Includes automated pre-screening for known vendor matches and existing capability overlap.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Triage" sourceRef="Task_InitialTriage" targetRef="Annot_Triage" />
+    <bpmn:textAnnotation id="Annot_PrelimAnalysis">
+      <bpmn:text>There is no flat experience in this software onboarding process; product management and tracking forecasting potential failure risks or outcomes. Leverage AI systems to automate preliminary review, market search and tracking. Routing, explore new capabilities, share and publish data, data analytics, preliminary architecture analysis (e.g. a market business case analysis from research, features, or capabilities currently in use in the backlog).</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_PrelimAnalysis" sourceRef="Task_PrelimAnalysis" targetRef="Annot_PrelimAnalysis" />
+    <bpmn:textAnnotation id="Annot_ParallelEval">
+      <bpmn:text>Parallel evaluation streams: Technical Architecture (scalability, integration), Security (vulnerability, compliance), Risk and Compliance (regulatory, data protection), Financial (TCO, ROI, licensing). All streams feed consolidated evaluation report.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_ParallelEval" sourceRef="GW_ParallelSplit" targetRef="Annot_ParallelEval" />
+    <bpmn:textAnnotation id="Annot_DueDiligence">
+      <bpmn:text>For high-priority items the process includes formal vendor due diligence, solution approach has risk management and risk management/compliance integration in the design consideration.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_DD" sourceRef="Task_VendorDueDiligence" targetRef="Annot_DueDiligence" />
+    <bpmn:textAnnotation id="Annot_PDLC">
+      <bpmn:text>Product Development Life Cycle: Architecture review, development and build, testing and QA, integration and deployment. Includes automated CI/CD pipelines, code review gates, and quality assurance checkpoints.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_PDLC" sourceRef="SP_PDLC" targetRef="Annot_PDLC" />
+    <bpmn:textAnnotation id="Annot_CloseRequest">
+      <bpmn:text>Includes archiving decisions for integration and tracking record in a proactive role date.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Close" sourceRef="Task_CloseRequest" targetRef="Annot_CloseRequest" />
   </bpmn:process>
   <bpmn:process id="Process_Vendor" name="Vendor / Third Party" isExecutable="false" camunda:historyTimeToLive="180">
     <bpmn:startEvent id="Start_VendorEngagement" name="Vendor&#10;Engagement&#10;Initiated">
@@ -671,6 +695,18 @@
     <bpmn:sequenceFlow id="Flow_V7" sourceRef="Task_VendorOnboarding" targetRef="Task_VendorDeploySupport"/>
     <bpmn:sequenceFlow id="Flow_V8" sourceRef="Task_VendorDeploySupport" targetRef="Task_VendorCloseRequest"/>
     <bpmn:sequenceFlow id="Flow_V_End" sourceRef="Task_VendorCloseRequest" targetRef="End_VendorComplete"/>
+    <bpmn:textAnnotation id="Annot_VendorEval">
+      <bpmn:text>Vendor evaluation process with thorough qualification, security and compliance review, and technical demonstration. Includes diligence-based vendor risk assessment and contract review before selection.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_VendorEval" sourceRef="Task_VendorIntake" targetRef="Annot_VendorEval" />
+    <bpmn:textAnnotation id="Annot_VendorClose">
+      <bpmn:text>Includes archiving security and compliance evidence. Vendor performance metrics tracked for ongoing management. Contract governance support is complete. Final vendor onboarding documentation archived.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_VendorClose" sourceRef="Task_VendorCloseRequest" targetRef="Annot_VendorClose" />
+    <bpmn:textAnnotation id="Annot_Ariba">
+      <bpmn:text>Vendor collaboration managed via Ariba procurement platform. Vendor selection decision made by Procurement lane in Product Management pool.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Ariba" sourceRef="Task_VendorContractReview" targetRef="Annot_Ariba" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_IdealState">
@@ -1335,6 +1371,51 @@
         <di:waypoint x="3735" y="1060"/>
         <di:waypoint x="3735" y="1000"/>
         </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Annot_Triage_di" bpmnElement="Annot_Triage">
+        <dc:Bounds x="860" y="380" width="240" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_PrelimAnalysis_di" bpmnElement="Annot_PrelimAnalysis">
+        <dc:Bounds x="1120" y="380" width="350" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_ParallelEval_di" bpmnElement="Annot_ParallelEval">
+        <dc:Bounds x="2010" y="380" width="120" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_DueDiligence_di" bpmnElement="Annot_DueDiligence">
+        <dc:Bounds x="2530" y="430" width="300" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_PDLC_di" bpmnElement="Annot_PDLC">
+        <dc:Bounds x="3495" y="430" width="300" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_CloseRequest_di" bpmnElement="Annot_CloseRequest">
+        <dc:Bounds x="4175" y="860" width="200" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Assoc_Triage_di" bpmnElement="Assoc_Triage">
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_PrelimAnalysis_di" bpmnElement="Assoc_PrelimAnalysis">
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_ParallelEval_di" bpmnElement="Assoc_ParallelEval">
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_DD_di" bpmnElement="Assoc_DD">
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_PDLC_di" bpmnElement="Assoc_PDLC">
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Close_di" bpmnElement="Assoc_Close">
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Annot_VendorEval_di" bpmnElement="Annot_VendorEval">
+        <dc:Bounds x="280" y="1150" width="300" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_VendorClose_di" bpmnElement="Annot_VendorClose">
+        <dc:Bounds x="1700" y="1390" width="250" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Annot_Ariba_di" bpmnElement="Annot_Ariba">
+        <dc:Bounds x="1060" y="1390" width="200" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Assoc_VendorEval_di" bpmnElement="Assoc_VendorEval">
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_VendorClose_di" bpmnElement="Assoc_VendorClose">
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Ariba_di" bpmnElement="Assoc_Ariba">
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_PDLC">
