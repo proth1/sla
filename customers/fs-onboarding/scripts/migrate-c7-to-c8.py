@@ -220,34 +220,7 @@ def migrate(src: str) -> str:
             xml,
         )
 
-    # 8. Transform receiveTask message correlation for Zeebe
-    # Camunda 8 receive tasks need zeebe:properties for message correlation
-    def transform_receive(match):
-        full = match.group(0)
-        task_id_m = re.search(r'id="([^"]*)"', full)
-        task_id = task_id_m.group(1) if task_id_m else ""
-
-        # Determine correlation key based on task
-        if "VendorResponse" in task_id:
-            msg_name = "msg_vendor_response"
-        elif "SignedContract" in task_id:
-            msg_name = "msg_signed_contract"
-        else:
-            msg_name = "msg_" + task_id.lower()
-
-        # For Zeebe, receive tasks still work but we should ensure they have
-        # message event definitions. Leave as-is for now since they already
-        # have messageEventDefinition in the BPMN.
-        return full
-
-    xml = re.sub(
-        r'<bpmn:receiveTask[^>]*>.*?</bpmn:receiveTask>',
-        transform_receive,
-        xml,
-        flags=re.DOTALL,
-    )
-
-    # 9. Transform camunda:properties to zeebe:properties
+    # 8. Transform camunda:properties to zeebe:properties
     xml = xml.replace('<camunda:properties>', '<zeebe:properties>')
     xml = xml.replace('</camunda:properties>', '</zeebe:properties>')
     xml = xml.replace('<camunda:property ', '<zeebe:property ')
