@@ -477,7 +477,7 @@
       <bpmn:sequenceFlow id="Flow_PDLC_No" name="No" sourceRef="PDLC_GW_TestResult" targetRef="PDLC_Development" />
       <bpmn:sequenceFlow id="Flow_PDLC5" sourceRef="PDLC_Integration" targetRef="PDLC_End" />
     </bpmn:subProcess>
-    <bpmn:receiveTask id="Receive_VendorResponse" name="Await Vendor&#10;Response" camunda:candidateGroups="procurement-lane">
+    <bpmn:receiveTask id="Receive_VendorResponse" name="Await Vendor&#10;Response">
       <bpmn:incoming>Flow_PM8</bpmn:incoming>
       <bpmn:outgoing>Flow_PM8b</bpmn:outgoing>
     </bpmn:receiveTask>
@@ -491,7 +491,7 @@
       <bpmn:incoming>Flow_VendorResponseSLA</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_VendorResponseSLA" sourceRef="Timer_VendorResponseSLA" targetRef="End_VendorResponseSLABreach" />
-    <bpmn:receiveTask id="Receive_SignedContract" name="Await Signed&#10;Contract" camunda:candidateGroups="procurement-lane">
+    <bpmn:receiveTask id="Receive_SignedContract" name="Await Signed&#10;Contract">
       <bpmn:incoming>Flow_PM13</bpmn:incoming>
       <bpmn:outgoing>Flow_PM13b</bpmn:outgoing>
     </bpmn:receiveTask>
