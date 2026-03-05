@@ -109,7 +109,7 @@
       <bpmn:outgoing>Flow_QualityGate_End</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:boundaryEvent id="Timer_Phase1QGSla" name="P2D&#10;SLA" attachedToRef="Task_Phase1QualityGate" cancelActivity="false">
+    <bpmn:boundaryEvent id="Timer_Phase1QGSla" name="2 Day&#10;SLA" attachedToRef="Task_Phase1QualityGate" cancelActivity="false">
       <bpmn:outgoing>Flow_Phase1QGSLAEscalate</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerDef_Phase1QG">
         <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
@@ -245,7 +245,7 @@
       <bpmndi:BPMNShape id="Timer_Phase1QGSla_di" bpmnElement="Timer_Phase1QGSla">
         <dc:Bounds x="1394" y="256" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1438" y="260" width="27" height="27" />
+          <dc:Bounds x="1438" y="260" width="46" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
