@@ -2,9 +2,24 @@
 
 ## Last Session Summary
 
-**Date**: 2026-03-04
+**Date**: 2026-03-05
 **Branch**: main
-**Release Version**: 2026.03.17
+**Release Version**: 2026.03.25
+
+### Completed — Code Audit Round 2 (11 findings, 4 PRs)
+- **PR #30**: Phase 6 HIGH severity fix — removed illegal outgoing flow from EndEvent_QualityGateRejected, replaced with XOR merge loop pattern → merged, release 2026.03.22
+- **PR #31**: CDD evidence hook — replaced fragile grep+awk YAML parsing with python3 regex → merged, release 2026.03.23
+- **PR #32**: 5 MEDIUM BPMN governance fixes — Phase 1/2 phase boundary patterns, master escalation removal, dual start event annotation, 4 flow label overlaps → merged, release 2026.03.24
+- **PR #33**: 3 MEDIUM security fixes — SLA_SESSION HMAC cookie (8h TTL), KV-based OTP verify rate limiting, send-otp rate limit documentation → merged, release 2026.03.25
+- All 4 PRs reviewed by pr-orchestrator: all APPROVED
+- Code audit Round 1+2 combined: 44/58 findings fixed (33 in Round 1, 11 in Round 2). 14 LOW findings remain deferred (cosmetic/false positives)
+
+### Completed — Onboarding v3 Pool Merge
+- **PR #29**: Merged Software Requester pool into Software Onboarding pool as swim lane → merged, release 2026.03.20
+- 3-pool → 2-pool consolidation per stakeholder (Scott) feedback
+- Cross-pool message flow replaced with cross-lane sequence flow
+- Fixed 2 visual overlaps, removed requester annotations
+- pr-orchestrator: APPROVED
 
 ### Completed — Onboarding-Only Customer Project
 - **PR #26**: First customer-specific project in mono-repo → merged, release 2026.03.17
@@ -63,9 +78,12 @@
 
 ---
 
+
+---
+
 ## SESSION END WARNING (Auto-generated)
 
-**Session ended**: 2026-03-04T06:52:10Z
+**Session ended**: 2026-03-04T19:33:42Z
 **activeContext.md was NOT updated** before session ended.
 
 The previous Claude may not have documented:

@@ -1,5 +1,54 @@
 # Changelog
 
+## [2026.03.25] - 2026-03-05
+
+### Fixed
+- Phase 6 BPMN: Remove illegal outgoing flow from EndEvent_QualityGateRejected (BPMN 2.0 violation), replace with proper XOR merge loop pattern (PR #30)
+- Phase 1 BPMN: Add missing phase boundary pattern (quality gate, approval, transition event) after routing assignment (PR #32)
+- Phase 2 BPMN: Replace `isAIInitiative` boolean condition with `aiComplexityScore >= 3` (DMN-first compliance), add phase boundary pattern (PR #32)
+- Master BPMN: Remove unsupported escalationEventDefinition from end event, add dual start event annotation (PR #32)
+- Phase 3/7/8 BPMN: Fix 4 flow label overlaps by repositioning label Y-coordinates (PR #32)
+- CDD evidence hook: Replace fragile grep+awk YAML parsing with python3 regex (PR #31)
+
+### Security
+- Auth worker: Add SLA_SESSION HMAC-signed cookie (8h TTL) checked before Descope JWT to prevent re-authentication on page reload (PR #33)
+- Auth worker: Add KV-based per-email rate limiting for /auth/verify-otp (5 attempts/10min) (PR #33)
+- Auth worker: Document Cloudflare Rate Limiting Rule for /auth/send-otp (PR #33)
+
+### Added
+- Auth worker: tsconfig.json and @cloudflare/workers-types for type checking (PR #33)
+
+## [2026.03.21] - 2026-03-04
+
+### Fixed
+- Onboarding v3 BPMN: 5 visual layout fixes — End_EvalRejected and End_VendorNotSelected repositioned into correct lanes, 40px gap added between Enterprise and Vendor pools, 2 backward sequence flows eliminated (Flow_R_ToTriage, Flow_PM_SelYes) by repositioning elements left-to-right
+- Pool/lane widths expanded from 3400 to 4270 to accommodate repositioned elements
+- Restored 9 text annotations and associations dropped during lxml serialization
+
+## [2026.03.20] - 2026-03-04
+
+### Changed
+- Onboarding v3 BPMN: merged 3-pool structure into 2 pools (Software Onboarding + Vendor)
+- Software Requester pool merged as swim lane into Software Onboarding pool per stakeholder feedback
+- Cross-pool message flow replaced with cross-lane sequence flow (Flow_R_ToTriage)
+- Removed requester pool annotations (Entry Criteria, Knowledge Management)
+- Fixed 2 visual overlaps (Triage/PrelimAnalysis annotations, ParallelEval/TechArchReview)
+
+## [2026.03.19] - 2026-03-04
+
+### Added
+- Comprehensive task documentation for all 28 remaining user tasks across Software Requester (4), Product Management (20), and PDLC sub-process (4) pools
+- Combined with v2026.03.18, all 38 user tasks in onboarding ideal state v2 now have full regulatory controls, evidence collection, and data point documentation
+- Regulatory frameworks referenced: OCC 2023-17 (29 refs), NIST CSF 2.0 (25), SOX (22), GDPR (14), DORA (14), ISO 27001 (4), SEC 17a-4 (2)
+
+## [2026.03.18] - 2026-03-04
+
+### Added
+- Onboarding ideal state v2 BPMN with detailed vendor task documentation
+- 10 vendor lane user tasks enriched with bpmn:documentation summaries and camunda:property comments
+- Regulatory control mappings (OCC 2023-17, GDPR, SOX, DORA, NIST CSF 2.0, ISO 27001, SEC 17a-4) per task
+- Evidence collection requirements and data point specifications for each vendor lifecycle stage
+
 ## [2026.03.17] - 2026-03-04
 
 ### Added
