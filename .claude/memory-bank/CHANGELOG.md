@@ -1,5 +1,12 @@
 # Changelog
 
+## [2026.03.27] - 2026-03-05
+
+### Added
+- BPMN rules: Hierarchical sub-process modeling standards (`bpmn-hierarchical-subprocess.md`) — 18 patterns extracted from user's v5 onboarding reference model (PR #35)
+- Patterns include: top-level orchestrator design (no swim lanes), collapsed sub-process conventions, bypass flow routing, merge gateway pattern, two-channel message flow routing, parallel fan-out layout, two-path execution, loop-back pattern, nested sub-processes, timer patterns, BPMNDiagram ID uniqueness
+- Enterprise pool height 290px, inter-pool gap 120px, two message flow channels (y=430 outbound, y=470 inbound)
+
 ## [2026.03.26] - 2026-03-05
 
 ### Fixed

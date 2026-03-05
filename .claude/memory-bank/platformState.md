@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.26
+**Current Version**: 2026.03.27
 **Last Release**: 2026-03-05
-**Total Releases**: 26
+**Total Releases**: 27
 
 ## Artifact Counts
 
@@ -30,6 +30,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.27 | 2026-03-05 | #35 | Codify hierarchical sub-process BPMN modeling patterns from v5 reference model |
 | 2026.03.26 | 2026-03-05 | #25 | Onboarding v4: vendor sequencing fix, receive tasks with SLA timers, modeling rules |
 | 2026.03.25 | 2026-03-05 | #33 | Auth worker: SLA_SESSION HMAC cookie (8h), OTP verify rate limiting |
 | 2026.03.24 | 2026-03-05 | #32 | BPMN governance patterns: phase boundaries (P1/P2), escalation fix, label overlaps |

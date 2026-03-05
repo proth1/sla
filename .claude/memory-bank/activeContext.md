@@ -4,7 +4,14 @@
 
 **Date**: 2026-03-05
 **Branch**: main
-**Release Version**: 2026.03.26
+**Release Version**: 2026.03.27
+
+### Completed — Hierarchical BPMN Modeling Rules Codification
+- **PR #35**: Codified 18 patterns from user's v5 onboarding reference model into `.claude/rules/bpmn-hierarchical-subprocess.md` → merged, release 2026.03.27
+- User manually edited v5 in Camunda Modeler; extracted patterns include: no top-level swim lanes, collapsed sub-process conventions, bypass flow routing (above main flow), merge gateway pattern, two-channel message flow routing (y=430 outbound / y=470 inbound), parallel fan-out (~100px spacing), two-path execution (Buy/Build), loop-back targeting merge gateways, nested sub-processes, timer patterns (boundary + standalone intermediate), BPMNDiagram ID uniqueness
+- Enterprise pool height 290px, inter-pool gap 120px
+- PR reviewed by pr-orchestrator twice (round 1 + round 2): APPROVE with suggestions, all addressed
+- Reference model: `processes/Onboarding-only/onboarding-to-be-ideal-state-v5.bpmn` (untracked, user's working file)
 
 ### Completed — Onboarding v4 Vendor Sequencing Fix
 - **PR #25**: Restored correct v4 base, applied vendor sequencing fix using text-based edits (not lxml), codified v3→v4 modeling patterns → merged, release 2026.03.26
@@ -90,9 +97,12 @@
 
 ---
 
+
+---
+
 ## SESSION END WARNING (Auto-generated)
 
-**Session ended**: 2026-03-05T04:38:27Z
+**Session ended**: 2026-03-05T13:04:14Z
 **activeContext.md was NOT updated** before session ended.
 
 The previous Claude may not have documented:
