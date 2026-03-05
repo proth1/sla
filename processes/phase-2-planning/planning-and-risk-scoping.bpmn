@@ -26,6 +26,9 @@
       </bpmn:lane>
       <bpmn:lane id="Lane_Governance" name="Governance" camunda:candidateGroups="governance-lane">
         <bpmn:flowNodeRef>EndEvent_Rejected</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Phase2_AcceptableMerge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Phase2_Approval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_Phase2Transition</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_Contracting" name="Contracting" camunda:candidateGroups="contracting-lane">
       </bpmn:lane>
@@ -160,10 +163,25 @@
       <bpmn:terminateEventDefinition id="TerminateDef_Rejected" />
     </bpmn:endEvent>
 
-    <bpmn:endEvent id="EndEvent_Phase2Complete" name="Phase 2 Complete&#10;(Proceed to Phase 3)">
+    <bpmn:exclusiveGateway id="Gateway_Phase2_AcceptableMerge">
       <bpmn:incoming>Flow_HighRisk</bpmn:incoming>
       <bpmn:incoming>Flow_StandardRisk</bpmn:incoming>
       <bpmn:incoming>Flow_MinimalRisk</bpmn:incoming>
+      <bpmn:outgoing>Flow_AcceptableMerge_Approval</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_Phase2_Approval" name="Phase 2&#10;Approval" camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_AcceptableMerge_Approval</bpmn:incoming>
+      <bpmn:outgoing>Flow_Approval_Phase2Transition</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:intermediateThrowEvent id="Event_Phase2Transition" name="Phase 2&#10;Complete">
+      <bpmn:incoming>Flow_Approval_Phase2Transition</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase2Transition_End</bpmn:outgoing>
+    </bpmn:intermediateThrowEvent>
+
+    <bpmn:endEvent id="EndEvent_Phase2Complete" name="Phase 2 Complete&#10;(Proceed to Phase 3)">
+      <bpmn:incoming>Flow_Phase2Transition_End</bpmn:incoming>
     </bpmn:endEvent>
 
     <bpmn:textAnnotation id="Annotation_OCC">
@@ -192,7 +210,7 @@
     <bpmn:sequenceFlow id="Flow_TierAssignment_AIGateway" sourceRef="Task_2_3_RiskTierAssignment" targetRef="Gateway_AIInitiative" />
 
     <bpmn:sequenceFlow id="Flow_YesAI_SplitAI" name="Yes" sourceRef="Gateway_AIInitiative" targetRef="Gateway_ParallelSplitAI">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isAIInitiative == true}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${aiComplexityScore >= 3}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_NotAI_SplitMain" name="No" sourceRef="Gateway_AIInitiative" targetRef="Gateway_ParallelSplitMain" />
 
@@ -218,13 +236,17 @@
     <bpmn:sequenceFlow id="Flow_UnacceptableRisk" name="Unacceptable Risk" sourceRef="Gateway_RiskTierDecision" targetRef="EndEvent_Rejected">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${riskTier == 'UNACCEPTABLE'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_HighRisk" name="High Risk" sourceRef="Gateway_RiskTierDecision" targetRef="EndEvent_Phase2Complete">
+    <bpmn:sequenceFlow id="Flow_HighRisk" name="High Risk" sourceRef="Gateway_RiskTierDecision" targetRef="Gateway_Phase2_AcceptableMerge">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${riskTier == 'HIGH'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_StandardRisk" name="Limited Risk" sourceRef="Gateway_RiskTierDecision" targetRef="EndEvent_Phase2Complete" />
-    <bpmn:sequenceFlow id="Flow_MinimalRisk" name="Minimal Risk" sourceRef="Gateway_RiskTierDecision" targetRef="EndEvent_Phase2Complete">
+    <bpmn:sequenceFlow id="Flow_StandardRisk" name="Limited Risk" sourceRef="Gateway_RiskTierDecision" targetRef="Gateway_Phase2_AcceptableMerge" />
+    <bpmn:sequenceFlow id="Flow_MinimalRisk" name="Minimal Risk" sourceRef="Gateway_RiskTierDecision" targetRef="Gateway_Phase2_AcceptableMerge">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${riskTier == 'MINIMAL'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_AcceptableMerge_Approval" sourceRef="Gateway_Phase2_AcceptableMerge" targetRef="Task_Phase2_Approval" />
+    <bpmn:sequenceFlow id="Flow_Approval_Phase2Transition" sourceRef="Task_Phase2_Approval" targetRef="Event_Phase2Transition" />
+    <bpmn:sequenceFlow id="Flow_Phase2Transition_End" sourceRef="Event_Phase2Transition" targetRef="EndEvent_Phase2Complete" />
 
     <bpmn:sequenceFlow id="Flow_SLATimer_Escalated" sourceRef="BoundaryEvent_Phase2SLATimer" targetRef="EndEvent_SLAEscalated" />
 
@@ -253,32 +275,32 @@
     <bpmndi:BPMNPlane id="BPMNPlane_Phase2Planning" bpmnElement="Collaboration_Phase2Planning">
 
       <bpmndi:BPMNShape id="Participant_EnterpriseGov_di" bpmnElement="Participant_EnterpriseGov" isHorizontal="true">
-        <dc:Bounds x="155" y="47" width="1750" height="930" />
+        <dc:Bounds x="155" y="47" width="2100" height="930" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
-        <dc:Bounds x="185" y="47" width="1720" height="130" />
+        <dc:Bounds x="185" y="47" width="2070" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
-        <dc:Bounds x="185" y="177" width="1720" height="130" />
+        <dc:Bounds x="185" y="177" width="2070" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Contracting_di" bpmnElement="Lane_Contracting" isHorizontal="true">
-        <dc:Bounds x="185" y="307" width="1720" height="60" />
+        <dc:Bounds x="185" y="307" width="2070" height="60" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Technical_di" bpmnElement="Lane_Technical" isHorizontal="true">
-        <dc:Bounds x="185" y="367" width="1720" height="130" />
+        <dc:Bounds x="185" y="367" width="2070" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_AIReview_di" bpmnElement="Lane_AIReview" isHorizontal="true">
-        <dc:Bounds x="185" y="497" width="1720" height="130" />
+        <dc:Bounds x="185" y="497" width="2070" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
-        <dc:Bounds x="185" y="627" width="1720" height="130" />
+        <dc:Bounds x="185" y="627" width="2070" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
-        <dc:Bounds x="185" y="757" width="1720" height="60" />
+        <dc:Bounds x="185" y="757" width="2070" height="60" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
-        <dc:Bounds x="185" y="817" width="1720" height="160" />
+        <dc:Bounds x="185" y="817" width="2070" height="160" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_Phase2Initiated_di" bpmnElement="StartEvent_Phase2Initiated">
@@ -294,9 +316,9 @@
         <dc:Bounds x="1180" y="72" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_Phase2Complete_di" bpmnElement="EndEvent_Phase2Complete">
-        <dc:Bounds x="1810" y="94" width="36" height="36" />
+        <dc:Bounds x="2150" y="224" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1853" y="95" width="84" height="40" />
+          <dc:Bounds x="2123" y="267" width="84" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -362,6 +384,22 @@
         <dc:Bounds x="1700" y="872" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1683" y="929" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Gateway_Phase2_AcceptableMerge_di" bpmnElement="Gateway_Phase2_AcceptableMerge" isMarkerVisible="true">
+        <dc:Bounds x="1870" y="217" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Phase2_Approval_di" bpmnElement="Task_Phase2_Approval">
+        <dc:Bounds x="1960" y="202" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Event_Phase2Transition_di" bpmnElement="Event_Phase2Transition">
+        <dc:Bounds x="2092" y="224" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2070" y="267" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -496,8 +534,8 @@
       <bpmndi:BPMNEdge id="Flow_HighRisk_di" bpmnElement="Flow_HighRisk">
         <di:waypoint x="1750" y="897" />
         <di:waypoint x="1770" y="897" />
-        <di:waypoint x="1770" y="112" />
-        <di:waypoint x="1810" y="112" />
+        <di:waypoint x="1770" y="242" />
+        <di:waypoint x="1870" y="242" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1773" y="490" width="44" height="14" />
         </bpmndi:BPMNLabel>
@@ -505,8 +543,8 @@
       <bpmndi:BPMNEdge id="Flow_StandardRisk_di" bpmnElement="Flow_StandardRisk">
         <di:waypoint x="1750" y="897" />
         <di:waypoint x="1790" y="897" />
-        <di:waypoint x="1790" y="112" />
-        <di:waypoint x="1810" y="112" />
+        <di:waypoint x="1790" y="242" />
+        <di:waypoint x="1870" y="242" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1793" y="540" width="55" height="14" />
         </bpmndi:BPMNLabel>
@@ -514,11 +552,26 @@
       <bpmndi:BPMNEdge id="Flow_MinimalRisk_di" bpmnElement="Flow_MinimalRisk">
         <di:waypoint x="1750" y="897" />
         <di:waypoint x="1805" y="897" />
-        <di:waypoint x="1805" y="112" />
-        <di:waypoint x="1810" y="112" />
+        <di:waypoint x="1805" y="242" />
+        <di:waypoint x="1870" y="242" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1808" y="590" width="63" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_AcceptableMerge_Approval_di" bpmnElement="Flow_AcceptableMerge_Approval">
+        <di:waypoint x="1920" y="242" />
+        <di:waypoint x="1960" y="242" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Approval_Phase2Transition_di" bpmnElement="Flow_Approval_Phase2Transition">
+        <di:waypoint x="2060" y="242" />
+        <di:waypoint x="2092" y="242" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase2Transition_End_di" bpmnElement="Flow_Phase2Transition_End">
+        <di:waypoint x="2128" y="242" />
+        <di:waypoint x="2150" y="242" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SLATimer_Escalated_di" bpmnElement="Flow_SLATimer_Escalated">
@@ -544,10 +597,10 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNShape id="Participant_VendorThirdParty_di" bpmnElement="Participant_VendorThirdParty" isHorizontal="true">
-        <dc:Bounds x="155" y="1007" width="1750" height="130" />
+        <dc:Bounds x="155" y="1007" width="2100" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_VendorResponse_di" bpmnElement="Lane_VendorResponse" isHorizontal="true">
-        <dc:Bounds x="185" y="1007" width="1720" height="130" />
+        <dc:Bounds x="185" y="1007" width="2070" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartEvent_VendorPhase2_di" bpmnElement="StartEvent_VendorPhase2">
         <dc:Bounds x="247" y="1054" width="36" height="36" />

@@ -777,7 +777,7 @@
         <di:waypoint x="1575" y="897" />
         <di:waypoint x="1660" y="897" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1583" y="873" width="74" height="27" />
+          <dc:Bounds x="1583" y="839" width="74" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
@@ -826,7 +826,7 @@
         <di:waypoint x="575" y="970" />
         <di:waypoint x="640" y="970" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="596" y="952" width="15" height="14" />
+          <dc:Bounds x="596" y="934" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
