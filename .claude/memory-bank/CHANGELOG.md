@@ -1,5 +1,12 @@
 # Changelog
 
+## [2026.03.28] - 2026-03-05
+
+### Added
+- Claude Code command: `/review-model` slash command (`.claude/commands/review-model.md`) for reviewing manual BPMN model changes against project standards (PR #37)
+- 7-step workflow: diff identification, element parsing, user intent capture, standards evaluation, validation, pattern codification, summary report
+- Supports `--diff-only` and `--no-codify` flags
+
 ## [2026.03.27] - 2026-03-05
 
 ### Added

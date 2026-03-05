@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Software Governance | SLA Platform</title>
+<title>Software Onboarding Governance | SLA Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
@@ -90,7 +90,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Open Sans Condensed', sans-serif; font-we
 .nav-links a:hover { color: white; }
 .slide-counter { position: fixed; bottom: 20px; right: 20px; background: var(--sla-navy); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; z-index: 1000; }
 
-/* Slide indicator — right-side dots (kmflow style) */
+/* Slide indicator — right-side dots */
 .slide-indicator { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 999; }
 .slide-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(13,33,55,0.3); cursor: pointer; transition: all 0.3s; }
 .slide-dot:hover { background: var(--sla-teal); transform: scale(1.3); }
@@ -131,1268 +131,1585 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Open Sans Condensed', sans-serif; font-we
 /* Comparison */
 .compare { display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: start; margin: 1rem 0; }
 .compare-arrow { font-size: 2rem; color: var(--sla-emerald); align-self: center; }
+
+/* Small table */
+.small-table { font-size: 0.75rem; }
+.small-table td, .small-table th { padding: 5px 8px; }
+
+/* Grayed out (post-onboarding) */
+.grayed { opacity: 0.45; }
+.grayed-label { display: inline-block; background: #94A3B8; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.75rem; font-weight: 600; }
+
+/* Escalation ladder */
+.escalation-step { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 6px; margin-bottom: 8px; }
+.escalation-step .level { font-family: 'Open Sans Condensed', sans-serif; font-size: 1.4rem; font-weight: 700; min-width: 32px; }
+
+/* Heatmap */
+.heatmap-wrap { overflow-x: auto; }
+.heatmap { border-collapse: collapse; width: 100%; font-size: 0.72rem; }
+.heatmap th { background: var(--sla-deep-blue); color: white; padding: 7px 8px; text-align: center; font-weight: 600; white-space: nowrap; }
+.heatmap th.topic-col { text-align: left; min-width: 130px; }
+.heatmap td { padding: 0; height: 36px; position: relative; border: 1px solid #e2e8f0; }
+.hm-cell { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; cursor: default; position: relative; }
+.hm-cell.active { background: var(--sla-deep-blue); color: white; font-weight: 700; font-size: 0.9rem; }
+.hm-cell.secondary { background: #93a5c0; color: white; font-weight: 600; font-size: 0.85rem; }
+.hm-cell.empty { background: #f8fafc; }
+.hm-cell .hm-tip { display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--sla-navy); color: white; padding: 6px 10px; border-radius: 4px; font-size: 0.7rem; z-index: 200; box-shadow: 0 2px 8px rgba(0,0,0,0.3); line-height: 1.5; max-width: 280px; white-space: normal; }
+.hm-cell .hm-tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--sla-navy); }
+.hm-cell.active:hover .hm-tip { display: block; }
+.heatmap td.topic-label { background: #f1f5f9; padding: 4px 10px; font-weight: 600; color: var(--sla-navy); font-size: 0.75rem; }
+.hm-legend { display: flex; gap: 16px; align-items: center; margin-top: 8px; font-size: 0.72rem; color: var(--sla-gray); }
+.hm-legend-box { width: 14px; height: 14px; border-radius: 2px; display: inline-block; margin-right: 4px; vertical-align: middle; }
+
+/* Journey Rail */
+.journey-rail { display: flex; gap: 6px; margin: 10px 0; align-items: stretch; }
+.journey-phase { flex: 1; border-radius: 6px; padding: 8px; min-height: 90px; display: flex; flex-direction: column; }
+.journey-phase.active { background: var(--sla-deep-blue); color: white; }
+.journey-phase.inactive { background: #e8edf2; color: #94a3b8; }
+.journey-phase .jp-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.journey-phase.active .jp-label { color: var(--sla-teal); }
+.journey-phase.inactive .jp-label { color: #94a3b8; }
+.journey-phase .jp-tasks { font-size: 0.62rem; line-height: 1.4; margin: 0; padding: 0; list-style: none; }
+.journey-phase.active .jp-tasks li::before { content: 'A '; color: var(--sla-gold); }
+.journey-footer { margin-top: 8px; background: #f1f5f9; border-radius: 4px; padding: 8px 12px; display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.7rem; }
+.journey-footer-block { display: flex; flex-direction: column; gap: 2px; }
+.journey-footer-block strong { color: var(--sla-navy); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.3px; }
+.journey-footer-block span { color: var(--sla-gray); }
+
+/* Topic Explorer Pills */
+.topic-pill { background:#e8edf2; border:none; border-radius:20px; padding:6px 14px; font-size:0.75rem; font-family:'Open Sans',sans-serif; cursor:pointer; color:#1e293b; transition:all 0.2s; font-weight:600; }
+.topic-pill:hover { background:var(--sla-deep-blue); color:white; }
+.topic-pill.active { background:var(--sla-deep-blue); color:white; }
+.topic-phase-block { background:white; border-left:3px solid var(--sla-deep-blue); border-radius:3px; padding:6px 10px; font-size:0.72rem; }
+.topic-phase-block strong { color:var(--sla-teal); display:block; margin-bottom:2px; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.3px; }
+.topic-phase-block ul { margin:0; padding-left:12px; color:var(--sla-gray); line-height:1.5; }
+
 </style>
 </head>
 <body>
 
 <!-- Navigation Bar -->
 <div class="nav-bar">
-  <span class="title">SLA Governance Platform</span>
+  <span class="title">Software Onboarding Governance</span>
   <div class="nav-links">
     <a onclick="goToSlide(0)">Home</a>
     <a onclick="goToSlide(2)">Problem</a>
-    <a onclick="goToSlide(7)">Phases</a>
-    <a onclick="goToSlide(17)">Master</a>
-    <a onclick="goToSlide(18)">DMN</a>
-    <a onclick="goToSlide(20)">Pathways</a>
-    <a onclick="goToSlide(22)">Lanes</a>
-    <a onclick="goToSlide(24)">Regulatory</a>
-    <a onclick="goToSlide(28)">Cross-Cutting</a>
-    <a onclick="goToSlide(33)">Roadmap</a>
+    <a onclick="goToSlide(4)">Phases</a>
+    <a onclick="goToSlide(7)">Due Diligence</a>
+    <a onclick="goToSlide(11)">RACI</a>
+    <a onclick="goToSlide(12)">Heat Map</a>
+    <a onclick="goToSlide(24)">Explorer</a>
+    <a onclick="goToSlide(25)">DMN</a>
+    <a onclick="goToSlide(32)">Next Steps</a>
   </div>
 </div>
 
 <!-- Slide Indicator (right-side dots) -->
 <div class="slide-indicator" id="slideIndicator"></div>
-<div class="slide-counter" id="slideCounter">1 / 37</div>
+<div class="slide-counter" id="slideCounter">1 / 33</div>
 
 <main class="slides-container" id="slidesContainer">
 
-<!-- ============================================================ -->
-<!-- SLIDE 1: Hero -->
-<!-- ============================================================ -->
 <div class="slide slide-hero" data-slide="0">
-  <h1>Enterprise Software Governance</h1>
-  <h2>SLA Platform &mdash; 8-Phase Lifecycle for Financial Services</h2>
-  <p style="opacity:0.85; max-width:700px;">A comprehensive, risk-tiered governance framework spanning Initiation through Operations &amp; Retirement. Built on BPMN 2.0, DMN 1.3, and Camunda Platform 7.</p>
+  <h1>Software Onboarding Governance</h1>
+  <h2>5-Phase Accelerated Onboarding &mdash; Financial Services</h2>
+  <p style="color:rgba(255,255,255,0.8);font-size:1.05rem;max-width:800px;">A structured, DMN-driven onboarding lifecycle covering Intake through Contracting &mdash; with parallel evaluation, risk-tiered routing, and real-time SLA monitoring built for financial services compliance.</p>
   <div class="badges">
+    <span class="badge">OCC 2023-17</span>
+    <span class="badge">GDPR/CCPA</span>
+    <span class="badge">EU AI Act</span>
+    <span class="badge">DORA</span>
+    <span class="badge">SR 11-7</span>
+    <span class="badge">SOX</span>
     <span class="badge">BPMN 2.0</span>
     <span class="badge">DMN 1.3</span>
     <span class="badge">Camunda 7</span>
-    <span class="badge">OCC 2023-17</span>
-    <span class="badge">SR 11-7</span>
-    <span class="badge">EU AI Act</span>
-    <span class="badge">DORA</span>
-    <span class="badge">SOX</span>
   </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
+  <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 2: Table of Contents -->
+<!-- SLIDE 1: Agenda -->
 <!-- ============================================================ -->
+
 <div class="slide" data-slide="1">
   <h2>Agenda</h2>
   <div class="two-col">
     <div>
-      <h3>Framework Overview</h3>
+      <h3>Overview</h3>
       <ul>
-        <li><a onclick="goToSlide(2)" style="cursor:pointer; color:var(--sla-blue);">Problem Statement</a></li>
-        <li><a onclick="goToSlide(3)" style="cursor:pointer; color:var(--sla-blue);">Vision &amp; Outcomes</a></li>
-        <li><a onclick="goToSlide(4)" style="cursor:pointer; color:var(--sla-blue);">Foundational Principles</a></li>
-        <li><a onclick="goToSlide(5)" style="cursor:pointer; color:var(--sla-blue);">Strategic Vision</a></li>
-        <li><a onclick="goToSlide(6)" style="cursor:pointer; color:var(--sla-blue);">Competitive Positioning</a></li>
-        <li><a onclick="goToSlide(7)" style="cursor:pointer; color:var(--sla-blue);">8-Phase Architecture</a></li>
-        <li><a onclick="goToSlide(8)" style="cursor:pointer; color:var(--sla-blue);">BPMN Notation Guide</a></li>
-        <li><a onclick="goToSlide(9)" style="cursor:pointer; color:var(--sla-blue);">Phase 1: Initiation &amp; Intake</a></li>
-        <li><a onclick="goToSlide(10)" style="cursor:pointer; color:var(--sla-blue);">Phase 2: Planning &amp; Risk Scoping</a></li>
-        <li><a onclick="goToSlide(11)" style="cursor:pointer; color:var(--sla-blue);">Phase 3: Due Diligence</a></li>
-        <li><a onclick="goToSlide(12)" style="cursor:pointer; color:var(--sla-blue);">Phase 4: Governance Review</a></li>
-        <li><a onclick="goToSlide(13)" style="cursor:pointer; color:var(--sla-blue);">Phase 5: Contracting</a></li>
-        <li><a onclick="goToSlide(14)" style="cursor:pointer; color:var(--sla-blue);">Phase 6: SDLC</a></li>
-        <li><a onclick="goToSlide(15)" style="cursor:pointer; color:var(--sla-blue);">Phase 7: Deployment</a></li>
-        <li><a onclick="goToSlide(16)" style="cursor:pointer; color:var(--sla-blue);">Phase 8: Operations</a></li>
+        <li><a href="#" onclick="goToSlide(2);return false;">Problem Statement</a></li>
+        <li><a href="#" onclick="goToSlide(3);return false;">Onboarding Vision</a></li>
+        <li><a href="#" onclick="goToSlide(4);return false;">5-Phase Architecture</a></li>
+        <li><a href="#" onclick="goToSlide(5);return false;">5-Phase Journey Details</a></li>
+      </ul>
+      <h3>Phase Details</h3>
+      <ul>
+        <li><a href="#" onclick="goToSlide(6);return false;">Phase 1: Intake</a></li>
+        <li><a href="#" onclick="goToSlide(7);return false;">Phase 2: Planning</a></li>
+        <li><a href="#" onclick="goToSlide(8);return false;">Phase 3: Due Diligence</a></li>
+        <li><a href="#" onclick="goToSlide(9);return false;">Phase 4: Governance Review</a></li>
+        <li><a href="#" onclick="goToSlide(10);return false;">Phase 5: Contracting</a></li>
       </ul>
     </div>
     <div>
-      <h3>Deep Dives</h3>
+      <h3>Governance Topics</h3>
       <ul>
-        <li><a onclick="goToSlide(17)" style="cursor:pointer; color:var(--sla-blue);">Master Orchestrator</a></li>
-        <li><a onclick="goToSlide(18)" style="cursor:pointer; color:var(--sla-blue);">DMN Decision Framework</a></li>
-        <li><a onclick="goToSlide(19)" style="cursor:pointer; color:var(--sla-blue);">DMN Table Details</a></li>
-        <li><a onclick="goToSlide(20)" style="cursor:pointer; color:var(--sla-blue);">Governance Pathways</a></li>
-        <li><a onclick="goToSlide(21)" style="cursor:pointer; color:var(--sla-blue);">Risk Classification</a></li>
-        <li><a onclick="goToSlide(22)" style="cursor:pointer; color:var(--sla-blue);">Lane Architecture</a></li>
-        <li><a onclick="goToSlide(23)" style="cursor:pointer; color:var(--sla-blue);">RACI Matrix</a></li>
-        <li><a onclick="goToSlide(24)" style="cursor:pointer; color:var(--sla-blue);">Regulatory Alignment</a></li>
-        <li><a onclick="goToSlide(25)" style="cursor:pointer; color:var(--sla-blue);">Regulatory Mapping</a></li>
-        <li><a onclick="goToSlide(26)" style="cursor:pointer; color:var(--sla-blue);">TPRM Deep Dive</a></li>
-        <li><a onclick="goToSlide(27)" style="cursor:pointer; color:var(--sla-blue);">Agentic Acceleration</a></li>
-        <li><a onclick="goToSlide(28)" style="cursor:pointer; color:var(--sla-blue);">Cross-Cutting Processes</a></li>
-        <li><a onclick="goToSlide(29)" style="cursor:pointer; color:var(--sla-blue);">Cycle Time Targets</a></li>
-        <li><a onclick="goToSlide(30)" style="cursor:pointer; color:var(--sla-blue);">Bottleneck Mitigation</a></li>
-        <li><a onclick="goToSlide(31)" style="cursor:pointer; color:var(--sla-blue);">Compression Waterfall</a></li>
-        <li><a onclick="goToSlide(32)" style="cursor:pointer; color:var(--sla-blue);">KPIs &amp; SLA Framework</a></li>
-        <li><a onclick="goToSlide(33)" style="cursor:pointer; color:var(--sla-blue);">Implementation Roadmap</a></li>
-        <li><a onclick="goToSlide(34)" style="cursor:pointer; color:var(--sla-blue);">Knowledge Architecture</a></li>
-        <li><a onclick="goToSlide(35)" style="cursor:pointer; color:var(--sla-blue);">Data Objects</a></li>
-        <li><a onclick="goToSlide(36)" style="cursor:pointer; color:var(--sla-blue);">Call to Action</a></li>
+        <li><a href="#" onclick="goToSlide(11);return false;">RACI Matrix by Topic</a></li>
+        <li><a href="#" onclick="goToSlide(12);return false;">Governance Topic Heat Map</a></li>
+        <li><a href="#" onclick="goToSlide(13);return false;">Intake Journey</a></li>
+        <li><a href="#" onclick="goToSlide(14);return false;">Prioritization Journey</a></li>
+        <li><a href="#" onclick="goToSlide(15);return false;">Funding Journey</a></li>
+        <li><a href="#" onclick="goToSlide(16);return false;">Sourcing Journey</a></li>
+        <li><a href="#" onclick="goToSlide(17);return false;">Cyber Journey</a></li>
+        <li><a href="#" onclick="goToSlide(18);return false;">EA Journey</a></li>
+        <li><a href="#" onclick="goToSlide(19);return false;">Compliance Journey</a></li>
+        <li><a href="#" onclick="goToSlide(20);return false;">AI Governance Journey</a></li>
+        <li><a href="#" onclick="goToSlide(21);return false;">Privacy Journey</a></li>
+        <li><a href="#" onclick="goToSlide(22);return false;">Commercial Counsel Journey</a></li>
+        <li><a href="#" onclick="goToSlide(23);return false;">TPRM Journey</a></li>
+        <li><a href="#" onclick="goToSlide(24);return false;">Interactive Topic Explorer</a></li>
+      </ul>
+      <h3>Regulatory &amp; Analysis</h3>
+      <ul>
+        <li><a href="#" onclick="goToSlide(25);return false;">Regulatory Framework</a></li>
+        <li><a href="#" onclick="goToSlide(26);return false;">Regulatory Coverage Matrix</a></li>
+        <li><a href="#" onclick="goToSlide(27);return false;">Risk-Tiered Governance</a></li>
+        <li><a href="#" onclick="goToSlide(28);return false;">Cycle Time Improvement</a></li>
+        <li><a href="#" onclick="goToSlide(29);return false;">Bottleneck Elimination</a></li>
+        <li><a href="#" onclick="goToSlide(30);return false;">Evidence Automation</a></li>
+        <li><a href="#" onclick="goToSlide(31);return false;">Ongoing Monitoring</a></li>
+        <li><a href="#" onclick="goToSlide(32);return false;">Implementation Roadmap</a></li>
       </ul>
     </div>
   </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
+  <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 3: Problem Statement -->
+<!-- SLIDE 2: Problem Statement (from reference slide 2) -->
 <!-- ============================================================ -->
+
 <div class="slide" data-slide="2">
-  <h2>The Problem: Software Governance at Scale</h2>
-  <div class="compare">
-    <div class="card rose">
-      <h4>Current State</h4>
-      <ul>
-        <li>90&ndash;120 day average governance cycles</li>
-        <li>Fragmented vendor risk assessments</li>
-        <li>Manual compliance checks across 11 frameworks</li>
-        <li>Siloed build vs. buy decisions</li>
-        <li>No unified AI model governance</li>
-        <li>Audit findings from inconsistent controls</li>
-      </ul>
+    <h2>Problem Statement</h2>
+    <p>Current vendor onboarding in financial services organizations averages <strong>45–60 days</strong> from initial intake to executed contract — driven by manual processes, siloed reviews, and inconsistent risk standards.</p>
+    <div class="metric-row">
+      <div class="metric"><div class="value">45–60d</div><div class="label">Current Cycle Time</div></div>
+      <div class="metric"><div class="value" style="color:var(--sla-emerald);">15–20d</div><div class="label">Target Cycle Time</div></div>
+      <div class="metric"><div class="value" style="color:var(--sla-gold);">65%</div><div class="label">Cycle Time Reduction</div></div>
+      <div class="metric"><div class="value">5</div><div class="label">Accelerated Phases</div></div>
     </div>
-    <div class="compare-arrow">&rarr;</div>
-    <div class="card emerald">
-      <h4>Target State</h4>
-      <ul>
-        <li>13.5&ndash;74 day cycles (risk-tiered)</li>
-        <li>Integrated TPRM with agent swarms</li>
-        <li>Automated compliance across all frameworks</li>
-        <li>Unified Build/Buy/Hybrid/Fast-Track pathways</li>
-        <li>Full AI governance with drift monitoring</li>
-        <li>Continuous control validation</li>
-      </ul>
-    </div>
-  </div>
-  <div class="metric-row">
-    <div class="metric"><div class="value">90&ndash;120</div><div class="label">Days (Current)</div></div>
-    <div class="metric"><div class="value" style="color:var(--sla-emerald);">13.5&ndash;74</div><div class="label">Days (Target)</div></div>
-    <div class="metric"><div class="value">11</div><div class="label">Regulatory Frameworks</div></div>
-    <div class="metric"><div class="value">8</div><div class="label">Governance Phases</div></div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 4: Vision & Outcomes -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="3">
-  <h2>Vision &amp; Key Outcomes</h2>
-  <p>Transform enterprise software governance from a manual, sequential bottleneck into a risk-intelligent, agent-augmented lifecycle that accelerates delivery while strengthening compliance.</p>
-  <div class="card-grid">
-    <div class="card">
-      <h4>Risk-Tiered Governance</h4>
-      <p>Four risk tiers (Minimal, Limited, High, Unacceptable) drive SLA targets, automation levels, review authorities, and monitoring cadence.</p>
-    </div>
-    <div class="card gold">
-      <h4>DMN-Driven Routing</h4>
-      <p>Eight decision tables replace embedded gateway logic. Every routing choice is auditable, version-controlled, and independently testable.</p>
-    </div>
-    <div class="card emerald">
-      <h4>Agentic Acceleration</h4>
-      <p>AI agent swarms handle evidence collection, risk scoring, compliance checks, and monitoring&mdash;with confidence-based escalation to human reviewers.</p>
-    </div>
-    <div class="card teal">
-      <h4>Unified Pathways</h4>
-      <p>Fast-Track, Build, Buy, and Hybrid pathways share a common governance backbone with pathway-specific activities in Phases 3, 5, and 6.</p>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 5: Foundational Principles -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="4">
-  <h2>Foundational Principles</h2>
-  <p>Three non-negotiable principles anchor every architectural decision, workflow design, and automation strategy across all eight phases.</p>
-  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
-    <div class="card">
-      <h4>1. Deterministic Knowledge Capture</h4>
-      <p>Front-load information harvesting to compress downstream cycle times by 40&ndash;60%.</p>
-      <ul style="font-size:0.85rem; color:var(--sla-gray);">
-        <li><strong>Pre-Defined Data Taxonomy</strong> &mdash; master catalogue of every information element across all 8 phases</li>
-        <li><strong>Pre-Structured Knowledge Base</strong> &mdash; evidence auto-classified for downstream consumption</li>
-        <li><strong>Programmatic Governance Logic</strong> &mdash; controls, thresholds, and SLAs as executable rules</li>
-        <li><strong>Cumulative Knowledge Effect</strong> &mdash; 30&ndash;50% effort reduction on similar assessments over time</li>
-      </ul>
-    </div>
-    <div class="card gold">
-      <h4>2. Automation-First Design</h4>
-      <p>Every lifecycle task evaluated against a three-tier automation hierarchy.</p>
-      <ul style="font-size:0.85rem; color:var(--sla-gray);">
-        <li><strong>Fully Automatable</strong> &mdash; intake validation, risk scoring, regulatory mapping, evidence collection, monitoring</li>
-        <li><strong>Partially Automatable</strong> &mdash; financial modeling, contract negotiation, development (AI drafts, humans oversee)</li>
-        <li><strong>Manual Only</strong> &mdash; governance committee decisions, fundamental architecture choices, exception management</li>
-      </ul>
-    </div>
-    <div class="card teal">
-      <h4>3. Governance by Design</h4>
-      <p>Governance woven into every phase&mdash;not bolted on at the end.</p>
-      <ul style="font-size:0.85rem; color:var(--sla-gray);">
-        <li><strong>Embedded Controls</strong> &mdash; BPMN sub-processes, gateways, and timers enforce cadences automatically</li>
-        <li><strong>Continuous Compliance</strong> &mdash; policy-as-code in CI/CD, in-sprint checkpoints, agent-driven regulatory review</li>
-        <li><strong>Three-Level Gap Analysis</strong> &mdash; framework &rarr; lifecycle &rarr; evidence coverage with zero gaps permitted</li>
-      </ul>
-    </div>
-  </div>
-  <div class="metric-row" style="margin-top:0.5rem;">
-    <div class="metric"><div class="value">40&ndash;60%</div><div class="label">Cycle Time Compression</div></div>
-    <div class="metric"><div class="value">3-Tier</div><div class="label">Automation Hierarchy</div></div>
-    <div class="metric"><div class="value">Shift-Left</div><div class="label">TPRM-to-Build Symmetry</div></div>
-    <div class="metric"><div class="value">Zero Gaps</div><div class="label">Control Coverage</div></div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 6: Strategic Vision — Intent Orchestration -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="5">
-  <h2>Strategic Vision: From Task Execution to Intent Orchestration</h2>
-  <p>The agentic model repositions every role in the software lifecycle&mdash;from manual execution to strategic orchestration.</p>
-  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
-    <div class="card">
-      <h4>Engineers &rarr; Directors of Intent</h4>
-      <p>Define the <em>&ldquo;what&rdquo;</em> with precision while AI agents handle the <em>&ldquo;how&rdquo;</em> through autonomous execution.</p>
-      <ul style="font-size:0.85rem; color:var(--sla-gray);">
-        <li>System thinking &amp; security architecture</li>
-        <li>Complex problem-solving &amp; quality judgment</li>
-        <li>Agents automate documentation, test authoring, legacy mapping, and spec drafting</li>
-      </ul>
-    </div>
-    <div class="card gold">
-      <h4>Governance &rarr; Continuous Oversight</h4>
-      <p>Shift from periodic gate reviews to real-time compliance validation via executable rules.</p>
-      <ul style="font-size:0.85rem; color:var(--sla-gray);">
-        <li>Design the rules, monitor exceptions</li>
-        <li>Continuously improve the control framework</li>
-        <li>Policy-as-code replaces manual evidence checks</li>
-      </ul>
-    </div>
-    <div class="card teal">
-      <h4>TPRM &rarr; Strategic Risk Decisions</h4>
-      <p>From administrative document reviewers to risk decision-makers supported by digital specialists.</p>
-      <ul style="font-size:0.85rem; color:var(--sla-gray);">
-        <li>Agents parse vendor evidence &amp; cross-reference benchmarks</li>
-        <li>Humans focus on edge cases &amp; vendor relationships</li>
-        <li>Risk-informed strategic decisions, not paperwork</li>
-      </ul>
-    </div>
-  </div>
-  <div class="card" style="margin-top:1rem; border-left-color:var(--sla-emerald);">
-    <h4>Dual-Track Experimental Framework</h4>
-    <div class="two-col" style="gap:20px;">
-      <div>
-        <p style="font-size:0.9rem;"><strong>Track 1: Automated Task Optimization</strong></p>
-        <p style="font-size:0.85rem; color:var(--sla-gray);">Instrument and automate discrete tasks across the lifecycle. Prove agents deliver higher consistency and speed than manual efforts.</p>
-      </div>
-      <div>
-        <p style="font-size:0.9rem;"><strong>Track 2: Reimagined Team Coaching</strong></p>
-        <p style="font-size:0.85rem; color:var(--sla-gray);">Coach strike teams through end-to-end processes from ideation to MVP. Leverage AI as a central collaborator via Mob Elaboration and Mob Construction.</p>
-      </div>
-    </div>
-    <p style="font-size:0.8rem; color:var(--sla-gray); margin-top:0.5rem;"><strong>A/B Benchmarks:</strong> Cycle time acceleration, prompt-to-commit success rate, defect density reduction, documentation freshness</p>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 7: Competitive Positioning -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="6">
-  <h2>Competitive Positioning</h2>
-  <p>The SLA Governance Platform is the only framework where every governance decision is deterministically reproducible through BPMN + DMN.</p>
-  <table class="styled-table" style="font-size:0.82rem;">
-    <thead><tr><th>Capability</th><th style="text-align:center;">SLA Platform</th><th style="text-align:center;">ServiceNow GRC</th><th style="text-align:center;">OneTrust</th><th style="text-align:center;">ProcessUnity</th></tr></thead>
-    <tbody>
-      <tr><td>Decision Transparency</td><td style="text-align:center; background:#dcfce7;">DMN tables</td><td style="text-align:center;">Workflow rules</td><td style="text-align:center;">Policy engine</td><td style="text-align:center;">Configurable</td></tr>
-      <tr><td>Regulatory Traceability</td><td style="text-align:center; background:#dcfce7;">11 frameworks, BPMN-linked</td><td style="text-align:center;">Control mapping</td><td style="text-align:center;">Regulation library</td><td style="text-align:center;">Questionnaires</td></tr>
-      <tr><td>AI Governance</td><td style="text-align:center; background:#dcfce7;">SR 11-7, drift monitoring</td><td style="text-align:center;">Limited</td><td style="text-align:center;">AI risk module</td><td style="text-align:center;">N/A</td></tr>
-      <tr><td>Audit Reproducibility</td><td style="text-align:center; background:#dcfce7;">Deterministic</td><td style="text-align:center;">Partial</td><td style="text-align:center;">Partial</td><td style="text-align:center;">Partial</td></tr>
-      <tr><td>Customizability</td><td style="text-align:center; background:#dcfce7;">Open BPMN/DMN</td><td style="text-align:center;">Proprietary</td><td style="text-align:center;">Proprietary</td><td style="text-align:center;">API-extensible</td></tr>
-      <tr><td>Agentic Acceleration</td><td style="text-align:center; background:#dcfce7;">Confidence-based escalation</td><td style="text-align:center;">N/A</td><td style="text-align:center;">N/A</td><td style="text-align:center;">N/A</td></tr>
-    </tbody>
-  </table>
-  <div class="metric-row" style="margin-top:0.75rem;">
-    <div class="metric"><div class="value" style="font-size:1.5rem;">Open Standard</div><div class="label">BPMN 2.0 + DMN 1.3</div></div>
-    <div class="metric"><div class="value" style="font-size:1.5rem;">Deterministic</div><div class="label">Every decision reproducible</div></div>
-    <div class="metric"><div class="value" style="font-size:1.5rem;">Agent-Native</div><div class="label">AI-augmented governance</div></div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 8: 8-Phase Architecture Overview -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="7">
-  <h2>8-Phase Governance Architecture</h2>
-  <div class="phase-pipeline">
-    <div class="phase-pip" style="background:#1d4ed8;"><span class="num">1</span>Initiation &amp; Intake</div>
-    <div class="phase-pip" style="background:#2563eb;"><span class="num">2</span>Planning &amp; Risk</div>
-    <div class="phase-pip" style="background:#3b82f6;"><span class="num">3</span>Due Diligence</div>
-    <div class="phase-pip" style="background:#0ea5e9;"><span class="num">4</span>Governance Review</div>
-    <div class="phase-pip" style="background:#0891b2;"><span class="num">5</span>Contracting</div>
-    <div class="phase-pip" style="background:#0d9488;"><span class="num">6</span>SDLC</div>
-    <div class="phase-pip" style="background:#059669;"><span class="num">7</span>Deployment</div>
-    <div class="phase-pip" style="background:#047857;"><span class="num">8</span>Operations</div>
-  </div>
-  <table class="styled-table">
-    <thead><tr><th>Phase</th><th>Sub-Process ID</th><th>SLA (Standard)</th><th>Automation Target</th><th>Key Decision</th></tr></thead>
-    <tbody>
-      <tr><td>1. Initiation &amp; Intake</td><td>SP-Phase1-Intake</td><td>1&ndash;2 days</td><td>75%</td><td>Pathway routing (DMN-2)</td></tr>
-      <tr><td>2. Planning &amp; Risk Scoping</td><td>SP-Phase2-Planning</td><td>3&ndash;5 days</td><td>60%</td><td>Risk tier (DMN-1)</td></tr>
-      <tr><td>3. Due Diligence &amp; Swarm</td><td>SP-Phase3-DueDiligence</td><td>5&ndash;8 days</td><td>70%</td><td>Swarm deployment</td></tr>
-      <tr><td>4. Governance Review</td><td>SP-Phase4-GovernanceReview</td><td>3&ndash;5 days</td><td>40%</td><td>Review routing (DMN-3)</td></tr>
-      <tr><td>5. Contracting &amp; Controls</td><td>SP-Phase5-Contracting</td><td>5&ndash;7 days</td><td>50%</td><td>Controls config</td></tr>
-      <tr><td>6. SDLC Development</td><td>SP-Phase6-SDLC</td><td>10&ndash;15 days</td><td>55%</td><td>6 nested sub-processes</td></tr>
-      <tr><td>7. Deployment &amp; Go-Live</td><td>SP-Phase7-Deployment</td><td>2&ndash;3 days</td><td>60%</td><td>Deployment decision</td></tr>
-      <tr><td>8. Operations &amp; Retirement</td><td>SP-Phase8-Operations</td><td>Ongoing</td><td>65%</td><td>Monitoring cadence (DMN-8)</td></tr>
-    </tbody>
-  </table>
-  <p style="font-size:0.75rem; color:var(--sla-gray); margin-top:4px;">Automation percentages represent design targets for fully deployed Horizon 3 state.</p>
-  <p style="font-size:0.85rem; color:var(--sla-gray);">3 Terminal End Events: <span class="tier-badge tier-minimal">End_Retired</span> <span class="tier-badge tier-high">End_Terminated</span> <span class="tier-badge tier-unacceptable">End_Rejected</span></p>
-  <div style="margin-top:0.5rem; padding:8px 12px; background:rgba(217,119,6,0.08); border-left:3px solid var(--sla-gold); border-radius:0 4px 4px 0; font-size:0.8rem;">
-    <strong>Finance Controller:</strong> Cost allocation visibility per governance phase&mdash;SLA-driven budget tracking from intake through operations.
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 9: BPMN Notation Legend -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="8">
-  <h2>BPMN Notation Guide</h2>
-  <p>Key symbols used throughout the governance process models.</p>
-  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
-    <div class="card">
-      <h4>Events</h4>
-      <table class="styled-table" style="font-size:0.8rem;">
-        <tbody>
-          <tr><td style="font-size:1.2rem;">&#9711;</td><td><strong>Start Event</strong> &mdash; process entry point</td></tr>
-          <tr><td style="font-size:1.2rem;">&#9673;</td><td><strong>End Event</strong> &mdash; process completion</td></tr>
-          <tr><td style="font-size:1.2rem;">&#9201;</td><td><strong>Timer</strong> (non-interrupting) &mdash; SLA tracking</td></tr>
-          <tr><td style="font-size:1.2rem;">&#9888;</td><td><strong>Error Boundary</strong> &mdash; exception handling</td></tr>
-          <tr><td style="font-size:1.2rem;">&#8679;</td><td><strong>Intermediate Throw</strong> &mdash; phase milestone</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="card gold">
-      <h4>Gateways</h4>
-      <table class="styled-table" style="font-size:0.8rem;">
-        <tbody>
-          <tr><td style="font-size:1.2rem;">&#9674;</td><td><strong>XOR (Exclusive)</strong> &mdash; one path based on condition</td></tr>
-          <tr><td style="font-size:1.2rem;">&#9726;</td><td><strong>AND (Parallel)</strong> &mdash; all paths execute concurrently</td></tr>
-        </tbody>
-      </table>
-      <h4 style="margin-top:0.75rem;">Activities</h4>
-      <table class="styled-table" style="font-size:0.8rem;">
-        <tbody>
-          <tr><td style="font-size:1.2rem;">&#9634;</td><td><strong>User Task</strong> &mdash; human governance activity</td></tr>
-          <tr><td style="font-size:1.2rem;">&#9881;</td><td><strong>Service Task</strong> &mdash; automated processing</td></tr>
-          <tr><td style="font-size:1.2rem;">&#9744;</td><td><strong>Business Rule</strong> &mdash; DMN decision table</td></tr>
-          <tr><td style="font-size:1.2rem;">&#9645;</td><td><strong>Sub-Process</strong> &mdash; collapsed child process</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="card teal">
-      <h4>Structural Elements</h4>
-      <table class="styled-table" style="font-size:0.8rem;">
-        <tbody>
-          <tr><td><strong>Pool</strong></td><td>Organizational boundary (Enterprise / Vendor)</td></tr>
-          <tr><td><strong>Lane</strong></td><td>Responsibility area (9+1 governance lanes)</td></tr>
-          <tr><td><strong>Message Flow</strong></td><td>Cross-pool communication (dashed line)</td></tr>
-          <tr><td><strong>Data Object</strong></td><td>Document/artifact produced or consumed</td></tr>
-          <tr><td><strong>Data Store</strong></td><td>Persistent knowledge base or registry</td></tr>
-          <tr><td><strong>Annotation</strong></td><td>Regulatory reference or clarification</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 10: Phase 1 — Initiation & Intake -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="9">
-  <h2>Phase 1: Initiation &amp; Intake</h2>
-  <p><strong>SLA:</strong> 1&ndash;2 days | <strong>Automation Target:</strong> 75% | <strong>Sub-Process:</strong> SP-Phase1-Intake</p>
-  <div class="two-col">
-    <div>
-      <h3>Activities</h3>
-      <table class="styled-table">
-        <thead><tr><th>#</th><th>Activity</th><th>Lane</th></tr></thead>
-        <tbody>
-          <tr><td>1.1</td><td>Request Submission</td><td>Business</td></tr>
-          <tr><td>1.2</td><td>AI Pre-Screening</td><td>Automation</td></tr>
-          <tr><td>1.3</td><td>Preliminary Categorization</td><td>Automation</td></tr>
-          <tr><td>1.4</td><td>Capability Reuse Assessment</td><td>Automation</td></tr>
-          <tr><td>1.5</td><td>Knowledge Harvesting</td><td>Automation</td></tr>
-          <tr><td>1.6</td><td>Routing Assignment</td><td>Automation</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:0.85rem;"><strong>DMN:</strong> DMN-2 Pathway Routing at Activity 1.6</p>
-      <div style="margin-top:0.75rem; padding:8px 12px; background:rgba(37,99,235,0.08); border-left:3px solid var(--sla-blue); border-radius:0 4px 4px 0; font-size:0.8rem;">
-        <strong>Business Requestor:</strong> Self-service intake with automated routing&mdash;submit once, track everywhere.
-      </div>
-    </div>
-    <div>
-      <div class="diagram-container">
-        <img src="images/phase-1-intake.svg" alt="Phase 1 BPMN Diagram">
-        <p style="text-align:center; font-size:0.75rem; color:var(--sla-gray); margin-top:8px;">Phase 1: Initiation &amp; Intake Process Model</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 11: Phase 2 — Planning & Risk Scoping -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="10">
-  <h2>Phase 2: Planning &amp; Inherent Risk Scoping</h2>
-  <p><strong>SLA:</strong> 3&ndash;5 days | <strong>Automation Target:</strong> 60% | <strong>Sub-Process:</strong> SP-Phase2-Planning</p>
-  <div class="two-col">
-    <div>
-      <h3>Activities</h3>
-      <table class="styled-table">
-        <thead><tr><th>#</th><th>Activity</th><th>Lane</th></tr></thead>
-        <tbody>
-          <tr><td>2.1</td><td>Business Case Validation</td><td>Business</td></tr>
-          <tr><td>2.2</td><td>Inherent Risk Scoring</td><td>Automation</td></tr>
-          <tr><td>2.3</td><td>Risk Tier Assignment</td><td>Automation</td></tr>
-          <tr><td>2.4</td><td>AI Risk Classification</td><td>AI Review</td></tr>
-          <tr><td>2.5</td><td>Scope Definition</td><td>Business + Tech</td></tr>
-          <tr><td>2.6</td><td>Regulatory Mapping</td><td>Compliance</td></tr>
-          <tr><td>2.7</td><td>Knowledge Base Pre-Population</td><td>Automation</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:0.85rem;"><strong>DMN:</strong> DMN-1 Risk Tier Classification at Activity 2.3</p>
-      <p style="font-size:0.85rem;"><strong>XOR:</strong> Unacceptable Risk &rarr; End_Rejected | High/Limited/Minimal &rarr; Phase 3</p>
-    </div>
-    <div>
-      <div class="diagram-container">
-        <img src="images/phase-2-planning.svg" alt="Phase 2 BPMN Diagram">
-        <p style="text-align:center; font-size:0.75rem; color:var(--sla-gray); margin-top:8px;">Phase 2: Planning &amp; Risk Scoping Process Model</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 12: Phase 3 — Due Diligence -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="11">
-  <h2>Phase 3: Due Diligence &amp; Swarm Evaluation</h2>
-  <p><strong>SLA:</strong> 5&ndash;8 days | <strong>Automation Target:</strong> 70% | <strong>Sub-Process:</strong> SP-Phase3-DueDiligence</p>
-  <div class="two-col">
-    <div>
-      <h3>Activities</h3>
-      <table class="styled-table">
-        <thead><tr><th>#</th><th>Activity</th><th>Lane</th></tr></thead>
-        <tbody>
-          <tr><td>3.1</td><td>Evidence Collection</td><td>Automation</td></tr>
-          <tr><td>3.2</td><td>Agent Swarm Deployment</td><td>Automation</td></tr>
-          <tr><td>3.3</td><td>Security Assessment</td><td>Technical</td></tr>
-          <tr><td>3.4</td><td>Compliance Assessment</td><td>Compliance</td></tr>
-          <tr><td>3.5</td><td>AI Model Risk Assessment</td><td>AI Review</td></tr>
-          <tr><td>3.6</td><td>Financial Stability Review</td><td>Business</td></tr>
-          <tr><td>3.7</td><td>Operational Resilience</td><td>Technical</td></tr>
-          <tr><td>3.8</td><td>Swarm Results Aggregation</td><td>Automation</td></tr>
-          <tr><td>3.9</td><td>Architecture Feasibility</td><td>Technical</td></tr>
-          <tr><td>3.10</td><td>TPRM-to-Build Mapping</td><td>Automation</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:0.85rem;">Activities 3.1&ndash;3.8 run in parallel (Buy) or sequentially (Build). 3.9&ndash;3.10 are Build-pathway specific.</p>
-    </div>
-    <div>
-      <div class="diagram-container">
-        <img src="images/phase-3-due-diligence.svg" alt="Phase 3 BPMN Diagram">
-        <p style="text-align:center; font-size:0.75rem; color:var(--sla-gray); margin-top:8px;">Phase 3: Due Diligence &amp; Swarm Evaluation</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 13: Phase 4 — Governance Review -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="12">
-  <h2>Phase 4: Governance Review &amp; Approval</h2>
-  <p><strong>SLA:</strong> 3&ndash;5 days | <strong>Automation Target:</strong> 40% | <strong>Sub-Process:</strong> SP-Phase4-GovernanceReview</p>
-  <div class="two-col">
-    <div>
-      <h3>Activities</h3>
-      <table class="styled-table">
-        <thead><tr><th>#</th><th>Activity</th><th>Lane</th></tr></thead>
-        <tbody>
-          <tr><td>4.1</td><td>Assessment Package Assembly</td><td>Automation</td></tr>
-          <tr><td>4.2</td><td>Risk-Tiered Review Routing</td><td>Automation</td></tr>
-          <tr><td>4.3a</td><td>Fast Path Review</td><td>Business</td></tr>
-          <tr><td>4.3b</td><td>Governance Committee Review</td><td>Compliance + Business</td></tr>
-          <tr><td>4.3c</td><td>Advisory Board Review</td><td>All Lanes</td></tr>
-          <tr><td>4.4</td><td>Ethical Impact Assessment</td><td>AI Review</td></tr>
-          <tr><td>4.5</td><td>Decision Documentation</td><td>Automation</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:0.85rem;"><strong>DMN:</strong> DMN-3 Governance Review Routing at Activity 4.2</p>
-      <p style="font-size:0.85rem;"><strong>XOR:</strong> Approved &rarr; Phase 5 | Approved w/ Conditions &rarr; Phase 5 | Rejected &rarr; End_Rejected</p>
-    </div>
-    <div>
-      <div class="diagram-container">
-        <img src="images/phase-4-governance.svg" alt="Phase 4 BPMN Diagram">
-        <p style="text-align:center; font-size:0.75rem; color:var(--sla-gray); margin-top:8px;">Phase 4: Governance Review &amp; Approval</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 14: Phase 5 — Contracting & Controls -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="13">
-  <h2>Phase 5: Contracting &amp; Controls Implementation</h2>
-  <p><strong>SLA:</strong> 5&ndash;7 days | <strong>Automation Target:</strong> 50% | <strong>Sub-Process:</strong> SP-Phase5-Contracting</p>
-  <div class="two-col">
-    <div>
-      <h3>Activities</h3>
-      <table class="styled-table">
-        <thead><tr><th>#</th><th>Activity</th><th>Lane</th></tr></thead>
-        <tbody>
-          <tr><td>5.1</td><td>Contract Negotiation</td><td>Contracting</td></tr>
-          <tr><td>5.2</td><td>Mandatory Provisions</td><td>Contracting</td></tr>
-          <tr><td>5.3</td><td>Controls Configuration</td><td>Compliance</td></tr>
-          <tr><td>5.4</td><td>Remediation Task Assignment</td><td>Automation</td></tr>
-          <tr><td>5.5</td><td>Exit Plan Development</td><td>Business + Tech</td></tr>
-          <tr><td>5.6</td><td>Knowledge Base Update</td><td>Automation</td></tr>
-        </tbody>
-      </table>
-      <div style="margin-top:0.75rem; padding:8px 12px; background:rgba(37,99,235,0.08); border-left:3px solid var(--sla-blue); border-radius:0 4px 4px 0; font-size:0.8rem;">
-        <strong>Legal Counsel:</strong> Contract lifecycle with regulatory clause tracking across OCC 2023-17 and DORA provisions.
-      </div>
-      <div style="margin-top:0.5rem; padding:8px 12px; background:rgba(217,119,6,0.08); border-left:3px solid var(--sla-gold); border-radius:0 4px 4px 0; font-size:0.8rem;">
-        <strong>Procurement Lead:</strong> Vendor evaluation scorecards with compliance overlay and exit plan development.
-      </div>
-    </div>
-    <div>
-      <div class="diagram-container">
-        <img src="images/phase-5-contracting.svg" alt="Phase 5 BPMN Diagram">
-        <p style="text-align:center; font-size:0.75rem; color:var(--sla-gray); margin-top:8px;">Phase 5: Contracting &amp; Controls</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 15: Phase 6 — SDLC -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="14">
-  <h2>Phase 6: SDLC Development &amp; Testing</h2>
-  <p><strong>SLA:</strong> 10&ndash;15 days | <strong>Automation Target:</strong> 55% | <strong>Sub-Process:</strong> SP-Phase6-SDLC</p>
-  <p>The most complex phase with <strong>6 nested sub-processes</strong>:</p>
-  <div style="margin-bottom:0.5rem; padding:8px 12px; background:rgba(37,99,235,0.08); border-left:3px solid var(--sla-blue); border-radius:0 4px 4px 0; font-size:0.8rem;">
-    <strong>Product Owner:</strong> Build pathway with 5 compliance gates, quality checkpoints, and SLA tracking per sprint.
-  </div>
-  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
-    <div class="card">
-      <h4>6A: Sprint Planning</h4>
-      <p>3 activities: Story refinement, capacity planning, sprint goal setting</p>
-    </div>
-    <div class="card">
-      <h4>6B: Development Pipeline</h4>
-      <p>4 activities including self-healing loop for build failures</p>
-    </div>
-    <div class="card gold">
-      <h4>6C: Testing Pipeline</h4>
-      <p>5 activities including AI model validation for AI-classified assets</p>
-    </div>
-    <div class="card teal">
-      <h4>6D: DevSecOps Security</h4>
-      <p>7 parallel stages: Pre-Commit through Production Security Monitoring</p>
-    </div>
-    <div class="card emerald">
-      <h4>6E: Compliance Gates</h4>
-      <p>5 gates: Post-Requirements, Post-Design, Post-Code, Post-Test, Pre-Deployment</p>
-    </div>
-    <div class="card rose">
-      <h4>6F: Sprint Review</h4>
-      <p>3 activities: Demo, retrospective, knowledge capture</p>
-    </div>
-  </div>
-  <div class="diagram-container">
-    <img src="images/phase-6-sdlc.svg" alt="Phase 6 BPMN Diagram">
-    <p style="text-align:center; font-size:0.75rem; color:var(--sla-gray); margin-top:8px;">Phase 6: SDLC Development &amp; Testing (Level 1)</p>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 16: Phase 7 — Deployment -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="15">
-  <h2>Phase 7: Deployment Decision &amp; Go-Live</h2>
-  <p><strong>SLA:</strong> 2&ndash;3 days | <strong>Automation Target:</strong> 60% | <strong>Sub-Process:</strong> SP-Phase7-Deployment</p>
-  <div class="two-col">
-    <div>
-      <h3>Activities</h3>
-      <table class="styled-table">
-        <thead><tr><th>#</th><th>Activity</th><th>Lane</th></tr></thead>
-        <tbody>
-          <tr><td>7.1</td><td>Deployment Readiness Assessment</td><td>Technical</td></tr>
-          <tr><td>7.2</td><td>Progressive Deployment</td><td>Automation</td></tr>
-          <tr><td>7.3</td><td>Post-Deployment Verification</td><td>Automation</td></tr>
-          <tr><td>7.4</td><td>Monitoring Activation</td><td>Automation</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:0.85rem;"><strong>XOR:</strong> Health Checks Pass &rarr; Phase 8 | Rejected &rarr; Loop back to Phase 6</p>
-    </div>
-    <div>
-      <div class="diagram-container">
-        <img src="images/phase-7-deployment.svg" alt="Phase 7 BPMN Diagram">
-        <p style="text-align:center; font-size:0.75rem; color:var(--sla-gray); margin-top:8px;">Phase 7: Deployment &amp; Go-Live</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 17: Phase 8 — Operations & Retirement -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="16">
-  <h2>Phase 8: Production Operations &amp; Retirement</h2>
-  <p><strong>SLA:</strong> Ongoing | <strong>Automation Target:</strong> 65% | <strong>Sub-Process:</strong> SP-Phase8-Operations</p>
-  <div class="two-col">
-    <div>
-      <h3>Monitoring Loop Activities</h3>
-      <table class="styled-table">
-        <thead><tr><th>#</th><th>Activity</th><th>Lane</th></tr></thead>
-        <tbody>
-          <tr><td>8.1</td><td>Control-Based Monitoring</td><td>Automation</td></tr>
-          <tr><td>8.2</td><td>AI Model Drift Monitoring</td><td>AI Review</td></tr>
-          <tr><td>8.3</td><td>Trigger Review on Demand</td><td>Automation</td></tr>
-          <tr><td>8.4</td><td>SLA Breach Root Cause</td><td>Automation</td></tr>
-          <tr><td>8.5</td><td>Vendor Performance Mgmt</td><td>Business</td></tr>
-          <tr><td>8.6</td><td>Process Mining</td><td>Automation</td></tr>
-          <tr><td>8.7</td><td>Knowledge Base Enrichment</td><td>Automation</td></tr>
-          <tr><td>8.8</td><td>Benchmark Recalibration</td><td>Automation</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:0.85rem;"><strong>DMN:</strong> DMN-6 Change Risk, DMN-8 Monitoring Cadence</p>
-      <p style="font-size:0.85rem;"><strong>XOR:</strong> Continue &rarr; Loop | Change &rarr; 8C | Retire &rarr; 8R</p>
-    </div>
-    <div>
-      <h3>Exit Paths</h3>
-      <div class="card emerald" style="margin-bottom:12px;">
-        <h4>Sub-Process 8C: Change Management</h4>
-        <p>3 activities: Impact assessment, change execution, validation. DMN-6 for change risk scoring.</p>
-      </div>
-      <div class="card gold" style="margin-bottom:12px;">
-        <h4>Sub-Process 8R: Decommission</h4>
-        <p>7 activities through End_Retired: Data migration, contract termination, knowledge archival.</p>
+    <h3>Current State Pain Points</h3>
+    <div class="card-grid">
+      <div class="card rose">
+        <h4>Manual Document Chasing</h4>
+        <p>Vendor evidence requests handled via email with no tracking, leading to repeated follow-ups and delays of 6–10 days per request cycle.</p>
       </div>
       <div class="card rose">
-        <h4>Emergency Termination</h4>
-        <p>5 activities through End_Terminated: Triggered by compliance breach or security incident.</p>
+        <h4>Siloed Reviews</h4>
+        <p>IT, Security, Legal, and Compliance conduct sequential reviews with no parallel execution, adding 12–18 days of unnecessary latency.</p>
       </div>
-      <div class="diagram-container" style="margin-top:12px;">
-        <img src="images/phase-8-operations.svg" alt="Phase 8 BPMN Diagram">
-        <p style="text-align:center; font-size:0.75rem; color:var(--sla-gray); margin-top:8px;">Phase 8: Operations &amp; Retirement</p>
+      <div class="card gold">
+        <h4>Inconsistent Risk Assessment</h4>
+        <p>No standardized risk scoring model results in subjective tier assignments, duplicated effort, and unpredictable governance outcomes.</p>
+      </div>
+      <div class="card gold">
+        <h4>No SLA Tracking</h4>
+        <p>Review deadlines are informal, escalation paths are undefined, and there is no automated breach detection or sponsor notification.</p>
       </div>
     </div>
+    <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
   </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
 
-<!-- ============================================================ -->
-<!-- SLIDE 18: Master Orchestrator -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="17">
-  <h2>Master Orchestrator (Level 0)</h2>
-  <p>Process ID: <code>ESG-E2E-Master-v4.0</code> &mdash; The top-level end-to-end governance flow connecting all 8 phases as collapsed sub-processes with XOR decision gateways and timer boundary events.</p>
-  <div class="diagram-container">
-    <img src="images/master-orchestrator.svg" alt="Master Orchestrator BPMN Diagram">
-    <p style="text-align:center; font-size:0.75rem; color:var(--sla-gray); margin-top:8px;">Master Orchestrator: 8-Phase Sequential Flow with 3 Terminal End Events</p>
-  </div>
-  <div class="metric-row">
-    <div class="metric"><div class="value">8</div><div class="label">Phases</div></div>
-    <div class="metric"><div class="value">4</div><div class="label">XOR Gateways</div></div>
-    <div class="metric"><div class="value">3</div><div class="label">End Events</div></div>
-    <div class="metric"><div class="value">2</div><div class="label">Pools (9+1 Lanes)</div></div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
+  <!-- Slide 3: Onboarding Vision -->
 
-<!-- ============================================================ -->
-<!-- SLIDE 19: DMN Decision Framework -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="18">
-  <h2>DMN Decision Framework</h2>
-  <p>Eight decision tables drive all governance routing. Every XOR gateway with business logic references a DMN table&mdash;no embedded conditions.</p>
-  <div id="chartDmnFramework" class="chart-container" style="min-height:350px;"></div>
-  <p style="font-size:0.75rem; color:var(--sla-gray); margin-top:4px;">Every governance routing decision is deterministically reproducible&mdash;no embedded gateway conditions, full audit trail per decision.</p>
-  <div class="metric-row">
-    <div class="metric"><div class="value">8</div><div class="label">DMN Tables</div></div>
-    <div class="metric"><div class="value">DMN 1.3</div><div class="label">Standard</div></div>
-    <div class="metric"><div class="value">FEEL</div><div class="label">Expression Language</div></div>
-    <div class="metric"><div class="value">UNIQUE/FIRST</div><div class="label">Hit Policies</div></div>
+<div class="slide" data-slide="3">
+    <h2>Onboarding Vision</h2>
+    <p>The Vendor Software Onboarding Governance replaces ad-hoc processes with a structured, DMN-driven 5-phase journey that delivers consistent, auditable, and compliant vendor onboarding at scale.</p>
+    <div class="card-grid">
+      <div class="card emerald">
+        <h4>Speed</h4>
+        <p>Accelerated 5-phase journey compresses 45–60 day cycles to 15–20 days via parallel reviews, automated intake screening, and Fast-Track routing for known vendors.</p>
+      </div>
+      <div class="card">
+        <h4>Consistency</h4>
+        <p>DMN-driven routing eliminates subjective decisions. Every gateway evaluates the same rule table inputs, producing deterministic, auditable outcomes across all risk tiers.</p>
+      </div>
+      <div class="card teal">
+        <h4>Compliance</h4>
+        <p>Built-in regulatory annotations for OCC 2023-17, GDPR/CCPA, EU AI Act, DORA, SR 11-7, and SOX. Every phase transition generates a compliance artifact.</p>
+      </div>
+      <div class="card gold">
+        <h4>Intelligence</h4>
+        <p>AI-assisted swarm evaluation in Phase 3, agent confidence escalation, and real-time SLA monitoring with four-level breach escalation and auto-reject capability.</p>
+      </div>
+    </div>
+    <h3>Key Outcomes</h3>
+    <ul>
+      <li>Pathway-aware branching: <span class="bg-fast">Fast-Track</span> for existing vendors with high component reuse</li>
+      <li>Parallel review execution across Technical Assessment, AI Review, and Compliance lanes</li>
+      <li>Automated vendor evidence portal replacing email-driven document chasing</li>
+      <li>Real-time SLA dashboard with ISO 8601 boundary timer events on every phase</li>
+    </ul>
+    <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
   </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
 
-<!-- ============================================================ -->
-<!-- SLIDE 20: DMN Table Details -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="19">
-  <h2>DMN Table Details</h2>
-  <table class="styled-table">
-    <thead><tr><th>ID</th><th>Name</th><th>Hit Policy</th><th>Inputs</th><th>Used In</th></tr></thead>
+  <!-- Slide 4: 5-Phase Journey -->
+
+<div class="slide" data-slide="4">
+    <h2>5-Phase Onboarding Journey</h2>
+    <p>The accelerated journey covers Intake through Contracting. Phases 6–8 (SDLC, Deployment, Operations) are out of scope for this engagement and handed off to the full governance lifecycle.</p>
+    <div class="phase-pipeline">
+      <div class="phase-pip" style="background:var(--sla-blue);">
+        <span class="num">1</span>Intake<br><small style="opacity:0.85;">1 day</small>
+      </div>
+      <div class="phase-pip" style="background:#1d4ed8;">
+        <span class="num">2</span>Planning<br><small style="opacity:0.85;">3 days</small>
+      </div>
+      <div class="phase-pip" style="background:var(--sla-deep-blue);">
+        <span class="num">3</span>Due Diligence<br><small style="opacity:0.85;">5 days</small>
+      </div>
+      <div class="phase-pip" style="background:#1e3a8a;">
+        <span class="num">4</span>Governance<br><small style="opacity:0.85;">5 days</small>
+      </div>
+      <div class="phase-pip" style="background:var(--sla-navy);">
+        <span class="num">5</span>Contracting<br><small style="opacity:0.85;">5 days</small>
+      </div>
+      <div class="phase-pip grayed" style="background:#64748B;border-radius:0 6px 6px 0;">
+        <span class="num">6–8</span>Post-Onboarding<br><small style="opacity:0.85;">Full lifecycle</small>
+      </div>
+    </div>
+    <div class="metric-row" style="margin-top:1.5rem;">
+      <div class="metric"><div class="value" style="color:var(--sla-emerald);">19d</div><div class="label">Standard Path Total</div></div>
+      <div class="metric"><div class="value" style="color:var(--sla-emerald);">10–12d</div><div class="label">Fast-Track Path</div></div>
+      <div class="metric"><div class="value">65%</div><div class="label">Cycle Time Reduction</div></div>
+      <div class="metric"><div class="value">4</div><div class="label">DMN Decision Tables</div></div>
+    </div>
+    <h3>Pathway Options</h3>
+    <div class="card-grid">
+      <div class="card emerald">
+        <h4><span class="bg-fast">Fast-Track</span></h4>
+        <p>Existing vendor with component reuse score ≥ 7. Skips deep due diligence tasks 3.6, 3.7, 3.9. Governance SLA compressed to 2 days.</p>
+      </div>
+      <div class="card">
+        <h4><span class="bg-buy">Standard Buy</span></h4>
+        <p>New or low-reuse vendor. Full due diligence including AI evaluation, security architecture review, and regulatory gap analysis.</p>
+      </div>
+    </div>
+    <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+  </div>
+
+  <!-- Slide 5: Phase 1 -->
+
+<div class="slide" data-slide="5">
+    <h2>Phase 1: Intake &amp; Screening</h2>
+    <div class="two-col">
+      <div>
+        <table class="styled-table">
+          <thead><tr><th>Task</th><th>Lane</th><th>Type</th><th>SLA</th></tr></thead>
+          <tbody>
+            <tr><td>1.1 Submit Vendor Request</td><td>Business</td><td>User Task</td><td>4h</td></tr>
+            <tr><td>1.2 Auto-Screen Completeness</td><td>Automation</td><td>Service Task</td><td>1h</td></tr>
+            <tr><td>1.3 Assign Risk Tier (DMN-1)</td><td>Governance</td><td>Business Rule</td><td>1h</td></tr>
+            <tr><td>1.4 Route Onboarding Pathway (DMN-2)</td><td>Automation</td><td>Business Rule</td><td>30m</td></tr>
+            <tr><td>1.5 Notify Stakeholders</td><td>Automation</td><td>Service Task</td><td>30m</td></tr>
+            <tr><td>1.6 Intake Approval</td><td>Governance</td><td>User Task</td><td>2h</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="card emerald">
+          <h4>Key Change: 1-Day SLA</h4>
+          <p>Standard intake SLA reduced from 2 days to 1 day via automated completeness screening (Task 1.2) and parallel DMN routing (Tasks 1.3–1.4).</p>
+        </div>
+        <div class="card" style="margin-top:12px;">
+          <h4>Automation Target: 75%</h4>
+          <p>Tasks 1.2, 1.4, and 1.5 are fully automated. Only Tasks 1.1 (submission) and 1.6 (approval) require human action.</p>
+        </div>
+        <div class="card gold" style="margin-top:12px;">
+          <h4>Pathway Decision Point</h4>
+          <p>OB-DMN-2 evaluates isExistingVendor, componentReuseScore, and requestType at Task 1.4 to assign Fast-Track or Standard pathway before Phase 2 begins.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+  </div>
+
+  <!-- Slide 6: Phase 2 -->
+
+<div class="slide" data-slide="6">
+    <h2>Phase 2: Planning &amp; Risk Scoping</h2>
+    <div class="two-col">
+      <div>
+        <table class="styled-table">
+          <thead><tr><th>Task</th><th>Lane</th><th>Type</th><th>SLA</th></tr></thead>
+          <tbody>
+            <tr><td>2.1 Define Scope &amp; Requirements</td><td>Business</td><td>User Task</td><td>4h</td></tr>
+            <tr><td>2.2 AI Initiative Classification</td><td>AI Review</td><td>User Task</td><td>2h</td></tr>
+            <tr><td>2.3 Risk Tier Assignment (DMN-1)</td><td>Governance</td><td>Business Rule</td><td>1h</td></tr>
+            <tr><td>2.4 Data Classification</td><td>Compliance</td><td>User Task</td><td>4h</td></tr>
+            <tr><td>2.5 Define Assessment Criteria</td><td>Technical Assessment</td><td>User Task</td><td>4h</td></tr>
+            <tr><td>2.6 Regulatory Gap Analysis</td><td>Compliance</td><td>User Task</td><td>4h</td></tr>
+            <tr><td>2.7 Planning Approval</td><td>Governance</td><td>User Task</td><td>4h</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="card rose">
+          <h4>Risk Tier XOR Gateway</h4>
+          <p>After Task 2.3, OB-DMN-1 evaluates risk tier. <span class="tier-badge tier-unacceptable">Unacceptable</span> routes immediately to <strong>End_Rejected</strong>. All other tiers proceed to Phase 3.</p>
+        </div>
+        <div class="card teal" style="margin-top:12px;">
+          <h4>AI Initiative Gateway</h4>
+          <p>Task 2.2 determines if this is an AI/ML vendor engagement. If yes, AI Review lane is mandatory in Phase 3. SR 11-7 model risk management applies.</p>
+        </div>
+        <div class="card emerald" style="margin-top:12px;">
+          <h4>Key Change: 3-Day SLA</h4>
+          <p>Compressed from 5 days by parallelizing Tasks 2.2 / 2.4 / 2.5 across AI Review, Compliance, and Technical Assessment lanes simultaneously.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+  </div>
+
+  <!-- Slide 7: Phase 3 -->
+
+<div class="slide" data-slide="7">
+    <h2>Phase 3: Due Diligence &amp; Swarm Evaluation</h2>
+    <div class="two-col">
+      <div>
+        <table class="styled-table small-table">
+          <thead><tr><th>Task</th><th>Lane</th><th>Type</th><th>SLA</th><th>Fast-Track?</th></tr></thead>
+          <tbody>
+            <tr><td>3.1 Technical Architecture Review</td><td>Technical</td><td>User Task</td><td>8h</td><td>Yes</td></tr>
+            <tr><td>3.2 Security Assessment</td><td>Technical</td><td>User Task</td><td>8h</td><td>Yes</td></tr>
+            <tr><td>3.3 AI Model Risk Eval (SR 11-7)</td><td>AI Review</td><td>User Task</td><td>8h</td><td>Yes</td></tr>
+            <tr><td>3.4 Regulatory Compliance Check</td><td>Compliance</td><td>User Task</td><td>4h</td><td>Yes</td></tr>
+            <tr><td>3.5 Privacy Impact Assessment</td><td>Compliance</td><td>User Task</td><td>4h</td><td>Yes</td></tr>
+            <tr><td>3.6 Vendor Evidence Portal</td><td>Vendor</td><td>User Task</td><td>24h</td><td style="color:var(--sla-rose);font-weight:600;">Skip</td></tr>
+            <tr><td>3.7 On-Site Assessment</td><td>Technical</td><td>User Task</td><td>8h</td><td style="color:var(--sla-rose);font-weight:600;">Skip</td></tr>
+            <tr><td>3.8 Swarm Agent Synthesis</td><td>Automation</td><td>Service Task</td><td>2h</td><td>Yes</td></tr>
+            <tr><td>3.9 SOC2/ISO Audit Review</td><td>Compliance</td><td>User Task</td><td>4h</td><td style="color:var(--sla-rose);font-weight:600;">Skip</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="card emerald">
+          <h4>Fast-Track Branching</h4>
+          <p>Existing vendors with high component reuse skip Tasks 3.6 (vendor evidence collection), 3.7 (on-site assessment), and 3.9 (audit review). Saves 1–2 days.</p>
+        </div>
+        <div class="card" style="margin-top:12px;">
+          <h4>Vendor Message Flows</h4>
+          <p>Task 3.6 sends RFP/evidence request via message flow to Vendor Response pool. Vendor portal submission triggers intermediate message catch event.</p>
+        </div>
+        <div class="card gold" style="margin-top:12px;">
+          <h4>Key Change: 5-Day SLA</h4>
+          <p>Tasks 3.1–3.5 execute in parallel across 4 lanes simultaneously (compressed from 8 days). Swarm agent (3.8) synthesizes findings and flags confidence escalations.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+  </div>
+
+  <!-- Slide 8: Phase 4 -->
+
+<div class="slide" data-slide="8">
+    <h2>Phase 4: Governance Review &amp; Approval</h2>
+    <div class="two-col">
+      <div>
+        <table class="styled-table">
+          <thead><tr><th>Task</th><th>Lane</th><th>Type</th><th>SLA</th></tr></thead>
+          <tbody>
+            <tr><td>4.1 Prepare Review Package</td><td>Governance</td><td>User Task</td><td>2h</td></tr>
+            <tr><td>4.2 Governance Routing (DMN-3)</td><td>Automation</td><td>Business Rule</td><td>30m</td></tr>
+            <tr><td>4.3a Fast Path Review</td><td>Governance</td><td>User Task</td><td>2d</td></tr>
+            <tr><td>4.3b Committee Review</td><td>Governance</td><td>User Task</td><td>5d</td></tr>
+            <tr><td>4.3c Advisory Board Review</td><td>Oversight</td><td>User Task</td><td>7d</td></tr>
+            <tr><td>4.4 Review Decision</td><td>Governance</td><td>User Task</td><td>2h</td></tr>
+            <tr><td>4.5 Throw OnboardingComplete Signal</td><td>Automation</td><td>Service Task</td><td>30m</td></tr>
+          </tbody>
+        </table>
+        <div class="card rose" style="margin-top:12px;">
+          <h4>Decision Outcomes</h4>
+          <ul style="font-size:0.85rem;">
+            <li><strong>Approved</strong> → Phase 5 Contracting</li>
+            <li><strong>Approved with Conditions</strong> → Phase 5 with remediation plan</li>
+            <li><strong>Rejected</strong> → End_Rejected</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h4>Three Review Paths (OB-DMN-3)</h4>
+          <ul style="font-size:0.85rem;">
+            <li><span class="bg-fast">Fast Path</span> — Fast-Track vendors: 2-day SLA, single approver</li>
+            <li><span class="bg-buy" style="background:var(--sla-blue);">Committee</span> — Limited/Minimal risk: 5-day SLA, quorum vote</li>
+            <li><span class="bg-buy" style="background:var(--sla-navy);">Advisory Board</span> — High risk: 7-day SLA, board review required</li>
+          </ul>
+        </div>
+        <div class="card emerald" style="margin-top:12px;">
+          <h4>Signal: OnboardingComplete</h4>
+          <p>Task 4.5 throws an <code>OnboardingComplete</code> intermediate signal event, notifying downstream cross-cutting sub-processes (SLA Monitoring, Continuous Improvement) to initialize.</p>
+        </div>
+        <div class="card gold" style="margin-top:12px;">
+          <h4>Key Change: Tighter SLAs</h4>
+          <p>Fast-Track governance compressed from standard 5-day committee review to 2-day fast path. DMN-3 routing determines path at Task 4.2 based on riskTier + pathway inputs.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+  </div>
+
+  <!-- Slide 9: Phase 5 -->
+
+<div class="slide" data-slide="9">
+    <h2>Phase 5: Contracting &amp; Controls</h2>
+    <div class="two-col">
+      <div>
+        <table class="styled-table">
+          <thead><tr><th>Task</th><th>Lane</th><th>Type</th><th>SLA</th></tr></thead>
+          <tbody>
+            <tr><td>5.1 Draft Master Agreement</td><td>Contracting</td><td>User Task</td><td>8h</td></tr>
+            <tr><td>5.2 Vendor Negotiation</td><td>Contracting/Vendor</td><td>User Task</td><td>2d</td></tr>
+            <tr><td>5.3 Security Controls Baseline</td><td>Technical</td><td>User Task</td><td>4h</td></tr>
+            <tr><td>5.4 DPA / Privacy Addendum</td><td>Compliance</td><td>User Task</td><td>4h</td></tr>
+            <tr><td>5.5 Regulatory Attestations</td><td>Compliance</td><td>User Task</td><td>4h</td></tr>
+            <tr><td>5.6 Legal Sign-Off</td><td>Contracting</td><td>User Task</td><td>4h</td></tr>
+            <tr><td>5.7 Vendor Contract Execution</td><td>Vendor</td><td>User Task</td><td>8h</td></tr>
+            <tr><td>5.8 Controls Implementation Plan</td><td>Technical</td><td>User Task</td><td>4h</td></tr>
+            <tr><td>Quality Gate</td><td>Automation</td><td>Business Rule</td><td>2d</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="card">
+          <h4>Vendor Message Flows</h4>
+          <p>Tasks 5.2 and 5.7 exchange contract drafts via message flows to the Vendor Response pool. Vendor execution triggers intermediate message catch event before Quality Gate.</p>
+        </div>
+        <div class="card teal" style="margin-top:12px;">
+          <h4>Parallel Exit Plans</h4>
+          <p>Tasks 5.3 (security controls), 5.4 (DPA), and 5.5 (attestations) execute in parallel across Technical Assessment and Compliance lanes simultaneously.</p>
+        </div>
+        <div class="card gold" style="margin-top:12px;">
+          <h4>Regulatory Coverage</h4>
+          <p><strong>OCC 2023-17</strong>: Third-party contract requirements.<br><strong>DORA</strong>: Digital resilience contractual obligations.<br><strong>SOX</strong>: Financial control attestations.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+  </div>
+
+  <!-- Slide 10: Post-Onboarding -->
+
+<div class="slide" data-slide="10">
+    <h2>Post-Onboarding: Phases 6–8</h2>
+    <p>Phases 6 through 8 are <strong>out of scope</strong> for this onboarding-only engagement. Upon successful completion of the Phase 5 Quality Gate, the vendor record is handed off to the full Software Onboarding Governance lifecycle.</p>
+    <div class="card-grid" style="opacity:0.55;">
+      <div class="card">
+        <h4><span class="grayed-label">Phase 6</span> SDLC Development &amp; Testing</h4>
+        <p>Build/Buy/Hybrid implementation path. Sprint governance, in-sprint compliance checks, defect tracking. 10–15 day SLA. 55% automation.</p>
+      </div>
+      <div class="card">
+        <h4><span class="grayed-label">Phase 7</span> Deployment &amp; Go-Live</h4>
+        <p>Infrastructure provisioning, production deployment, go-live readiness review, deployment decision gateway. 2–3 day SLA. 60% automation.</p>
+      </div>
+      <div class="card">
+        <h4><span class="grayed-label">Phase 8</span> Operations &amp; Retirement</h4>
+        <p>Ongoing monitoring, change management, SLA breach escalation, vulnerability remediation, and graceful retirement via decommission. Ongoing. 65% automation.</p>
+      </div>
+    </div>
+    <div class="card emerald" style="margin-top:1.5rem;">
+      <h4>Handoff Artifact</h4>
+      <p>At Phase 5 Quality Gate completion, the governance record includes: executed contract, controls baseline, regulatory attestations, risk tier assignment, DMN routing history, and compliance artifact package. This artifact is passed to the Phase 6 SDLC team as the official onboarding completion record.</p>
+    </div>
+    <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+  </div>
+
+  <!-- Slide 11: DMN Framework Overview -->
+
+<div class="slide" data-slide="11">
+  <h2>RACI Matrix by Governance Topic</h2>
+  <table class="styled-table" style="font-size:0.68rem;">
+    <thead><tr><th>Topic</th><th>Business</th><th>Governance</th><th style="background:var(--sla-teal); color:white;">Finance</th><th>Procurement</th><th>Contracting</th><th>Technical</th><th>AI Review</th><th>Compliance</th><th>Oversight</th><th>Automation</th><th>Vendor</th></tr></thead>
     <tbody>
-      <tr><td>DMN-1</td><td>Risk Tier Classification</td><td>FIRST</td><td>5 risk scores (data, regulatory, operational, AI, 3rd-party)</td><td>Phase 2 (2.3)</td></tr>
-      <tr><td>DMN-2</td><td>Pathway Routing</td><td>FIRST</td><td>Reuse score, build/buy analysis, capacity, alignment, time-to-value</td><td>Phase 1 (1.6)</td></tr>
-      <tr><td>DMN-3</td><td>Governance Review Routing</td><td>UNIQUE</td><td>Risk tier</td><td>Phase 4 (4.2)</td></tr>
-      <tr><td>DMN-4</td><td>Automation Tier Assignment</td><td>UNIQUE</td><td>Risk tier</td><td>Cross-cutting</td></tr>
-      <tr><td>DMN-5</td><td>Agent Confidence Escalation</td><td>FIRST</td><td>Confidence score, risk tier</td><td>Cross-cutting</td></tr>
-      <tr><td>DMN-6</td><td>Change Risk Scoring</td><td>FIRST</td><td>Complexity, dependency, deployment, history, rollback</td><td>Phase 8 (8C)</td></tr>
-      <tr><td>DMN-7</td><td>Vulnerability Remediation Routing</td><td>UNIQUE</td><td>CVSS score, application tier</td><td>Cross-cutting (SP-Cross-2)</td></tr>
-      <tr><td>DMN-8</td><td>Monitoring Cadence Assignment</td><td>UNIQUE</td><td>Risk tier, asset type</td><td>Phase 8 (8.1)</td></tr>
+      <tr><td>Intake</td><td>R/A</td><td>C</td><td style="background:#f0fdfa;">C</td><td>-</td><td>-</td><td>-</td><td>-</td><td>C</td><td>-</td><td>-</td><td>-</td></tr>
+      <tr><td>Prioritization</td><td>C</td><td>R/A</td><td style="background:#f0fdfa;">C</td><td>-</td><td>-</td><td>C</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+      <tr><td>Funding</td><td>-</td><td>C</td><td style="background:#ccfbf1;">R/A</td><td>C</td><td>-</td><td>-</td><td>-</td><td>-</td><td>I</td><td>-</td><td>-</td></tr>
+      <tr><td>Sourcing</td><td>-</td><td>A</td><td style="background:#f0fdfa;">-</td><td>R</td><td>-</td><td>C</td><td>-</td><td>C</td><td>I</td><td>-</td><td>R</td></tr>
+      <tr><td>Cyber</td><td>-</td><td>C</td><td style="background:#f0fdfa;">-</td><td>-</td><td>-</td><td>R/A</td><td>-</td><td>C</td><td>-</td><td>-</td><td>C</td></tr>
+      <tr><td>EA</td><td>-</td><td>C</td><td style="background:#f0fdfa;">-</td><td>-</td><td>-</td><td>R/A</td><td>-</td><td>-</td><td>-</td><td>-</td><td>C</td></tr>
+      <tr><td>Compliance</td><td>-</td><td>C</td><td style="background:#f0fdfa;">-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R/A</td><td>C</td><td>-</td><td>C</td></tr>
+      <tr><td>AI Governance</td><td>-</td><td>I</td><td style="background:#f0fdfa;">-</td><td>-</td><td>-</td><td>C</td><td>R/A</td><td>C</td><td>-</td><td>-</td><td>-</td></tr>
+      <tr><td>Privacy</td><td>C</td><td>C</td><td style="background:#f0fdfa;">-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R/A</td><td>-</td><td>-</td><td>-</td></tr>
+      <tr><td>Comm. Counsel</td><td>-</td><td>C</td><td style="background:#f0fdfa;">C</td><td>-</td><td>R/A</td><td>-</td><td>-</td><td>C</td><td>I</td><td>-</td><td>R</td></tr>
+      <tr><td>TPRM</td><td>-</td><td>R/A</td><td style="background:#f0fdfa;">-</td><td>C</td><td>C</td><td>C</td><td>-</td><td>C</td><td>C</td><td>C</td><td>C</td></tr>
     </tbody>
   </table>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 21: Governance Pathways -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="20">
-  <h2>Governance Pathways</h2>
-  <p>DMN-2 (Pathway Routing) assigns each initiative to one of five pathways based on capability reuse, build/buy analysis, organizational capacity, strategic alignment, and time-to-value.</p>
-  <div class="card-grid">
-    <div class="card emerald">
-      <h4><span class="bg-fast">Fast-Track</span></h4>
-      <p>Pre-approved categories with existing vendor relationships. Minimal risk only. Abbreviated Phases 3&ndash;5.</p>
-      <ul><li>SLA: 13.5&ndash;23 days</li><li>Automation: 85%+</li></ul>
-    </div>
-    <div class="card">
-      <h4><span class="bg-build">Build</span></h4>
-      <p>Internal development pathway. Full SDLC (Phase 6) with 6 nested sub-processes. Architecture feasibility in Phase 3.</p>
-      <ul><li>SLA: 29&ndash;45 days</li><li>Automation: 55%</li></ul>
-    </div>
-    <div class="card gold">
-      <h4><span class="bg-buy">Buy</span></h4>
-      <p>Vendor procurement pathway. Agent swarm due diligence (Phase 3). Full contracting (Phase 5).</p>
-      <ul><li>SLA: 29&ndash;45 days</li><li>Automation: 50%</li></ul>
-    </div>
-    <div class="card teal">
-      <h4><span class="bg-hybrid">Hybrid</span></h4>
-      <p>Combined build + buy. Both Build and Buy activities in Phases 3, 5, 6. Highest complexity.</p>
-      <ul><li>SLA: 46&ndash;74 days</li><li>Automation: 45%</li></ul>
-    </div>
-    <div class="card" style="border-left-color:#7c3aed;">
-      <h4><span style="background:#7c3aed; color:white; padding:2px 8px; border-radius:3px; font-size:0.8rem;">Reuse</span></h4>
-      <p>Existing enterprise capabilities via mandatory registry queries with semantic matching. Five-outcome decision table determines reuse eligibility.</p>
-      <ul><li>SLA: 5&ndash;10 days</li><li>Automation: 90%</li></ul>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 22: Risk Classification -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="21">
-  <h2>Risk Tier Classification</h2>
-  <p>DMN-1 assigns risk tiers based on 5 dimensions. The tier drives SLA targets, automation levels, review authority, and monitoring cadence throughout the lifecycle.</p>
-  <table class="styled-table">
-    <thead><tr><th>Tier</th><th>Composite Score</th><th>Cycle Time</th><th>Review Authority</th><th>Monitoring</th></tr></thead>
-    <tbody>
-      <tr><td><span class="tier-badge tier-unacceptable">Unacceptable</span></td><td>&ge; 4.0</td><td>Auto-Rejected</td><td>Auto-Reject at Phase 2</td><td>N/A</td></tr>
-      <tr><td><span class="tier-badge tier-high">High</span></td><td>3.0 &ndash; 3.9</td><td>46&ndash;74 days</td><td>Advisory Board (All Lanes)</td><td>Weekly</td></tr>
-      <tr><td><span class="tier-badge tier-limited">Limited</span></td><td>2.0 &ndash; 2.9</td><td>29&ndash;45 days</td><td>Governance Committee</td><td>Monthly</td></tr>
-      <tr><td><span class="tier-badge tier-minimal">Minimal</span></td><td>&lt; 2.0</td><td>13.5&ndash;23 days</td><td>Fast Path (Business Owner)</td><td>Quarterly</td></tr>
-    </tbody>
-  </table>
-  <h3>5 Risk Dimensions (DMN-1 Inputs)</h3>
-  <div class="card-grid" style="grid-template-columns: repeat(5, 1fr);">
-    <div class="card"><h4>Data Sensitivity</h4><p>Classification level of data processed</p></div>
-    <div class="card gold"><h4>Regulatory Exposure</h4><p>Number and severity of applicable regulations</p></div>
-    <div class="card teal"><h4>Operational Impact</h4><p>Business criticality and dependency depth</p></div>
-    <div class="card emerald"><h4>AI Complexity</h4><p>Model sophistication and autonomy level</p></div>
-    <div class="card rose"><h4>3rd-Party Depth</h4><p>Vendor dependency and subcontracting tiers</p></div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 23: Lane Architecture -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="22">
-  <h2>Lane Architecture (2 Pools, 9+1 Lanes)</h2>
-  <div class="two-col">
-    <div>
-      <h3>Enterprise Governance Pool</h3>
-      <table class="styled-table">
-        <thead><tr><th>Lane</th><th>candidateGroups</th><th>Defense Line</th></tr></thead>
-        <tbody>
-          <tr><td>Business Lane</td><td><code>business-lane</code></td><td>1st Line</td></tr>
-          <tr><td>Governance Lane</td><td><code>governance-lane</code></td><td>2nd Line</td></tr>
-          <tr><td>Contracting Lane</td><td><code>contracting-lane</code></td><td>1st/2nd Line</td></tr>
-          <tr><td>Technical Assessment</td><td><code>technical-assessment</code></td><td>2nd Line</td></tr>
-          <tr><td>AI Review Lane</td><td><code>ai-review</code></td><td>2nd Line</td></tr>
-          <tr><td>Compliance Lane</td><td><code>compliance-lane</code></td><td>2nd Line</td></tr>
-          <tr><td>Oversight Lane</td><td><code>oversight-lane</code></td><td>3rd Line</td></tr>
-          <tr><td>Automation Lane</td><td><code>automation-lane</code></td><td>1st Line</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div>
-      <h3>Vendor / Third Party Pool</h3>
-      <table class="styled-table">
-        <thead><tr><th>Lane</th><th>candidateGroups</th><th>Defense Line</th></tr></thead>
-        <tbody>
-          <tr><td>Vendor Response Lane</td><td><code>vendor-response</code></td><td>N/A (External)</td></tr>
-        </tbody>
-      </table>
-      <h3 style="margin-top:1.5rem;">Three Lines of Defense</h3>
-      <div class="card" style="margin-bottom:12px;"><h4>1st Line: Business Operations</h4><p>Business Lane, Contracting Lane, Automation Lane own and manage risk day-to-day.</p></div>
-      <div class="card gold" style="margin-bottom:12px;"><h4>2nd Line: Risk &amp; Compliance</h4><p>Governance, Technical, AI Review, Compliance lanes provide independent oversight.</p></div>
-      <div class="card rose"><h4>3rd Line: Internal Audit</h4><p>Oversight Lane provides independent assurance over 1st and 2nd line activities.</p></div>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 24: RACI Matrix -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="23">
-  <h2>RACI Matrix by Phase</h2>
-  <table class="styled-table" style="font-size:0.75rem;">
-    <thead><tr><th>Phase</th><th>Business</th><th>Governance</th><th>Contracting</th><th>Technical</th><th>AI Review</th><th>Compliance</th><th>Oversight</th><th>Automation</th><th>Vendor</th></tr></thead>
-    <tbody>
-      <tr><td>1. Intake</td><td>R</td><td>I</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>A</td><td>-</td></tr>
-      <tr><td>2. Planning</td><td>R</td><td>C</td><td>-</td><td>C</td><td>R</td><td>R</td><td>I</td><td>A</td><td>-</td></tr>
-      <tr><td>3. Due Diligence</td><td>C</td><td>I</td><td>-</td><td>R</td><td>R</td><td>R</td><td>I</td><td>A</td><td>R</td></tr>
-      <tr><td>4. Governance</td><td>R</td><td>A</td><td>-</td><td>C</td><td>R</td><td>R</td><td>I</td><td>C</td><td>-</td></tr>
-      <tr><td>5. Contracting</td><td>C</td><td>I</td><td>R/A</td><td>C</td><td>-</td><td>R</td><td>I</td><td>C</td><td>R</td></tr>
-      <tr><td>6. SDLC</td><td>C</td><td>I</td><td>-</td><td>R/A</td><td>C</td><td>C</td><td>I</td><td>R</td><td>C</td></tr>
-      <tr><td>7. Deployment</td><td>C</td><td>I</td><td>-</td><td>R</td><td>-</td><td>C</td><td>I</td><td>A</td><td>-</td></tr>
-      <tr><td>8. Operations</td><td>R</td><td>C</td><td>C</td><td>C</td><td>R</td><td>C</td><td>A</td><td>R</td><td>R</td></tr>
-    </tbody>
-  </table>
-  <p style="font-size:0.8rem; color:var(--sla-gray);">R = Responsible, A = Accountable, C = Consulted, I = Informed</p>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
+  <p style="font-size:0.75rem; color:var(--sla-gray);">R = Responsible &bull; A = Accountable &bull; C = Consulted &bull; I = Informed &nbsp;|&nbsp; <span style="background:#ccfbf1; padding:1px 6px; border-radius:2px;">Finance</span> = new functional area (split from Governance)</p>
+  <div class="slide-footer"><span>Confidential</span><span>Software Onboarding Governance</span></div>
 </div>
 
 <!-- ============================================================ -->
 <!-- SLIDE 25: Regulatory Alignment -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="24">
-  <h2>Regulatory Alignment</h2>
-  <p>11 regulatory frameworks mapped across the 8-phase lifecycle with mandatory text annotations in every BPMN model.</p>
-  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
-    <div class="card"><h4>OCC 2023-17</h4><p>Third-party risk management. Phases 2, 3, 5, 8.</p></div>
-    <div class="card"><h4>SR 11-7</h4><p>Model risk management. AI governance in Phase 2, 3.</p></div>
-    <div class="card gold"><h4>SOX</h4><p>Financial controls, audit trails. Phase 4, 5.</p></div>
-    <div class="card"><h4>GDPR / CCPA</h4><p>Data protection, classification. Phase 2, 3.</p></div>
-    <div class="card teal"><h4>EU AI Act</h4><p>AI system risk classification. Phase 2, 3, 8.</p></div>
-    <div class="card"><h4>DORA</h4><p>Digital operational resilience. Phase 5, 7, 8.</p></div>
-    <div class="card gold"><h4>NIST CSF 2.0</h4><p>Cybersecurity framework. Phase 3, 6, 7.</p></div>
-    <div class="card"><h4>ISO 27001</h4><p>Information security management. Phase 3, 6.</p></div>
-    <div class="card emerald"><h4>SEC 17a-4</h4><p>Records retention. Phase 5, 8.</p></div>
-    <div class="card"><h4>BCBS d577</h4><p>Operational resilience. Phase 7, 8.</p></div>
-    <div class="card rose"><h4>FS AI RMF</h4><p>Financial services AI risk management. Phase 2, 3, 8.</p></div>
+
+<div class="slide" data-slide="12">
+  <h2>Governance Topic Coverage Across Onboarding Phases</h2>
+  <p style="font-size:0.85rem; color:var(--sla-gray); margin-bottom:0.75rem;">Hover over any cell to see the tasks that address each governance topic in that phase.</p>
+  
+  <div class="heatmap-wrap">
+    <table class="heatmap">
+      <thead>
+        <tr>
+          <th class="topic-col">Governance Topic</th>
+          <th>SP1<br><span style="font-weight:400; font-size:0.65rem;">Request &amp; Triage</span></th>
+          <th>SP2<br><span style="font-weight:400; font-size:0.65rem;">Planning &amp; Routing</span></th>
+          <th>SP3<br><span style="font-weight:400; font-size:0.65rem;">Evaluation &amp; DD</span></th>
+          <th>SP4<br><span style="font-weight:400; font-size:0.65rem;">Contracting &amp; Build</span></th>
+          <th>SP5<br><span style="font-weight:400; font-size:0.65rem;">UAT &amp; Go-Live</span></th>
+          <th>Vendor Pool</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="topic-label">Intake</td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Review Existing, Leverage Existing, Gather Docs, Submit Request, Initial Triage</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Close Request</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+        </tr>
+        <tr>
+          <td class="topic-label">Prioritization</td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Preliminary Analysis, Backlog Prioritization, Pathway Routing</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+        </tr>
+        <tr>
+          <td class="topic-label">Funding</td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Gather Documentation</span></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Preliminary Analysis</span></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Financial Analysis</span></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Negotiate Contract</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+        </tr>
+        <tr>
+          <td class="topic-label">Sourcing</td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Financial Analysis, Assess Vendor Landscape, Vendor Due Diligence, Await Vendor Response, Evaluate Vendor Response</span></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Refine Requirements</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Vendor Intake, Vendor Proposal</span></div></td>
+        </tr>
+        <tr>
+          <td class="topic-label">Cyber</td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Tech Architecture Review, Security Assessment</span></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Perform PoC, Tech Risk Evaluation, Define Build Reqs, Development, Testing</span></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Onboard Software</span></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Security Questionnaire</span></div></td>
+        </tr>
+        <tr>
+          <td class="topic-label">EA</td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Tech Architecture Review</span></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Perform PoC, Tech Risk Evaluation, Define Build Reqs, Architecture Review, Development, Integration</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Technical Demonstration, Deployment Support</span></div></td>
+        </tr>
+        <tr>
+          <td class="topic-label">Compliance</td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Initial Triage</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Risk Compliance Legal, Vendor Due Diligence</span></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Refine Requirements, Testing, Integration</span></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Perform UAT, Final Approval</span></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Compliance Documentation</span></div></td>
+        </tr>
+        <tr>
+          <td class="topic-label">AI Governance</td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">AI Governance Review</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+        </tr>
+        <tr>
+          <td class="topic-label">Privacy</td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Gather Documentation</span></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Preliminary Analysis</span></div></td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Risk Compliance Legal</span></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Refine Requirements, Perform PoC, Define Build Reqs</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+        </tr>
+        <tr>
+          <td class="topic-label">Commercial Counsel</td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Negotiate Contract, Finalize Contract</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Vendor Contract Review, Contract Execution</span></div></td>
+        </tr>
+        <tr>
+          <td class="topic-label">TPRM</td>
+          <td><div class="hm-cell secondary">&#10003;<span class="hm-tip">Initial Triage</span></div></td>
+          <td><div class="hm-cell empty"></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Risk Compliance Legal, Assess Vendor Landscape, Vendor Due Diligence, Evaluate Vendor Response</span></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Tech Risk Evaluation, Negotiate Contract, Finalize Contract</span></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Final Approval, Onboard Software</span></div></td>
+          <td><div class="hm-cell active">&#10003;<span class="hm-tip">Vendor Intake, Vendor Onboarding, Close Request</span></div></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
+  <div class="hm-legend">
+    <span><span class="hm-legend-box" style="background:var(--sla-deep-blue);"></span>Primary &mdash; 2+ tasks</span>
+    <span><span class="hm-legend-box" style="background:#93a5c0;"></span>Secondary &mdash; 1 task</span>
+    <span><span class="hm-legend-box" style="background:#f8fafc; border:1px solid #e2e8f0;"></span>No coverage</span>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Governance Topic Coverage Matrix</span></div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 26: Regulatory Mapping Table -->
+<!-- SLIDES 39-49: Topic Journey Slides (one per topic) -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="25">
-  <h2>Regulatory Framework Mapping</h2>
-  <table class="styled-table" style="font-size:0.75rem;">
-    <thead><tr><th>Framework</th><th>Ph 1</th><th>Ph 2</th><th>Ph 3</th><th>Ph 4</th><th>Ph 5</th><th>Ph 6</th><th>Ph 7</th><th>Ph 8</th><th>Cross-Cut</th></tr></thead>
-    <tbody>
-      <tr><td>OCC 2023-17</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>SP-1,2</td></tr>
-      <tr><td>SR 11-7</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>SP-4</td></tr>
-      <tr><td>SOX</td><td>-</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
-      <tr><td>GDPR/CCPA</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
-      <tr><td>EU AI Act</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>SP-4</td></tr>
-      <tr><td>DORA</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td style="background:#dcfce7;">&#10003;</td><td>SP-3</td></tr>
-      <tr><td>NIST CSF 2.0</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>SP-2,3</td></tr>
-      <tr><td>ISO 27001</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>-</td><td>-</td></tr>
-      <tr><td>SEC 17a-4</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>-</td></tr>
-      <tr><td>BCBS d577</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td style="background:#dcfce7;">&#10003;</td><td>SP-1</td></tr>
-      <tr><td>FS AI RMF</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td style="background:#dcfce7;">&#10003;</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="background:#dcfce7;">&#10003;</td><td>SP-5</td></tr>
-    </tbody>
-  </table>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
+
+
+<!-- SLIDE 39: Intake Journey -->
+
+<div class="slide" data-slide="13">
+  <h2 style="font-size:1.6rem;">Topic Journey: Intake</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">Initial request capture, portfolio review, and solution discovery</p>
+  <div class="journey-rail">
+    <div class="journey-phase active">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+      <ul class="jp-tasks">
+        <li>Review Existing Solutions</li>
+        <li>Leverage Existing Software</li>
+        <li>Gather Documentation</li>
+        <li>Submit Software Request</li>
+        <li>Initial Triage</li>
+      </ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+      <ul class="jp-tasks"><li>Close Request</li></ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">Vendor Pool</div>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: Business (Review, Leverage, Gather, Submit) / Governance (Triage, Close) &bull; A: Business / Governance &bull; C: Governance, Finance, Compliance, TPRM</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>OCC 2023-17 (Inventory) &bull; NIST CSF 2.0 ID.AM</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: Intake</span></div>
+</div>
+
+<!-- SLIDE 40: Prioritization Journey -->
+
+<div class="slide" data-slide="14">
+  <h2 style="font-size:1.6rem;">Topic Journey: Prioritization</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">Backlog ranking, pathway selection, and resource allocation</p>
+  <div class="journey-rail">
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+      <ul class="jp-tasks">
+        <li>Preliminary Analysis</li>
+        <li>Backlog Prioritization</li>
+        <li>Pathway Routing</li>
+      </ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">Vendor Pool</div>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: Governance (all tasks) &bull; A: Governance &bull; C: Finance, Privacy (PrelimAnalysis), Business (Backlog, Routing), Technical Assessment (Routing) &bull; I: Business</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>SOX (Resource Authorization)</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: Prioritization</span></div>
+</div>
+
+<!-- SLIDE 41: Funding Journey -->
+
+<div class="slide" data-slide="15">
+  <h2 style="font-size:1.6rem;">Topic Journey: Funding</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">Financial analysis, budget authorization, TCO/ROI evaluation</p>
+  <div class="journey-rail">
+    <div class="journey-phase active">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+      <ul class="jp-tasks"><li>Gather Documentation</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+      <ul class="jp-tasks"><li>Preliminary Analysis</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+      <ul class="jp-tasks"><li>Financial Analysis</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+      <ul class="jp-tasks"><li>Negotiate Contract</li></ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">Vendor Pool</div>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: Finance (Financial Analysis) / Business (Gather Docs) / Governance (PrelimAnalysis) / Contracting (Negotiate) &bull; A: Finance / Governance / Contracting &bull; C: Governance, Procurement</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>SOX 302/404 &bull; OCC 2023-17 Section 40</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: Funding</span></div>
+</div>
+
+<!-- SLIDE 42: Sourcing Journey -->
+
+<div class="slide" data-slide="16">
+  <h2 style="font-size:1.6rem;">Topic Journey: Sourcing</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">Vendor landscape assessment, vendor selection, and procurement</p>
+  <div class="journey-rail">
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+      <ul class="jp-tasks">
+        <li>Financial Analysis</li>
+        <li>Assess Vendor Landscape</li>
+        <li>Vendor Due Diligence</li>
+        <li>Await Vendor Response</li>
+        <li>Evaluate Vendor Response</li>
+      </ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+      <ul class="jp-tasks"><li>Refine Requirements</li></ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">Vendor Pool</div>
+      <ul class="jp-tasks"><li>Vendor Intake</li><li>Vendor Proposal</li></ul>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: Procurement (Landscape, DD, Evaluate) / Vendor (Intake, Proposal) / Business (Refine) &bull; A: Governance / Procurement &bull; C: Compliance, Technical Assessment &bull; I: Oversight</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>OCC 2023-17 Section 35 &bull; DORA Article 28</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: Sourcing</span></div>
+</div>
+
+<!-- SLIDE 43: Cyber Journey -->
+
+<div class="slide" data-slide="17">
+  <h2 style="font-size:1.6rem;">Topic Journey: Cyber</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">Security assessment, vulnerability management, and security architecture</p>
+  <div class="journey-rail">
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+      <ul class="jp-tasks"><li>Tech Architecture Review</li><li>Security Assessment</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+      <ul class="jp-tasks"><li>Perform PoC</li><li>Tech Risk Evaluation</li><li>Define Build Reqs</li><li>Development</li><li>Testing</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+      <ul class="jp-tasks"><li>Onboard Software</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">Vendor Pool</div>
+      <ul class="jp-tasks"><li>Security Questionnaire</li></ul>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: Technical Assessment (Arch Review, Security, PoC, TechRisk, PDLC) / Automation (Onboard) / Vendor (Security Q.) &bull; A: Technical Assessment / Automation &bull; C: Governance, Compliance, Business</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>NIST CSF 2.0 &bull; ISO 27001 &bull; DORA Articles 9&ndash;11</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: Cyber</span></div>
+</div>
+
+<!-- SLIDE 44: EA Journey -->
+
+<div class="slide" data-slide="18">
+  <h2 style="font-size:1.6rem;">Topic Journey: Enterprise Architecture</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">Architecture review, integration compatibility, and technology standards</p>
+  <div class="journey-rail">
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+      <ul class="jp-tasks"><li>Tech Architecture Review</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+      <ul class="jp-tasks"><li>Perform PoC</li><li>Tech Risk Evaluation</li><li>Define Build Reqs</li><li>Architecture Review</li><li>Development</li><li>Integration</li></ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">Vendor Pool</div>
+      <ul class="jp-tasks"><li>Technical Demonstration</li><li>Deployment Support</li></ul>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: Technical Assessment (Arch Review, PoC, TechRisk, PDLC tasks) / Business (Define Build Reqs) / Vendor (Demo, Deploy) &bull; A: Technical Assessment / Business &bull; C: Governance, Business, Compliance</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>DORA Article 9 &bull; NIST CSF 2.0 PR.PS</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: Enterprise Architecture</span></div>
+</div>
+
+<!-- SLIDE 45: Compliance Journey -->
+
+<div class="slide" data-slide="19">
+  <h2 style="font-size:1.6rem;">Topic Journey: Compliance</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">Regulatory compliance, legal review, and data protection verification</p>
+  <div class="journey-rail">
+    <div class="journey-phase active">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+      <ul class="jp-tasks"><li>Initial Triage</li></ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+      <ul class="jp-tasks"><li>Risk Compliance Legal</li><li>Vendor Due Diligence</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+      <ul class="jp-tasks"><li>Refine Requirements</li><li>Testing</li><li>Integration</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+      <ul class="jp-tasks"><li>Perform UAT</li><li>Final Approval</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">Vendor Pool</div>
+      <ul class="jp-tasks"><li>Compliance Documentation</li></ul>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: Compliance (RiskCompliance, DD) / Governance (Triage) / Business (Refine, UAT) / Technical (Testing, Integration) / Oversight (Final Approval) &bull; A: Compliance / Governance / Oversight &bull; C: Governance, Compliance, Privacy</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>GDPR/CCPA &bull; SOX &bull; DORA &bull; OCC 2023-17</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: Compliance</span></div>
+</div>
+
+<!-- SLIDE 46: AI Governance Journey -->
+
+<div class="slide" data-slide="20">
+  <h2 style="font-size:1.6rem;">Topic Journey: AI Governance</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">AI/ML risk classification, model validation, and bias assessment</p>
+  <div class="journey-rail">
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+      <ul class="jp-tasks"><li>AI Governance Review</li></ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">Vendor Pool</div>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: AI Review (AI Governance Review) &bull; A: AI Review &bull; C: Technical Assessment, Compliance &bull; I: Governance</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>SR 11-7 &bull; EU AI Act &bull; NIST AI RMF &bull; OCC 2023-17 (Third-party AI)</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: AI Governance</span></div>
+</div>
+
+<!-- SLIDE 47: Privacy Journey -->
+
+<div class="slide" data-slide="21">
+  <h2 style="font-size:1.6rem;">Topic Journey: Privacy</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">Data protection impact assessment, cross-border transfers, and consent management</p>
+  <div class="journey-rail">
+    <div class="journey-phase active">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+      <ul class="jp-tasks"><li>Gather Documentation</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+      <ul class="jp-tasks"><li>Preliminary Analysis</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+      <ul class="jp-tasks"><li>Risk Compliance Legal</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+      <ul class="jp-tasks"><li>Refine Requirements</li><li>Perform PoC</li><li>Define Build Reqs</li></ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">Vendor Pool</div>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: Business (Gather Docs) / Governance (PrelimAnalysis) / Compliance (RiskCompliance) / Business (Refine, Define Build) / Technical (PoC) &bull; A: Business / Governance / Compliance / Technical &bull; C: Finance, Privacy, Governance</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>GDPR Articles 25/28/35/44&ndash;49 &bull; CCPA</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: Privacy</span></div>
+</div>
+
+<!-- SLIDE 48: Commercial Counsel Journey -->
+
+<div class="slide" data-slide="22">
+  <h2 style="font-size:1.6rem;">Topic Journey: Commercial Counsel</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">Contract negotiation, legal terms review, and vendor agreements</p>
+  <div class="journey-rail">
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+      <ul class="jp-tasks"><li>Negotiate Contract</li><li>Finalize Contract</li></ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">Vendor Pool</div>
+      <ul class="jp-tasks"><li>Vendor Contract Review</li><li>Contract Execution</li></ul>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: Contracting (Negotiate, Finalize) / Vendor (Contract Review, Execution) &bull; A: Contracting / Vendor &bull; C: Finance, Governance, Compliance &bull; I: Oversight</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>OCC 2023-17 Section 60 &bull; DORA Article 30</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: Commercial Counsel</span></div>
+</div>
+
+<!-- SLIDE 49: TPRM Journey -->
+
+<div class="slide" data-slide="23">
+  <h2 style="font-size:1.6rem;">Topic Journey: TPRM</h2>
+  <p style="font-size:0.8rem; color:var(--sla-gray);">Third-party risk management, vendor lifecycle, and ongoing monitoring</p>
+  <div class="journey-rail">
+    <div class="journey-phase active">
+      <div class="jp-label">SP1 &mdash; Request &amp; Triage</div>
+      <ul class="jp-tasks"><li>Initial Triage</li></ul>
+    </div>
+    <div class="journey-phase inactive">
+      <div class="jp-label">SP2 &mdash; Planning &amp; Routing</div>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP3 &mdash; Evaluation &amp; DD</div>
+      <ul class="jp-tasks"><li>Risk Compliance Legal</li><li>Assess Vendor Landscape</li><li>Vendor Due Diligence</li><li>Evaluate Vendor Response</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP4 &mdash; Contracting &amp; Build</div>
+      <ul class="jp-tasks"><li>Tech Risk Evaluation</li><li>Negotiate Contract</li><li>Finalize Contract</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">SP5 &mdash; UAT &amp; Go-Live</div>
+      <ul class="jp-tasks"><li>Final Approval</li><li>Onboard Software</li></ul>
+    </div>
+    <div class="journey-phase active">
+      <div class="jp-label">Vendor Pool</div>
+      <ul class="jp-tasks"><li>Vendor Intake</li><li>Vendor Onboarding</li><li>Close Request</li></ul>
+    </div>
+  </div>
+  <div class="journey-footer">
+    <div class="journey-footer-block"><strong>RACI</strong><span>R: Governance (Triage) / Procurement (Landscape, DD, Evaluate) / Compliance (RiskCompliance) / Contracting (Negotiate, Finalize) / Oversight (Final Approval) / Automation (Onboard) / Vendor (Intake, Onboard, Close) &bull; A: Governance / Procurement / Compliance / Contracting / Oversight / Automation</span></div>
+    <div class="journey-footer-block"><strong>Regulatory References</strong><span>OCC 2023-17 (All Sections) &bull; DORA Article 28 &bull; NIST CSF 2.0 GV.SC</span></div>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journey: TPRM</span></div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 27: TPRM Deep Dive -->
+<!-- SLIDE 50: Interactive Governance Topic Explorer -->
+<!-- ============================================================ -->
+
+<div class="slide" data-slide="24">
+  <h2>Interactive Governance Topic Explorer</h2>
+  <div style="display:flex; flex-wrap:wrap; gap:8px; margin:12px 0;">
+    <button class="topic-pill" onclick="selectTopic('Intake')">Intake</button>
+    <button class="topic-pill" onclick="selectTopic('Prioritization')">Prioritization</button>
+    <button class="topic-pill" onclick="selectTopic('Funding')">Funding</button>
+    <button class="topic-pill" onclick="selectTopic('Sourcing')">Sourcing</button>
+    <button class="topic-pill" onclick="selectTopic('Cyber')">Cyber</button>
+    <button class="topic-pill" onclick="selectTopic('EA')">EA</button>
+    <button class="topic-pill" onclick="selectTopic('Compliance')">Compliance</button>
+    <button class="topic-pill" onclick="selectTopic('AI Governance')">AI Governance</button>
+    <button class="topic-pill" onclick="selectTopic('Privacy')">Privacy</button>
+    <button class="topic-pill" onclick="selectTopic('Commercial Counsel')">Commercial Counsel</button>
+    <button class="topic-pill" onclick="selectTopic('TPRM')">TPRM</button>
+  </div>
+  <div id="topicPlaceholder" style="background:#f1f5f9; border-radius:8px; padding:24px; text-align:center; color:var(--sla-gray); font-size:0.9rem; min-height:160px; display:flex; align-items:center; justify-content:center;">Select a topic above to highlight relevant process elements</div>
+  <div id="topicPanel" style="display:none;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+      <div>
+        <div id="topicDesc" style="background:white; border-left:4px solid var(--sla-deep-blue); border-radius:4px; padding:10px 14px; font-size:0.8rem; color:#1e293b; margin-bottom:10px;"></div>
+        <div style="background:#f8fafc; border-radius:4px; padding:10px 14px; font-size:0.75rem;">
+          <strong style="color:var(--sla-navy); display:block; margin-bottom:4px;">RACI</strong>
+          <div id="topicRaci" style="color:var(--sla-gray); line-height:1.6;"></div>
+        </div>
+        <div style="background:#f8fafc; border-radius:4px; padding:10px 14px; font-size:0.75rem; margin-top:8px;">
+          <strong style="color:var(--sla-navy); display:block; margin-bottom:4px;">Regulatory References</strong>
+          <div id="topicRegs" style="color:var(--sla-gray); line-height:1.6;"></div>
+        </div>
+      </div>
+      <div>
+        <strong style="color:var(--sla-navy); font-size:0.75rem; display:block; margin-bottom:6px;">Tasks by Sub-Process</strong>
+        <div id="topicPhases" style="display:flex; flex-direction:column; gap:6px;"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const topicData = {
+      "Intake": {
+        description: "Initial request capture, portfolio review, and solution discovery",
+        phases: {
+          "SP1 — Request & Triage": ["Review Existing Solutions", "Leverage Existing Software", "Gather Documentation", "Submit Software Request", "Initial Triage"],
+          "SP5 — UAT & Go-Live": ["Close Request"]
+        },
+        raci: { responsible: "Business / Governance", accountable: "Business / Governance", consulted: "Governance, Finance, Compliance, TPRM", informed: "Business" },
+        regulations: ["OCC 2023-17 (Inventory)", "NIST CSF 2.0 ID.AM"]
+      },
+      "Prioritization": {
+        description: "Backlog ranking, pathway selection, and resource allocation",
+        phases: { "SP2 — Planning & Routing": ["Preliminary Analysis", "Backlog Prioritization", "Pathway Routing"] },
+        raci: { responsible: "Governance", accountable: "Governance", consulted: "Finance, Privacy, Business, Technical Assessment", informed: "Business" },
+        regulations: ["SOX (Resource Authorization)"]
+      },
+      "Funding": {
+        description: "Financial analysis, budget authorization, TCO/ROI evaluation",
+        phases: {
+          "SP1 — Request & Triage": ["Gather Documentation"],
+          "SP2 — Planning & Routing": ["Preliminary Analysis"],
+          "SP3 — Evaluation & DD": ["Financial Analysis"],
+          "SP4 — Contracting & Build": ["Negotiate Contract"]
+        },
+        raci: { responsible: "Finance / Business / Governance / Contracting", accountable: "Finance / Governance / Contracting", consulted: "Governance, Procurement, Finance" },
+        regulations: ["SOX 302/404", "OCC 2023-17 Section 40"]
+      },
+      "Sourcing": {
+        description: "Vendor landscape assessment, vendor selection, and procurement",
+        phases: {
+          "SP3 — Evaluation & DD": ["Financial Analysis", "Assess Vendor Landscape", "Vendor Due Diligence", "Await Vendor Response", "Evaluate Vendor Response"],
+          "SP4 — Contracting & Build": ["Refine Requirements"],
+          "Vendor Pool": ["Vendor Intake", "Vendor Proposal"]
+        },
+        raci: { responsible: "Procurement / Vendor / Business", accountable: "Governance / Procurement", consulted: "Compliance, Technical Assessment", informed: "Oversight" },
+        regulations: ["OCC 2023-17 Section 35", "DORA Article 28"]
+      },
+      "Cyber": {
+        description: "Security assessment, vulnerability management, and security architecture",
+        phases: {
+          "SP3 — Evaluation & DD": ["Tech Architecture Review", "Security Assessment"],
+          "SP4 — Contracting & Build": ["Perform PoC", "Tech Risk Evaluation", "Define Build Reqs", "Development", "Testing"],
+          "SP5 — UAT & Go-Live": ["Onboard Software"],
+          "Vendor Pool": ["Security Questionnaire"]
+        },
+        raci: { responsible: "Technical Assessment / Automation / Vendor", accountable: "Technical Assessment / Automation", consulted: "Governance, Compliance, Business" },
+        regulations: ["NIST CSF 2.0", "ISO 27001", "DORA Articles 9-11"]
+      },
+      "EA": {
+        description: "Architecture review, integration compatibility, and technology standards",
+        phases: {
+          "SP3 — Evaluation & DD": ["Tech Architecture Review"],
+          "SP4 — Contracting & Build": ["Perform PoC", "Tech Risk Evaluation", "Define Build Reqs", "Architecture Review", "Development", "Integration"],
+          "Vendor Pool": ["Technical Demonstration", "Deployment Support"]
+        },
+        raci: { responsible: "Technical Assessment / Business / Vendor", accountable: "Technical Assessment / Business", consulted: "Governance, Business, Compliance" },
+        regulations: ["DORA Article 9", "NIST CSF 2.0 PR.PS"]
+      },
+      "Compliance": {
+        description: "Regulatory compliance, legal review, and data protection verification",
+        phases: {
+          "SP1 — Request & Triage": ["Initial Triage"],
+          "SP3 — Evaluation & DD": ["Risk Compliance Legal", "Vendor Due Diligence"],
+          "SP4 — Contracting & Build": ["Refine Requirements", "Testing", "Integration"],
+          "SP5 — UAT & Go-Live": ["Perform UAT", "Final Approval"],
+          "Vendor Pool": ["Compliance Documentation"]
+        },
+        raci: { responsible: "Compliance / Governance / Business / Technical / Oversight", accountable: "Compliance / Governance / Oversight", consulted: "Governance, Compliance, Privacy" },
+        regulations: ["GDPR/CCPA", "SOX", "DORA", "OCC 2023-17"]
+      },
+      "AI Governance": {
+        description: "AI/ML risk classification, model validation, and bias assessment",
+        phases: { "SP3 — Evaluation & DD": ["AI Governance Review"] },
+        raci: { responsible: "AI Review", accountable: "AI Review", consulted: "Technical Assessment, Compliance", informed: "Governance" },
+        regulations: ["SR 11-7", "EU AI Act", "NIST AI RMF", "OCC 2023-17 (Third-party AI)"]
+      },
+      "Privacy": {
+        description: "Data protection impact assessment, cross-border transfers, and consent management",
+        phases: {
+          "SP1 — Request & Triage": ["Gather Documentation"],
+          "SP2 — Planning & Routing": ["Preliminary Analysis"],
+          "SP3 — Evaluation & DD": ["Risk Compliance Legal"],
+          "SP4 — Contracting & Build": ["Refine Requirements", "Perform PoC", "Define Build Reqs"]
+        },
+        raci: { responsible: "Business / Governance / Compliance / Technical", accountable: "Business / Governance / Compliance / Technical", consulted: "Finance, Privacy, Governance" },
+        regulations: ["GDPR Articles 25/28/35/44-49", "CCPA"]
+      },
+      "Commercial Counsel": {
+        description: "Contract negotiation, legal terms review, and vendor agreements",
+        phases: {
+          "SP4 — Contracting & Build": ["Negotiate Contract", "Finalize Contract"],
+          "Vendor Pool": ["Vendor Contract Review", "Contract Execution"]
+        },
+        raci: { responsible: "Contracting / Vendor", accountable: "Contracting / Vendor", consulted: "Finance, Governance, Compliance", informed: "Oversight" },
+        regulations: ["OCC 2023-17 Section 60", "DORA Article 30"]
+      },
+      "TPRM": {
+        description: "Third-party risk management, vendor lifecycle, and ongoing monitoring",
+        phases: {
+          "SP1 — Request & Triage": ["Initial Triage"],
+          "SP3 — Evaluation & DD": ["Risk Compliance Legal", "Assess Vendor Landscape", "Vendor Due Diligence", "Evaluate Vendor Response"],
+          "SP4 — Contracting & Build": ["Tech Risk Evaluation", "Negotiate Contract", "Finalize Contract"],
+          "SP5 — UAT & Go-Live": ["Final Approval", "Onboard Software"],
+          "Vendor Pool": ["Vendor Intake", "Vendor Onboarding", "Close Request"]
+        },
+        raci: { responsible: "Governance / Procurement / Compliance / Contracting / Oversight / Automation / Vendor", accountable: "Governance / Procurement / Compliance / Contracting / Oversight / Automation", consulted: "Compliance, Technical Assessment, Procurement, Contracting, Oversight, Automation" },
+        regulations: ["OCC 2023-17 (All Sections)", "DORA Article 28", "NIST CSF 2.0 GV.SC"]
+      }
+    };
+
+    function selectTopic(name) {
+      document.querySelectorAll('.topic-pill').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const data = topicData[name];
+      if (!data) return;
+
+      document.getElementById('topicPlaceholder').style.display = 'none';
+      document.getElementById('topicPanel').style.display = 'block';
+
+      document.getElementById('topicDesc').textContent = data.description;
+
+      const raciEl = document.getElementById('topicRaci');
+      let raciHtml = `<strong>R:</strong> ${data.raci.responsible} &nbsp; <strong>A:</strong> ${data.raci.accountable} &nbsp; <strong>C:</strong> ${data.raci.consulted}`;
+      if (data.raci.informed) raciHtml += ` &nbsp; <strong>I:</strong> ${data.raci.informed}`;
+      raciEl.innerHTML = raciHtml;
+
+      document.getElementById('topicRegs').innerHTML = data.regulations.join(' &bull; ');
+
+      const phasesEl = document.getElementById('topicPhases');
+      phasesEl.innerHTML = '';
+      for (const [phase, tasks] of Object.entries(data.phases)) {
+        const block = document.createElement('div');
+        block.className = 'topic-phase-block';
+        block.innerHTML = `<strong>${phase}</strong><ul>${tasks.map(t => `<li>${t}</li>`).join('')}</ul>`;
+        phasesEl.appendChild(block);
+      }
+    }
+  </script>
+  <div class="slide-footer"><span>Confidential</span><span>Interactive Governance Topic Explorer</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 25: Regulatory Framework (section header) -->
+<!-- ============================================================ -->
+<div class="slide slide-section" data-slide="25">
+  <h2>Regulatory Compliance Built Into Every Step</h2>
+  <p style="color:rgba(255,255,255,0.85); font-size:1.1rem; margin-top:1rem; max-width:800px;">Seven regulatory frameworks are mapped across the 5-phase onboarding lifecycle. Every phase transition generates compliance artifacts, and every BPMN task carries the applicable regulatory annotations.</p>
+  <div style="margin-top:2rem; display:flex; gap:12px; flex-wrap:wrap;">
+    <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:6px 14px;font-size:0.85rem;">OCC 2023-17</span>
+    <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:6px 14px;font-size:0.85rem;">SR 11-7</span>
+    <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:6px 14px;font-size:0.85rem;">EU AI Act</span>
+    <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:6px 14px;font-size:0.85rem;">GDPR / CCPA</span>
+    <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:6px 14px;font-size:0.85rem;">DORA</span>
+    <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:6px 14px;font-size:0.85rem;">SOX</span>
+    <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:6px 14px;font-size:0.85rem;">NIST CSF 2.0</span>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 26: Regulatory Coverage Matrix -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="26">
-  <h2>TPRM Deep Dive</h2>
-  <p>Third-Party Risk Management spans Phases 2&ndash;8 with agent swarm acceleration in Phase 3 and continuous vendor monitoring in Phase 8.</p>
-  <div class="two-col">
-    <div>
-      <h3>TPRM Lifecycle</h3>
-      <div class="card" style="margin-bottom:12px;">
-        <h4>Phase 2: Inherent Risk Scoring</h4>
-        <p>5-dimension risk assessment drives vendor tier classification and due diligence depth.</p>
-      </div>
-      <div class="card gold" style="margin-bottom:12px;">
-        <h4>Phase 3: Agent Swarm Due Diligence</h4>
-        <p>Parallel assessment agents: Security (3.3), Compliance (3.4), Financial (3.6), Operational (3.7). Automated evidence collection (3.1).</p>
-      </div>
-      <div class="card teal" style="margin-bottom:12px;">
-        <h4>Phase 5: Contract Controls</h4>
-        <p>Mandatory provisions, SLA requirements, exit plan development, OCC 2023-17 compliance.</p>
-      </div>
-      <div class="card emerald">
-        <h4>Phase 8: Ongoing Monitoring</h4>
-        <p>Vendor performance management (8.5), benchmark recalibration (8.8), risk-tiered monitoring cadence (DMN-8).</p>
-      </div>
-    </div>
-    <div>
-      <h3>Agent Swarm Architecture</h3>
-      <table class="styled-table">
-        <thead><tr><th>Agent</th><th>Role</th><th>Confidence</th></tr></thead>
-        <tbody>
-          <tr><td>Evidence Collector</td><td>Gather vendor documentation</td><td>Auto &ge; 0.90</td></tr>
-          <tr><td>Security Assessor</td><td>Vulnerability and posture analysis</td><td>Review &ge; 0.70</td></tr>
-          <tr><td>Compliance Checker</td><td>Regulatory alignment verification</td><td>Review &ge; 0.70</td></tr>
-          <tr><td>Financial Analyst</td><td>Stability and viability assessment</td><td>Review &ge; 0.75</td></tr>
-          <tr><td>Aggregator</td><td>Synthesize swarm findings</td><td>Review &ge; 0.80</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:0.85rem;">DMN-5 (Agent Confidence Escalation) routes agent outputs: Autonomous (&ge; 0.90), Human Review (0.70&ndash;0.89), Manual Takeover (&lt; 0.70).</p>
-    </div>
+  <h2>Regulatory Framework Coverage Matrix</h2>
+  <p>Each onboarding phase carries specific regulatory obligations. Text annotations in the BPMN models reference the applicable frameworks at each task and gateway.</p>
+  <table class="styled-table">
+    <thead>
+      <tr><th>Regulation</th><th>Scope</th><th>Phase 1</th><th>Phase 2</th><th>Phase 3</th><th>Phase 4</th><th>Phase 5</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>OCC 2023-17</strong></td>
+        <td>Third-party risk management guidance</td>
+        <td></td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+        <td></td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+      </tr>
+      <tr>
+        <td><strong>SR 11-7</strong></td>
+        <td>Model risk management (AI vendors)</td>
+        <td></td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><strong>EU AI Act</strong></td>
+        <td>AI system risk classification</td>
+        <td></td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><strong>GDPR / CCPA</strong></td>
+        <td>Data protection and privacy</td>
+        <td></td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+        <td></td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+      </tr>
+      <tr>
+        <td><strong>DORA</strong></td>
+        <td>Digital operational resilience (EU)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+      </tr>
+      <tr>
+        <td><strong>SOX</strong></td>
+        <td>Financial controls and audit</td>
+        <td></td>
+        <td></td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+        <td></td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+      </tr>
+      <tr>
+        <td><strong>NIST CSF 2.0</strong></td>
+        <td>Cybersecurity framework</td>
+        <td></td>
+        <td></td>
+        <td style="background:#DCFCE7;text-align:center;">&#10003;</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="card" style="margin-top:1rem;">
+    <h4>Compliance Artifact Generation</h4>
+    <p style="font-size:0.85rem;">Each phase completion triggers automatic artifact generation: risk assessment records (Phase 2), due diligence report (Phase 3), governance decision record (Phase 4), executed contract package (Phase 5). All artifacts are timestamped, versioned, and linked to the vendor record in the GRC platform.</p>
   </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
+  <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 28: Agentic Acceleration -->
+<!-- SLIDE 27: Risk-Tiered Governance -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="27">
-  <h2>Agentic Acceleration</h2>
-  <p>AI agents augment human governance at every phase, with confidence-based escalation ensuring appropriate human oversight.</p>
-  <div style="margin-bottom:0.5rem; padding:8px 12px; background:rgba(5,150,105,0.08); border-left:3px solid var(--sla-emerald); border-radius:0 4px 4px 0; font-size:0.8rem;">
-    <strong>AI/MRM Lead:</strong> SR 11-7 compliant model lifecycle&mdash;risk classification, drift monitoring, confidence-based escalation via DMN-5.
-  </div>
-  <div id="chartAutomation" class="chart-container" style="min-height:350px;"></div>
-  <p style="font-size:0.75rem; color:var(--sla-gray); margin-top:4px;">Automation percentages represent design targets for fully deployed Horizon 3 state. Weighted average target: 59%.</p>
-  <div class="metric-row">
-    <div class="metric"><div class="value">75%</div><div class="label">Phase 1 Target</div></div>
-    <div class="metric"><div class="value">70%</div><div class="label">Phase 3 Target</div></div>
-    <div class="metric"><div class="value">40%</div><div class="label">Phase 4 Target</div></div>
-    <div class="metric"><div class="value">65%</div><div class="label">Phase 8 Target</div></div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 29: Cross-Cutting Sub-Processes -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="28">
-  <h2>5 Cross-Cutting Event Sub-Processes</h2>
-  <p>These event sub-processes run throughout the lifecycle, triggered from any phase.</p>
-  <div class="card-grid">
-    <div class="card">
-      <h4>SP-Cross-1: SLA Monitoring &amp; Breach Management</h4>
-      <p>Progressive escalation at 50%, 75%, 90%, 100% thresholds. Timer events on every phase. Breach triggers root cause analysis.</p>
-    </div>
-    <div class="card rose">
-      <h4>SP-Cross-2: Vulnerability Remediation</h4>
-      <p>DMN-7 routes by CVSS score and app tier. 4-tier SLA matrix. Autonomous patching for low-risk findings.</p>
-    </div>
-    <div class="card gold">
-      <h4>SP-Cross-3: Incident Response</h4>
-      <p>P1&ndash;P4 severity classification. Security alert triggers containment, investigation, remediation, and post-incident review.</p>
-    </div>
-    <div class="card teal">
-      <h4>SP-Cross-4: Regulatory Change Management</h4>
-      <p>90-day regulatory horizon scanning workflow. Impact assessment, gap analysis, control updates, and compliance verification.</p>
-    </div>
-    <div class="card emerald">
-      <h4>SP-Cross-5: Continuous Improvement</h4>
-      <p>8 improvement cycles: process mining, bottleneck analysis, optimization, measurement. Quarterly + continuous triggers.</p>
-    </div>
-  </div>
-  <div class="diagram-container">
-    <img src="images/cross-cutting.svg" alt="Cross-Cutting Sub-Processes BPMN">
-    <p style="text-align:center; font-size:0.75rem; color:var(--sla-gray); margin-top:8px;">Cross-Cutting Event Sub-Processes</p>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 30: Cycle Time Targets -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="29">
-  <h2>Cycle Time Targets</h2>
-  <div id="chartCycleTime" class="chart-container" style="min-height:350px;"></div>
-  <p style="font-size:0.75rem; color:var(--sla-gray); margin-top:4px;">Risk-tiered SLA targets compress governance cycles by 38&ndash;85% versus industry baseline of 90&ndash;120 days.</p>
-  <table class="styled-table">
-    <thead><tr><th>Risk Tier</th><th>Baseline (Industry)</th><th>Target</th><th>Compression</th></tr></thead>
+  <h2>Risk-Tiered Governance</h2>
+  <p>OB-DMN-1 classifies every vendor request into one of four risk tiers. The tier determines due diligence depth, governance review path, and SLA windows across all five phases.</p>
+  <table class="styled-table" style="margin-bottom:1rem;">
+    <thead>
+      <tr><th>Risk Tier</th><th>Criteria</th><th>Due Diligence</th><th>Governance Path</th><th>Total SLA</th></tr>
+    </thead>
     <tbody>
-      <tr><td><span class="tier-badge tier-minimal">Minimal</span></td><td>90&ndash;120 days</td><td>13.5&ndash;23 days</td><td>75&ndash;85%</td></tr>
-      <tr><td><span class="tier-badge tier-limited">Limited</span></td><td>90&ndash;120 days</td><td>29&ndash;45 days</td><td>62&ndash;68%</td></tr>
-      <tr><td><span class="tier-badge tier-high">High</span></td><td>90&ndash;120 days</td><td>46&ndash;74 days</td><td>38&ndash;49%</td></tr>
+      <tr>
+        <td><span class="tier-badge tier-unacceptable">Unacceptable</span></td>
+        <td>Critical vendor + high data class + broad regulatory scope</td>
+        <td>N/A</td>
+        <td><strong>End_Rejected</strong> (Phase 1 or 2)</td>
+        <td>&lt; 1 day</td>
+      </tr>
+      <tr>
+        <td><span class="tier-badge tier-high">High</span></td>
+        <td>Critical/major vendor, AI flag, high geographic risk</td>
+        <td>Full (all tasks, incl. on-site)</td>
+        <td>Advisory Board (P7D)</td>
+        <td>~26 days</td>
+      </tr>
+      <tr>
+        <td><span class="tier-badge tier-limited">Limited</span></td>
+        <td>Standard vendor, moderate data classification</td>
+        <td>Standard (tasks 3.1&ndash;3.5, 3.8&ndash;3.9)</td>
+        <td>Committee (P5D)</td>
+        <td>~19 days</td>
+      </tr>
+      <tr>
+        <td><span class="tier-badge tier-minimal">Minimal</span></td>
+        <td>Commodity vendor, low data class, no AI flag</td>
+        <td>Streamlined (Fast-Track eligible)</td>
+        <td>Fast Path (P2D)</td>
+        <td>10&ndash;12 days</td>
+      </tr>
     </tbody>
   </table>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 31: Critical Path & Bottleneck Mitigation -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="30">
-  <h2>Critical Path &amp; Bottleneck Mitigation</h2>
-  <p>Four critical bottlenecks in the traditional governance lifecycle and the acceleration strategies that eliminate them.</p>
-  <table class="styled-table">
-    <thead><tr><th>Bottleneck</th><th>Before</th><th>After</th><th>Mitigation Strategy</th></tr></thead>
-    <tbody>
-      <tr><td>Vendor Evidence Collection</td><td>5&ndash;7 days</td><td>1&ndash;2 days</td><td>Trust Center API integration with automated evidence harvesting</td></tr>
-      <tr><td>Governance Committee Scheduling</td><td>10&ndash;15 days</td><td>1&ndash;10 days</td><td>Risk-tiered routing via DMN&mdash;minimal risk bypasses committee entirely</td></tr>
-      <tr><td>Legal Contract Review</td><td>5&ndash;7 days</td><td>1&ndash;2 days</td><td>AI-assisted clause matching against pre-approved contract templates</td></tr>
-      <tr><td>SDLC Rework Cycles</td><td>+3&ndash;5 days</td><td>0 days</td><td>In-sprint compliance with policy-as-code validation eliminates rework</td></tr>
-    </tbody>
-  </table>
-  <div id="chartBottleneck" class="chart-container" style="min-height:280px;"></div>
-  <p style="font-size:0.75rem; color:var(--sla-gray); margin-top:4px;">Combined bottleneck elimination saves 23.5 days per governance cycle&mdash;agent swarms and DMN routing drive the largest reductions.</p>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 32: Cycle Time Compression Waterfall -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="31">
-  <h2>Cycle Time Compression Waterfall</h2>
-  <p>Five optimization layers progressively compress governance lifecycle from 90&ndash;120 days down to 29&ndash;45 days (68&ndash;75% reduction).</p>
-  <div id="chartWaterfall" class="chart-container" style="min-height:350px;"></div>
-  <p style="font-size:0.75rem; color:var(--sla-gray); margin-top:4px;">Five optimization layers stack progressively&mdash;each layer builds on prior compression, with agent swarms contributing the single largest reduction.</p>
-  <div class="metric-row">
-    <div class="metric"><div class="value">90&ndash;120d</div><div class="label">Baseline (Industry Avg)</div></div>
-    <div class="metric"><div class="value" style="color:var(--sla-emerald);">29&ndash;45d</div><div class="label">Target (Optimized)</div></div>
-    <div class="metric"><div class="value">68&ndash;75%</div><div class="label">Total Reduction</div></div>
-    <div class="metric"><div class="value">5</div><div class="label">Optimization Layers</div></div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 33: KPIs & Success Metrics -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="32">
-  <h2>KPIs &amp; SLA Framework</h2>
-  <table class="styled-table" style="font-size:0.82rem;">
-    <thead><tr><th>SLA Metric</th><th>Target</th><th>Measurement Method</th><th>Category</th></tr></thead>
-    <tbody>
-      <tr><td>Phase Gate Compliance</td><td>&gt; 90%</td><td>Phases completing within SLA window / total phases</td><td>Process</td></tr>
-      <tr><td>Automation Utilization</td><td>&gt; 60%</td><td>Automated task completions / total tasks</td><td>Process</td></tr>
-      <tr><td>First-Pass Approval Rate</td><td>&gt; 80%</td><td>Initiatives approved without revision loop</td><td>Quality</td></tr>
-      <tr><td>Evidence Collection Timeliness</td><td>&gt; 70%</td><td>Evidence collected within SLA / total evidence requests</td><td>TPRM</td></tr>
-      <tr><td>Agent Swarm Processing Time</td><td>&lt; 2 min</td><td>Per SOC 2 report analysis by swarm agents</td><td>Agentic</td></tr>
-      <tr><td>Knowledge Base Pre-Population</td><td>&gt; 65%</td><td>Fields auto-populated at intake from prior assessments</td><td>Knowledge</td></tr>
-      <tr><td>End-to-End Cycle Time</td><td>29&ndash;45d</td><td>Intake to production for standard-risk initiatives</td><td>Outcome</td></tr>
-      <tr><td>Regulatory Coverage Score</td><td>11/11</td><td>Frameworks with active control mapping</td><td>Compliance</td></tr>
-      <tr><td>Vulnerability Remediation SLA</td><td>&gt; 95%</td><td>Critical/High findings remediated within DMN-7 SLA</td><td>Security</td></tr>
-    </tbody>
-  </table>
-  <div class="card-grid" style="margin-top:1rem;">
-    <div class="card">
-      <h4>Process Efficiency</h4>
-      <ul><li>Phase-level SLA adherence by risk tier</li><li>Automation rate per phase</li><li>Rework/revision loop frequency</li></ul>
-    </div>
-    <div class="card gold">
-      <h4>Risk &amp; Compliance</h4>
-      <ul><li>Audit finding reduction rate</li><li>Control effectiveness index</li><li>Three-level gap analysis coverage</li></ul>
-    </div>
-    <div class="card emerald">
-      <h4>Agentic Performance</h4>
-      <ul><li>Agent confidence distribution</li><li>Human escalation rate by tier</li><li>Knowledge base growth velocity</li></ul>
-    </div>
-    <div class="card teal">
-      <h4>Business Outcomes</h4>
-      <ul><li>Time-to-value for new capabilities</li><li>Vendor onboarding throughput</li><li>Cost per governance decision</li></ul>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 34: Implementation Roadmap -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="33">
-  <h2>Implementation Roadmap</h2>
-  <div class="card-grid">
-    <div class="card">
-      <h4>Wave 1: Foundation (Q1)</h4>
-      <ul>
-        <li>BPMN/DMN model library (8 phases + cross-cutting)</li>
-        <li>DMN decision table deployment</li>
-        <li>Lane/RACI governance structure</li>
-        <li>Regulatory annotation framework</li>
-      </ul>
-    </div>
-    <div class="card gold">
-      <h4>Wave 2: Automation (Q2)</h4>
-      <ul>
-        <li>Camunda 7 engine deployment</li>
-        <li>Agent swarm integration (Phase 3)</li>
-        <li>SLA monitoring activation (SP-Cross-1)</li>
-        <li>DMN-driven routing live</li>
-      </ul>
-    </div>
-    <div class="card teal">
-      <h4>Wave 3: Intelligence (Q3)</h4>
-      <ul>
-        <li>AI model governance (Phase 2, 8)</li>
-        <li>Knowledge base AI enrichment</li>
-        <li>Process mining integration (SP-Cross-5)</li>
-        <li>Advanced agent confidence tuning</li>
-      </ul>
-    </div>
-    <div class="card emerald">
-      <h4>Wave 4: Optimization (Q4)</h4>
-      <ul>
-        <li>Full cross-cutting sub-process deployment</li>
-        <li>Continuous improvement automation</li>
-        <li>Regulatory change management live</li>
-        <li>Target state metrics achievement</li>
-      </ul>
-    </div>
-  </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
-</div>
-
-<!-- ============================================================ -->
-<!-- SLIDE 35: Knowledge Architecture -->
-<!-- ============================================================ -->
-<div class="slide" data-slide="34">
-  <h2>Knowledge Architecture</h2>
-  <p>Every phase enriches a shared knowledge base that accelerates subsequent governance decisions and agent accuracy.</p>
   <div class="two-col">
     <div>
-      <h3>Knowledge Flows</h3>
-      <div class="card" style="margin-bottom:12px;">
-        <h4>Phase 1: Knowledge Harvesting (1.5)</h4>
-        <p>Initial population from request metadata, prior assessments, vendor intelligence.</p>
-      </div>
-      <div class="card gold" style="margin-bottom:12px;">
-        <h4>Phase 2: Knowledge Pre-Population (2.7)</h4>
-        <p>Risk assessment patterns, regulatory mapping templates, capability matrices.</p>
-      </div>
-      <div class="card teal" style="margin-bottom:12px;">
-        <h4>Phase 5: Knowledge Update (5.6)</h4>
-        <p>Contract terms, control configurations, exit plan templates.</p>
-      </div>
-      <div class="card emerald">
-        <h4>Phase 8: Knowledge Enrichment (8.7)</h4>
-        <p>Operational patterns, incident learnings, performance benchmarks.</p>
-      </div>
-    </div>
-    <div>
-      <h3>Knowledge Categories</h3>
-      <table class="styled-table">
-        <thead><tr><th>Category</th><th>Source Phases</th></tr></thead>
+      <h3>OB-DMN-1 Inputs</h3>
+      <table class="styled-table small-table">
+        <thead><tr><th>Input</th><th>Type</th><th>Values</th></tr></thead>
         <tbody>
-          <tr><td>Vendor Intelligence</td><td>3, 5, 8</td></tr>
-          <tr><td>Risk Patterns</td><td>2, 3, 4</td></tr>
-          <tr><td>Compliance Templates</td><td>2, 5, 6</td></tr>
-          <tr><td>Architecture Decisions</td><td>3, 6, 7</td></tr>
-          <tr><td>Operational Baselines</td><td>7, 8</td></tr>
-          <tr><td>Incident Learnings</td><td>8, Cross-Cut 3</td></tr>
+          <tr><td>vendorCategory</td><td>string</td><td>critical, major, standard, commodity</td></tr>
+          <tr><td>dataClassification</td><td>integer</td><td>1&ndash;10</td></tr>
+          <tr><td>regulatoryScope</td><td>string</td><td>sox, gdpr, eu-ai-act, dora, multi, none</td></tr>
+          <tr><td>aiFlag</td><td>boolean</td><td>true, false</td></tr>
+          <tr><td>geographicRisk</td><td>string</td><td>high, medium, low</td></tr>
         </tbody>
       </table>
     </div>
+    <div>
+      <h3>OB-DMN-1 Outputs</h3>
+      <table class="styled-table small-table">
+        <thead><tr><th>Output</th><th>Type</th><th>Values</th></tr></thead>
+        <tbody>
+          <tr><td>riskTier</td><td>string</td><td>Unacceptable, High, Limited, Minimal</td></tr>
+          <tr><td><strong>onboardingEligible</strong></td><td>boolean</td><td>true, false</td></tr>
+        </tbody>
+      </table>
+      <div class="card gold" style="margin-top:12px;">
+        <h4>Key Change vs. Standard DMN-1</h4>
+        <p style="font-size:0.82rem;">Added <code>onboardingEligible</code> boolean output. When <code>false</code>, Phase 1 gateway routes directly to End_Rejected. Removes Data Classification &ge; 8 Unacceptable rule (not applicable to onboarding-only scope).</p>
+      </div>
+    </div>
   </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
+  <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 36: Data Objects -->
+<!-- SLIDE 28: Cycle Time Improvement (section header) -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="35">
-  <h2>Data Objects &amp; Integration Points</h2>
-  <p>Key data objects flow through the governance lifecycle, enriched at each phase and consumed by downstream decisions.</p>
+<div class="slide slide-section" data-slide="28">
+  <h2>From 90 Days to Under 30</h2>
+  <p style="color:rgba(255,255,255,0.85); font-size:1.1rem; margin-top:1rem; max-width:800px;">The framework compresses onboarding cycle time by eliminating sequential reviews, automating evidence collection, and applying DMN-driven routing to reduce governance overhead for lower-risk vendors.</p>
+  <div class="metric-row" style="margin-top:2rem;">
+    <div class="metric" style="background:rgba(255,255,255,0.1); color:white;">
+      <div class="value" style="color:#94a3b8;">90d</div>
+      <div class="label" style="color:rgba(255,255,255,0.7);">Industry Baseline</div>
+    </div>
+    <div class="metric" style="background:rgba(255,255,255,0.1); color:white;">
+      <div class="value" style="color:var(--sla-gold);">19d</div>
+      <div class="label" style="color:rgba(255,255,255,0.7);">Standard Target</div>
+    </div>
+    <div class="metric" style="background:rgba(255,255,255,0.1); color:white;">
+      <div class="value" style="color:var(--sla-emerald);">10&ndash;12d</div>
+      <div class="label" style="color:rgba(255,255,255,0.7);">Fast-Track Target</div>
+    </div>
+    <div class="metric" style="background:rgba(255,255,255,0.1); color:white;">
+      <div class="value" style="color:var(--sla-emerald);">79%</div>
+      <div class="label" style="color:rgba(255,255,255,0.7);">Max Reduction</div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 29: Bottleneck Elimination (D3 chart) -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="29">
+  <h2>Bottleneck Elimination</h2>
+  <p>Key process bottlenecks identified in current-state onboarding and their targeted reductions using parallel execution, automation, and DMN-driven routing.</p>
+  <div class="chart-container" id="chartOnboardingBottleneck" style="min-height:280px;"></div>
+  <div class="card-grid" style="margin-top:0.75rem;">
+    <div class="card rose">
+      <h4>Vendor Evidence: 6d &rarr; 1.5d</h4>
+      <p>Automated vendor portal replaces email chasing. Evidence requests triggered by BPMN service task; completeness scored automatically.</p>
+    </div>
+    <div class="card gold">
+      <h4>Committee Scheduling: 12.5d &rarr; 5.5d</h4>
+      <p>DMN-3 routes Fast-Track and Minimal-risk vendors to single-approver fast path, bypassing full committee scheduling overhead.</p>
+    </div>
+    <div class="card">
+      <h4>Contract Review: 6d &rarr; 1.5d</h4>
+      <p>Parallel execution of security controls (5.3), DPA (5.4), and attestations (5.5) eliminates sequential legal review queue.</p>
+    </div>
+    <div class="card emerald">
+      <h4>SDLC Rework: 4d &rarr; 0d</h4>
+      <p>In-sprint compliance checks and quality gate at Phase 5 eliminate rework loops discovered late in implementation.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 30: Evidence Automation Matrix -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="30">
+  <h2>Evidence Automation Matrix</h2>
+  <p>Compliance artifacts generated automatically at each phase gate, replacing manual evidence collection with deterministic BPM-driven outputs.</p>
   <table class="styled-table">
-    <thead><tr><th>Data Object</th><th>Created</th><th>Enriched</th><th>Consumed</th></tr></thead>
+    <thead>
+      <tr><th>Phase</th><th>Artifact</th><th>Generator</th><th>Regulatory Use</th><th>Automation %</th></tr>
+    </thead>
     <tbody>
-      <tr><td>Initiative Request Package</td><td>Phase 1</td><td>Phase 1&ndash;2</td><td>All Phases</td></tr>
-      <tr><td>Risk Assessment Report</td><td>Phase 2</td><td>Phase 3</td><td>Phase 4, 8</td></tr>
-      <tr><td>Due Diligence Evidence Pack</td><td>Phase 3</td><td>Phase 3</td><td>Phase 4, 5</td></tr>
-      <tr><td>Governance Decision Record</td><td>Phase 4</td><td>Phase 4</td><td>Phase 5&ndash;8</td></tr>
-      <tr><td>Contract &amp; Controls Package</td><td>Phase 5</td><td>Phase 5</td><td>Phase 6&ndash;8</td></tr>
-      <tr><td>SDLC Artifact Bundle</td><td>Phase 6</td><td>Phase 6</td><td>Phase 7</td></tr>
-      <tr><td>Deployment Manifest</td><td>Phase 7</td><td>Phase 7</td><td>Phase 8</td></tr>
-      <tr><td>Operational Health Dashboard</td><td>Phase 8</td><td>Ongoing</td><td>Phase 8, Cross-Cut</td></tr>
+      <tr><td><strong>Phase 1</strong></td><td>Intake Record + Risk Tier Assignment</td><td>Camunda DMN + Service Task</td><td>OCC 2023-17 Inventory</td><td style="color:var(--sla-emerald);font-weight:600;">95%</td></tr>
+      <tr><td><strong>Phase 2</strong></td><td>Risk Assessment Record + Regulatory Gap List</td><td>GRC Platform API + User Task output</td><td>OCC 2023-17, GDPR, SR 11-7</td><td style="color:var(--sla-emerald);font-weight:600;">70%</td></tr>
+      <tr><td><strong>Phase 3</strong></td><td>Due Diligence Report + Swarm Synthesis</td><td>AI Swarm Agent + Camunda history</td><td>OCC 2023-17, NIST CSF, SOX</td><td style="color:var(--sla-emerald);font-weight:600;">80%</td></tr>
+      <tr><td><strong>Phase 4</strong></td><td>Governance Decision Record + Vote Log</td><td>Camunda Tasklist + Audit Trail</td><td>SOX 302/404, OCC 2023-17</td><td style="color:var(--sla-gold);font-weight:600;">50%</td></tr>
+      <tr><td><strong>Phase 5</strong></td><td>Executed Contract Package + Controls Baseline</td><td>CLM + eSign + GRC Platform</td><td>DORA, SOX, GDPR, OCC 2023-17</td><td style="color:var(--sla-gold);font-weight:600;">60%</td></tr>
     </tbody>
   </table>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
+  <div class="card teal" style="margin-top:1rem;">
+    <h4>Audit Trail Completeness</h4>
+    <p style="font-size:0.85rem;">Camunda history API retains all task assignments, decision outputs, timer events, and signal throws for the full lifecycle. Every DMN table evaluation is logged with input/output snapshot. Evidence package is automatically assembled at Phase 5 Quality Gate and linked to the vendor master record.</p>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 37: Call to Action -->
+<!-- SLIDE 31: Ongoing Monitoring & Close-out -->
 <!-- ============================================================ -->
-<div class="slide slide-section" data-slide="36">
-  <h2>Decision Request</h2>
-  <p style="font-size:1.1rem; color:rgba(255,255,255,0.9); max-width:800px;">Approve pilot deployment of the SLA Governance Platform for one business unit, validating the 8-phase lifecycle with DMN-driven routing and agent-augmented due diligence.</p>
-  <div style="margin-top:1.5rem;">
-    <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
-      <div class="card" style="background:rgba(255,255,255,0.1); border-left-color:var(--sla-gold); color:white;">
-        <h4 style="color:var(--sla-gold);">Chief Risk Officer</h4>
-        <ul style="color:rgba(255,255,255,0.9); font-size:0.85rem;">
-          <li>Approve governance framework adoption</li>
-          <li>Validate risk tier classification model</li>
-          <li>Authorize DMN decision table deployment</li>
-        </ul>
-      </div>
-      <div class="card" style="background:rgba(255,255,255,0.1); border-left-color:var(--sla-teal); color:white;">
-        <h4 style="color:var(--sla-teal);">Chief Technology Officer</h4>
-        <ul style="color:rgba(255,255,255,0.9); font-size:0.85rem;">
-          <li>Allocate engineering resources for Camunda 7 integration</li>
-          <li>Approve agent swarm architecture for Phase 3</li>
-          <li>Sponsor SDLC pipeline alignment</li>
-        </ul>
-      </div>
-      <div class="card" style="background:rgba(255,255,255,0.1); border-left-color:var(--sla-emerald); color:white;">
-        <h4 style="color:var(--sla-emerald);">Chief Compliance Officer</h4>
-        <ul style="color:rgba(255,255,255,0.9); font-size:0.85rem;">
-          <li>Validate regulatory alignment with examination schedule</li>
-          <li>Approve 11-framework control mapping</li>
-          <li>Certify audit trail completeness</li>
-        </ul>
+<div class="slide" data-slide="31">
+  <h2>Ongoing Monitoring &amp; Close-out</h2>
+  <p>After Phase 5 execution, the vendor record enters continuous monitoring via the SLA cross-cutting sub-process. Four monitoring tracks run in parallel.</p>
+  <div class="two-col">
+    <div>
+      <h3>Post-Onboarding Monitoring Tracks</h3>
+      <table class="styled-table small-table">
+        <thead><tr><th>Track</th><th>Trigger</th><th>Frequency</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td>SLA Compliance</td><td>ISO 8601 timer events</td><td>Continuous</td><td>Automation</td></tr>
+          <tr><td>Vendor Performance</td><td>Quarterly review cadence</td><td>Quarterly</td><td>Governance</td></tr>
+          <tr><td>Regulatory Change</td><td>Horizon scanning feed</td><td>Monthly</td><td>Compliance</td></tr>
+          <tr><td>Security Posture</td><td>Vulnerability feed + SOC alerts</td><td>Continuous</td><td>Technical</td></tr>
+        </tbody>
+      </table>
+      <div class="card gold" style="margin-top:1rem;">
+        <h4>OB-DMN-4 Breach Escalation</h4>
+        <p style="font-size:0.82rem;">Four-level escalation ladder: L1 notify-sponsor &rarr; L2 escalate-governance &rarr; L3 board-alert (High risk) &rarr; L4 auto-reject. Triggered by boundary timer events on every phase SLA.</p>
       </div>
     </div>
-    <div style="margin-top:1.5rem; display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-      <div class="card" style="background:rgba(255,255,255,0.08); border-left-color:var(--sla-blue); color:white;">
-        <h4 style="color:var(--sla-blue);">Projected ROI</h4>
-        <ul style="color:rgba(255,255,255,0.9); font-size:0.85rem;">
-          <li><strong>Cycle Time:</strong> 68&ndash;75% reduction (90&ndash;120d &rarr; 29&ndash;45d)</li>
-          <li><strong>Compliance Cost:</strong> 40&ndash;60% reduction via automated control validation</li>
-          <li><strong>Audit Risk:</strong> Deterministic evidence trail eliminates finding gaps</li>
-        </ul>
+    <div>
+      <h3>Close-out Conditions</h3>
+      <div class="card emerald" style="margin-bottom:10px;">
+        <h4>Successful Onboarding</h4>
+        <p style="font-size:0.82rem;">Phase 5 Quality Gate passes. Handoff artifact delivered to Phase 6 SDLC team. Vendor record activated in GRC platform. SLA monitoring sub-process initializes.</p>
       </div>
-      <div class="card" style="background:rgba(255,255,255,0.08); border-left-color:var(--sla-rose); color:white;">
-        <h4 style="color:var(--sla-rose);">Deployment Timeline</h4>
-        <ul style="color:rgba(255,255,255,0.9); font-size:0.85rem;">
-          <li><strong>Days 1&ndash;90:</strong> Pilot &mdash; single business unit, Phases 1&ndash;4</li>
-          <li><strong>Months 4&ndash;6:</strong> Phase 1 &mdash; full 8-phase lifecycle, one pathway</li>
-          <li><strong>Months 7&ndash;12:</strong> Full deployment &mdash; all pathways, agent swarms, cross-cutting</li>
-        </ul>
+      <div class="card rose" style="margin-bottom:10px;">
+        <h4>Rejection (End_Rejected)</h4>
+        <p style="font-size:0.82rem;">Triggered at Phase 1/2 (Unacceptable risk tier) or Phase 4 (Governance rejection). All evidence artifacts archived. Vendor notified via message flow. Appeal window: 30 days.</p>
+      </div>
+      <div class="card">
+        <h4>SLA Breach Auto-Reject (L4)</h4>
+        <p style="font-size:0.82rem;">OB-DMN-4 Level 4 breach triggers auto-reject after fourth escalation cycle without resolution. All stakeholders notified simultaneously. Escalation record preserved.</p>
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>Confidential</span><span>Enterprise Software Governance</span></div>
+  <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 32: Implementation Roadmap / Call to Action -->
+<!-- ============================================================ -->
+<div class="slide slide-hero" data-slide="32" style="justify-content:flex-start;">
+  <h1 style="font-size:2.2rem; margin-bottom:0.5rem;">Implementation Roadmap</h1>
+  <h2 style="font-size:1.3rem; color:rgba(255,255,255,0.85); margin-bottom:1.5rem;">Four steps from framework adoption to go-live</h2>
+  <div class="card-grid" style="margin-bottom:1.5rem;">
+    <div class="card" style="background:rgba(255,255,255,0.1); border-left-color:var(--sla-gold); color:white;">
+      <h4 style="color:var(--sla-gold);">1. Validate Task I/O</h4>
+      <p style="color:rgba(255,255,255,0.8); font-size:0.85rem;">Review Task I/O dictionaries with business and technical stakeholders. Confirm input sources and output consumers for each task against customer system inventory.</p>
+    </div>
+    <div class="card" style="background:rgba(255,255,255,0.1); border-left-color:var(--sla-teal); color:white;">
+      <h4 style="color:var(--sla-teal);">2. Configure DMN Tables</h4>
+      <p style="color:rgba(255,255,255,0.8); font-size:0.85rem;">Populate OB-DMN-1 through OB-DMN-4 with customer-specific thresholds: vendor category definitions, data classification scales, regulatory scope mappings, and SLA breach timing.</p>
+    </div>
+    <div class="card" style="background:rgba(255,255,255,0.1); border-left-color:var(--sla-emerald); color:white;">
+      <h4 style="color:var(--sla-emerald);">3. Deploy to Camunda 7</h4>
+      <p style="color:rgba(255,255,255,0.8); font-size:0.85rem;">Deploy all 5 phase BPMN models plus the 4 DMN tables to Camunda Platform 7. Configure candidateGroups to match customer LDAP/AD groups. Enable BPM engine SLA timer events.</p>
+    </div>
+    <div class="card" style="background:rgba(255,255,255,0.1); border-left-color:var(--sla-blue); color:white;">
+      <h4 style="color:var(--sla-blue);">4. Integrate Monitoring</h4>
+      <p style="color:rgba(255,255,255,0.8); font-size:0.85rem;">Connect real-time SLA dashboard to Camunda history API. Configure OB-DMN-4 breach escalation to customer notification channels (email, Slack, ServiceNow). Run parallel pilot with first 3 vendors.</p>
+    </div>
+  </div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+    <div class="card" style="background:rgba(255,255,255,0.08); border-left-color:var(--sla-gold); color:white;">
+      <h4 style="color:var(--sla-gold);">Projected ROI</h4>
+      <ul style="color:rgba(255,255,255,0.85); font-size:0.82rem;">
+        <li><strong>Cycle Time:</strong> 65&ndash;79% reduction (45&ndash;90d &rarr; 10&ndash;19d)</li>
+        <li><strong>Compliance Cost:</strong> 40&ndash;60% reduction via automated control validation</li>
+        <li><strong>Audit Risk:</strong> Deterministic evidence trail eliminates finding gaps</li>
+      </ul>
+    </div>
+    <div class="card" style="background:rgba(255,255,255,0.08); border-left-color:var(--sla-rose); color:white;">
+      <h4 style="color:var(--sla-rose);">Deployment Timeline</h4>
+      <ul style="color:rgba(255,255,255,0.85); font-size:0.82rem;">
+        <li><strong>Days 1&ndash;30:</strong> DMN configuration + Camunda deployment</li>
+        <li><strong>Days 31&ndash;60:</strong> Pilot &mdash; 3 vendors, Fast-Track + Standard paths</li>
+        <li><strong>Days 61&ndash;90:</strong> Full rollout &mdash; all tiers, monitoring dashboards live</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Governance</span><span>Confidential</span></div>
 </div>
 
 </main>
@@ -1401,7 +1718,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Open Sans Condensed', sans-serif; font-we
 <!-- JavaScript: Navigation + D3 Visualizations -->
 <!-- ============================================================ -->
 <script>
-// Scroll-snap navigation (kmflow style)
+// Scroll-snap navigation
 const slidesContainer = document.getElementById('slidesContainer');
 const slides = document.querySelectorAll('.slide');
 const totalSlides = slides.length;
@@ -1470,140 +1787,16 @@ const chartObserver = new IntersectionObserver((entries) => {
     if (entry.isIntersecting && !entry.target.dataset.rendered) {
       entry.target.dataset.rendered = 'true';
       const chartId = entry.target.id;
-      if (chartId === 'chartCycleTime') renderCycleTimeChart();
-      if (chartId === 'chartAutomation') renderAutomationChart();
-      if (chartId === 'chartDmnFramework') renderDmnChart();
-      if (chartId === 'chartBottleneck') renderBottleneckChart();
-      if (chartId === 'chartWaterfall') renderWaterfallChart();
+      if (chartId === 'chartOnboardingBottleneck') renderOnboardingBottleneckChart();
     }
   });
 }, { root: slidesContainer, threshold: 0.3 });
 
 document.querySelectorAll('.chart-container[id]').forEach(el => chartObserver.observe(el));
 
-// Cycle Time Chart
-function renderCycleTimeChart() {
-  const container = d3.select('#chartCycleTime');
-  const width = container.node().clientWidth - 40;
-  const height = 280;
-  const svg = container.append('svg').attr('width', width).attr('height', height);
-
-  const data = [
-    { tier: 'Minimal', baseline: 105, target: 18, color: '#059669' },
-    { tier: 'Limited', baseline: 105, target: 37, color: '#2563EB' },
-    { tier: 'High', baseline: 105, target: 60, color: '#D97706' }
-  ];
-
-  const x = d3.scaleBand().domain(data.map(d => d.tier)).range([60, width - 20]).padding(0.4);
-  const y = d3.scaleLinear().domain([0, 130]).range([height - 30, 10]);
-
-  svg.selectAll('.bar-base').data(data).enter().append('rect')
-    .attr('x', d => x(d.tier)).attr('y', d => y(d.baseline))
-    .attr('width', x.bandwidth() / 2 - 2).attr('height', d => height - 30 - y(d.baseline))
-    .attr('fill', '#CBD5E1').attr('rx', 3);
-
-  svg.selectAll('.bar-target').data(data).enter().append('rect')
-    .attr('x', d => x(d.tier) + x.bandwidth() / 2 + 2).attr('y', d => y(d.target))
-    .attr('width', x.bandwidth() / 2 - 2).attr('height', d => height - 30 - y(d.target))
-    .attr('fill', d => d.color).attr('rx', 3);
-
-  svg.selectAll('.label-base').data(data).enter().append('text')
-    .attr('x', d => x(d.tier) + x.bandwidth() / 4).attr('y', d => y(d.baseline) - 4)
-    .attr('text-anchor', 'middle').attr('font-size', '11px').attr('fill', '#64748B')
-    .text(d => d.baseline + 'd');
-
-  svg.selectAll('.label-target').data(data).enter().append('text')
-    .attr('x', d => x(d.tier) + 3 * x.bandwidth() / 4).attr('y', d => y(d.target) - 4)
-    .attr('text-anchor', 'middle').attr('font-size', '11px').attr('font-weight', '600').attr('fill', d => d.color)
-    .text(d => d.target + 'd');
-
-  svg.append('g').attr('transform', `translate(0,${height - 30})`).call(d3.axisBottom(x)).selectAll('text').attr('font-size', '12px');
-  svg.append('g').attr('transform', 'translate(55,0)').call(d3.axisLeft(y).ticks(5)).selectAll('text').attr('font-size', '10px');
-
-  const legend = svg.append('g').attr('transform', `translate(${width - 180}, 15)`);
-  legend.append('rect').attr('width', 12).attr('height', 12).attr('fill', '#CBD5E1').attr('rx', 2);
-  legend.append('text').attr('x', 16).attr('y', 10).text('Baseline').attr('font-size', '11px');
-  legend.append('rect').attr('x', 80).attr('width', 12).attr('height', 12).attr('fill', '#2563EB').attr('rx', 2);
-  legend.append('text').attr('x', 96).attr('y', 10).text('Target').attr('font-size', '11px');
-}
-
-// Automation Chart
-function renderAutomationChart() {
-  const container = d3.select('#chartAutomation');
-  const width = container.node().clientWidth - 40;
-  const height = 280;
-  const svg = container.append('svg').attr('width', width).attr('height', height);
-
-  const data = [
-    { phase: 'Ph 1', value: 75 }, { phase: 'Ph 2', value: 60 },
-    { phase: 'Ph 3', value: 70 }, { phase: 'Ph 4', value: 40 },
-    { phase: 'Ph 5', value: 50 }, { phase: 'Ph 6', value: 55 },
-    { phase: 'Ph 7', value: 60 }, { phase: 'Ph 8', value: 65 }
-  ];
-
-  const x = d3.scaleBand().domain(data.map(d => d.phase)).range([50, width - 10]).padding(0.3);
-  const y = d3.scaleLinear().domain([0, 100]).range([height - 30, 10]);
-  const colorScale = d3.scaleLinear().domain([40, 75]).range(['#D97706', '#059669']);
-
-  svg.selectAll('rect').data(data).enter().append('rect')
-    .attr('x', d => x(d.phase)).attr('y', d => y(d.value))
-    .attr('width', x.bandwidth()).attr('height', d => height - 30 - y(d.value))
-    .attr('fill', d => colorScale(d.value)).attr('rx', 3);
-
-  svg.selectAll('.val').data(data).enter().append('text')
-    .attr('x', d => x(d.phase) + x.bandwidth() / 2).attr('y', d => y(d.value) - 5)
-    .attr('text-anchor', 'middle').attr('font-size', '12px').attr('font-weight', '600')
-    .text(d => d.value + '%');
-
-  svg.append('g').attr('transform', `translate(0,${height - 30})`).call(d3.axisBottom(x)).selectAll('text').attr('font-size', '11px');
-  svg.append('g').attr('transform', 'translate(45,0)').call(d3.axisLeft(y).ticks(5).tickFormat(d => d + '%')).selectAll('text').attr('font-size', '10px');
-}
-
-// DMN Framework Chart
-function renderDmnChart() {
-  const container = d3.select('#chartDmnFramework');
-  const width = container.node().clientWidth - 40;
-  const height = 300;
-  const svg = container.append('svg').attr('width', width).attr('height', height);
-
-  const nodes = [
-    { id: 'center', label: 'DMN\nFramework', x: width/2, y: height/2, r: 40, color: '#0D2137' },
-    { id: 'dmn1', label: 'DMN-1\nRisk Tier', x: width/2, y: 40, r: 30, color: '#DC2626' },
-    { id: 'dmn2', label: 'DMN-2\nPathway', x: width/2 + 170, y: 70, r: 30, color: '#2563EB' },
-    { id: 'dmn3', label: 'DMN-3\nGov Review', x: width/2 + 200, y: height/2, r: 30, color: '#0891b2' },
-    { id: 'dmn4', label: 'DMN-4\nAutomation', x: width/2 + 170, y: height - 70, r: 30, color: '#059669' },
-    { id: 'dmn5', label: 'DMN-5\nEscalation', x: width/2, y: height - 40, r: 30, color: '#D97706' },
-    { id: 'dmn6', label: 'DMN-6\nChange Risk', x: width/2 - 170, y: height - 70, r: 30, color: '#7c3aed' },
-    { id: 'dmn7', label: 'DMN-7\nVuln Routing', x: width/2 - 200, y: height/2, r: 30, color: '#be185d' },
-    { id: 'dmn8', label: 'DMN-8\nMonitoring', x: width/2 - 170, y: 70, r: 30, color: '#0d9488' }
-  ];
-
-  const links = nodes.slice(1).map(n => ({ source: 'center', target: n.id }));
-  const nodeMap = Object.fromEntries(nodes.map(n => [n.id, n]));
-
-  svg.selectAll('line').data(links).enter().append('line')
-    .attr('x1', d => nodeMap[d.source].x).attr('y1', d => nodeMap[d.source].y)
-    .attr('x2', d => nodeMap[d.target].x).attr('y2', d => nodeMap[d.target].y)
-    .attr('stroke', '#CBD5E1').attr('stroke-width', 2);
-
-  const g = svg.selectAll('g.node').data(nodes).enter().append('g');
-  g.append('circle').attr('cx', d => d.x).attr('cy', d => d.y).attr('r', d => d.r)
-    .attr('fill', d => d.color).attr('opacity', 0.9);
-
-  g.each(function(d) {
-    const lines = d.label.split('\n');
-    const text = d3.select(this).append('text')
-      .attr('x', d.x).attr('y', d.y - (lines.length - 1) * 6)
-      .attr('text-anchor', 'middle').attr('fill', 'white').attr('font-size', d.r > 35 ? '11px' : '9px').attr('font-weight', '600');
-    lines.forEach((line, i) => {
-      text.append('tspan').attr('x', d.x).attr('dy', i === 0 ? 0 : '1.1em').text(line);
-    });
-  });
-}
-
-// Bottleneck Mitigation Chart
-function renderBottleneckChart() {
-  const container = d3.select('#chartBottleneck');
+// Bottleneck Chart for Onboarding
+function renderOnboardingBottleneckChart() {
+  const container = d3.select('#chartOnboardingBottleneck');
   const width = container.node().clientWidth - 40;
   const height = 240;
   const svg = container.append('svg').attr('width', width).attr('height', height);
@@ -1615,7 +1808,7 @@ function renderBottleneckChart() {
     { label: 'SDLC Rework', before: 4, after: 0, color: '#059669' }
   ];
 
-  const margin = { left: 160, right: 60 };
+  const margin = { left: 175, right: 70 };
   const x = d3.scaleLinear().domain([0, 16]).range([margin.left, width - margin.right]);
   const y = d3.scaleBand().domain(data.map(d => d.label)).range([20, height - 30]).padding(0.35);
 
@@ -1641,92 +1834,14 @@ function renderBottleneckChart() {
     .attr('x', margin.left - 8).attr('y', d => y(d.label) + y.bandwidth() / 2 + 4)
     .attr('text-anchor', 'end').attr('font-size', '11px').attr('fill', '#1E293B').text(d => d.label);
 
-  const legend = svg.append('g').attr('transform', `translate(${width - 180}, 5)`);
+  const legend = svg.append('g').attr('transform', 'translate(' + (width - 170) + ', 5)');
   legend.append('rect').attr('width', 10).attr('height', 10).attr('fill', '#CBD5E1').attr('rx', 2);
-  legend.append('text').attr('x', 14).attr('y', 9).text('Before').attr('font-size', '10px');
-  legend.append('rect').attr('x', 70).attr('width', 10).attr('height', 10).attr('fill', '#2563EB').attr('rx', 2);
-  legend.append('text').attr('x', 84).attr('y', 9).text('After').attr('font-size', '10px');
-}
+  legend.append('text').attr('x', 14).attr('y', 9).text('Before SLA').attr('font-size', '10px').attr('fill', '#64748B');
+  legend.append('rect').attr('x', 90).attr('width', 10).attr('height', 10).attr('fill', '#2563EB').attr('rx', 2);
+  legend.append('text').attr('x', 104).attr('y', 9).text('After SLA').attr('font-size', '10px').attr('fill', '#2563EB');
 
-// Compression Waterfall Chart
-function renderWaterfallChart() {
-  const container = d3.select('#chartWaterfall');
-  const width = container.node().clientWidth - 40;
-  const height = 320;
-  const svg = container.append('svg').attr('width', width).attr('height', height);
-
-  const layers = [
-    { label: 'Baseline', start: 0, value: 105, total: 105, color: '#CBD5E1', isBase: true },
-    { label: 'BPMN Automation', start: 105, value: -20, total: 85, color: '#2563EB' },
-    { label: 'Knowledge Capture', start: 85, value: -18, total: 67, color: '#0891b2' },
-    { label: 'Agent Swarm', start: 67, value: -15, total: 52, color: '#059669' },
-    { label: 'Risk-Tiered Routing', start: 52, value: -10, total: 42, color: '#D97706' },
-    { label: 'In-Sprint Compliance', start: 42, value: -5, total: 37, color: '#7c3aed' },
-    { label: 'Target', start: 0, value: 37, total: 37, color: '#059669', isTarget: true }
-  ];
-
-  const margin = { left: 50, right: 20, top: 20, bottom: 50 };
-  const x = d3.scaleBand().domain(layers.map(d => d.label)).range([margin.left, width - margin.right]).padding(0.25);
-  const y = d3.scaleLinear().domain([0, 120]).range([height - margin.bottom, margin.top]);
-
-  // Connector lines between bars
-  layers.forEach((d, i) => {
-    if (i > 0 && i < layers.length - 1) {
-      svg.append('line')
-        .attr('x1', x(layers[i-1].label) + x.bandwidth())
-        .attr('y1', y(layers[i-1].isBase ? layers[i-1].value : d.start))
-        .attr('x2', x(d.label))
-        .attr('y2', y(d.start))
-        .attr('stroke', '#94A3B8').attr('stroke-dasharray', '3,3').attr('stroke-width', 1);
-    }
-  });
-
-  // Bars
-  svg.selectAll('.wf-bar').data(layers).enter().append('rect')
-    .attr('x', d => x(d.label))
-    .attr('y', d => {
-      if (d.isBase || d.isTarget) return y(d.value);
-      return y(d.start);
-    })
-    .attr('width', x.bandwidth())
-    .attr('height', d => {
-      if (d.isBase || d.isTarget) return y(0) - y(d.value);
-      return y(0) - y(Math.abs(d.value));
-    })
-    .attr('fill', d => d.color).attr('rx', 3).attr('opacity', 0.85);
-
-  // Value labels
-  svg.selectAll('.wf-val').data(layers).enter().append('text')
-    .attr('x', d => x(d.label) + x.bandwidth() / 2)
-    .attr('y', d => {
-      if (d.isBase) return y(d.value) - 5;
-      if (d.isTarget) return y(d.value) - 5;
-      return y(d.start) - 5;
-    })
-    .attr('text-anchor', 'middle').attr('font-size', '11px').attr('font-weight', '600')
-    .attr('fill', d => d.isBase ? '#64748B' : d.color)
-    .text(d => {
-      if (d.isBase) return d.value + 'd';
-      if (d.isTarget) return d.value + 'd';
-      return d.value + 'd';
-    });
-
-  // Reduction % labels
-  layers.forEach(d => {
-    if (!d.isBase && !d.isTarget) {
-      const pct = Math.round(Math.abs(d.value) / 105 * 100);
-      svg.append('text')
-        .attr('x', x(d.label) + x.bandwidth() / 2)
-        .attr('y', y(d.start) + (y(0) - y(Math.abs(d.value))) / 2 + 4)
-        .attr('text-anchor', 'middle').attr('font-size', '9px').attr('fill', 'white').attr('font-weight', '600')
-        .text('-' + pct + '%');
-    }
-  });
-
-  svg.append('g').attr('transform', `translate(0,${height - margin.bottom})`)
-    .call(d3.axisBottom(x)).selectAll('text').attr('font-size', '9px').attr('transform', 'rotate(-20)').attr('text-anchor', 'end');
-  svg.append('g').attr('transform', `translate(${margin.left},0)`)
-    .call(d3.axisLeft(y).ticks(5).tickFormat(d => d + 'd')).selectAll('text').attr('font-size', '10px');
+  svg.append('g').attr('transform', 'translate(0,' + (height - 30) + ')')
+    .call(d3.axisBottom(x).ticks(6).tickFormat(d => d + 'd')).selectAll('text').attr('font-size', '10px');
 }
 </script>
 </body>

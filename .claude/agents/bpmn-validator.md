@@ -359,7 +359,7 @@ bash scripts/validators/validate-bpmn.sh [file.bpmn]
 
 ## Context Requirements
 When validating BPMN/DMN files, the agent needs:
-- Access to all .bpmn and .dmn files in the project (processes/phase-{1..8}-*/, processes/master/, processes/cross-cutting/, decisions/dmn/)
+- Access to all .bpmn and .dmn files in the project (framework/processes/phase-{1..8}-*/, framework/processes/master/, framework/processes/cross-cutting/, framework/decisions/dmn/, customers/fs-onboarding/processes/)
 - Understanding of the current Camunda version (7, not 8)
 - List of valid SLA candidateGroups (9+1 groups — see Section 3 above)
 - List of valid DMN table IDs (8 tables — see Section 4 above)

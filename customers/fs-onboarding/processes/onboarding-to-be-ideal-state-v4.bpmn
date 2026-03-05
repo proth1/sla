@@ -19,11 +19,11 @@
         <bpmn:flowNodeRef>Task_FinalizeContract</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>End_VendorNotSelected</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Receive_VendorResponse</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>End_VendorResponseSLABreach</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Timer_VendorResponseSLA</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Receive_SignedContract</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>End_ContractSLABreach</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Timer_ContractSLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Timer_VendorResponseSLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_VendorResponseSLABreach</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_ProductMgmt" name="Product Management">
         <bpmn:flowNodeRef>Task_InitialTriage</bpmn:flowNodeRef>
@@ -481,16 +481,6 @@
       <bpmn:incoming>Flow_PM8</bpmn:incoming>
       <bpmn:outgoing>Flow_PM8b</bpmn:outgoing>
     </bpmn:receiveTask>
-    <bpmn:boundaryEvent id="Timer_VendorResponseSLA" name="5 Day&#10;SLA" cancelActivity="false" attachedToRef="Receive_VendorResponse">
-      <bpmn:outgoing>Flow_VendorResponseSLA</bpmn:outgoing>
-      <bpmn:timerEventDefinition id="TimerDef_VendorResponse">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:boundaryEvent>
-    <bpmn:endEvent id="End_VendorResponseSLABreach" name="Vendor Response&#10;SLA Breach">
-      <bpmn:incoming>Flow_VendorResponseSLA</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_VendorResponseSLA" sourceRef="Timer_VendorResponseSLA" targetRef="End_VendorResponseSLABreach" />
     <bpmn:receiveTask id="Receive_SignedContract" name="Await Signed&#10;Contract">
       <bpmn:incoming>Flow_PM13</bpmn:incoming>
       <bpmn:outgoing>Flow_PM13b</bpmn:outgoing>
@@ -567,6 +557,16 @@
     <bpmn:sequenceFlow id="Flow_PM_End" sourceRef="Task_CloseRequest" targetRef="Activity_0zf4l0g" />
     <bpmn:sequenceFlow id="Flow_PM_FinalNo" name="No" sourceRef="GW_FinalDecision" targetRef="End_FinalRejected" />
     <bpmn:sequenceFlow id="Flow_0033t8v" sourceRef="Activity_0zf4l0g" targetRef="End_SoftwareOnboarded" />
+    <bpmn:boundaryEvent id="Timer_VendorResponseSLA" name="5 Day&#10;SLA" cancelActivity="false" attachedToRef="Receive_VendorResponse">
+      <bpmn:outgoing>Flow_1poyzh5</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_VendorResponse">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="End_VendorResponseSLABreach" name="Vendor Response&#10;SLA Breach">
+      <bpmn:incoming>Flow_1poyzh5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1poyzh5" sourceRef="Timer_VendorResponseSLA" targetRef="End_VendorResponseSLABreach" />
   </bpmn:process>
   <bpmn:process id="Process_Vendor" name="Vendor / Third Party" isExecutable="false" camunda:historyTimeToLive="180">
     <bpmn:startEvent id="Start_VendorEngagement" name="Vendor&#10;Engagement&#10;Initiated">
@@ -717,16 +717,16 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_IdealState">
       <bpmndi:BPMNShape id="Participant_ProductMgmt_di" bpmnElement="Participant_ProductMgmt" isHorizontal="true">
-        <dc:Bounds x="160" y="80" width="4940" height="1041" />
+        <dc:Bounds x="160" y="80" width="4940" height="1120" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_Procurement_di" bpmnElement="Lane_Procurement" isHorizontal="true">
-        <dc:Bounds x="190" y="950" width="4910" height="171" />
+      <bpmndi:BPMNShape id="Lane_Requester_di" bpmnElement="Lane_Requester" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="4910" height="350" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_ProductMgmt_di" bpmnElement="Lane_ProductMgmt" isHorizontal="true">
         <dc:Bounds x="190" y="430" width="4910" height="520" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_Requester_di" bpmnElement="Lane_Requester" isHorizontal="true">
-        <dc:Bounds x="190" y="80" width="4910" height="350" />
+      <bpmndi:BPMNShape id="Lane_Procurement_di" bpmnElement="Lane_Procurement" isHorizontal="true">
+        <dc:Bounds x="190" y="950" width="4910" height="250" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_InitialTriage_di" bpmnElement="Task_InitialTriage">
         <dc:Bounds x="890" y="690" width="100" height="80" />
@@ -917,8 +917,26 @@
           <dc:Bounds x="2988" y="1056" width="63" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_VendorResponseSLABreach_di" bpmnElement="End_VendorResponseSLABreach">
+        <dc:Bounds x="2712" y="1112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2686" y="1156" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP_PDLC_di" bpmnElement="SP_PDLC" isExpanded="false">
         <dc:Bounds x="3735" y="690" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_VendorResponse_di" bpmnElement="Receive_VendorResponse">
+        <dc:Bounds x="2560" y="990" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_SignedContract_di" bpmnElement="Receive_SignedContract">
+        <dc:Bounds x="3895" y="990" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_ContractSLABreach_di" bpmnElement="End_ContractSLABreach">
+        <dc:Bounds x="4007" y="1052" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3988" y="1088" width="66" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Timer_TriageSLA_di" bpmnElement="Timer_TriageSLA">
         <dc:Bounds x="922" y="752" width="36" height="36" />
@@ -926,6 +944,22 @@
           <dc:Bounds x="955" y="786" width="29" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_ContractSLA_di" bpmnElement="Timer_ContractSLA">
+        <dc:Bounds x="3927" y="1052" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3971" y="1056" width="29" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_VendorResponseSLA_di" bpmnElement="Timer_VendorResponseSLA">
+        <dc:Bounds x="2642" y="1052" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2685" y="1076" width="29" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_ContractSLA_di" bpmnElement="Flow_ContractSLA">
+        <di:waypoint x="3963" y="1070" />
+        <di:waypoint x="4007" y="1070" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_R_ToTriage_di" bpmnElement="Flow_R_ToTriage">
         <di:waypoint x="880" y="340" />
         <di:waypoint x="940" y="340" />
@@ -997,6 +1031,16 @@
           <dc:Bounds x="1744" y="712" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Par5_di" bpmnElement="Flow_PM_Par5">
+        <di:waypoint x="2060" y="755" />
+        <di:waypoint x="2060" y="1030" />
+        <di:waypoint x="2140" y="1030" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_Par5J_di" bpmnElement="Flow_PM_Par5J">
+        <di:waypoint x="2240" y="1030" />
+        <di:waypoint x="2320" y="1030" />
+        <di:waypoint x="2320" y="755" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PM_BuildMerge_di" bpmnElement="Flow_PM_BuildMerge">
         <di:waypoint x="1880" y="730" />
         <di:waypoint x="1935" y="730" />
@@ -1025,11 +1069,6 @@
         <di:waypoint x="2060" y="880" />
         <di:waypoint x="2140" y="880" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_Par5_di" bpmnElement="Flow_PM_Par5">
-        <di:waypoint x="2060" y="755" />
-        <di:waypoint x="2060" y="1030" />
-        <di:waypoint x="2140" y="1030" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PM_Par1J_di" bpmnElement="Flow_PM_Par1J">
         <di:waypoint x="2240" y="580" />
         <di:waypoint x="2320" y="580" />
@@ -1050,11 +1089,6 @@
         <di:waypoint x="2320" y="880" />
         <di:waypoint x="2320" y="755" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_Par5J_di" bpmnElement="Flow_PM_Par5J">
-        <di:waypoint x="2240" y="1030" />
-        <di:waypoint x="2320" y="1030" />
-        <di:waypoint x="2320" y="755" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PM7_di" bpmnElement="Flow_PM7">
         <di:waypoint x="2345" y="730" />
         <di:waypoint x="2450" y="730" />
@@ -1068,6 +1102,15 @@
         <di:waypoint x="2820" y="1030" />
         <di:waypoint x="2875" y="1030" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM8b_di" bpmnElement="Flow_PM8b">
+        <di:waypoint x="2660" y="1030" />
+        <di:waypoint x="2720" y="1030" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_SLAEsc_di" bpmnElement="Flow_PM_SLAEsc">
+        <di:waypoint x="940" y="788" />
+        <di:waypoint x="940" y="830" />
+        <di:waypoint x="1002" y="830" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PM_SelYes_di" bpmnElement="Flow_PM_SelYes">
         <di:waypoint x="2900" y="1005" />
         <di:waypoint x="2900" y="730" />
@@ -1076,12 +1119,13 @@
           <dc:Bounds x="2906" y="865" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_SelNo_di" bpmnElement="Flow_PM_SelNo">
-        <di:waypoint x="2925" y="1030" />
-        <di:waypoint x="3002" y="1030" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2956" y="1012" width="15" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNEdge id="Flow_PM10_di" bpmnElement="Flow_PM10">
+        <di:waypoint x="3090" y="730" />
+        <di:waypoint x="3150" y="730" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM11_di" bpmnElement="Flow_PM11">
+        <di:waypoint x="3250" y="730" />
+        <di:waypoint x="3310" y="730" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PM12_di" bpmnElement="Flow_PM12">
         <di:waypoint x="3410" y="730" />
@@ -1102,81 +1146,12 @@
           <dc:Bounds x="3498" y="785" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_ToBuyExec_di" bpmnElement="Flow_PM_ToBuyExec">
-        <di:waypoint x="3655" y="755" />
-        <di:waypoint x="3655" y="1030" />
-        <di:waypoint x="3735" y="1030" />
+      <bpmndi:BPMNEdge id="Flow_PM_SelNo_di" bpmnElement="Flow_PM_SelNo">
+        <di:waypoint x="2925" y="1030" />
+        <di:waypoint x="3002" y="1030" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3666" y="890" width="19" height="14" />
+          <dc:Bounds x="2956" y="1012" width="15" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_ToBuildExec_di" bpmnElement="Flow_PM_ToBuildExec">
-        <di:waypoint x="3680" y="730" />
-        <di:waypoint x="3735" y="730" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3697" y="701" width="25" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM13_di" bpmnElement="Flow_PM13">
-        <di:waypoint x="3835" y="1030" />
-        <di:waypoint x="3895" y="1030" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_BuyExecMerge_di" bpmnElement="Flow_PM_BuyExecMerge">
-        <di:waypoint x="4105" y="990" />
-        <di:waypoint x="4105" y="755" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_BuildExecMerge_di" bpmnElement="Flow_PM_BuildExecMerge">
-        <di:waypoint x="3835" y="730" />
-        <di:waypoint x="4080" y="730" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM14_di" bpmnElement="Flow_PM14">
-        <di:waypoint x="4130" y="730" />
-        <di:waypoint x="4190" y="730" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM15_di" bpmnElement="Flow_PM15">
-        <di:waypoint x="4290" y="730" />
-        <di:waypoint x="4340" y="730" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM16_di" bpmnElement="Flow_PM16">
-        <di:waypoint x="4440" y="730" />
-        <di:waypoint x="4475" y="730" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_FinalYes_di" bpmnElement="Flow_PM_FinalYes">
-        <di:waypoint x="4525" y="730" />
-        <di:waypoint x="4575" y="730" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="4543" y="705" width="18" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_FinalNo_di" bpmnElement="Flow_PM_FinalNo">
-        <di:waypoint x="4500" y="755" />
-        <di:waypoint x="4500" y="820" />
-        <di:waypoint x="4607" y="820" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="4510" y="828" width="15" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM17_di" bpmnElement="Flow_PM17">
-        <di:waypoint x="4675" y="730" />
-        <di:waypoint x="4750" y="730" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_End_di" bpmnElement="Flow_PM_End">
-        <di:waypoint x="4850" y="730" />
-        <di:waypoint x="4920" y="730" />
-        <di:waypoint x="4920" y="310" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM_SLAEsc_di" bpmnElement="Flow_PM_SLAEsc">
-        <di:waypoint x="940" y="788" />
-        <di:waypoint x="940" y="830" />
-        <di:waypoint x="1002" y="830" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM10_di" bpmnElement="Flow_PM10">
-        <di:waypoint x="3090" y="730" />
-        <di:waypoint x="3150" y="730" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PM11_di" bpmnElement="Flow_PM11">
-        <di:waypoint x="3250" y="730" />
-        <di:waypoint x="3310" y="730" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_R1_di" bpmnElement="Flow_R1">
         <di:waypoint x="298" y="200" />
@@ -1209,233 +1184,259 @@
         <di:waypoint x="720" y="200" />
         <di:waypoint x="782" y="200" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0033t8v_di" bpmnElement="Flow_0033t8v">
-        <di:waypoint x="4970" y="270" />
-        <di:waypoint x="5022" y="270" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Participant_Vendor_di" bpmnElement="Participant_Vendor" isHorizontal="true">
-        <dc:Bounds x="160" y="1310" width="4940" height="420" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Start_VendorEngagement_di" bpmnElement="Start_VendorEngagement">
-        <dc:Bounds x="222" y="1472" width="36" height="36" />
+      <bpmndi:BPMNEdge id="Flow_PM_ToBuyExec_di" bpmnElement="Flow_PM_ToBuyExec">
+        <di:waypoint x="3655" y="755" />
+        <di:waypoint x="3655" y="1030" />
+        <di:waypoint x="3735" y="1030" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="209" y="1515" width="63" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_VendorIntake_di" bpmnElement="Task_VendorIntake">
-        <dc:Bounds x="310" y="1450" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GW_VendorQualified_di" bpmnElement="GW_VendorQualified" isMarkerVisible="true">
-        <dc:Bounds x="465" y="1465" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="465" y="1428" width="50" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_VendorProposal_di" bpmnElement="Task_VendorProposal">
-        <dc:Bounds x="570" y="1450" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GW_VendorParSplit_di" bpmnElement="GW_VendorParSplit">
-        <dc:Bounds x="725" y="1465" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_VendorSecurityReview_di" bpmnElement="Task_VendorSecurityReview">
-        <dc:Bounds x="830" y="1350" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_VendorComplianceReview_di" bpmnElement="Task_VendorComplianceReview">
-        <dc:Bounds x="830" y="1450" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_VendorTechDemo_di" bpmnElement="Task_VendorTechDemo">
-        <dc:Bounds x="830" y="1550" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GW_VendorParJoin_di" bpmnElement="GW_VendorParJoin">
-        <dc:Bounds x="985" y="1465" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_VendorContractReview_di" bpmnElement="Task_VendorContractReview">
-        <dc:Bounds x="1090" y="1450" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_VendorContractSign_di" bpmnElement="Task_VendorContractSign">
-        <dc:Bounds x="1250" y="1450" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_VendorOnboarding_di" bpmnElement="Task_VendorOnboarding">
-        <dc:Bounds x="1410" y="1450" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_VendorDeploySupport_di" bpmnElement="Task_VendorDeploySupport">
-        <dc:Bounds x="1570" y="1450" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_VendorCloseRequest_di" bpmnElement="Task_VendorCloseRequest">
-        <dc:Bounds x="1730" y="1450" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_VendorComplete_di" bpmnElement="End_VendorComplete">
-        <dc:Bounds x="1892" y="1472" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1887" y="1515" width="47" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_VendorDisqualified_di" bpmnElement="End_VendorDisqualified">
-        <dc:Bounds x="552" y="1572" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="542" y="1615" width="57" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_V1_di" bpmnElement="Flow_V1">
-        <di:waypoint x="258" y="1490" />
-        <di:waypoint x="310" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V2_di" bpmnElement="Flow_V2">
-        <di:waypoint x="410" y="1490" />
-        <di:waypoint x="465" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V_QualYes_di" bpmnElement="Flow_V_QualYes">
-        <di:waypoint x="515" y="1490" />
-        <di:waypoint x="570" y="1490" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="536" y="1472" width="18" height="14" />
+          <dc:Bounds x="3666" y="890" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V_QualNo_di" bpmnElement="Flow_V_QualNo">
-        <di:waypoint x="490" y="1515" />
-        <di:waypoint x="490" y="1590" />
-        <di:waypoint x="552" y="1590" />
+      <bpmndi:BPMNEdge id="Flow_PM_ToBuildExec_di" bpmnElement="Flow_PM_ToBuildExec">
+        <di:waypoint x="3680" y="730" />
+        <di:waypoint x="3735" y="730" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="515" y="1566" width="15" height="14" />
+          <dc:Bounds x="3697" y="701" width="25" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V3_di" bpmnElement="Flow_V3">
-        <di:waypoint x="670" y="1490" />
-        <di:waypoint x="725" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V_VP1_di" bpmnElement="Flow_V_VP1">
-        <di:waypoint x="750" y="1465" />
-        <di:waypoint x="750" y="1390" />
-        <di:waypoint x="830" y="1390" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V_VP2_di" bpmnElement="Flow_V_VP2">
-        <di:waypoint x="775" y="1490" />
-        <di:waypoint x="830" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V_VP3_di" bpmnElement="Flow_V_VP3">
-        <di:waypoint x="750" y="1515" />
-        <di:waypoint x="750" y="1590" />
-        <di:waypoint x="830" y="1590" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V_VP1J_di" bpmnElement="Flow_V_VP1J">
-        <di:waypoint x="930" y="1390" />
-        <di:waypoint x="1010" y="1390" />
-        <di:waypoint x="1010" y="1465" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V_VP2J_di" bpmnElement="Flow_V_VP2J">
-        <di:waypoint x="930" y="1490" />
-        <di:waypoint x="985" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V_VP3J_di" bpmnElement="Flow_V_VP3J">
-        <di:waypoint x="930" y="1590" />
-        <di:waypoint x="1010" y="1590" />
-        <di:waypoint x="1010" y="1515" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V4_di" bpmnElement="Flow_V4">
-        <di:waypoint x="1035" y="1490" />
-        <di:waypoint x="1090" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V5_di" bpmnElement="Flow_V5">
-        <di:waypoint x="1190" y="1490" />
-        <di:waypoint x="1250" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V6_di" bpmnElement="Flow_V6">
-        <di:waypoint x="1350" y="1490" />
-        <di:waypoint x="1410" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V7_di" bpmnElement="Flow_V7">
-        <di:waypoint x="1510" y="1490" />
-        <di:waypoint x="1570" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V8_di" bpmnElement="Flow_V8">
-        <di:waypoint x="1670" y="1490" />
-        <di:waypoint x="1730" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_V_End_di" bpmnElement="Flow_V_End">
-        <di:waypoint x="1830" y="1490" />
-        <di:waypoint x="1892" y="1490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MsgFlow_DDRequest_di" bpmnElement="MsgFlow_DDRequest">
-        <di:waypoint x="2450" y="1070" />
-        <di:waypoint x="2450" y="1200" />
-        <di:waypoint x="240" y="1200" />
-        <di:waypoint x="240" y="1472" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1311" y="1168" width="69" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MsgFlow_VendorResponse_di" bpmnElement="MsgFlow_VendorResponse">
-        <di:waypoint x="620" y="1450" />
-        <di:waypoint x="620" y="1150" />
-        <di:waypoint x="2610" y="1150" />
-        <di:waypoint x="2610" y="1070" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1571" y="1131" width="88" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MsgFlow_ContractDraft_di" bpmnElement="MsgFlow_ContractDraft">
-        <di:waypoint x="3785" y="1070" />
-        <di:waypoint x="3785" y="1240" />
-        <di:waypoint x="1140" y="1240" />
-        <di:waypoint x="1140" y="1450" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2348" y="1221" width="69" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MsgFlow_SignedContract_di" bpmnElement="MsgFlow_SignedContract">
-        <di:waypoint x="1300" y="1450" />
-        <di:waypoint x="1300" y="1270" />
-        <di:waypoint x="3945" y="1270" />
-        <di:waypoint x="3945" y="1070" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2583" y="1251" width="79" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Receive_VendorResponse_di" bpmnElement="Receive_VendorResponse">
-        <dc:Bounds x="2560" y="990" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Timer_VendorResponseSLA_di" bpmnElement="Timer_VendorResponseSLA">
-        <dc:Bounds x="2592" y="1052" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2636" y="1056" width="29" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_VendorResponseSLABreach_di" bpmnElement="End_VendorResponseSLABreach">
-        <dc:Bounds x="2672" y="1052" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2649" y="1088" width="82" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Receive_SignedContract_di" bpmnElement="Receive_SignedContract">
-        <dc:Bounds x="3895" y="990" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Timer_ContractSLA_di" bpmnElement="Timer_ContractSLA">
-        <dc:Bounds x="3927" y="1052" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3971" y="1056" width="29" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_ContractSLABreach_di" bpmnElement="End_ContractSLABreach">
-        <dc:Bounds x="4007" y="1052" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3988" y="1088" width="66" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_PM8b_di" bpmnElement="Flow_PM8b">
-        <di:waypoint x="2660" y="1030" />
-        <di:waypoint x="2720" y="1030" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_VendorResponseSLA_di" bpmnElement="Flow_VendorResponseSLA">
-        <di:waypoint x="2628" y="1070" />
-        <di:waypoint x="2672" y="1070" />
+      <bpmndi:BPMNEdge id="Flow_PM13_di" bpmnElement="Flow_PM13">
+        <di:waypoint x="3835" y="1030" />
+        <di:waypoint x="3895" y="1030" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PM13b_di" bpmnElement="Flow_PM13b">
         <di:waypoint x="3995" y="1030" />
         <di:waypoint x="4055" y="1030" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ContractSLA_di" bpmnElement="Flow_ContractSLA">
-        <di:waypoint x="3963" y="1070" />
-        <di:waypoint x="4007" y="1070" />
+      <bpmndi:BPMNEdge id="Flow_PM_BuyExecMerge_di" bpmnElement="Flow_PM_BuyExecMerge">
+        <di:waypoint x="4105" y="990" />
+        <di:waypoint x="4105" y="755" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_FinalYes_di" bpmnElement="Flow_PM_FinalYes">
+        <di:waypoint x="4525" y="730" />
+        <di:waypoint x="4575" y="730" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4543" y="705" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM17_di" bpmnElement="Flow_PM17">
+        <di:waypoint x="4675" y="730" />
+        <di:waypoint x="4750" y="730" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_BuildExecMerge_di" bpmnElement="Flow_PM_BuildExecMerge">
+        <di:waypoint x="3835" y="730" />
+        <di:waypoint x="4080" y="730" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM14_di" bpmnElement="Flow_PM14">
+        <di:waypoint x="4130" y="730" />
+        <di:waypoint x="4190" y="730" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM15_di" bpmnElement="Flow_PM15">
+        <di:waypoint x="4290" y="730" />
+        <di:waypoint x="4340" y="730" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM16_di" bpmnElement="Flow_PM16">
+        <di:waypoint x="4440" y="730" />
+        <di:waypoint x="4475" y="730" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_End_di" bpmnElement="Flow_PM_End">
+        <di:waypoint x="4850" y="730" />
+        <di:waypoint x="4920" y="730" />
+        <di:waypoint x="4920" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PM_FinalNo_di" bpmnElement="Flow_PM_FinalNo">
+        <di:waypoint x="4500" y="755" />
+        <di:waypoint x="4500" y="820" />
+        <di:waypoint x="4607" y="820" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4510" y="828" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0033t8v_di" bpmnElement="Flow_0033t8v">
+        <di:waypoint x="4970" y="270" />
+        <di:waypoint x="5022" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1poyzh5_di" bpmnElement="Flow_1poyzh5">
+        <di:waypoint x="2660" y="1088" />
+        <di:waypoint x="2660" y="1130" />
+        <di:waypoint x="2712" y="1130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Vendor_di" bpmnElement="Participant_Vendor" isHorizontal="true">
+        <dc:Bounds x="160" y="1390" width="4940" height="370" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_VendorEngagement_di" bpmnElement="Start_VendorEngagement">
+        <dc:Bounds x="222" y="1552" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="209" y="1595" width="63" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorIntake_di" bpmnElement="Task_VendorIntake">
+        <dc:Bounds x="310" y="1530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_VendorQualified_di" bpmnElement="GW_VendorQualified" isMarkerVisible="true">
+        <dc:Bounds x="465" y="1545" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="465" y="1508" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorProposal_di" bpmnElement="Task_VendorProposal">
+        <dc:Bounds x="570" y="1530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_VendorParSplit_di" bpmnElement="GW_VendorParSplit">
+        <dc:Bounds x="725" y="1545" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorSecurityReview_di" bpmnElement="Task_VendorSecurityReview">
+        <dc:Bounds x="830" y="1430" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorComplianceReview_di" bpmnElement="Task_VendorComplianceReview">
+        <dc:Bounds x="830" y="1530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorTechDemo_di" bpmnElement="Task_VendorTechDemo">
+        <dc:Bounds x="830" y="1630" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_VendorParJoin_di" bpmnElement="GW_VendorParJoin">
+        <dc:Bounds x="985" y="1545" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorContractReview_di" bpmnElement="Task_VendorContractReview">
+        <dc:Bounds x="1090" y="1530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorContractSign_di" bpmnElement="Task_VendorContractSign">
+        <dc:Bounds x="1250" y="1530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorOnboarding_di" bpmnElement="Task_VendorOnboarding">
+        <dc:Bounds x="1410" y="1530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorDeploySupport_di" bpmnElement="Task_VendorDeploySupport">
+        <dc:Bounds x="1570" y="1530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorCloseRequest_di" bpmnElement="Task_VendorCloseRequest">
+        <dc:Bounds x="1730" y="1530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_VendorComplete_di" bpmnElement="End_VendorComplete">
+        <dc:Bounds x="1892" y="1552" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1887" y="1595" width="47" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_VendorDisqualified_di" bpmnElement="End_VendorDisqualified">
+        <dc:Bounds x="552" y="1652" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="542" y="1695" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_V1_di" bpmnElement="Flow_V1">
+        <di:waypoint x="258" y="1570" />
+        <di:waypoint x="310" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V2_di" bpmnElement="Flow_V2">
+        <di:waypoint x="410" y="1570" />
+        <di:waypoint x="465" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_QualYes_di" bpmnElement="Flow_V_QualYes">
+        <di:waypoint x="515" y="1570" />
+        <di:waypoint x="570" y="1570" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="536" y="1552" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_QualNo_di" bpmnElement="Flow_V_QualNo">
+        <di:waypoint x="490" y="1595" />
+        <di:waypoint x="490" y="1670" />
+        <di:waypoint x="552" y="1670" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="515" y="1646" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V3_di" bpmnElement="Flow_V3">
+        <di:waypoint x="670" y="1570" />
+        <di:waypoint x="725" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP1_di" bpmnElement="Flow_V_VP1">
+        <di:waypoint x="750" y="1545" />
+        <di:waypoint x="750" y="1470" />
+        <di:waypoint x="830" y="1470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP2_di" bpmnElement="Flow_V_VP2">
+        <di:waypoint x="775" y="1570" />
+        <di:waypoint x="830" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP3_di" bpmnElement="Flow_V_VP3">
+        <di:waypoint x="750" y="1595" />
+        <di:waypoint x="750" y="1670" />
+        <di:waypoint x="830" y="1670" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP1J_di" bpmnElement="Flow_V_VP1J">
+        <di:waypoint x="930" y="1470" />
+        <di:waypoint x="1010" y="1470" />
+        <di:waypoint x="1010" y="1545" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP2J_di" bpmnElement="Flow_V_VP2J">
+        <di:waypoint x="930" y="1570" />
+        <di:waypoint x="985" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_VP3J_di" bpmnElement="Flow_V_VP3J">
+        <di:waypoint x="930" y="1670" />
+        <di:waypoint x="1010" y="1670" />
+        <di:waypoint x="1010" y="1595" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V4_di" bpmnElement="Flow_V4">
+        <di:waypoint x="1035" y="1570" />
+        <di:waypoint x="1090" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V5_di" bpmnElement="Flow_V5">
+        <di:waypoint x="1190" y="1570" />
+        <di:waypoint x="1250" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V6_di" bpmnElement="Flow_V6">
+        <di:waypoint x="1350" y="1570" />
+        <di:waypoint x="1410" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V7_di" bpmnElement="Flow_V7">
+        <di:waypoint x="1510" y="1570" />
+        <di:waypoint x="1570" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V8_di" bpmnElement="Flow_V8">
+        <di:waypoint x="1670" y="1570" />
+        <di:waypoint x="1730" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V_End_di" bpmnElement="Flow_V_End">
+        <di:waypoint x="1830" y="1570" />
+        <di:waypoint x="1892" y="1570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_DDRequest_di" bpmnElement="MsgFlow_DDRequest">
+        <di:waypoint x="2450" y="1070" />
+        <di:waypoint x="2450" y="1280" />
+        <di:waypoint x="240" y="1280" />
+        <di:waypoint x="240" y="1552" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1311" y="1248" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_VendorResponse_di" bpmnElement="MsgFlow_VendorResponse">
+        <di:waypoint x="620" y="1530" />
+        <di:waypoint x="620" y="1240" />
+        <di:waypoint x="2610" y="1240" />
+        <di:waypoint x="2610" y="1070" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1571" y="1221" width="88" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_ContractDraft_di" bpmnElement="MsgFlow_ContractDraft">
+        <di:waypoint x="3785" y="1070" />
+        <di:waypoint x="3785" y="1320" />
+        <di:waypoint x="1140" y="1320" />
+        <di:waypoint x="1140" y="1530" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2348" y="1301" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_SignedContract_di" bpmnElement="MsgFlow_SignedContract">
+        <di:waypoint x="1300" y="1530" />
+        <di:waypoint x="1300" y="1350" />
+        <di:waypoint x="3945" y="1350" />
+        <di:waypoint x="3945" y="1070" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2583" y="1331" width="79" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

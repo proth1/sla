@@ -4,7 +4,7 @@
 
 This standard governs the creation of hierarchical BPMN models using collapsed sub-processes. It was derived from the v5 Onboarding reference model and applies to ALL hierarchical BPMN models in this project.
 
-**Reference model**: `processes/Onboarding-only/onboarding-to-be-ideal-state-v5.bpmn`
+**Reference model**: `customers/fs-onboarding/processes/onboarding-to-be-ideal-state-v5.bpmn`
 
 ---
 

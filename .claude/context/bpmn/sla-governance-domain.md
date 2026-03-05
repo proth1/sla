@@ -341,10 +341,11 @@ Timer IDs follow the pattern `Timer_Phase[1-8]_[TaskName]SLA`. End events receiv
 |-----------|-------|
 | Process ID | `ESG-E2E-Master-v4.0` |
 | Target Engine | Camunda Platform 7 (documentation-only, `isExecutable="false"`) |
-| Master file | `processes/master/sla-governance-master.bpmn` |
-| Phase files | `processes/phase-{1..8}-*/` |
-| Cross-cutting | `processes/cross-cutting/` |
-| DMN tables | `decisions/dmn/` |
+| Master file | `framework/processes/master/sla-governance-master.bpmn` |
+| Phase files | `framework/processes/phase-{1..8}-*/` |
+| Cross-cutting | `framework/processes/cross-cutting/` |
+| DMN tables | `framework/decisions/dmn/` |
+| Customer (onboarding) | `customers/fs-onboarding/processes/` |
 | Pool count | 2 (Enterprise Governance + Vendor/Third Party) |
 | Lane count | 9+1 (8 Enterprise + 1 Vendor) |
 
