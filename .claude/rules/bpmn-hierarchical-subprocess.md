@@ -8,6 +8,18 @@ This standard governs the creation of hierarchical BPMN models using collapsed s
 
 ---
 
+## Scope and Precedence
+
+This file applies to **hierarchical models** (models using collapsed sub-processes). For **flat multi-lane governance models** (e.g., the 8-phase ESG master), use `bpmn-visual-clarity.md` and `bpmn-governance-standards.md` instead.
+
+Where this file specifies **tighter spacing or smaller gaps** than the flat-model standards, those values apply ONLY within hierarchical model contexts:
+- Internal sub-process diagrams (no lanes → tighter layout)
+- Top-level orchestrator (collapsed SPs → more compact)
+
+If both files apply to the same element, the flat-model standard takes precedence for elements shared with non-hierarchical contexts (e.g., vendor pool layout).
+
+---
+
 ## When to Use Hierarchical Models
 
 Use collapsed sub-processes when a flat model exceeds **15 tasks** or spans **3+ swim lanes**. The hierarchy reduces cognitive overload by showing "what happens when" at the top level, with "who does what" inside each expandable sub-process.
@@ -164,7 +176,7 @@ The Vendor pool is EXPANDED (not collapsed) at the top level, showing all vendor
 Pool: x=160, y=490, width=1800, height=360
 ```
 
-- **Inter-pool gap**: 80px minimum (Enterprise bottom y=410 → Vendor top y=490)
+- **Inter-pool gap**: 80px in the v5 reference model (Enterprise bottom y=410 → Vendor top y=490). Note: `bpmn-visual-clarity.md` specifies 100px for flat models — hierarchical models MAY use 80px because the collapsed orchestrator is more compact, but 100px is preferred when space allows.
 - Vendor main flow Y-center: **y=630** (tasks at y=590, events at y=612, gateways at y=605)
 - Vendor parallel branches: **100px vertical spacing** (y=530, 630, 730)
 - Vendor rejection end events: **y=730** (below main flow)
@@ -232,6 +244,8 @@ Each internal diagram uses its OWN coordinate space starting near x=150-180. Coo
 - **SLA escalation end events**: Named with SLA context (e.g., "Triage SLA&#10;Escalation")
 
 ### Internal Element Spacing
+
+Internal sub-process diagrams use tighter spacing than flat multi-lane models (which use 60-65px per `bpmn-visual-clarity.md`). This is appropriate because internal diagrams have no lane boundaries to cross.
 
 | Element Pair | Gap |
 |-------------|-----|
@@ -306,7 +320,7 @@ y=500    [Assess Vendor Landscape]   → ↗           [SLA Breach]
 
 Rules:
 - Split and join gateways centered vertically among branches (y=306 for 5 branches spanning y=80-540)
-- **~100-110px vertical spacing** between branches
+- **~100-110px vertical spacing** between branches (tighter than the 170-180px used in flat multi-lane models, because internal diagrams have no lane structure)
 - Branches fan both UP and DOWN from center
 - L-shaped routing: vertical from gateway → horizontal into task
 - Post-join flow continues on the center Y-level
