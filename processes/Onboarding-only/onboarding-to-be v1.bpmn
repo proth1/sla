@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  id="Definitions_1"
+  targetNamespace="http://bpmn.io/schema/bpmn"
+  exporter="Camunda Modeler"
+  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_SoftwareRequester" name="Software Requester" processRef="Process_SoftwareRequester" />
+    <bpmn:participant id="Participant_ProductManagement" name="Product Management" processRef="Process_ProductManagement" />
+    <bpmn:messageFlow id="Flow_Message_SubmitRequest" sourceRef="Task_SubmitSoftwareRequest" targetRef="StartEvent_RequestReceived" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_SoftwareRequester" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_SoftwareDefined" name="Software need&#10;defined">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_ReviewExistingSolutions" name="Review existing&#10;solutions">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_BypassProcess" name="Bypass formal&#10;process?">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_LeverageExisting</bpmn:outgoing>
+      <bpmn:outgoing>Flow_NewSoftwareNeeded</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_LeverageExistingSoftware" name="Leverage existing&#10;software">
+      <bpmn:incoming>Flow_LeverageExisting</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndLeverage</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_Leveraged" name="Software&#10;Leveraged">
+      <bpmn:incoming>Flow_EndLeverage</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_GatherDocumentation" name="Gather&#10;documentation">
+      <bpmn:incoming>Flow_NewSoftwareNeeded</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_SubmitSoftwareRequest" name="Submit software&#10;request">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToRequesterEnd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_RequestClosed_Requester" name="Request&#10;Submitted">
+      <bpmn:incoming>Flow_ToRequesterEnd</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_SoftwareDefined" targetRef="Task_ReviewExistingSolutions" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_ReviewExistingSolutions" targetRef="Gateway_BypassProcess" />
+    <bpmn:sequenceFlow id="Flow_LeverageExisting" name="Yes" sourceRef="Gateway_BypassProcess" targetRef="Task_LeverageExistingSoftware" />
+    <bpmn:sequenceFlow id="Flow_NewSoftwareNeeded" name="No" sourceRef="Gateway_BypassProcess" targetRef="Task_GatherDocumentation" />
+    <bpmn:sequenceFlow id="Flow_EndLeverage" sourceRef="Task_LeverageExistingSoftware" targetRef="EndEvent_Leveraged" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_GatherDocumentation" targetRef="Task_SubmitSoftwareRequest" />
+    <bpmn:sequenceFlow id="Flow_ToRequesterEnd" sourceRef="Task_SubmitSoftwareRequest" targetRef="EndEvent_RequestClosed_Requester" />
+  </bpmn:process>
+
+  <bpmn:process id="Process_ProductManagement" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_RequestReceived" name="Request&#10;Received">
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_ReviewAndEvaluateRequest" name="Initial Triage&#10;and Evaluation">
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_EvaluateRequest" name="Triage&#10;Decision">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_RejectRequest</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Continue</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_RequestRejected" name="Request&#10;Rejected">
+      <bpmn:incoming>Flow_RejectRequest</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_BuyVsBuild" name="Buy vs.&#10;Build">
+      <bpmn:incoming>Flow_Continue</bpmn:incoming>
+      <bpmn:outgoing>Flow_BuyPath</bpmn:outgoing>
+      <bpmn:outgoing>Flow_BuildPath</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_BuyPath" name="Assess Vendor&#10;Landscape (Buy)">
+      <bpmn:incoming>Flow_BuyPath</bpmn:incoming>
+      <bpmn:outgoing>Flow_BuyConverge</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_BuildPath" name="Integrate into&#10;Production Plan (Build)">
+      <bpmn:incoming>Flow_BuildPath</bpmn:incoming>
+      <bpmn:outgoing>Flow_BuildConverge</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_MergePaths">
+      <bpmn:incoming>Flow_BuyConverge</bpmn:incoming>
+      <bpmn:incoming>Flow_BuildConverge</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToPoc</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_PerformPoc" name="Perform Proof&#10;of Concept (PoC)">
+      <bpmn:incoming>Flow_ToPoc</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToRefineReq</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_RefineRequirements" name="Refine&#10;Requirements">
+      <bpmn:incoming>Flow_ToRefineReq</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToTechRiskEval</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:task id="Task_TechRiskEval" name="Technology and&#10;Risk Evaluation">
+      <bpmn:incoming>Flow_ToTechRiskEval</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToUat</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:userTask id="Task_PerformUAT" name="Perform&#10;Pilot / UAT">
+      <bpmn:incoming>Flow_ToUat</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToOnboard</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:task id="Task_OnboardSoftware" name="Onboard Software&#10;and Negotiate">
+      <bpmn:incoming>Flow_ToOnboard</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToFinalApproval</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:userTask id="Task_ProvideFinalApproval" name="Provide Final&#10;Approval">
+      <bpmn:incoming>Flow_ToFinalApproval</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToEnd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_SoftwareOnboarded" name="Software&#10;Onboarded">
+      <bpmn:incoming>Flow_ToEnd</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="StartEvent_RequestReceived" targetRef="Task_ReviewAndEvaluateRequest" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_ReviewAndEvaluateRequest" targetRef="Gateway_EvaluateRequest" />
+    <bpmn:sequenceFlow id="Flow_RejectRequest" name="Reject" sourceRef="Gateway_EvaluateRequest" targetRef="EndEvent_RequestRejected" />
+    <bpmn:sequenceFlow id="Flow_Continue" name="Approve" sourceRef="Gateway_EvaluateRequest" targetRef="Gateway_BuyVsBuild" />
+    <bpmn:sequenceFlow id="Flow_BuyPath" name="Buy" sourceRef="Gateway_BuyVsBuild" targetRef="Task_BuyPath" />
+    <bpmn:sequenceFlow id="Flow_BuildPath" name="Build" sourceRef="Gateway_BuyVsBuild" targetRef="Task_BuildPath" />
+    <bpmn:sequenceFlow id="Flow_BuyConverge" sourceRef="Task_BuyPath" targetRef="Gateway_MergePaths" />
+    <bpmn:sequenceFlow id="Flow_BuildConverge" sourceRef="Task_BuildPath" targetRef="Gateway_MergePaths" />
+    <bpmn:sequenceFlow id="Flow_ToPoc" sourceRef="Gateway_MergePaths" targetRef="Task_PerformPoc" />
+    <bpmn:sequenceFlow id="Flow_ToRefineReq" sourceRef="Task_PerformPoc" targetRef="Task_RefineRequirements" />
+    <bpmn:sequenceFlow id="Flow_ToTechRiskEval" sourceRef="Task_RefineRequirements" targetRef="Task_TechRiskEval" />
+    <bpmn:sequenceFlow id="Flow_ToUat" sourceRef="Task_TechRiskEval" targetRef="Task_PerformUAT" />
+    <bpmn:sequenceFlow id="Flow_ToOnboard" sourceRef="Task_PerformUAT" targetRef="Task_OnboardSoftware" />
+    <bpmn:sequenceFlow id="Flow_ToFinalApproval" sourceRef="Task_OnboardSoftware" targetRef="Task_ProvideFinalApproval" />
+    <bpmn:sequenceFlow id="Flow_ToEnd" sourceRef="Task_ProvideFinalApproval" targetRef="EndEvent_SoftwareOnboarded" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Participant_SoftwareRequester_di" bpmnElement="Participant_SoftwareRequester" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1050" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_SoftwareDefined_di" bpmnElement="StartEvent_SoftwareDefined">
+        <dc:Bounds x="222" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="202" y="225" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReviewExistingSolutions_di" bpmnElement="Task_ReviewExistingSolutions">
+        <dc:Bounds x="320" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_BypassProcess_di" bpmnElement="Gateway_BypassProcess" isMarkerVisible="true">
+        <dc:Bounds x="485" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="468" y="138" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_LeverageExistingSoftware_di" bpmnElement="Task_LeverageExistingSoftware">
+        <dc:Bounds x="600" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Leveraged_di" bpmnElement="EndEvent_Leveraged">
+        <dc:Bounds x="762" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="745" y="155" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GatherDocumentation_di" bpmnElement="Task_GatherDocumentation">
+        <dc:Bounds x="600" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SubmitSoftwareRequest_di" bpmnElement="Task_SubmitSoftwareRequest">
+        <dc:Bounds x="760" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_RequestClosed_Requester_di" bpmnElement="EndEvent_RequestClosed_Requester">
+        <dc:Bounds x="922" y="252" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="910" y="295" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Participant_ProductManagement_di" bpmnElement="Participant_ProductManagement" isHorizontal="true">
+        <dc:Bounds x="160" y="380" width="1900" height="350" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_RequestReceived_di" bpmnElement="StartEvent_RequestReceived">
+        <dc:Bounds x="222" y="542" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="210" y="585" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReviewAndEvaluateRequest_di" bpmnElement="Task_ReviewAndEvaluateRequest">
+        <dc:Bounds x="320" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_EvaluateRequest_di" bpmnElement="Gateway_EvaluateRequest" isMarkerVisible="true">
+        <dc:Bounds x="485" y="535" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="480" y="498" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_RequestRejected_di" bpmnElement="EndEvent_RequestRejected">
+        <dc:Bounds x="632" y="622" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="665" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_BuyVsBuild_di" bpmnElement="Gateway_BuyVsBuild" isMarkerVisible="true">
+        <dc:Bounds x="625" y="535" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="618" y="592" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BuyPath_di" bpmnElement="Task_BuyPath">
+        <dc:Bounds x="740" y="440" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BuildPath_di" bpmnElement="Task_BuildPath">
+        <dc:Bounds x="740" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_MergePaths_di" bpmnElement="Gateway_MergePaths" isMarkerVisible="true">
+        <dc:Bounds x="905" y="535" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PerformPoc_di" bpmnElement="Task_PerformPoc">
+        <dc:Bounds x="1020" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RefineRequirements_di" bpmnElement="Task_RefineRequirements">
+        <dc:Bounds x="1180" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_TechRiskEval_di" bpmnElement="Task_TechRiskEval">
+        <dc:Bounds x="1340" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PerformUAT_di" bpmnElement="Task_PerformUAT">
+        <dc:Bounds x="1500" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_OnboardSoftware_di" bpmnElement="Task_OnboardSoftware">
+        <dc:Bounds x="1660" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ProvideFinalApproval_di" bpmnElement="Task_ProvideFinalApproval">
+        <dc:Bounds x="1820" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_SoftwareOnboarded_di" bpmnElement="EndEvent_SoftwareOnboarded">
+        <dc:Bounds x="1982" y="542" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1966" y="585" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="258" y="200" />
+        <di:waypoint x="320" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="420" y="200" />
+        <di:waypoint x="485" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_LeverageExisting_di" bpmnElement="Flow_LeverageExisting">
+        <di:waypoint x="510" y="175" />
+        <di:waypoint x="510" y="130" />
+        <di:waypoint x="600" y="130" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="518" y="150" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NewSoftwareNeeded_di" bpmnElement="Flow_NewSoftwareNeeded">
+        <di:waypoint x="510" y="225" />
+        <di:waypoint x="510" y="270" />
+        <di:waypoint x="600" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="519" y="245" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EndLeverage_di" bpmnElement="Flow_EndLeverage">
+        <di:waypoint x="700" y="130" />
+        <di:waypoint x="762" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="700" y="270" />
+        <di:waypoint x="760" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToRequesterEnd_di" bpmnElement="Flow_ToRequesterEnd">
+        <di:waypoint x="860" y="270" />
+        <di:waypoint x="922" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="258" y="560" />
+        <di:waypoint x="320" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="420" y="560" />
+        <di:waypoint x="485" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_RejectRequest_di" bpmnElement="Flow_RejectRequest">
+        <di:waypoint x="510" y="585" />
+        <di:waypoint x="510" y="640" />
+        <di:waypoint x="632" y="640" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="518" y="610" width="34" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Continue_di" bpmnElement="Flow_Continue">
+        <di:waypoint x="535" y="560" />
+        <di:waypoint x="625" y="560" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="557" y="542" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuyPath_di" bpmnElement="Flow_BuyPath">
+        <di:waypoint x="650" y="535" />
+        <di:waypoint x="650" y="480" />
+        <di:waypoint x="740" y="480" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="660" y="505" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuildPath_di" bpmnElement="Flow_BuildPath">
+        <di:waypoint x="650" y="585" />
+        <di:waypoint x="650" y="660" />
+        <di:waypoint x="740" y="660" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="659" y="620" width="25" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuyConverge_di" bpmnElement="Flow_BuyConverge">
+        <di:waypoint x="840" y="480" />
+        <di:waypoint x="930" y="480" />
+        <di:waypoint x="930" y="535" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuildConverge_di" bpmnElement="Flow_BuildConverge">
+        <di:waypoint x="840" y="660" />
+        <di:waypoint x="930" y="660" />
+        <di:waypoint x="930" y="585" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToPoc_di" bpmnElement="Flow_ToPoc">
+        <di:waypoint x="955" y="560" />
+        <di:waypoint x="1020" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToRefineReq_di" bpmnElement="Flow_ToRefineReq">
+        <di:waypoint x="1120" y="560" />
+        <di:waypoint x="1180" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToTechRiskEval_di" bpmnElement="Flow_ToTechRiskEval">
+        <di:waypoint x="1280" y="560" />
+        <di:waypoint x="1340" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToUat_di" bpmnElement="Flow_ToUat">
+        <di:waypoint x="1440" y="560" />
+        <di:waypoint x="1500" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToOnboard_di" bpmnElement="Flow_ToOnboard">
+        <di:waypoint x="1600" y="560" />
+        <di:waypoint x="1660" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToFinalApproval_di" bpmnElement="Flow_ToFinalApproval">
+        <di:waypoint x="1760" y="560" />
+        <di:waypoint x="1820" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToEnd_di" bpmnElement="Flow_ToEnd">
+        <di:waypoint x="1920" y="560" />
+        <di:waypoint x="1982" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Message_SubmitRequest_di" bpmnElement="Flow_Message_SubmitRequest">
+        <di:waypoint x="810" y="310" />
+        <di:waypoint x="810" y="430" />
+        <di:waypoint x="240" y="430" />
+        <di:waypoint x="240" y="542" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

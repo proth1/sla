@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="OB_Definitions_Phase4GovernanceApproval"
+                  targetNamespace="http://sla.governance/bpmn/onboarding"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+
+  <bpmn:signal id="Signal_OnboardingComplete" name="OnboardingComplete" />
+
+  <bpmn:collaboration id="OB_Collaboration_Phase4">
+    <bpmn:participant id="OB_Participant_EnterpriseGov" name="OB Phase 4: Governance Review and Onboarding Approval — Enterprise Governance Pool" processRef="Process_OB_Phase4_GovernanceApproval" />
+    <bpmn:participant id="OB_Participant_VendorParty" name="Vendor / Third Party" processRef="OB_Process_VendorResponse" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_OB_Phase4_GovernanceApproval" name="OB Phase 4: Governance Review and Onboarding Approval" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="OB_LaneSet_Phase4">
+      <bpmn:lane id="OB_Lane_Business" name="Business">
+        <bpmn:flowNodeRef>OB_StartEvent_Phase4Initiated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_FastPathReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_End_OB_Approved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_End_OB_Conditional</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Governance" name="Governance">
+        <bpmn:flowNodeRef>OB_Task_AdvisoryBoardReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_AdvisorySLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Contracting" name="Contracting">
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_TechnicalAssessment" name="Technical Assessment">
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_AIReview" name="AI Review">
+        <bpmn:flowNodeRef>OB_Task_EthicalImpact</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_AdvisoryParallelSplit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_AdvisoryParallelJoin</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Compliance" name="Compliance">
+        <bpmn:flowNodeRef>OB_Task_CommitteeReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_CommitteeSLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_End_OB_Rejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Oversight" name="Oversight">
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Automation" name="Automation">
+        <bpmn:flowNodeRef>OB_Task_PackageAssembly</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_ReviewRouting</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_ReviewAuthority</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_ReviewMerge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_DecisionDocumentation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_Decision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_ProcessSLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="OB_StartEvent_Phase4Initiated" name="Phase 3&#10;Complete">
+      <bpmn:outgoing>OB_Flow_Start_Assembly</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:serviceTask id="OB_Task_PackageAssembly" name="4.1 Package&#10;Assembly" camunda:type="external" camunda:topic="package-assembly">
+      <bpmn:incoming>OB_Flow_Start_Assembly</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Assembly_Routing</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_ProcessSLA" name="P5D&#10;SLA" attachedToRef="OB_Task_PackageAssembly" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_ProcessSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_ProcessSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:businessRuleTask id="OB_Task_ReviewRouting" name="4.2 Review&#10;Routing" camunda:decisionRef="OB_DMN_GovernanceReviewRouting" camunda:decisionRefBinding="latest" camunda:resultVariable="reviewAuthority" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>OB_Flow_Assembly_Routing</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Routing_AuthGateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:exclusiveGateway id="OB_Gateway_ReviewAuthority" name="Review Authority?" default="OB_Flow_AuthGateway_Committee">
+      <bpmn:incoming>OB_Flow_Routing_AuthGateway</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_AuthGateway_FastPath</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_AuthGateway_Committee</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_AuthGateway_Advisory</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="OB_Task_FastPathReview" name="4.3a Fast Path&#10;Review" camunda:candidateGroups="business-lane">
+      <bpmn:incoming>OB_Flow_AuthGateway_FastPath</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_FastPath_Merge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_FastPathSLA" name="2D&#10;SLA" attachedToRef="OB_Task_FastPathReview" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_FastPathSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_FastPath">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_FastPathSLAEscalated" name="Fast Path SLA&#10;Escalated">
+      <bpmn:incoming>OB_Flow_FastPathSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="OB_Task_CommitteeReview" name="4.3b Committee&#10;Review" camunda:candidateGroups="compliance-lane">
+      <bpmn:incoming>OB_Flow_AuthGateway_Committee</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Committee_Merge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_CommitteeSLA" name="5D&#10;SLA" attachedToRef="OB_Task_CommitteeReview" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_CommitteeSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_Committee">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_CommitteeSLAEscalated" name="Committee SLA&#10;Escalated">
+      <bpmn:incoming>OB_Flow_CommitteeSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="OB_Task_AdvisoryBoardReview" name="4.3c Advisory&#10;Board Review" camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>OB_Flow_AuthGateway_Advisory</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Advisory_ParallelSplit</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_AdvisorySLA" name="P5D&#10;SLA" attachedToRef="OB_Task_AdvisoryBoardReview" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_AdvisorySLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_Advisory">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_AdvisorySLAEscalated" name="Advisory SLA&#10;Escalated">
+      <bpmn:incoming>OB_Flow_AdvisorySLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:parallelGateway id="OB_Gateway_AdvisoryParallelSplit">
+      <bpmn:incoming>OB_Flow_Advisory_ParallelSplit</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_ParallelSplit_Advisory</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_ParallelSplit_Ethics</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="OB_Task_EthicalImpact" name="4.4 Ethical Impact&#10;Assessment" camunda:candidateGroups="ai-review">
+      <bpmn:incoming>OB_Flow_ParallelSplit_Ethics</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Ethics_ParallelJoin</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:parallelGateway id="OB_Gateway_AdvisoryParallelJoin">
+      <bpmn:incoming>OB_Flow_ParallelSplit_Advisory</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_Ethics_ParallelJoin</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_AdvisoryJoin_Merge</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:exclusiveGateway id="OB_Gateway_ReviewMerge">
+      <bpmn:incoming>OB_Flow_FastPath_Merge</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_Committee_Merge</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_AdvisoryJoin_Merge</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_ReviewMerge_DecisionDoc</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:serviceTask id="OB_Task_DecisionDocumentation" name="4.5 Decision&#10;Documentation" camunda:type="external" camunda:topic="decision-documentation">
+      <bpmn:incoming>OB_Flow_ReviewMerge_DecisionDoc</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_DecisionDoc_Gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:exclusiveGateway id="OB_Gateway_Decision" name="Governance&#10;Decision?" default="OB_Flow_Decision_Conditional">
+      <bpmn:incoming>OB_Flow_DecisionDoc_Gateway</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Decision_Approved</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_Decision_Conditional</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_Decision_Rejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="OB_End_OB_Approved" name="Onboarding&#10;Approved">
+      <bpmn:incoming>OB_Flow_Decision_Approved</bpmn:incoming>
+      <bpmn:signalEventDefinition id="OB_SignalDef_OnboardingComplete" signalRef="Signal_OnboardingComplete" />
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_End_OB_Conditional" name="Approved with&#10;Conditions">
+      <bpmn:incoming>OB_Flow_Decision_Conditional</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_End_OB_Rejected" name="Rejected —&#10;Onboarding Terminated">
+      <bpmn:incoming>OB_Flow_Decision_Rejected</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="OB_TerminateDef_Rejected" />
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_ProcessSLAEscalated" name="Process SLA&#10;Escalated">
+      <bpmn:incoming>OB_Flow_ProcessSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:textAnnotation id="OB_Annotation_OCC">
+      <bpmn:text>OCC 2023-17: Third-party governance review must document risk tier rationale, reviewer authority, and approval conditions. Risk-tiered routing (4.2) ensures proportionate oversight per vendor criticality.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_OCC" sourceRef="OB_Task_ReviewRouting" targetRef="OB_Annotation_OCC" />
+
+    <bpmn:textAnnotation id="OB_Annotation_NIST">
+      <bpmn:text>NIST CSF 2.0: Governance review and approval controls map to GOVERN (GV.OC, GV.RM) and IDENTIFY (ID.RA) functions. Decision documentation (4.5) supports auditability and continuous improvement.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_NIST" sourceRef="OB_Task_DecisionDocumentation" targetRef="OB_Annotation_NIST" />
+
+    <bpmn:textAnnotation id="OB_Annotation_AIAct_SR117">
+      <bpmn:text>EU AI Act + SR 11-7: Ethical Impact Assessment (4.4) runs in parallel with Advisory Board Review (4.3c) for AI/model systems. Ethics Committee documents model risk acceptance and AI Act conformity assessment.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_AIAct" sourceRef="OB_Task_EthicalImpact" targetRef="OB_Annotation_AIAct_SR117" />
+
+    <bpmn:textAnnotation id="OB_Annotation_TaskIO">
+      <bpmn:text>Task I/O: 4.1 IN(evidencePackageId, swarmSummary) OUT(assessmentPackageId) | 4.2 IN(riskTier, pathway) OUT(reviewAuthority, reviewSLADays) | 4.3a/b/c IN(assessmentPackageId) OUT(reviewDecision, conditionsText) | 4.4 IN(assessmentPackageId, aiRiskClassification) OUT(ethicalImpactScore) | 4.5 IN(reviewDecision) OUT(decisionRecordId, onboardingStatus)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_TaskIO" sourceRef="OB_Task_PackageAssembly" targetRef="OB_Annotation_TaskIO" />
+
+    <bpmn:sequenceFlow id="OB_Flow_Start_Assembly" sourceRef="OB_StartEvent_Phase4Initiated" targetRef="OB_Task_PackageAssembly" />
+    <bpmn:sequenceFlow id="OB_Flow_Assembly_Routing" sourceRef="OB_Task_PackageAssembly" targetRef="OB_Task_ReviewRouting" />
+    <bpmn:sequenceFlow id="OB_Flow_Routing_AuthGateway" sourceRef="OB_Task_ReviewRouting" targetRef="OB_Gateway_ReviewAuthority" />
+
+    <bpmn:sequenceFlow id="OB_Flow_AuthGateway_FastPath" name="Fast Path Reviewer" sourceRef="OB_Gateway_ReviewAuthority" targetRef="OB_Task_FastPathReview">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${reviewAuthority == 'Fast Path Reviewer'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="OB_Flow_AuthGateway_Committee" name="Governance Committee" sourceRef="OB_Gateway_ReviewAuthority" targetRef="OB_Task_CommitteeReview" />
+    <bpmn:sequenceFlow id="OB_Flow_AuthGateway_Advisory" name="Advisory Board" sourceRef="OB_Gateway_ReviewAuthority" targetRef="OB_Task_AdvisoryBoardReview">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${reviewAuthority == 'AI Governance Advisory Board'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="OB_Flow_FastPath_Merge" sourceRef="OB_Task_FastPathReview" targetRef="OB_Gateway_ReviewMerge" />
+    <bpmn:sequenceFlow id="OB_Flow_Committee_Merge" sourceRef="OB_Task_CommitteeReview" targetRef="OB_Gateway_ReviewMerge" />
+
+    <bpmn:sequenceFlow id="OB_Flow_Advisory_ParallelSplit" sourceRef="OB_Task_AdvisoryBoardReview" targetRef="OB_Gateway_AdvisoryParallelSplit" />
+    <bpmn:sequenceFlow id="OB_Flow_ParallelSplit_Advisory" sourceRef="OB_Gateway_AdvisoryParallelSplit" targetRef="OB_Gateway_AdvisoryParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_ParallelSplit_Ethics" sourceRef="OB_Gateway_AdvisoryParallelSplit" targetRef="OB_Task_EthicalImpact" />
+    <bpmn:sequenceFlow id="OB_Flow_Ethics_ParallelJoin" sourceRef="OB_Task_EthicalImpact" targetRef="OB_Gateway_AdvisoryParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_AdvisoryJoin_Merge" sourceRef="OB_Gateway_AdvisoryParallelJoin" targetRef="OB_Gateway_ReviewMerge" />
+
+    <bpmn:sequenceFlow id="OB_Flow_ReviewMerge_DecisionDoc" sourceRef="OB_Gateway_ReviewMerge" targetRef="OB_Task_DecisionDocumentation" />
+    <bpmn:sequenceFlow id="OB_Flow_DecisionDoc_Gateway" sourceRef="OB_Task_DecisionDocumentation" targetRef="OB_Gateway_Decision" />
+
+    <bpmn:sequenceFlow id="OB_Flow_Decision_Approved" name="Approved" sourceRef="OB_Gateway_Decision" targetRef="OB_End_OB_Approved">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${governanceDecision == 'APPROVED'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="OB_Flow_Decision_Conditional" name="Approved with Conditions" sourceRef="OB_Gateway_Decision" targetRef="OB_End_OB_Conditional" />
+    <bpmn:sequenceFlow id="OB_Flow_Decision_Rejected" name="Rejected" sourceRef="OB_Gateway_Decision" targetRef="OB_End_OB_Rejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${governanceDecision == 'REJECTED'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="OB_Flow_ProcessSLAEscalate" sourceRef="OB_Timer_ProcessSLA" targetRef="OB_EndEvent_ProcessSLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_FastPathSLAEscalate" sourceRef="OB_Timer_FastPathSLA" targetRef="OB_EndEvent_FastPathSLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_CommitteeSLAEscalate" sourceRef="OB_Timer_CommitteeSLA" targetRef="OB_EndEvent_CommitteeSLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_AdvisorySLAEscalate" sourceRef="OB_Timer_AdvisorySLA" targetRef="OB_EndEvent_AdvisorySLAEscalated" />
+
+  </bpmn:process>
+
+  <bpmn:process id="OB_Process_VendorResponse" name="Vendor / Third Party Response" isExecutable="false" camunda:historyTimeToLive="180">
+    <bpmn:laneSet id="OB_LaneSet_Vendor">
+      <bpmn:lane id="OB_Lane_VendorResponse" name="Vendor Response">
+        <bpmn:flowNodeRef>OB_StartEvent_VendorRequest</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_VendorResponseReceipt</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_VendorResponseSent</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="OB_StartEvent_VendorRequest" name="Onboarding Assessment&#10;Request Received">
+      <bpmn:outgoing>OB_Flow_VendorStart_Response</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="OB_Task_VendorResponseReceipt" name="Vendor Response&#10;Package Submission" camunda:candidateGroups="vendor-response">
+      <bpmn:incoming>OB_Flow_VendorStart_Response</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_VendorResponse_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="OB_EndEvent_VendorResponseSent" name="Response Package&#10;Submitted">
+      <bpmn:incoming>OB_Flow_VendorResponse_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="OB_Flow_VendorStart_Response" sourceRef="OB_StartEvent_VendorRequest" targetRef="OB_Task_VendorResponseReceipt" />
+    <bpmn:sequenceFlow id="OB_Flow_VendorResponse_End" sourceRef="OB_Task_VendorResponseReceipt" targetRef="OB_EndEvent_VendorResponseSent" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="OB_BPMNDiagram_Phase4">
+    <bpmndi:BPMNPlane id="OB_BPMNPlane_Phase4" bpmnElement="OB_Collaboration_Phase4">
+
+      <bpmndi:BPMNShape id="OB_Participant_EnterpriseGov_di" bpmnElement="OB_Participant_EnterpriseGov" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="2200" height="1290" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_Business_di" bpmnElement="OB_Lane_Business" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="2170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Governance_di" bpmnElement="OB_Lane_Governance" isHorizontal="true">
+        <dc:Bounds x="185" y="172" width="2170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Contracting_di" bpmnElement="OB_Lane_Contracting" isHorizontal="true">
+        <dc:Bounds x="185" y="297" width="2170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_TechnicalAssessment_di" bpmnElement="OB_Lane_TechnicalAssessment" isHorizontal="true">
+        <dc:Bounds x="185" y="422" width="2170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_AIReview_di" bpmnElement="OB_Lane_AIReview" isHorizontal="true">
+        <dc:Bounds x="185" y="547" width="2170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Compliance_di" bpmnElement="OB_Lane_Compliance" isHorizontal="true">
+        <dc:Bounds x="185" y="672" width="2170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Oversight_di" bpmnElement="OB_Lane_Oversight" isHorizontal="true">
+        <dc:Bounds x="185" y="797" width="2170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Automation_di" bpmnElement="OB_Lane_Automation" isHorizontal="true">
+        <dc:Bounds x="185" y="922" width="2170" height="165" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Participant_VendorParty_di" bpmnElement="OB_Participant_VendorParty" isHorizontal="true">
+        <dc:Bounds x="155" y="1367" width="2200" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_VendorResponse_di" bpmnElement="OB_Lane_VendorResponse" isHorizontal="true">
+        <dc:Bounds x="185" y="1367" width="2170" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_StartEvent_Phase4Initiated_di" bpmnElement="OB_StartEvent_Phase4Initiated">
+        <dc:Bounds x="222" y="92" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200" y="135" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_PackageAssembly_di" bpmnElement="OB_Task_PackageAssembly">
+        <dc:Bounds x="310" y="962" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_ProcessSLA_di" bpmnElement="OB_Timer_ProcessSLA">
+        <dc:Bounds x="342" y="1024" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="386" y="1028" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_ProcessSLAEscalated_di" bpmnElement="OB_EndEvent_ProcessSLAEscalated">
+        <dc:Bounds x="342" y="1075" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="318" y="1118" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_ReviewRouting_di" bpmnElement="OB_Task_ReviewRouting">
+        <dc:Bounds x="460" y="962" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_ReviewAuthority_di" bpmnElement="OB_Gateway_ReviewAuthority" isMarkerVisible="true">
+        <dc:Bounds x="615" y="977" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="597" y="1034" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_FastPathReview_di" bpmnElement="OB_Task_FastPathReview">
+        <dc:Bounds x="740" y="70" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_FastPathSLA_di" bpmnElement="OB_Timer_FastPathSLA">
+        <dc:Bounds x="772" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="816" y="136" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_FastPathSLAEscalated_di" bpmnElement="OB_EndEvent_FastPathSLAEscalated">
+        <dc:Bounds x="876" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="852" y="105" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_AdvisoryBoardReview_di" bpmnElement="OB_Task_AdvisoryBoardReview">
+        <dc:Bounds x="740" y="195" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_AdvisorySLA_di" bpmnElement="OB_Timer_AdvisorySLA">
+        <dc:Bounds x="772" y="257" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="816" y="261" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_AdvisorySLAEscalated_di" bpmnElement="OB_EndEvent_AdvisorySLAEscalated">
+        <dc:Bounds x="876" y="257" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="852" y="230" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_AdvisoryParallelSplit_di" bpmnElement="OB_Gateway_AdvisoryParallelSplit" isMarkerVisible="true">
+        <dc:Bounds x="895" y="577" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_EthicalImpact_di" bpmnElement="OB_Task_EthicalImpact">
+        <dc:Bounds x="1010" y="570" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_AdvisoryParallelJoin_di" bpmnElement="OB_Gateway_AdvisoryParallelJoin" isMarkerVisible="true">
+        <dc:Bounds x="1165" y="577" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_CommitteeReview_di" bpmnElement="OB_Task_CommitteeReview">
+        <dc:Bounds x="740" y="695" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_CommitteeSLA_di" bpmnElement="OB_Timer_CommitteeSLA">
+        <dc:Bounds x="772" y="757" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="816" y="761" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_CommitteeSLAEscalated_di" bpmnElement="OB_EndEvent_CommitteeSLAEscalated">
+        <dc:Bounds x="876" y="757" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="852" y="730" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_End_OB_Rejected_di" bpmnElement="OB_End_OB_Rejected">
+        <dc:Bounds x="1992" y="717" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1968" y="760" width="84" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_ReviewMerge_di" bpmnElement="OB_Gateway_ReviewMerge" isMarkerVisible="true">
+        <dc:Bounds x="1265" y="977" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_DecisionDocumentation_di" bpmnElement="OB_Task_DecisionDocumentation">
+        <dc:Bounds x="1370" y="962" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_Decision_di" bpmnElement="OB_Gateway_Decision" isMarkerVisible="true">
+        <dc:Bounds x="1530" y="977" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1512" y="1034" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_End_OB_Approved_di" bpmnElement="OB_End_OB_Approved">
+        <dc:Bounds x="1792" y="92" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1768" y="135" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_End_OB_Conditional_di" bpmnElement="OB_End_OB_Conditional">
+        <dc:Bounds x="1992" y="92" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1968" y="135" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Annotation_OCC_di" bpmnElement="OB_Annotation_OCC">
+        <dc:Bounds x="200" y="1255" width="700" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Annotation_NIST_di" bpmnElement="OB_Annotation_NIST">
+        <dc:Bounds x="950" y="1255" width="650" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Annotation_AIAct_SR117_di" bpmnElement="OB_Annotation_AIAct_SR117">
+        <dc:Bounds x="1650" y="1255" width="680" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Annotation_TaskIO_di" bpmnElement="OB_Annotation_TaskIO">
+        <dc:Bounds x="200" y="1200" width="2120" height="40" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_StartEvent_VendorRequest_di" bpmnElement="OB_StartEvent_VendorRequest">
+        <dc:Bounds x="222" y="1412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200" y="1455" width="80" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_VendorResponseReceipt_di" bpmnElement="OB_Task_VendorResponseReceipt">
+        <dc:Bounds x="310" y="1390" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_VendorResponseSent_di" bpmnElement="OB_EndEvent_VendorResponseSent">
+        <dc:Bounds x="462" y="1412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="440" y="1455" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Start_Assembly_di" bpmnElement="OB_Flow_Start_Assembly">
+        <di:waypoint x="258" y="110" />
+        <di:waypoint x="280" y="110" />
+        <di:waypoint x="280" y="1002" />
+        <di:waypoint x="310" y="1002" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Assembly_Routing_di" bpmnElement="OB_Flow_Assembly_Routing">
+        <di:waypoint x="410" y="1002" />
+        <di:waypoint x="460" y="1002" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Routing_AuthGateway_di" bpmnElement="OB_Flow_Routing_AuthGateway">
+        <di:waypoint x="560" y="1002" />
+        <di:waypoint x="615" y="1002" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_AuthGateway_FastPath_di" bpmnElement="OB_Flow_AuthGateway_FastPath">
+        <di:waypoint x="640" y="977" />
+        <di:waypoint x="640" y="110" />
+        <di:waypoint x="740" y="110" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="648" y="535" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_AuthGateway_Advisory_di" bpmnElement="OB_Flow_AuthGateway_Advisory">
+        <di:waypoint x="640" y="977" />
+        <di:waypoint x="640" y="235" />
+        <di:waypoint x="740" y="235" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="648" y="597" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_AuthGateway_Committee_di" bpmnElement="OB_Flow_AuthGateway_Committee">
+        <di:waypoint x="640" y="1027" />
+        <di:waypoint x="640" y="735" />
+        <di:waypoint x="740" y="735" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="648" y="873" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FastPath_Merge_di" bpmnElement="OB_Flow_FastPath_Merge">
+        <di:waypoint x="840" y="110" />
+        <di:waypoint x="1290" y="110" />
+        <di:waypoint x="1290" y="977" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Advisory_ParallelSplit_di" bpmnElement="OB_Flow_Advisory_ParallelSplit">
+        <di:waypoint x="840" y="235" />
+        <di:waypoint x="920" y="235" />
+        <di:waypoint x="920" y="577" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_ParallelSplit_Advisory_di" bpmnElement="OB_Flow_ParallelSplit_Advisory">
+        <di:waypoint x="945" y="602" />
+        <di:waypoint x="1165" y="602" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_ParallelSplit_Ethics_di" bpmnElement="OB_Flow_ParallelSplit_Ethics">
+        <di:waypoint x="920" y="627" />
+        <di:waypoint x="920" y="610" />
+        <di:waypoint x="1010" y="610" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Ethics_ParallelJoin_di" bpmnElement="OB_Flow_Ethics_ParallelJoin">
+        <di:waypoint x="1110" y="610" />
+        <di:waypoint x="1190" y="610" />
+        <di:waypoint x="1190" y="627" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_AdvisoryJoin_Merge_di" bpmnElement="OB_Flow_AdvisoryJoin_Merge">
+        <di:waypoint x="1190" y="577" />
+        <di:waypoint x="1190" y="235" />
+        <di:waypoint x="1290" y="235" />
+        <di:waypoint x="1290" y="977" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Committee_Merge_di" bpmnElement="OB_Flow_Committee_Merge">
+        <di:waypoint x="840" y="735" />
+        <di:waypoint x="1290" y="735" />
+        <di:waypoint x="1290" y="1027" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_ReviewMerge_DecisionDoc_di" bpmnElement="OB_Flow_ReviewMerge_DecisionDoc">
+        <di:waypoint x="1315" y="1002" />
+        <di:waypoint x="1370" y="1002" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_DecisionDoc_Gateway_di" bpmnElement="OB_Flow_DecisionDoc_Gateway">
+        <di:waypoint x="1470" y="1002" />
+        <di:waypoint x="1530" y="1002" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Decision_Approved_di" bpmnElement="OB_Flow_Decision_Approved">
+        <di:waypoint x="1555" y="977" />
+        <di:waypoint x="1555" y="110" />
+        <di:waypoint x="1792" y="110" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1563" y="535" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Decision_Conditional_di" bpmnElement="OB_Flow_Decision_Conditional">
+        <di:waypoint x="1580" y="1002" />
+        <di:waypoint x="1790" y="1002" />
+        <di:waypoint x="1790" y="110" />
+        <di:waypoint x="1992" y="110" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1676" y="984" width="54" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Decision_Rejected_di" bpmnElement="OB_Flow_Decision_Rejected">
+        <di:waypoint x="1555" y="1027" />
+        <di:waypoint x="1555" y="735" />
+        <di:waypoint x="1992" y="735" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1563" y="873" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_ProcessSLAEscalate_di" bpmnElement="OB_Flow_ProcessSLAEscalate">
+        <di:waypoint x="360" y="1060" />
+        <di:waypoint x="360" y="1075" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FastPathSLAEscalate_di" bpmnElement="OB_Flow_FastPathSLAEscalate">
+        <di:waypoint x="808" y="150" />
+        <di:waypoint x="876" y="150" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_AdvisorySLAEscalate_di" bpmnElement="OB_Flow_AdvisorySLAEscalate">
+        <di:waypoint x="808" y="275" />
+        <di:waypoint x="876" y="275" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_CommitteeSLAEscalate_di" bpmnElement="OB_Flow_CommitteeSLAEscalate">
+        <di:waypoint x="808" y="775" />
+        <di:waypoint x="876" y="775" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Assoc_OCC_di" bpmnElement="OB_Assoc_OCC">
+        <di:waypoint x="510" y="1002" />
+        <di:waypoint x="550" y="1255" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Assoc_NIST_di" bpmnElement="OB_Assoc_NIST">
+        <di:waypoint x="1420" y="1042" />
+        <di:waypoint x="1275" y="1255" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Assoc_AIAct_di" bpmnElement="OB_Assoc_AIAct">
+        <di:waypoint x="1110" y="610" />
+        <di:waypoint x="1990" y="1255" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Assoc_TaskIO_di" bpmnElement="OB_Assoc_TaskIO">
+        <di:waypoint x="360" y="1042" />
+        <di:waypoint x="360" y="1200" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_VendorStart_Response_di" bpmnElement="OB_Flow_VendorStart_Response">
+        <di:waypoint x="258" y="1430" />
+        <di:waypoint x="310" y="1430" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_VendorResponse_End_di" bpmnElement="OB_Flow_VendorResponse_End">
+        <di:waypoint x="410" y="1430" />
+        <di:waypoint x="462" y="1430" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

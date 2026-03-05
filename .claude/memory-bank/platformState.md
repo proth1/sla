@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.16
-**Last Release**: 2026-03-04
-**Total Releases**: 16
+**Current Version**: 2026.03.25
+**Last Release**: 2026-03-05
+**Total Releases**: 25
 
 ## Artifact Counts
 
@@ -30,6 +30,15 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.25 | 2026-03-05 | #33 | Auth worker: SLA_SESSION HMAC cookie (8h), OTP verify rate limiting |
+| 2026.03.24 | 2026-03-05 | #32 | BPMN governance patterns: phase boundaries (P1/P2), escalation fix, label overlaps |
+| 2026.03.23 | 2026-03-05 | #31 | CDD evidence hook: replace grep+awk YAML parsing with python3 |
+| 2026.03.22 | 2026-03-05 | #30 | Phase 6: fix HIGH severity end event illegal outgoing flow |
+| 2026.03.21 | 2026-03-04 | #34 | Onboarding v3: fix 5 visual layout issues (backward flows, lane positioning, pool gap) |
+| 2026.03.20 | 2026-03-04 | #29 | Onboarding v3: merge requester pool into software onboarding pool as swim lane |
+| 2026.03.19 | 2026-03-04 | #28 | All-pool task documentation: 28 tasks across Requester, Product Mgmt, PDLC pools |
+| 2026.03.18 | 2026-03-04 | #27 | Vendor task documentation v2: 10 tasks with regulatory controls and evidence requirements |
+| 2026.03.17 | 2026-03-04 | #26 | Onboarding-only customer project: 4 DMN tables, 7 BPMNs, 22-slide presentation |
 | 2026.03.16 | 2026-03-04 | #22,#23,#24 | Code audit fixes: 33 findings across validators, BPMN governance, infra security |
 | 2026.03.15 | 2026-03-04 | #21 | Phase 8 Operations BPMN layout fix: expanded Automation lane, fixed start event routing |
 | 2026.03.14 | 2026-03-04 | #20 | Presentation upgrades: CTA rewrite, competitive positioning, BPMN legend, persona anchors |

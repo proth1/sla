@@ -35,10 +35,15 @@ fi
 # Resolve Jira credentials: prefer ~/.jira.d/config.yml (agentic-sdlc),
 # fall back to env vars
 JIRA_CONFIG="$HOME/.jira.d/config.yml"
-if [[ -f "${JIRA_CONFIG}" ]]; then
-    CFG_URL=$(grep '^endpoint:' "${JIRA_CONFIG}" | awk '{print $2}' | tr -d '[:space:]')
-    CFG_USER=$(grep '^user:' "${JIRA_CONFIG}" | awk '{print $2}' | tr -d '[:space:]')
-    CFG_PASS=$(grep '^password:' "${JIRA_CONFIG}" | awk '{print $2}' | tr -d '[:space:]')
+if [[ -f "${JIRA_CONFIG}" ]] && command -v python3 &>/dev/null; then
+    read -r CFG_URL CFG_USER CFG_PASS < <(python3 -c "
+import re, sys
+cfg = open('${JIRA_CONFIG}').read()
+def val(key):
+    m = re.search(r'^' + key + r':\s*(.+)', cfg, re.M)
+    return m.group(1).strip() if m else ''
+print(val('endpoint'), val('user'), val('password'))
+" 2>/dev/null || echo "")
     if [[ -n "${CFG_URL}" && -n "${CFG_USER}" && -n "${CFG_PASS}" ]]; then
         JIRA_URL="${CFG_URL}"
         JIRA_AUTH="${CFG_USER}:${CFG_PASS}"
