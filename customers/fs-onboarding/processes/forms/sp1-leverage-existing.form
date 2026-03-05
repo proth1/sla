@@ -1,0 +1,114 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_LeverageExisting",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Leverage Existing Software\nConfigure or extend an existing solution to meet the business need.",
+      "id": "Field_101"
+    },
+    {
+      "type": "textfield",
+      "key": "existingSolutionName",
+      "label": "Existing Software Name and Version",
+      "validate": {
+        "required": true
+      },
+      "id": "Field_102"
+    },
+    {
+      "type": "separator",
+      "id": "Field_103"
+    },
+    {
+      "type": "group",
+      "label": "License Assessment",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "currentLicenseCount",
+          "label": "Current License Count",
+          "id": "Field_104"
+        },
+        {
+          "type": "textfield",
+          "key": "requiredLicenseCount",
+          "label": "Required License Count",
+          "id": "Field_105"
+        }
+      ],
+      "id": "Field_106"
+    },
+    {
+      "type": "textarea",
+      "key": "configurationChanges",
+      "label": "Configuration Changes Needed",
+      "description": "Describe any configuration, customization, or extensions required.",
+      "id": "Field_107"
+    },
+    {
+      "type": "number",
+      "key": "estimatedCostAvoidance",
+      "label": "Estimated Cost Avoidance vs. New Procurement ($)",
+      "id": "Field_108"
+    },
+    {
+      "type": "separator",
+      "id": "Field_109"
+    },
+    {
+      "type": "text",
+      "text": "## Risk Impact Assessment",
+      "id": "Field_110"
+    },
+    {
+      "type": "radio",
+      "key": "riskTierImpact",
+      "label": "Risk Tier Impact Assessment",
+      "validate": {
+        "required": true
+      },
+      "values": [
+        {
+          "label": "No Change — reuse does not alter risk profile",
+          "value": "no-change"
+        },
+        {
+          "label": "Escalation Needed — expanded scope changes risk tier",
+          "value": "escalation-needed"
+        }
+      ],
+      "id": "Field_111"
+    },
+    {
+      "type": "textarea",
+      "key": "expandedUserScope",
+      "label": "Expanded User Population Scope",
+      "description": "Describe any new user groups or departments that will gain access.",
+      "id": "Field_112"
+    },
+    {
+      "type": "textarea",
+      "key": "newDataTypes",
+      "label": "New Data Types Introduced",
+      "description": "List any new data classifications being processed (e.g., PII, PHI, financial).",
+      "id": "Field_113"
+    },
+    {
+      "type": "textarea",
+      "key": "reuseJustification",
+      "label": "Reuse Justification",
+      "validate": {
+        "required": true
+      },
+      "description": "Explain why leveraging this existing solution is the preferred approach.",
+      "id": "Field_114"
+    }
+  ]
+}

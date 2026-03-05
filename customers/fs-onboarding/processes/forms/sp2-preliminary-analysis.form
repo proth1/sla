@@ -1,0 +1,179 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_PreliminaryAnalysis",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Preliminary Business Analysis\nConduct initial business case and privacy screening before full evaluation.",
+      "id": "Field_501"
+    },
+    {
+      "type": "separator",
+      "id": "Field_502"
+    },
+    {
+      "type": "group",
+      "label": "Business Case",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "marketResearchSummary",
+          "label": "Market Research Summary",
+          "description": "Summarize market landscape and available solutions.",
+          "id": "Field_503"
+        },
+        {
+          "type": "textarea",
+          "key": "strategicAlignmentAssessment",
+          "label": "Strategic Alignment Assessment",
+          "validate": {
+            "required": true
+          },
+          "description": "How does this request align with enterprise strategy and roadmap?",
+          "id": "Field_504"
+        },
+        {
+          "type": "radio",
+          "key": "riskAppetiteAlignment",
+          "label": "Risk Appetite Alignment",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Within — risk is within organizational appetite",
+              "value": "within"
+            },
+            {
+              "label": "Borderline — risk is at the edge of appetite, needs monitoring",
+              "value": "borderline"
+            },
+            {
+              "label": "Exceeds — risk exceeds organizational appetite",
+              "value": "exceeds"
+            }
+          ],
+          "id": "Field_505"
+        }
+      ],
+      "id": "Field_506"
+    },
+    {
+      "type": "separator",
+      "id": "Field_507"
+    },
+    {
+      "type": "group",
+      "label": "Financial Preliminary",
+      "components": [
+        {
+          "type": "number",
+          "key": "preliminaryCostEstimate",
+          "label": "Preliminary Cost Estimate ($)",
+          "id": "Field_508"
+        },
+        {
+          "type": "textfield",
+          "key": "preliminaryROI",
+          "label": "Preliminary ROI Estimate",
+          "description": "Express as percentage or payback period (e.g., '150%' or '18 months').",
+          "id": "Field_509"
+        },
+        {
+          "type": "radio",
+          "key": "budgetSourceIdentified",
+          "label": "Budget Source Identified?",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_510"
+        }
+      ],
+      "id": "Field_511"
+    },
+    {
+      "type": "separator",
+      "id": "Field_512"
+    },
+    {
+      "type": "group",
+      "label": "Privacy Screening",
+      "components": [
+        {
+          "type": "radio",
+          "key": "dpiaRequired",
+          "label": "DPIA Required?",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "To Be Determined",
+              "value": "tbd"
+            }
+          ],
+          "id": "Field_513"
+        },
+        {
+          "type": "radio",
+          "key": "highRiskProcessing",
+          "label": "High-Risk Processing Identified?",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_514"
+        }
+      ],
+      "id": "Field_515"
+    },
+    {
+      "type": "separator",
+      "id": "Field_516"
+    },
+    {
+      "type": "radio",
+      "key": "needsFullEvaluation",
+      "label": "Does this request need full evaluation and due diligence?",
+      "validate": {
+        "required": true
+      },
+      "description": "This drives the GW_NeedsFullEval gateway decision.",
+      "values": [
+        {
+          "label": "Yes — proceed to full evaluation",
+          "value": "yes"
+        },
+        {
+          "label": "No — can proceed directly to contracting/build",
+          "value": "no"
+        }
+      ],
+      "id": "Field_517"
+    }
+  ]
+}

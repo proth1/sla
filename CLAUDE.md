@@ -10,12 +10,21 @@ SLA (Software Lifecycle Automation) is an **Enterprise Software Governance** fra
 
 ## Repository Layout
 
-- `processes/master/` — Level 0 master orchestrator BPMN
-- `processes/phase-{1..8}-*/` — BPMN models organized by 8 governance phases (Intake → Operations & Retirement)
-- `processes/cross-cutting/` — 5 cross-cutting event sub-processes
-- `decisions/dmn/` — 8 DMN 1.3 decision tables (DMN-1 through DMN-8)
-- `docs/requirements/` — Source .docx/.pptx requirement documents
-- `docs/presentations/index.html` — Master HTML presentation (template with `{{PLACEHOLDER}}` tokens)
+### Strategic Framework (IP)
+- `framework/processes/master/` — Level 0 master orchestrator BPMN
+- `framework/processes/phase-{1..8}-*/` — BPMN models by governance phase
+- `framework/processes/cross-cutting/` — 5 cross-cutting event sub-processes
+- `framework/decisions/dmn/` — 8 DMN 1.3 decision tables (DMN-1 through DMN-8)
+- `framework/docs/` — PRD, requirements, knowledge base, archived strategic presentation
+
+### Customer Implementations
+- `customers/fs-onboarding/` — Financial services vendor onboarding (5-phase)
+  - `processes/` — Active BPMN models, DMN tables, Camunda forms
+  - `docs/` — Governance topic mapping, audit findings, vendor tasks
+  - `scripts/` — Customer-specific transformation scripts
+
+### Shared Infrastructure
+- `docs/presentations/index.html` — Live onboarding presentation (Cloudflare Pages deploy target)
 - `scripts/validators/` — JavaScript BPMN validators
 - `infrastructure/cloudflare-workers/sla-presentation-auth/` — Cloudflare Worker for OTP-protected presentation
 
@@ -26,8 +35,11 @@ SLA (Software Lifecycle Automation) is an **Enterprise Software Governance** fra
 # All files
 bash scripts/validators/validate-bpmn.sh
 
-# Single file
-bash scripts/validators/validate-bpmn.sh processes/phase-1-needs-assessment/some-process.bpmn
+# Single file (customer model)
+bash scripts/validators/validate-bpmn.sh customers/fs-onboarding/processes/onboarding-to-be-ideal-state-v5.bpmn
+
+# Framework model
+bash scripts/validators/validate-bpmn.sh framework/processes/master/sla-governance-master.bpmn
 
 # Individual validators (require npm install in scripts/validators/ first)
 node scripts/validators/bpmn-validator.js <file.bpmn>
@@ -53,7 +65,8 @@ npx wrangler deploy
 
 ## BPMN Modeling Constraints
 
-- **Target engine**: Camunda Platform 7 (use `camunda:` namespace, `candidateGroups`, `historyTimeToLive`)
+- **Target engine**: Camunda 8 / Zeebe (use `zeebe:` namespace, `zeebe:assignmentDefinition`, `zeebe:formDefinition`)
+- **Legacy engine**: Camunda Platform 7 models exist in v5 and earlier (use `camunda:` namespace)
 - **Process ID**: `ESG-E2E-Master-v4.0` (Enterprise Software Governance)
 - **2 pools**: Enterprise Governance (8 lanes) + Vendor/Third Party (1 lane)
 - **9+1 lanes**: Business, Governance, Contracting, Technical Assessment, AI Review, Compliance, Oversight, Automation + Vendor Response

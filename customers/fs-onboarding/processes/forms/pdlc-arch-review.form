@@ -1,0 +1,135 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_PDLCArchReview",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Architecture Review",
+      "id": "Field_001"
+    },
+    {
+      "type": "group",
+      "label": "Architecture Review",
+      "id": "Field_002",
+      "components": [
+        {
+          "type": "radio",
+          "key": "architectureDesignDocReviewed",
+          "label": "Architecture Design Document Reviewed?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_003"
+        },
+        {
+          "type": "textarea",
+          "key": "designPatternsAssessment",
+          "label": "Design Patterns Assessment",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004"
+        },
+        {
+          "type": "textarea",
+          "key": "securityArchitectureReview",
+          "label": "Security Architecture Review",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        },
+        {
+          "type": "textarea",
+          "key": "scalabilityAssessment",
+          "label": "Scalability Assessment",
+          "id": "Field_006"
+        },
+        {
+          "type": "radio",
+          "key": "codeRepositorySetup",
+          "label": "Code Repository Setup?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_007"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_008"
+    },
+    {
+      "type": "group",
+      "label": "Architecture Decision",
+      "id": "Field_009",
+      "components": [
+        {
+          "type": "select",
+          "key": "architectureApproved",
+          "label": "Architecture Approved?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Approved",
+              "value": "approved"
+            },
+            {
+              "label": "Needs Revision",
+              "value": "needs-revision"
+            },
+            {
+              "label": "Rejected",
+              "value": "rejected"
+            }
+          ],
+          "id": "Field_010"
+        },
+        {
+          "type": "textarea",
+          "key": "archReviewNotes",
+          "label": "Review Notes",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_011"
+        },
+        {
+          "type": "textarea",
+          "key": "revisionRequirements",
+          "label": "Revision Requirements",
+          "id": "Field_012"
+        }
+      ]
+    }
+  ]
+}

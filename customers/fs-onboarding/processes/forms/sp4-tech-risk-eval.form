@@ -1,0 +1,289 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_TechRiskEval",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Technology and Risk Evaluation",
+      "id": "Field_001"
+    },
+    {
+      "type": "group",
+      "label": "Technology Risk",
+      "id": "Field_002",
+      "components": [
+        {
+          "type": "select",
+          "key": "technologyMaturity",
+          "label": "Technology Maturity",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Emerging",
+              "value": "emerging"
+            },
+            {
+              "label": "Established",
+              "value": "established"
+            },
+            {
+              "label": "Mature",
+              "value": "mature"
+            },
+            {
+              "label": "Legacy",
+              "value": "legacy"
+            }
+          ],
+          "id": "Field_003"
+        },
+        {
+          "type": "select",
+          "key": "vendorLockInRisk",
+          "label": "Vendor Lock-in Risk",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Low",
+              "value": "low"
+            },
+            {
+              "label": "Medium",
+              "value": "medium"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            }
+          ],
+          "id": "Field_004"
+        },
+        {
+          "type": "select",
+          "key": "integrationRisk",
+          "label": "Integration Risk",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Low",
+              "value": "low"
+            },
+            {
+              "label": "Medium",
+              "value": "medium"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            }
+          ],
+          "id": "Field_005"
+        },
+        {
+          "type": "select",
+          "key": "scalabilityRisk",
+          "label": "Scalability Risk",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Low",
+              "value": "low"
+            },
+            {
+              "label": "Medium",
+              "value": "medium"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            }
+          ],
+          "id": "Field_006"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_007"
+    },
+    {
+      "type": "group",
+      "label": "Operational Risk",
+      "id": "Field_008",
+      "components": [
+        {
+          "type": "select",
+          "key": "availabilityRisk",
+          "label": "Availability Risk",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Low",
+              "value": "low"
+            },
+            {
+              "label": "Medium",
+              "value": "medium"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            }
+          ],
+          "id": "Field_009"
+        },
+        {
+          "type": "select",
+          "key": "dataLossRisk",
+          "label": "Data Loss Risk",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Low",
+              "value": "low"
+            },
+            {
+              "label": "Medium",
+              "value": "medium"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            }
+          ],
+          "id": "Field_010"
+        },
+        {
+          "type": "select",
+          "key": "recoveryCapability",
+          "label": "Recovery Capability",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Strong",
+              "value": "strong"
+            },
+            {
+              "label": "Adequate",
+              "value": "adequate"
+            },
+            {
+              "label": "Weak",
+              "value": "weak"
+            }
+          ],
+          "id": "Field_011"
+        },
+        {
+          "type": "select",
+          "key": "operationalComplexity",
+          "label": "Operational Complexity",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Low",
+              "value": "low"
+            },
+            {
+              "label": "Medium",
+              "value": "medium"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            }
+          ],
+          "id": "Field_012"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_013"
+    },
+    {
+      "type": "group",
+      "label": "Risk Decision",
+      "id": "Field_014",
+      "components": [
+        {
+          "type": "select",
+          "key": "overallTechnologyRisk",
+          "label": "Overall Technology Risk",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Low",
+              "value": "low"
+            },
+            {
+              "label": "Medium",
+              "value": "medium"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            },
+            {
+              "label": "Critical",
+              "value": "critical"
+            }
+          ],
+          "id": "Field_015"
+        },
+        {
+          "type": "textarea",
+          "key": "riskMitigationPlan",
+          "label": "Risk Mitigation Plan",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_016"
+        },
+        {
+          "type": "radio",
+          "key": "techRiskApproved",
+          "label": "Technology Risk Approved?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_017"
+        }
+      ]
+    }
+  ]
+}

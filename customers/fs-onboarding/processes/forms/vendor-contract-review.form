@@ -1,0 +1,42 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": { "name": "Camunda Modeler", "version": "5.28.0" },
+  "schemaVersion": 16,
+  "id": "Form_VendorContractReview",
+  "components": [
+    {
+      "type": "group",
+      "label": "Contract Review",
+      "id": "Field_001",
+      "components": [
+        { "type": "radio", "key": "contractReceivedAndReviewed", "label": "Contract received and reviewed", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_002" },
+        { "type": "number", "key": "redlinedClausesCount", "label": "Redlined clauses count", "validate": { "required": true }, "id": "Field_003" },
+        { "type": "textarea", "key": "categoriesOfRequestedChanges", "label": "Categories of requested changes", "id": "Field_004" },
+        { "type": "textarea", "key": "highImpactItemsIdentified", "label": "High-impact items identified", "id": "Field_005" }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Key Terms Response",
+      "id": "Field_006",
+      "components": [
+        { "type": "radio", "key": "auditRightsAccepted", "label": "Audit rights accepted", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }, { "label": "Negotiation", "value": "negotiation" }], "validate": { "required": true }, "id": "Field_007" },
+        { "type": "radio", "key": "slaCommitmentsAccepted", "label": "SLA commitments accepted", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }, { "label": "Negotiation", "value": "negotiation" }], "validate": { "required": true }, "id": "Field_008" },
+        { "type": "radio", "key": "dataProtectionProvisionsAccepted", "label": "Data protection provisions accepted", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }, { "label": "Negotiation", "value": "negotiation" }], "validate": { "required": true }, "id": "Field_009" },
+        { "type": "radio", "key": "terminationRightsAccepted", "label": "Termination rights accepted", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }, { "label": "Negotiation", "value": "negotiation" }], "validate": { "required": true }, "id": "Field_010" },
+        { "type": "textarea", "key": "liabilityIndemnificationPosition", "label": "Liability/indemnification position", "id": "Field_011" }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Negotiation",
+      "id": "Field_012",
+      "components": [
+        { "type": "textfield", "key": "estimatedTimeToResolution", "label": "Estimated time to resolution", "id": "Field_013" },
+        { "type": "textfield", "key": "authorizedNegotiator", "label": "Authorized negotiator", "validate": { "required": true }, "id": "Field_014" },
+        { "type": "textarea", "key": "negotiationNotes", "label": "Negotiation notes", "id": "Field_015" }
+      ]
+    }
+  ]
+}

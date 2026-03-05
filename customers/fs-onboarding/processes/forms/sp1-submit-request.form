@@ -1,0 +1,103 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_SubmitRequest",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Review Your Submission\nPlease review the information below before submitting. All fields are read-only.",
+      "id": "Field_301"
+    },
+    {
+      "type": "separator",
+      "id": "Field_302"
+    },
+    {
+      "type": "textarea",
+      "key": "businessProblem",
+      "label": "Business Problem",
+      "disabled": true,
+      "id": "Field_303"
+    },
+    {
+      "type": "textfield",
+      "key": "urgencyLevel",
+      "label": "Urgency Level",
+      "disabled": true,
+      "id": "Field_304"
+    },
+    {
+      "type": "textfield",
+      "key": "pathwayPreference",
+      "label": "Pathway Preference",
+      "disabled": true,
+      "id": "Field_305"
+    },
+    {
+      "type": "textfield",
+      "key": "criticality",
+      "label": "Business Criticality",
+      "disabled": true,
+      "id": "Field_306"
+    },
+    {
+      "type": "textfield",
+      "key": "estimatedBudget",
+      "label": "Estimated Budget",
+      "disabled": true,
+      "id": "Field_307"
+    },
+    {
+      "type": "textfield",
+      "key": "dataTypes",
+      "label": "Data Types",
+      "disabled": true,
+      "id": "Field_308"
+    },
+    {
+      "type": "textfield",
+      "key": "hasAI",
+      "label": "AI Involvement",
+      "disabled": true,
+      "id": "Field_309"
+    },
+    {
+      "type": "separator",
+      "id": "Field_310"
+    },
+    {
+      "type": "text",
+      "text": "## Certification",
+      "id": "Field_311"
+    },
+    {
+      "type": "checkbox",
+      "key": "submitterCertification",
+      "label": "I certify the information provided is accurate and complete",
+      "validate": {
+        "required": true
+      },
+      "id": "Field_312"
+    },
+    {
+      "type": "textfield",
+      "key": "submitterName",
+      "label": "Submitter Name",
+      "validate": {
+        "required": true
+      },
+      "id": "Field_313"
+    },
+    {
+      "type": "textfield",
+      "key": "submitterTitle",
+      "label": "Submitter Title",
+      "id": "Field_314"
+    }
+  ]
+}
