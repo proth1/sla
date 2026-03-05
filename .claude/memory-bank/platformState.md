@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.25
+**Current Version**: 2026.03.26
 **Last Release**: 2026-03-05
-**Total Releases**: 25
+**Total Releases**: 26
 
 ## Artifact Counts
 
@@ -30,6 +30,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.26 | 2026-03-05 | #25 | Onboarding v4: vendor sequencing fix, receive tasks with SLA timers, modeling rules |
 | 2026.03.25 | 2026-03-05 | #33 | Auth worker: SLA_SESSION HMAC cookie (8h), OTP verify rate limiting |
 | 2026.03.24 | 2026-03-05 | #32 | BPMN governance patterns: phase boundaries (P1/P2), escalation fix, label overlaps |
 | 2026.03.23 | 2026-03-05 | #31 | CDD evidence hook: replace grep+awk YAML parsing with python3 |

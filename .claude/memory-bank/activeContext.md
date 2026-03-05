@@ -4,7 +4,13 @@
 
 **Date**: 2026-03-05
 **Branch**: main
-**Release Version**: 2026.03.25
+**Release Version**: 2026.03.26
+
+### Completed — Onboarding v4 Vendor Sequencing Fix
+- **PR #25**: Restored correct v4 base, applied vendor sequencing fix using text-based edits (not lxml), codified v3→v4 modeling patterns → merged, release 2026.03.26
+- Inserted Receive_VendorResponse (P5D) and Receive_SignedContract (P7D) receive tasks with SLA boundary timers
+- Added gateway naming, flow label, notification, annotation rules to modeling standards
+- Element count: 161 → 171 (+10 exactly as planned), critical elements preserved
 
 ### Completed — Code Audit Round 2 (11 findings, 4 PRs)
 - **PR #30**: Phase 6 HIGH severity fix — removed illegal outgoing flow from EndEvent_QualityGateRejected, replaced with XOR merge loop pattern → merged, release 2026.03.22
@@ -81,9 +87,12 @@
 
 ---
 
+
+---
+
 ## SESSION END WARNING (Auto-generated)
 
-**Session ended**: 2026-03-04T19:33:42Z
+**Session ended**: 2026-03-05T04:38:27Z
 **activeContext.md was NOT updated** before session ended.
 
 The previous Claude may not have documented:

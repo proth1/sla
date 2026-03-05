@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026.03.26] - 2026-03-05
+
+### Fixed
+- Onboarding BPMN: Fix vendor sequencing (swap DD task order, insert receive tasks with P5D/P7D SLA timers) using text-based edits on correct v4 base (PR #25)
+- Onboarding BPMN: Remove invalid `camunda:candidateGroups` from `receiveTask` elements (PR #25)
+- Onboarding BPMN: Reposition SLA breach end events within pool boundaries, fix 4px timer flows to 44px (PR #25)
+
+### Added
+- BPMN rules: Gateway naming convention (question-style), conditional flow labels (Yes/No), cross-lane notification pattern, regulatory annotation approach (PR #25)
+- BPMN rules: Lane ordering convention, minimum lane heights per content density (PR #25)
+- Lessons learned: BPMN file editing safety (never use lxml round-trip, verify base file, element count checks) (PR #25)
+
 ## [2026.03.25] - 2026-03-05
 
 ### Fixed
