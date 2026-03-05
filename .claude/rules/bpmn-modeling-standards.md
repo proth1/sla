@@ -338,6 +338,99 @@ Reading DMN output variables in `conditionExpression` is acceptable — the busi
 <bpmn:conditionExpression>${riskScore > 7 && vendorTier == 'critical'}</bpmn:conditionExpression>
 ```
 
+## Gateway Naming Convention
+
+**Rule: Decision gateways MUST use question-style names ending with "?"**
+
+```xml
+<!-- CORRECT: Question-style -->
+<bpmn:exclusiveGateway id="GW_Approved" name="Approved ?" />
+<bpmn:exclusiveGateway id="GW_BuildOrBuy" name="Do we Build ?" />
+
+<!-- WRONG: Statement-style -->
+<bpmn:exclusiveGateway id="GW_Decision" name="Triage Decision" />
+<bpmn:exclusiveGateway id="GW_PathSelect" name="Buy vs. Build" />
+```
+
+**Merge gateways and parallel gateways MUST NOT have name attributes.** They serve structural purposes, not decision purposes. Naming them adds visual noise.
+
+```xml
+<!-- CORRECT -->
+<bpmn:exclusiveGateway id="GW_Merge" />
+<bpmn:parallelGateway id="GW_Split" />
+
+<!-- WRONG -->
+<bpmn:exclusiveGateway id="GW_Merge" name="Merge Paths" />
+<bpmn:parallelGateway id="GW_Split" name="Parallel Evaluation" />
+```
+
+## Conditional Flow Label Convention
+
+**Rule: All conditional sequence flows MUST use "Yes" / "No" labels**
+
+Do NOT use action-specific labels like "Approve"/"Reject", "Build"/"Buy", or "Pass"/"Fail". These couple the label to the specific decision context, making the pattern inconsistent across the model.
+
+```xml
+<!-- CORRECT -->
+<bpmn:sequenceFlow id="Flow_Yes" name="Yes" sourceRef="GW_Approved" targetRef="Task_Next">
+  <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved}</bpmn:conditionExpression>
+</bpmn:sequenceFlow>
+<bpmn:sequenceFlow id="Flow_No" name="No" sourceRef="GW_Approved" targetRef="End_Rejected">
+  <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!approved}</bpmn:conditionExpression>
+</bpmn:sequenceFlow>
+
+<!-- WRONG -->
+<bpmn:sequenceFlow id="Flow_Approve" name="Approve" ... />
+<bpmn:sequenceFlow id="Flow_Reject" name="Reject" ... />
+```
+
+The gateway name provides the question context ("Approved?"), and the flows provide the answer ("Yes" / "No"). This creates a natural reading: "Approved? → Yes / No".
+
+## Cross-Lane Notification Pattern
+
+**Rule: Before process end events, notify the initiating lane**
+
+When a process starts in one lane (e.g., Requester) but the final activities occur in a different lane (e.g., Product Management), add a notification task back to the initiating lane before the end event. The end event should be placed in the initiating lane.
+
+```xml
+<!-- Pattern: Notify originator before closing -->
+<bpmn:userTask id="Task_NotifyRequester" name="Notify&#10;Requester"
+  camunda:candidateGroups="requester-lane">
+  <bpmn:incoming>Flow_FromLastTask</bpmn:incoming>
+  <bpmn:outgoing>Flow_ToEnd</bpmn:outgoing>
+</bpmn:userTask>
+
+<bpmn:endEvent id="End_Complete" name="Process&#10;Complete">
+  <bpmn:incoming>Flow_ToEnd</bpmn:incoming>
+</bpmn:endEvent>
+```
+
+This ensures:
+1. The process initiator knows the outcome
+2. The end event appears in the same lane as the start event (visual symmetry)
+3. No silent completion in a lane the requester cannot see
+
+## Regulatory Annotation Approach
+
+**Preferred: Use `camunda:properties` extension elements instead of `bpmn:textAnnotation`**
+
+Text annotations consume visual space in the diagram and can clutter multi-lane models. For regulatory references, embed them as Camunda properties on the relevant task:
+
+```xml
+<bpmn:userTask id="Task_VendorAssessment" name="Vendor Assessment">
+  <bpmn:extensionElements>
+    <camunda:properties>
+      <camunda:property name="regulation" value="OCC 2023-17: Third-party risk management" />
+      <camunda:property name="regulation2" value="DORA: Digital operational resilience" />
+    </camunda:properties>
+  </bpmn:extensionElements>
+</bpmn:userTask>
+```
+
+This keeps regulatory traceability without adding 9+ text annotations and associations to the DI layer.
+
+**Exception**: For master-level governance models (e.g., ESG-E2E-Master), text annotations are acceptable because they serve an educational/documentation purpose.
+
 ## Validation Checklist
 
 **Visual Layout**
@@ -372,5 +465,5 @@ Reading DMN output variables in `conditionExpression` is acceptable — the busi
 
 ---
 
-**Version**: 1.0.0 | **Created**: 2026-03-02
+**Version**: 1.1.0 | **Created**: 2026-03-02 | **Updated**: 2026-03-05
 **Source**: Consolidated from SLA governance standards and ACMOS modeling best practices

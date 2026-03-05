@@ -54,7 +54,7 @@ SLA governance models use 2 pools with 9+1 lanes. Each lane is 125px tall:
 |-----------|---------|-------|-----------------|
 | Vendor Response | 1030 | 1155 | `vendor-response` |
 
-(30px gap between pools)
+(100px gap between pools — see Inter-Pool Gap section below)
 
 ### Element Positioning Within Lanes
 
@@ -71,6 +71,29 @@ Tasks should be centered vertically within their assigned lane:
 | Oversight | 772 | 787 | 794 |
 | Automation | 897 | 912 | 919 |
 | Vendor Response | 1052 | 1067 | 1074 |
+
+---
+
+## Lane Ordering Convention (Domain-Specific Models)
+
+For domain-specific process models (e.g., onboarding, vendor management) that define their own lanes:
+
+1. **Process-facing lanes at top** — Lanes that interact with external parties (vendors, partners) go at the top of the pool for maximum visual prominence
+2. **Coordinating lanes in the middle** — Program/project management lanes that orchestrate across functional areas
+3. **Initiating lanes at the bottom** — The lane where the process begins (requester, business owner) goes at the bottom
+
+This ensures the most complex interactions (vendor communication, message flows to external pools) happen at the top of the diagram, closest to any external participant pools.
+
+### Minimum Lane Heights
+
+| Content Density | Minimum Height |
+|----------------|----------------|
+| 1-2 tasks only | 125px |
+| 3-5 tasks, no boundary events | 160px |
+| 6+ tasks or boundary events | 250px |
+| Vendor-facing with message flows + timers | 350px |
+
+Lanes with boundary timer events, receive tasks, and message flows need significantly more vertical space to avoid overlapping elements.
 
 ---
 
@@ -93,6 +116,61 @@ Lane A:  [Task A] ----\
                        \--- [Task B]  (diagonal across lanes)
 Lane B:
 ```
+
+---
+
+## Inter-Pool Gap and Message Flow Routing (CRITICAL)
+
+**Rule: Maintain a minimum 100px gap between the Enterprise Governance pool and the Vendor pool.**
+
+Message flows between pools route through this gap as horizontal segments. Without sufficient space, message flow labels overlap with pool borders, making the diagram unreadable.
+
+### Gap Dimensions
+
+| Boundary | Y-Coordinate | Notes |
+|----------|-------------|-------|
+| Enterprise pool bottom | 1040 | y=80 + height=960 |
+| Message flow horizontal | 1090 | Centered in gap |
+| Vendor pool top | 1140 | 100px below Enterprise |
+
+### Message Flow Routing Pattern
+
+All cross-pool message flows MUST use this 4-waypoint L-shaped pattern:
+
+```
+Enterprise pool:
+   [Source Task] ──┐ (exit from bottom, y = task bottom edge)
+                   │ (vertical down to gap)
+                   ├────────────────────┐ (horizontal at y=1090, in gap)
+                   │                    │
+Vendor pool:       │              ┌─────┘ (vertical down into vendor)
+                   │              │
+                   │         [Target Task]
+```
+
+```xml
+<!-- Example: Enterprise → Vendor message flow -->
+<di:waypoint x="2610" y="1000"/>   <!-- source bottom edge -->
+<di:waypoint x="2610" y="1090"/>   <!-- down to gap midpoint -->
+<di:waypoint x="240" y="1090"/>    <!-- horizontal through gap -->
+<di:waypoint x="240" y="1352"/>    <!-- down to vendor element -->
+```
+
+### Rules
+
+1. **Minimum 100px gap** between pool bottom edges — never less
+2. **Horizontal segments at gap midpoint** (y=1090 for standard layout) — never at pool edges
+3. **50px label clearance** above and below horizontal segments — labels must not touch pool borders
+4. **Message flows may go right-to-left** — this is standard BPMN for cross-pool communication
+5. **No diagonal message flows** — use only vertical and horizontal segments
+
+### Why 100px?
+
+Message flow labels in Camunda Modeler are ~27px tall and positioned centered on the horizontal segment. With 50px clearance on each side:
+- Label top: 1090 - 14 = 1076 (36px below Enterprise pool at 1040)
+- Label bottom: 1090 + 14 = 1104 (36px above Vendor pool at 1140)
+
+This prevents the label text from visually colliding with pool border lines.
 
 ---
 
@@ -286,6 +364,10 @@ Before saving any BPMN file:
 11. [ ] **Default/bypass flows route around tasks** -- No flow cuts through a task bounding box
 12. [ ] **Flow labels clear of task text** -- Label Y ≤ target_task_y - 18
 13. [ ] **One sub-process per lane** -- No lane overcrowded with multiple SPs
+14. [ ] **Inter-pool gap ≥ 100px** -- Message flow labels must not overlap pool borders
+15. [ ] **Message flows at gap midpoint** -- Horizontal segments centered in gap (y=1090 for standard layout)
+16. [ ] **End events within lane boundaries** -- Every end event's full bounds (y to y+36) within its assigned lane
+17. [ ] **Cross-lane continuation flows go forward** -- When a gateway routes to another lane, target task X > source gateway X
 
 ---
 
@@ -301,6 +383,28 @@ Before saving any BPMN file:
 
 ---
 
-**Rule Version**: 1.1.0
-**Created**: 2026-03-02 | **Updated**: 2026-03-03
+## XML Serialization Safety (CRITICAL)
+
+When programmatically editing BPMN files (Python, lxml, ElementTree):
+
+1. **Verify element counts before and after** — lxml/ElementTree can silently drop elements (especially `textAnnotation`, `association`, empty elements)
+2. **Count shapes in DI section** — compare shape count before and after transformation
+3. **Never trust lxml round-trip fidelity** — always diff the output and check for dropped elements
+4. **Prefer targeted text edits** over full XML parse/serialize for small changes
+5. **Text annotations are high-risk** — they contain child `<bpmn:text>` elements that serializers may strip if empty or malformed
+
+### Verification Command
+
+After any programmatic BPMN edit:
+```bash
+# Compare element counts
+grep -c "bpmnElement=" before.bpmn
+grep -c "bpmnElement=" after.bpmn
+# Should match or differ only by intentional additions/removals
+```
+
+---
+
+**Rule Version**: 1.3.0
+**Created**: 2026-03-02 | **Updated**: 2026-03-05
 **Source**: Adapted from ACMOS change management visual clarity standards for SLA multi-lane governance
