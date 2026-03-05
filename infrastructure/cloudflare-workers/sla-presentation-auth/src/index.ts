@@ -14,6 +14,8 @@ interface Env {
   PROXY_SECRET: string;
   CF_ACCESS_CLIENT_ID: string;
   CF_ACCESS_CLIENT_SECRET: string;
+  SESSION_SECRET: string;
+  RATE_LIMIT_KV: KVNamespace;
 }
 
 // Allowed email addresses and domains
@@ -24,7 +26,13 @@ const ALLOWED_DOMAINS = ['agentic-innovations.com'];
 const SESSION_COOKIE = 'DS';
 const REFRESH_COOKIE = 'DSR';
 const PENDING_EMAIL_COOKIE = 'PENDING_EMAIL';
+const SLA_SESSION_COOKIE = 'SLA_SESSION';
+const SLA_SESSION_TTL = 28800; // 8 hours in seconds
 const LOGIN_PATH = '/auth/login';
+
+// OTP verify rate limiting
+const OTP_VERIFY_MAX_ATTEMPTS = 5;
+const OTP_VERIFY_WINDOW_SECONDS = 600; // 10 minutes
 
 // SLA logo SVG markup (matches KMFlow style: single bold text)
 const SLA_LOGO_SVG = `<svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg">
@@ -44,6 +52,95 @@ function sanitizeRedirect(redirect: string | null): string {
   if (!redirect) return '/';
   if (redirect.startsWith('/') && !redirect.startsWith('//')) return redirect;
   return '/';
+}
+
+function getSessionSecret(env: Env): string {
+  return env.SESSION_SECRET || env.DESCOPE_PROJECT_ID;
+}
+
+async function hmacSign(data: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
+  return Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+async function createSLASession(email: string, env: Env): Promise<string> {
+  const expiry = Math.floor(Date.now() / 1000) + SLA_SESSION_TTL;
+  const data = `${email}|${expiry}`;
+  const signature = await hmacSign(data, getSessionSecret(env));
+  return `${data}|${signature}`;
+}
+
+async function validateSLASession(
+  token: string,
+  env: Env
+): Promise<{ valid: boolean; email?: string }> {
+  const parts = token.split('|');
+  if (parts.length !== 3) return { valid: false };
+
+  const [email, expiryStr, signature] = parts;
+  const expiry = parseInt(expiryStr, 10);
+
+  if (isNaN(expiry) || expiry < Math.floor(Date.now() / 1000)) {
+    return { valid: false };
+  }
+
+  const data = `${email}|${expiryStr}`;
+  const expected = await hmacSign(data, getSessionSecret(env));
+
+  if (signature !== expected) return { valid: false };
+
+  return { valid: true, email };
+}
+
+function getSLASessionToken(request: Request): string | null {
+  const cookie = request.headers.get('Cookie') || '';
+  const match = cookie.match(new RegExp(`${SLA_SESSION_COOKIE}=([^;]+)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+async function checkOTPVerifyRateLimit(
+  email: string,
+  env: Env
+): Promise<{ allowed: boolean; remaining: number }> {
+  const key = `otp_attempts:${email.toLowerCase()}`;
+  const existing = await env.RATE_LIMIT_KV.get(key);
+  const attempts = existing ? parseInt(existing, 10) : 0;
+
+  if (attempts >= OTP_VERIFY_MAX_ATTEMPTS) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  return { allowed: true, remaining: OTP_VERIFY_MAX_ATTEMPTS - attempts };
+}
+
+async function incrementOTPVerifyAttempts(
+  email: string,
+  env: Env
+): Promise<void> {
+  const key = `otp_attempts:${email.toLowerCase()}`;
+  const existing = await env.RATE_LIMIT_KV.get(key);
+  const attempts = existing ? parseInt(existing, 10) : 0;
+  await env.RATE_LIMIT_KV.put(key, String(attempts + 1), {
+    expirationTtl: OTP_VERIFY_WINDOW_SECONDS,
+  });
+}
+
+async function clearOTPVerifyAttempts(
+  email: string,
+  env: Env
+): Promise<void> {
+  const key = `otp_attempts:${email.toLowerCase()}`;
+  await env.RATE_LIMIT_KV.delete(key);
 }
 
 export default {
@@ -70,7 +167,19 @@ export default {
       return handleLogout(url);
     }
 
-    // Check for valid session
+    // Check SLA_SESSION cookie FIRST (worker-managed, 8h TTL)
+    const slaSession = getSLASessionToken(request);
+    if (slaSession) {
+      const slaValidation = await validateSLASession(slaSession, env);
+      if (slaValidation.valid && slaValidation.email) {
+        if (isEmailAuthorized(slaValidation.email)) {
+          return proxyToPages(request, env, url);
+        }
+        return renderUnauthorizedPage(slaValidation.email);
+      }
+    }
+
+    // Fall through to Descope JWT validation
     const sessionToken = getSessionToken(request);
     const refreshToken = getRefreshToken(request);
 
@@ -287,11 +396,21 @@ async function proxyToPagesWithNewSession(
     redirect: 'manual',
   });
 
+  // Extract email from the JWT for SLA_SESSION
+  const validation = await validateDescopeJWT(sessionJwt, env.DESCOPE_PROJECT_ID);
+  const email = validation.payload?.email as string | undefined;
+
   const newHeaders = new Headers(response.headers);
   newHeaders.append('Set-Cookie', `${SESSION_COOKIE}=${sessionJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=28800`);
 
   if (refreshJwt) {
     newHeaders.append('Set-Cookie', `${REFRESH_COOKIE}=${refreshJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+  }
+
+  // Issue SLA_SESSION cookie for extended session
+  if (email) {
+    const slaToken = await createSLASession(email, env);
+    newHeaders.append('Set-Cookie', `${SLA_SESSION_COOKIE}=${encodeURIComponent(slaToken)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SLA_SESSION_TTL}`);
   }
 
   return new Response(response.body, {
@@ -369,6 +488,7 @@ function handleLogout(url: URL): Response {
   headers.append('Set-Cookie', `${SESSION_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
   headers.append('Set-Cookie', `${REFRESH_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
   headers.append('Set-Cookie', `${PENDING_EMAIL_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
+  headers.append('Set-Cookie', `${SLA_SESSION_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
 
   return new Response(null, { status: 302, headers });
 }
@@ -437,6 +557,20 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
       return redirectToLoginWithError(url, 'Please enter the 6-digit code from your email.', redirect, 'verify');
     }
 
+    // Rate limit OTP verification attempts per email
+    if (env.RATE_LIMIT_KV) {
+      const rateCheck = await checkOTPVerifyRateLimit(email, env);
+      if (!rateCheck.allowed) {
+        return redirectToLoginWithError(
+          url,
+          'Too many verification attempts. Please wait 10 minutes and try again.',
+          redirect,
+          'verify'
+        );
+      }
+      await incrementOTPVerifyAttempts(email, env);
+    }
+
     const response = await fetch(`https://api.descope.com/v1/auth/otp/verify/email`, {
       method: 'POST',
       headers: {
@@ -451,6 +585,11 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
 
     if (!response.ok) {
       return redirectToLoginWithError(url, 'Invalid or expired code. Please try again.', redirect, 'verify');
+    }
+
+    // Clear rate limit on successful verification
+    if (env.RATE_LIMIT_KV) {
+      await clearOTPVerifyAttempts(email, env);
     }
 
     const data = await response.json() as {
@@ -475,6 +614,10 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
     if (data.refreshJwt) {
       headers.append('Set-Cookie', `${REFRESH_COOKIE}=${data.refreshJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
     }
+
+    // Issue SLA_SESSION cookie for extended session (8h)
+    const slaToken = await createSLASession(verifiedEmail, env);
+    headers.append('Set-Cookie', `${SLA_SESSION_COOKIE}=${encodeURIComponent(slaToken)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SLA_SESSION_TTL}`);
 
     return new Response(null, { status: 302, headers });
   } catch (error) {
