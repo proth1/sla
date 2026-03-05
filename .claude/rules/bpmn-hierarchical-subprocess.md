@@ -55,13 +55,13 @@ NO user tasks, service tasks, or business rule tasks at the top level. ALL work 
 ### Enterprise Pool Dimensions
 
 ```
-Pool: x=160, y=80, width=1800, height=330
+Pool: x=160, y=80, width=1800, height=290
 ```
 
-- **Height 330px** (not 200px) — provides vertical space for rejection end events below the main flow
+- **Height 290px** — compact orchestrator with space for rejection end events below the main flow
 - Main flow Y-center: **y=190** (events at y=172, gateways at y=165, SPs at y=150)
 - Rejection end events: **y=262** (below main flow, within pool bounds)
-- Pool boundary bottom: y=80+330 = **y=410**
+- Pool boundary bottom: y=80+290 = **y=370**
 
 ### Collapsed Sub-Process Dimensions
 
@@ -87,10 +87,11 @@ Pattern: `{Action}&#10;{and/or} {Object}` — two lines, each 8-12 characters.
 
 | Element Pair | X-Gap |
 |-------------|-------|
-| Start Event → First SP | 54px (x=236 → x=290) |
+| Start Event → First SP | 54px (x=256 → x=310) |
 | SP → Gateway | 55px (SP end → GW start) |
 | Gateway → SP | 55px (GW end → SP start) |
 | SP → SP (via gateway) | ~55px each segment |
+| Gateway → Gateway | 70-90px (e.g., GW_EvalApproved → merge) |
 | Gateway → End Event | 57px |
 | Last SP → Gateway | 95px |
 
@@ -151,18 +152,38 @@ y=190    [GW_BuyVsBuild] ──No──→ [SP_EvalDD] → ... → [SP_ContractB
 
 1. Exit from the **top** of the gateway (y = gateway_y)
 2. Route horizontally **above** all skipped elements (y=120)
-3. Enter the **top** of the target sub-process (y = SP_y)
+3. Enter the **top** of the target **merge gateway** (not directly into the SP)
 4. Label positioned centered on the horizontal segment
 
 ```xml
-<!-- Build path bypass: up, across, down -->
+<!-- Build path bypass: up, across, down to merge gateway -->
 <bpmndi:BPMNEdge id="Flow_v5_7_di" bpmnElement="Flow_v5_7">
-  <di:waypoint x="730" y="165" />    <!-- gateway top -->
-  <di:waypoint x="730" y="120" />    <!-- up to bypass level -->
-  <di:waypoint x="1225" y="120" />   <!-- horizontal across -->
-  <di:waypoint x="1225" y="150" />   <!-- down to target SP -->
+  <di:waypoint x="750" y="165" />    <!-- gateway top -->
+  <di:waypoint x="750" y="120" />    <!-- up to bypass level -->
+  <di:waypoint x="1270" y="120" />   <!-- horizontal across -->
+  <di:waypoint x="1270" y="165" />   <!-- down to merge gateway -->
 </bpmndi:BPMNEdge>
 ```
+
+### Merge Gateway Before Sub-Process
+
+When multiple paths converge before entering a sub-process, use a **merge gateway** at the top level. The bypass flow and the normal flow both target the merge gateway, which has a single outgoing flow to the sub-process:
+
+```
+y=120    ─────────── Yes (Build bypass) ───────────┐
+         ↑                                         ↓
+y=190    [GW_BuyVsBuild] ──No──→ ... → [GW_EvalApproved] ──Yes──→ [Merge GW] → [SP_ContractBuild]
+```
+
+```xml
+<bpmn:exclusiveGateway id="Gateway_0gh936r">
+  <bpmn:incoming>Flow_v5_12</bpmn:incoming>   <!-- Eval Approved: Yes -->
+  <bpmn:incoming>Flow_v5_7</bpmn:incoming>    <!-- Build bypass -->
+  <bpmn:outgoing>Flow_1oux8e4</bpmn:outgoing> <!-- to SP_ContractBuild -->
+</bpmn:exclusiveGateway>
+```
+
+The merge gateway has **NO name** (structural purpose only) and sits at the same Y as the main flow.
 
 ---
 
@@ -176,33 +197,49 @@ The Vendor pool is EXPANDED (not collapsed) at the top level, showing all vendor
 Pool: x=160, y=490, width=1800, height=360
 ```
 
-- **Inter-pool gap**: 80px in the v5 reference model (Enterprise bottom y=410 → Vendor top y=490). Note: `bpmn-visual-clarity.md` specifies 100px for flat models — hierarchical models MAY use 80px because the collapsed orchestrator is more compact, but 100px is preferred when space allows.
+- **Inter-pool gap**: 120px (Enterprise bottom y=370 → Vendor top y=490). This exceeds the 100px minimum from `bpmn-visual-clarity.md` and provides ample room for message flow labels in both routing channels.
 - Vendor main flow Y-center: **y=630** (tasks at y=590, events at y=612, gateways at y=605)
 - Vendor parallel branches: **100px vertical spacing** (y=530, 630, 730)
 - Vendor rejection end events: **y=730** (below main flow)
 
 ### Message Flow Routing Through Inter-Pool Gap
 
-4-waypoint L-shape through the gap between pools:
+4-waypoint L-shape through the gap between pools. Use **two horizontal routing channels** in the gap to prevent message flows from crossing:
 
 ```
-Enterprise pool (bottom at y=410):
+Enterprise pool (bottom at y=370):
    [SP element] ──┐ (exit from bottom, y = SP_y + 80 = 230)
                    │ (vertical down into gap)
-                   ├────────────────────┐ (horizontal at y=450-470)
-Vendor pool (top at y=490):            │
-                   │              ┌─────┘ (vertical down into vendor)
-                   │              │
+y=430 ────────────├─── Enterprise→Vendor channel ────┐
+y=470 ────────────│─── Vendor→Enterprise channel ──┐ │
+                   │                                │ │
+Vendor pool (top at y=490):                         │ │
+                   │              ┌─────────────────┘ │
+                   │              │    ┌──────────────┘
                    │         [Vendor Task]
 ```
 
+**Channel convention**:
+- **y=430**: Enterprise-to-Vendor flows (requests going OUT — DDRequest, ContractDraft)
+- **y=470**: Vendor-to-Enterprise flows (responses coming IN — VendorResponse, SignedContract)
+
+This separation prevents message flow lines from crossing each other in the inter-pool gap.
+
 ```xml
-<!-- Enterprise → Vendor message flow -->
+<!-- Enterprise → Vendor message flow (y=430 channel) -->
 <bpmndi:BPMNEdge id="MsgFlow_DDRequest_di" bpmnElement="MsgFlow_DDRequest">
-  <di:waypoint x="840" y="230" />    <!-- SP bottom edge -->
-  <di:waypoint x="840" y="450" />    <!-- down to gap -->
-  <di:waypoint x="240" y="450" />    <!-- horizontal in gap -->
+  <di:waypoint x="860" y="230" />    <!-- SP bottom edge -->
+  <di:waypoint x="860" y="430" />    <!-- down to outbound channel -->
+  <di:waypoint x="240" y="430" />    <!-- horizontal in gap -->
   <di:waypoint x="240" y="612" />    <!-- down to vendor element -->
+</bpmndi:BPMNEdge>
+
+<!-- Vendor → Enterprise message flow (y=470 channel) -->
+<bpmndi:BPMNEdge id="MsgFlow_VendorResponse_di" bpmnElement="MsgFlow_VendorResponse">
+  <di:waypoint x="620" y="590" />    <!-- vendor task top edge -->
+  <di:waypoint x="620" y="470" />    <!-- up to inbound channel -->
+  <di:waypoint x="900" y="470" />    <!-- horizontal in gap -->
+  <di:waypoint x="900" y="230" />    <!-- up to SP bottom edge -->
 </bpmndi:BPMNEdge>
 ```
 
@@ -361,7 +398,11 @@ y=200    [Start] → [UAT] → [Approval] → [Onboard] → [Notify] → [Close]
 
 ## Timer + SLA Breach Pattern Inside Sub-Processes
 
-Boundary timer events with SLA breach end events:
+Two timer patterns are used inside sub-processes:
+
+### Pattern 1: Boundary Timer (Preferred for Receive Tasks)
+
+Boundary timers attach to tasks that wait for external responses (receive tasks, long-running user tasks):
 
 ```xml
 <!-- Boundary timer on receive task -->
@@ -372,6 +413,19 @@ Boundary timer events with SLA breach end events:
     <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
   </bpmn:timerEventDefinition>
 </bpmn:boundaryEvent>
+```
+
+### Pattern 2: Standalone Intermediate Catch Timer
+
+For SLA timers that monitor a task but are not structurally attached (e.g., when the timer tracks the overall sub-process rather than a single task), use an intermediate catch event positioned visually below the monitored task:
+
+```xml
+<bpmn:intermediateCatchEvent id="Timer_TriageSLA" name="2 Day&#10;SLA">
+  <bpmn:outgoing>Flow_SP1_SLA</bpmn:outgoing>
+  <bpmn:timerEventDefinition>
+    <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+  </bpmn:timerEventDefinition>
+</bpmn:intermediateCatchEvent>
 ```
 
 ### Visual Layout
@@ -515,7 +569,7 @@ Before saving any hierarchical BPMN file:
 - [ ] No laneSet at top level
 - [ ] All sub-processes have `isExpanded="false"` in DI
 - [ ] Each sub-process has its own BPMNDiagram
-- [ ] Enterprise pool height ≥ 330px
+- [ ] Enterprise pool height ~290px (compact orchestrator)
 - [ ] Rejection end events at y=262 (below main flow)
 - [ ] Bypass flows route ABOVE main flow
 - [ ] "No" rejection flows use L-shape (down then right)
@@ -529,6 +583,13 @@ Before saving any hierarchical BPMN file:
 - [ ] Internal start events have NO name
 - [ ] Merge gateways have NO name
 
+### Inter-Pool and Message Flows
+- [ ] Inter-pool gap ≥ 120px (Enterprise bottom to Vendor top)
+- [ ] Enterprise→Vendor message flows route at y=430 (upper channel)
+- [ ] Vendor→Enterprise message flows route at y=470 (lower channel)
+- [ ] No message flow lines cross each other in the gap
+- [ ] Merge gateways used where multiple paths converge before a SP
+
 ### Structural Integrity
 - [ ] Zero duplicate `_di` IDs across all diagrams
 - [ ] Every collapsed SP has exactly one BPMNDiagram
@@ -538,5 +599,5 @@ Before saving any hierarchical BPMN file:
 
 ---
 
-**Version**: 1.0.0 | **Created**: 2026-03-05
+**Version**: 1.1.0 | **Created**: 2026-03-05 | **Updated**: 2026-03-05
 **Source**: Extracted from user's manual Camunda Modeler edits to onboarding-to-be-ideal-state-v5.bpmn
