@@ -47,15 +47,15 @@
           },
           "values": [
             {
-              "label": "Within — risk is within organizational appetite",
+              "label": "Within \u2014 risk is within organizational appetite",
               "value": "within"
             },
             {
-              "label": "Borderline — risk is at the edge of appetite, needs monitoring",
+              "label": "Borderline \u2014 risk is at the edge of appetite, needs monitoring",
               "value": "borderline"
             },
             {
-              "label": "Exceeds — risk exceeds organizational appetite",
+              "label": "Exceeds \u2014 risk exceeds organizational appetite",
               "value": "exceeds"
             }
           ],
@@ -165,15 +165,16 @@
       "description": "This drives the GW_NeedsFullEval gateway decision.",
       "values": [
         {
-          "label": "Yes — proceed to full evaluation",
+          "label": "Yes \u2014 proceed to full evaluation",
           "value": "yes"
         },
         {
-          "label": "No — can proceed directly to contracting/build",
+          "label": "No \u2014 can proceed directly to contracting/build",
           "value": "no"
         }
       ],
       "id": "Field_517"
     }
-  ]
+  ],
+  "type": "default"
 }

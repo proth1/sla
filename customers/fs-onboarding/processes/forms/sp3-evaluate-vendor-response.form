@@ -31,11 +31,22 @@
           "type": "select",
           "key": "functionalRequirementsCoverage",
           "label": "Functional Requirements Coverage",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Full", "value": "full" },
-            { "label": "Partial", "value": "partial" },
-            { "label": "Insufficient", "value": "insufficient" }
+            {
+              "label": "Full",
+              "value": "full"
+            },
+            {
+              "label": "Partial",
+              "value": "partial"
+            },
+            {
+              "label": "Insufficient",
+              "value": "insufficient"
+            }
           ],
           "id": "Field_005"
         },
@@ -43,11 +54,22 @@
           "type": "select",
           "key": "technicalRequirementsCoverage",
           "label": "Technical Requirements Coverage",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Full", "value": "full" },
-            { "label": "Partial", "value": "partial" },
-            { "label": "Insufficient", "value": "insufficient" }
+            {
+              "label": "Full",
+              "value": "full"
+            },
+            {
+              "label": "Partial",
+              "value": "partial"
+            },
+            {
+              "label": "Insufficient",
+              "value": "insufficient"
+            }
           ],
           "id": "Field_006"
         },
@@ -55,11 +77,22 @@
           "type": "radio",
           "key": "slaCommitmentsAcceptable",
           "label": "SLA Commitments Acceptable",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" },
-            { "label": "Negotiation Needed", "value": "negotiation-needed" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "Negotiation Needed",
+              "value": "negotiation-needed"
+            }
           ],
           "id": "Field_007"
         },
@@ -67,12 +100,26 @@
           "type": "select",
           "key": "pricingAssessment",
           "label": "Pricing Assessment",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Competitive", "value": "competitive" },
-            { "label": "Acceptable", "value": "acceptable" },
-            { "label": "Above Market", "value": "above-market" },
-            { "label": "Unacceptable", "value": "unacceptable" }
+            {
+              "label": "Competitive",
+              "value": "competitive"
+            },
+            {
+              "label": "Acceptable",
+              "value": "acceptable"
+            },
+            {
+              "label": "Above Market",
+              "value": "above-market"
+            },
+            {
+              "label": "Unacceptable",
+              "value": "unacceptable"
+            }
           ],
           "id": "Field_008"
         }
@@ -91,7 +138,9 @@
           "type": "number",
           "key": "overallVendorScore",
           "label": "Overall Vendor Score (0-100)",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_011"
         },
         {
@@ -133,11 +182,22 @@
           "type": "select",
           "key": "evaluationApproved",
           "label": "Evaluation Decision",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Approved", "value": "approved" },
-            { "label": "Approved with Conditions", "value": "approved-with-conditions" },
-            { "label": "Rejected", "value": "rejected" }
+            {
+              "label": "Approved",
+              "value": "approved"
+            },
+            {
+              "label": "Approved with Conditions",
+              "value": "approved-with-conditions"
+            },
+            {
+              "label": "Rejected",
+              "value": "rejected"
+            }
           ],
           "id": "Field_018"
         },
@@ -151,10 +211,13 @@
           "type": "textarea",
           "key": "evaluationSummary",
           "label": "Evaluation Summary",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_020"
         }
       ]
     }
-  ]
+  ],
+  "type": "default"
 }

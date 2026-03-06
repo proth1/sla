@@ -1,7 +1,10 @@
 {
   "executionPlatform": "Camunda Cloud",
   "executionPlatformVersion": "8.6.0",
-  "exporter": { "name": "Camunda Modeler", "version": "5.28.0" },
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
   "schemaVersion": 16,
   "id": "Form_VendorCloseRequest",
   "components": [
@@ -10,10 +13,42 @@
       "label": "Engagement Closure",
       "id": "Field_001",
       "components": [
-        { "type": "textfield", "key": "onboardingCompletionDate", "label": "Onboarding completion date", "validate": { "required": true }, "id": "Field_002" },
-        { "type": "checkbox", "key": "allDeliverablesProvided", "label": "All deliverables provided", "validate": { "required": true }, "id": "Field_003" },
-        { "type": "checkbox", "key": "dataHandlingObligationsConfirmed", "label": "Data handling obligations confirmed", "validate": { "required": true }, "id": "Field_004" },
-        { "type": "checkbox", "key": "performanceBaselineEstablished", "label": "Performance baseline established", "validate": { "required": true }, "id": "Field_005" }
+        {
+          "type": "textfield",
+          "key": "onboardingCompletionDate",
+          "label": "Onboarding completion date",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_002"
+        },
+        {
+          "type": "checkbox",
+          "key": "allDeliverablesProvided",
+          "label": "All deliverables provided",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_003"
+        },
+        {
+          "type": "checkbox",
+          "key": "dataHandlingObligationsConfirmed",
+          "label": "Data handling obligations confirmed",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004"
+        },
+        {
+          "type": "checkbox",
+          "key": "performanceBaselineEstablished",
+          "label": "Performance baseline established",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        }
       ]
     },
     {
@@ -21,13 +56,61 @@
       "label": "Transition to Monitoring",
       "id": "Field_006",
       "components": [
-        { "type": "textfield", "key": "vendorRelationshipManagerAssigned", "label": "Vendor relationship manager assigned", "validate": { "required": true }, "id": "Field_007" },
-        { "type": "textfield", "key": "vendorNextScheduledReviewDate", "label": "Next scheduled review date", "validate": { "required": true }, "id": "Field_008" },
-        { "type": "textarea", "key": "openActionItems", "label": "Open action items", "id": "Field_009" },
-        { "type": "textarea", "key": "vendorLessonsLearned", "label": "Lessons learned", "id": "Field_010" }
+        {
+          "type": "textfield",
+          "key": "vendorRelationshipManagerAssigned",
+          "label": "Vendor relationship manager assigned",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_007"
+        },
+        {
+          "type": "textfield",
+          "key": "vendorNextScheduledReviewDate",
+          "label": "Next scheduled review date",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_008"
+        },
+        {
+          "type": "textarea",
+          "key": "openActionItems",
+          "label": "Open action items",
+          "id": "Field_009"
+        },
+        {
+          "type": "textarea",
+          "key": "vendorLessonsLearned",
+          "label": "Lessons learned",
+          "id": "Field_010"
+        }
       ]
     },
-    { "type": "separator", "id": "Field_011" },
-    { "type": "radio", "key": "vendorEngagementComplete", "label": "Vendor engagement complete", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_012" }
-  ]
+    {
+      "type": "separator",
+      "id": "Field_011"
+    },
+    {
+      "type": "radio",
+      "key": "vendorEngagementComplete",
+      "label": "Vendor engagement complete",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        }
+      ],
+      "validate": {
+        "required": true
+      },
+      "id": "Field_012"
+    }
+  ],
+  "type": "default"
 }

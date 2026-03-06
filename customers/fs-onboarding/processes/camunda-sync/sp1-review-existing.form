@@ -126,11 +126,11 @@
       },
       "values": [
         {
-          "label": "Sufficient — can be leveraged as-is or with minor configuration",
+          "label": "Sufficient \u2014 can be leveraged as-is or with minor configuration",
           "value": "sufficient"
         },
         {
-          "label": "Insufficient — new procurement or build required",
+          "label": "Insufficient \u2014 new procurement or build required",
           "value": "insufficient"
         }
       ],
@@ -142,5 +142,6 @@
       "label": "Estimated Cost Avoidance if Leveraged ($)",
       "id": "Field_018"
     }
-  ]
+  ],
+  "type": "default"
 }

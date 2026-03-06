@@ -76,11 +76,11 @@
       },
       "values": [
         {
-          "label": "No Change — reuse does not alter risk profile",
+          "label": "No Change \u2014 reuse does not alter risk profile",
           "value": "no-change"
         },
         {
-          "label": "Escalation Needed — expanded scope changes risk tier",
+          "label": "Escalation Needed \u2014 expanded scope changes risk tier",
           "value": "escalation-needed"
         }
       ],
@@ -110,5 +110,6 @@
       "description": "Explain why leveraging this existing solution is the preferred approach.",
       "id": "Field_114"
     }
-  ]
+  ],
+  "type": "default"
 }

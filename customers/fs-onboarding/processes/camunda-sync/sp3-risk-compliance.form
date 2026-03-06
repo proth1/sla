@@ -31,25 +31,40 @@
           "type": "textarea",
           "key": "applicableRegulations",
           "label": "Applicable Regulations Confirmed",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_005"
         },
         {
           "type": "textarea",
           "key": "regulatoryGapAnalysis",
           "label": "Regulatory Gap Analysis",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_006"
         },
         {
           "type": "select",
           "key": "complianceAssessmentStatus",
           "label": "Compliance Assessment Status",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Compliant", "value": "compliant" },
-            { "label": "Gaps Identified", "value": "gaps-identified" },
-            { "label": "Non-Compliant", "value": "non-compliant" }
+            {
+              "label": "Compliant",
+              "value": "compliant"
+            },
+            {
+              "label": "Gaps Identified",
+              "value": "gaps-identified"
+            },
+            {
+              "label": "Non-Compliant",
+              "value": "non-compliant"
+            }
           ],
           "id": "Field_007"
         }
@@ -68,12 +83,26 @@
           "type": "select",
           "key": "dataClassificationConfirmed",
           "label": "Data Classification Confirmed",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Public", "value": "public" },
-            { "label": "Internal", "value": "internal" },
-            { "label": "Confidential", "value": "confidential" },
-            { "label": "Restricted", "value": "restricted" }
+            {
+              "label": "Public",
+              "value": "public"
+            },
+            {
+              "label": "Internal",
+              "value": "internal"
+            },
+            {
+              "label": "Confidential",
+              "value": "confidential"
+            },
+            {
+              "label": "Restricted",
+              "value": "restricted"
+            }
           ],
           "id": "Field_010"
         },
@@ -81,10 +110,18 @@
           "type": "radio",
           "key": "dpiaRequired",
           "label": "DPIA Required",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_011"
         },
@@ -93,10 +130,22 @@
           "key": "dpiaStatus",
           "label": "DPIA Status",
           "values": [
-            { "label": "Not Started", "value": "not-started" },
-            { "label": "In Progress", "value": "in-progress" },
-            { "label": "Completed", "value": "completed" },
-            { "label": "Not Required", "value": "not-required" }
+            {
+              "label": "Not Started",
+              "value": "not-started"
+            },
+            {
+              "label": "In Progress",
+              "value": "in-progress"
+            },
+            {
+              "label": "Completed",
+              "value": "completed"
+            },
+            {
+              "label": "Not Required",
+              "value": "not-required"
+            }
           ],
           "id": "Field_012"
         },
@@ -105,8 +154,14 @@
           "key": "crossBorderDataTransfers",
           "label": "Cross-Border Data Transfers",
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_013"
         },
@@ -131,11 +186,22 @@
           "type": "select",
           "key": "legalReviewStatus",
           "label": "Legal Review Status",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Pending", "value": "pending" },
-            { "label": "In Progress", "value": "in-progress" },
-            { "label": "Complete", "value": "complete" }
+            {
+              "label": "Pending",
+              "value": "pending"
+            },
+            {
+              "label": "In Progress",
+              "value": "in-progress"
+            },
+            {
+              "label": "Complete",
+              "value": "complete"
+            }
           ],
           "id": "Field_017"
         },
@@ -166,12 +232,26 @@
           "type": "select",
           "key": "residualRiskRating",
           "label": "Residual Risk Rating",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Low", "value": "low" },
-            { "label": "Medium", "value": "medium" },
-            { "label": "High", "value": "high" },
-            { "label": "Critical", "value": "critical" }
+            {
+              "label": "Low",
+              "value": "low"
+            },
+            {
+              "label": "Medium",
+              "value": "medium"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            },
+            {
+              "label": "Critical",
+              "value": "critical"
+            }
           ],
           "id": "Field_022"
         },
@@ -185,11 +265,22 @@
           "type": "select",
           "key": "complianceApproval",
           "label": "Compliance Approval",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Approved", "value": "approved" },
-            { "label": "Conditional", "value": "conditional" },
-            { "label": "Rejected", "value": "rejected" }
+            {
+              "label": "Approved",
+              "value": "approved"
+            },
+            {
+              "label": "Conditional",
+              "value": "conditional"
+            },
+            {
+              "label": "Rejected",
+              "value": "rejected"
+            }
           ],
           "id": "Field_024"
         },
@@ -201,5 +292,6 @@
         }
       ]
     }
-  ]
+  ],
+  "type": "default"
 }

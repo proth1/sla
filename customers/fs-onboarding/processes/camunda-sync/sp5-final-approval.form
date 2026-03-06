@@ -1,7 +1,10 @@
 {
   "executionPlatform": "Camunda Cloud",
   "executionPlatformVersion": "8.6.0",
-  "exporter": { "name": "Camunda Modeler", "version": "5.28.0" },
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
   "schemaVersion": 16,
   "id": "Form_FinalApproval",
   "components": [
@@ -10,7 +13,11 @@
       "label": "Evidence Review",
       "id": "Field_001",
       "components": [
-        { "type": "text", "text": "Review the complete evidence package before rendering approval decision.", "id": "Field_002" }
+        {
+          "type": "text",
+          "text": "Review the complete evidence package before rendering approval decision.",
+          "id": "Field_002"
+        }
       ]
     },
     {
@@ -18,12 +25,54 @@
       "label": "Approval Assessment",
       "id": "Field_003",
       "components": [
-        { "type": "checkbox", "key": "evaluationResultsReviewed", "label": "Evaluation results reviewed", "validate": { "required": true }, "id": "Field_004" },
-        { "type": "checkbox", "key": "riskAssessmentReviewed", "label": "Risk assessment reviewed", "validate": { "required": true }, "id": "Field_005" },
-        { "type": "checkbox", "key": "uatSignOffConfirmed", "label": "UAT sign-off confirmed", "validate": { "required": true }, "id": "Field_006" },
-        { "type": "checkbox", "key": "contractExecutionConfirmed", "label": "Contract execution confirmed", "id": "Field_007" },
-        { "type": "checkbox", "key": "complianceVerificationConfirmed", "label": "Compliance verification confirmed", "validate": { "required": true }, "id": "Field_008" },
-        { "type": "number", "key": "evidencePackageCompletenessScore", "label": "Evidence package completeness score (0-100)", "id": "Field_009" }
+        {
+          "type": "checkbox",
+          "key": "evaluationResultsReviewed",
+          "label": "Evaluation results reviewed",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004"
+        },
+        {
+          "type": "checkbox",
+          "key": "riskAssessmentReviewed",
+          "label": "Risk assessment reviewed",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        },
+        {
+          "type": "checkbox",
+          "key": "uatSignOffConfirmed",
+          "label": "UAT sign-off confirmed",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_006"
+        },
+        {
+          "type": "checkbox",
+          "key": "contractExecutionConfirmed",
+          "label": "Contract execution confirmed",
+          "id": "Field_007"
+        },
+        {
+          "type": "checkbox",
+          "key": "complianceVerificationConfirmed",
+          "label": "Compliance verification confirmed",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_008"
+        },
+        {
+          "type": "number",
+          "key": "evidencePackageCompletenessScore",
+          "label": "Evidence package completeness score (0-100)",
+          "id": "Field_009"
+        }
       ]
     },
     {
@@ -31,13 +80,80 @@
       "label": "Approval Decision",
       "id": "Field_010",
       "components": [
-        { "type": "select", "key": "approvalDecision", "label": "Approval decision", "values": [{ "label": "Approved", "value": "approved" }, { "label": "Approved with Conditions", "value": "approved-with-conditions" }, { "label": "Rejected", "value": "rejected" }], "validate": { "required": true }, "id": "Field_011" },
-        { "type": "textarea", "key": "approvalConditions", "label": "Conditions", "id": "Field_012" },
-        { "type": "textfield", "key": "conditionsDeadline", "label": "Conditions deadline", "id": "Field_013" },
-        { "type": "textfield", "key": "approverAuthorityLevel", "label": "Approver authority level", "validate": { "required": true }, "id": "Field_014" },
-        { "type": "textarea", "key": "decisionRationale", "label": "Decision rationale", "validate": { "required": true }, "id": "Field_015" },
-        { "type": "radio", "key": "finalApproved", "label": "Final approved", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_016" }
+        {
+          "type": "select",
+          "key": "approvalDecision",
+          "label": "Approval decision",
+          "values": [
+            {
+              "label": "Approved",
+              "value": "approved"
+            },
+            {
+              "label": "Approved with Conditions",
+              "value": "approved-with-conditions"
+            },
+            {
+              "label": "Rejected",
+              "value": "rejected"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_011"
+        },
+        {
+          "type": "textarea",
+          "key": "approvalConditions",
+          "label": "Conditions",
+          "id": "Field_012"
+        },
+        {
+          "type": "textfield",
+          "key": "conditionsDeadline",
+          "label": "Conditions deadline",
+          "id": "Field_013"
+        },
+        {
+          "type": "textfield",
+          "key": "approverAuthorityLevel",
+          "label": "Approver authority level",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_014"
+        },
+        {
+          "type": "textarea",
+          "key": "decisionRationale",
+          "label": "Decision rationale",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_015"
+        },
+        {
+          "type": "radio",
+          "key": "finalApproved",
+          "label": "Final approved",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_016"
+        }
       ]
     }
-  ]
+  ],
+  "type": "default"
 }

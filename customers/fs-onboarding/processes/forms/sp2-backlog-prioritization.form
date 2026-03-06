@@ -95,15 +95,16 @@
       },
       "values": [
         {
-          "label": "Yes — add to backlog and proceed",
+          "label": "Yes \u2014 add to backlog and proceed",
           "value": "yes"
         },
         {
-          "label": "No — defer or cancel",
+          "label": "No \u2014 defer or cancel",
           "value": "no"
         }
       ],
       "id": "Field_610"
     }
-  ]
+  ],
+  "type": "default"
 }

@@ -31,13 +31,30 @@
           "type": "select",
           "key": "aiSystemType",
           "label": "AI System Type",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "ML Model", "value": "ml-model" },
-            { "label": "LLM", "value": "llm" },
-            { "label": "Rule-Based", "value": "rule-based" },
-            { "label": "Hybrid", "value": "hybrid" },
-            { "label": "Other", "value": "other" }
+            {
+              "label": "ML Model",
+              "value": "ml-model"
+            },
+            {
+              "label": "LLM",
+              "value": "llm"
+            },
+            {
+              "label": "Rule-Based",
+              "value": "rule-based"
+            },
+            {
+              "label": "Hybrid",
+              "value": "hybrid"
+            },
+            {
+              "label": "Other",
+              "value": "other"
+            }
           ],
           "id": "Field_005"
         },
@@ -45,12 +62,26 @@
           "type": "select",
           "key": "euAiActRiskCategory",
           "label": "EU AI Act Risk Category",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Unacceptable", "value": "unacceptable" },
-            { "label": "High", "value": "high" },
-            { "label": "Limited", "value": "limited" },
-            { "label": "Minimal", "value": "minimal" }
+            {
+              "label": "Unacceptable",
+              "value": "unacceptable"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            },
+            {
+              "label": "Limited",
+              "value": "limited"
+            },
+            {
+              "label": "Minimal",
+              "value": "minimal"
+            }
           ],
           "id": "Field_006"
         },
@@ -58,11 +89,22 @@
           "type": "select",
           "key": "sr117ModelTier",
           "label": "SR 11-7 Model Tier",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Tier 1 - Critical", "value": "tier1-critical" },
-            { "label": "Tier 2 - Significant", "value": "tier2-significant" },
-            { "label": "Tier 3 - Limited", "value": "tier3-limited" }
+            {
+              "label": "Tier 1 - Critical",
+              "value": "tier1-critical"
+            },
+            {
+              "label": "Tier 2 - Significant",
+              "value": "tier2-significant"
+            },
+            {
+              "label": "Tier 3 - Limited",
+              "value": "tier3-limited"
+            }
           ],
           "id": "Field_007"
         },
@@ -70,7 +112,9 @@
           "type": "textarea",
           "key": "modelNamesAndVersions",
           "label": "Model Names and Versions",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_008"
         }
       ]
@@ -88,19 +132,35 @@
           "type": "textarea",
           "key": "trainingDataSources",
           "label": "Training Data Sources",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_011"
         },
         {
           "type": "select",
           "key": "trainingDataClassification",
           "label": "Training Data Classification",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Public", "value": "public" },
-            { "label": "Internal", "value": "internal" },
-            { "label": "Confidential", "value": "confidential" },
-            { "label": "Restricted", "value": "restricted" }
+            {
+              "label": "Public",
+              "value": "public"
+            },
+            {
+              "label": "Internal",
+              "value": "internal"
+            },
+            {
+              "label": "Confidential",
+              "value": "confidential"
+            },
+            {
+              "label": "Restricted",
+              "value": "restricted"
+            }
           ],
           "id": "Field_012"
         },
@@ -108,10 +168,18 @@
           "type": "radio",
           "key": "customerDataUsedForTraining",
           "label": "Customer Data Used for Training",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_013"
         },
@@ -120,9 +188,18 @@
           "key": "optOutMechanismAvailable",
           "label": "Opt-Out Mechanism Available",
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" },
-            { "label": "N/A", "value": "na" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "N/A",
+              "value": "na"
+            }
           ],
           "id": "Field_014"
         },
@@ -147,10 +224,18 @@
           "type": "radio",
           "key": "biasTestingPerformed",
           "label": "Bias Testing Performed",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_018"
         },
@@ -165,8 +250,14 @@
           "key": "explainabilityToolsAvailable",
           "label": "Explainability Tools Available",
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_020"
         },
@@ -174,10 +265,18 @@
           "type": "radio",
           "key": "modelDriftMonitoring",
           "label": "Model Drift Monitoring",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_021"
         },
@@ -186,8 +285,14 @@
           "key": "adversarialTestingPerformed",
           "label": "Adversarial Testing Performed",
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_022"
         },
@@ -196,9 +301,18 @@
           "key": "promptInjectionControls",
           "label": "Prompt Injection Controls",
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" },
-            { "label": "N/A", "value": "na" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "N/A",
+              "value": "na"
+            }
           ],
           "id": "Field_023"
         }
@@ -217,11 +331,22 @@
           "type": "radio",
           "key": "aiGovernanceDocumentation",
           "label": "AI Governance Documentation",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" },
-            { "label": "Partial", "value": "partial" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "Partial",
+              "value": "partial"
+            }
           ],
           "id": "Field_026"
         },
@@ -229,10 +354,18 @@
           "type": "radio",
           "key": "designatedAiRiskOwner",
           "label": "Designated AI Risk Owner",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_027"
         },
@@ -240,10 +373,18 @@
           "type": "radio",
           "key": "humanInTheLoopOversight",
           "label": "Human-in-the-Loop Oversight",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_028"
         },
@@ -251,10 +392,18 @@
           "type": "radio",
           "key": "modelVersioningAuditTrails",
           "label": "Model Versioning and Audit Trails",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_029"
         },
@@ -263,8 +412,14 @@
           "key": "ethicalReviewMechanism",
           "label": "Ethical Review Mechanism",
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_030"
         }
@@ -283,10 +438,18 @@
           "type": "radio",
           "key": "performanceMetricsTracked",
           "label": "Performance Metrics Tracked",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_033"
         },
@@ -300,10 +463,18 @@
           "type": "radio",
           "key": "continuousMonitoringCapability",
           "label": "Continuous Monitoring Capability",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_035"
         },
@@ -311,10 +482,18 @@
           "type": "radio",
           "key": "potentialHarmsIdentified",
           "label": "Potential Harms Identified",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_036"
         },
@@ -339,11 +518,22 @@
           "type": "select",
           "key": "aiRiskClassification",
           "label": "AI Risk Classification",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Acceptable", "value": "acceptable" },
-            { "label": "Conditional", "value": "conditional" },
-            { "label": "Unacceptable", "value": "unacceptable" }
+            {
+              "label": "Acceptable",
+              "value": "acceptable"
+            },
+            {
+              "label": "Conditional",
+              "value": "conditional"
+            },
+            {
+              "label": "Unacceptable",
+              "value": "unacceptable"
+            }
           ],
           "id": "Field_040"
         },
@@ -351,18 +541,31 @@
           "type": "textarea",
           "key": "aiGovernanceNotes",
           "label": "AI Governance Notes",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_041"
         },
         {
           "type": "select",
           "key": "aiApproval",
           "label": "AI Approval",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Approved", "value": "approved" },
-            { "label": "Conditional", "value": "conditional" },
-            { "label": "Rejected", "value": "rejected" }
+            {
+              "label": "Approved",
+              "value": "approved"
+            },
+            {
+              "label": "Conditional",
+              "value": "conditional"
+            },
+            {
+              "label": "Rejected",
+              "value": "rejected"
+            }
           ],
           "id": "Field_042"
         },
@@ -374,5 +577,6 @@
         }
       ]
     }
-  ]
+  ],
+  "type": "default"
 }

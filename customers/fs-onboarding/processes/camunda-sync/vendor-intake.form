@@ -1,7 +1,10 @@
 {
   "executionPlatform": "Camunda Cloud",
   "executionPlatformVersion": "8.6.0",
-  "exporter": { "name": "Camunda Modeler", "version": "5.28.0" },
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
   "schemaVersion": 16,
   "id": "Form_VendorIntake",
   "components": [
@@ -10,11 +13,51 @@
       "label": "Vendor Identity",
       "id": "Field_001",
       "components": [
-        { "type": "textfield", "key": "legalEntityName", "label": "Legal entity name", "validate": { "required": true }, "id": "Field_002" },
-        { "type": "textfield", "key": "taxIdDunsNumber", "label": "Tax ID / DUNS number", "validate": { "required": true }, "id": "Field_003" },
-        { "type": "textfield", "key": "jurisdictionOfIncorporation", "label": "Jurisdiction of incorporation", "validate": { "required": true }, "id": "Field_004" },
-        { "type": "textfield", "key": "primaryContactName", "label": "Primary contact name", "validate": { "required": true }, "id": "Field_005" },
-        { "type": "textfield", "key": "primaryContactEmail", "label": "Primary contact email", "validate": { "required": true }, "id": "Field_006" }
+        {
+          "type": "textfield",
+          "key": "legalEntityName",
+          "label": "Legal entity name",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_002"
+        },
+        {
+          "type": "textfield",
+          "key": "taxIdDunsNumber",
+          "label": "Tax ID / DUNS number",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_003"
+        },
+        {
+          "type": "textfield",
+          "key": "jurisdictionOfIncorporation",
+          "label": "Jurisdiction of incorporation",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004"
+        },
+        {
+          "type": "textfield",
+          "key": "primaryContactName",
+          "label": "Primary contact name",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        },
+        {
+          "type": "textfield",
+          "key": "primaryContactEmail",
+          "label": "Primary contact email",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_006"
+        }
       ]
     },
     {
@@ -22,11 +65,67 @@
       "label": "Ownership & Structure",
       "id": "Field_007",
       "components": [
-        { "type": "textarea", "key": "ownershipStructure", "label": "Ownership structure", "validate": { "required": true }, "id": "Field_008" },
-        { "type": "textarea", "key": "ultimateBeneficialOwners", "label": "Ultimate beneficial owners (>25%)", "id": "Field_009" },
-        { "type": "select", "key": "annualRevenueRange", "label": "Annual revenue range", "values": [{ "label": "Under $1M", "value": "under1M" }, { "label": "$1M - $10M", "value": "1M-10M" }, { "label": "$10M - $100M", "value": "10M-100M" }, { "label": "$100M - $1B", "value": "100M-1B" }, { "label": "Over $1B", "value": "over1B" }], "validate": { "required": true }, "id": "Field_010" },
-        { "type": "number", "key": "numberOfEmployees", "label": "Number of employees", "id": "Field_011" },
-        { "type": "number", "key": "yearsInOperation", "label": "Years in operation", "validate": { "required": true }, "id": "Field_012" }
+        {
+          "type": "textarea",
+          "key": "ownershipStructure",
+          "label": "Ownership structure",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_008"
+        },
+        {
+          "type": "textarea",
+          "key": "ultimateBeneficialOwners",
+          "label": "Ultimate beneficial owners (>25%)",
+          "id": "Field_009"
+        },
+        {
+          "type": "select",
+          "key": "annualRevenueRange",
+          "label": "Annual revenue range",
+          "values": [
+            {
+              "label": "Under $1M",
+              "value": "under1M"
+            },
+            {
+              "label": "$1M - $10M",
+              "value": "1M-10M"
+            },
+            {
+              "label": "$10M - $100M",
+              "value": "10M-100M"
+            },
+            {
+              "label": "$100M - $1B",
+              "value": "100M-1B"
+            },
+            {
+              "label": "Over $1B",
+              "value": "over1B"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_010"
+        },
+        {
+          "type": "number",
+          "key": "numberOfEmployees",
+          "label": "Number of employees",
+          "id": "Field_011"
+        },
+        {
+          "type": "number",
+          "key": "yearsInOperation",
+          "label": "Years in operation",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_012"
+        }
       ]
     },
     {
@@ -34,10 +133,56 @@
       "label": "Certifications & Insurance",
       "id": "Field_013",
       "components": [
-        { "type": "textarea", "key": "industryCertificationsHeld", "label": "Industry certifications held", "id": "Field_014" },
-        { "type": "radio", "key": "proofOfInsuranceEO", "label": "Proof of insurance — E&O", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_015" },
-        { "type": "radio", "key": "proofOfInsuranceCyber", "label": "Proof of insurance — Cyber liability", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_016" },
-        { "type": "textarea", "key": "financialServicesClientReferences", "label": "Financial services client references", "id": "Field_017" }
+        {
+          "type": "textarea",
+          "key": "industryCertificationsHeld",
+          "label": "Industry certifications held",
+          "id": "Field_014"
+        },
+        {
+          "type": "radio",
+          "key": "proofOfInsuranceEO",
+          "label": "Proof of insurance \u2014 E&O",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_015"
+        },
+        {
+          "type": "radio",
+          "key": "proofOfInsuranceCyber",
+          "label": "Proof of insurance \u2014 Cyber liability",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_016"
+        },
+        {
+          "type": "textarea",
+          "key": "financialServicesClientReferences",
+          "label": "Financial services client references",
+          "id": "Field_017"
+        }
       ]
     },
     {
@@ -45,11 +190,49 @@
       "label": "Sanctions Screening",
       "id": "Field_018",
       "components": [
-        { "type": "checkbox", "key": "noActiveSanctionsExclusions", "label": "No active sanctions/exclusions", "validate": { "required": true }, "id": "Field_019" },
-        { "type": "checkbox", "key": "conflictOfInterestDeclaration", "label": "Conflict of interest declaration", "validate": { "required": true }, "id": "Field_020" }
+        {
+          "type": "checkbox",
+          "key": "noActiveSanctionsExclusions",
+          "label": "No active sanctions/exclusions",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_019"
+        },
+        {
+          "type": "checkbox",
+          "key": "conflictOfInterestDeclaration",
+          "label": "Conflict of interest declaration",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_020"
+        }
       ]
     },
-    { "type": "separator", "id": "Field_021" },
-    { "type": "radio", "key": "vendorQualified", "label": "Vendor qualified", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_022" }
-  ]
+    {
+      "type": "separator",
+      "id": "Field_021"
+    },
+    {
+      "type": "radio",
+      "key": "vendorQualified",
+      "label": "Vendor qualified",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        }
+      ],
+      "validate": {
+        "required": true
+      },
+      "id": "Field_022"
+    }
+  ],
+  "type": "default"
 }

@@ -99,5 +99,6 @@
       "label": "Submitter Title",
       "id": "Field_314"
     }
-  ]
+  ],
+  "type": "default"
 }

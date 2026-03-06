@@ -31,7 +31,9 @@
           "type": "textfield",
           "key": "legalEntityName",
           "label": "Legal Entity Name",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_005"
         },
         {
@@ -44,7 +46,9 @@
           "type": "textfield",
           "key": "jurisdictionOfIncorporation",
           "label": "Jurisdiction of Incorporation",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_007"
         },
         {
@@ -64,11 +68,26 @@
           "key": "annualRevenueRange",
           "label": "Annual Revenue Range",
           "values": [
-            { "label": "Under $1M", "value": "under1M" },
-            { "label": "$1M - $10M", "value": "1M-10M" },
-            { "label": "$10M - $100M", "value": "10M-100M" },
-            { "label": "$100M - $1B", "value": "100M-1B" },
-            { "label": "Over $1B", "value": "over1B" }
+            {
+              "label": "Under $1M",
+              "value": "under1M"
+            },
+            {
+              "label": "$1M - $10M",
+              "value": "1M-10M"
+            },
+            {
+              "label": "$10M - $100M",
+              "value": "10M-100M"
+            },
+            {
+              "label": "$100M - $1B",
+              "value": "100M-1B"
+            },
+            {
+              "label": "Over $1B",
+              "value": "over1B"
+            }
           ],
           "id": "Field_010"
         },
@@ -100,8 +119,14 @@
           "key": "auditedFinancialsAvailable",
           "label": "Audited Financials Available",
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_015"
         },
@@ -109,12 +134,26 @@
           "type": "select",
           "key": "financialStabilityAssessment",
           "label": "Financial Stability Assessment",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Strong", "value": "strong" },
-            { "label": "Adequate", "value": "adequate" },
-            { "label": "Concerns", "value": "concerns" },
-            { "label": "Unacceptable", "value": "unacceptable" }
+            {
+              "label": "Strong",
+              "value": "strong"
+            },
+            {
+              "label": "Adequate",
+              "value": "adequate"
+            },
+            {
+              "label": "Concerns",
+              "value": "concerns"
+            },
+            {
+              "label": "Unacceptable",
+              "value": "unacceptable"
+            }
           ],
           "id": "Field_016"
         }
@@ -133,11 +172,22 @@
           "type": "select",
           "key": "sanctionsScreeningResult",
           "label": "Sanctions Screening Result",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Clear", "value": "clear" },
-            { "label": "Match Found", "value": "match-found" },
-            { "label": "Pending", "value": "pending" }
+            {
+              "label": "Clear",
+              "value": "clear"
+            },
+            {
+              "label": "Match Found",
+              "value": "match-found"
+            },
+            {
+              "label": "Pending",
+              "value": "pending"
+            }
           ],
           "id": "Field_019"
         },
@@ -145,10 +195,18 @@
           "type": "radio",
           "key": "conflictOfInterestDeclaration",
           "label": "Conflict of Interest Declaration",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Confirmed", "value": "confirmed" },
-            { "label": "Not Confirmed", "value": "not-confirmed" }
+            {
+              "label": "Confirmed",
+              "value": "confirmed"
+            },
+            {
+              "label": "Not Confirmed",
+              "value": "not-confirmed"
+            }
           ],
           "id": "Field_020"
         },
@@ -173,10 +231,18 @@
           "type": "radio",
           "key": "subContractorsInvolved",
           "label": "Sub-contractors Involved",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_024"
         },
@@ -207,11 +273,22 @@
           "type": "select",
           "key": "dueDiligenceResult",
           "label": "Due Diligence Result",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Satisfactory", "value": "satisfactory" },
-            { "label": "Conditional", "value": "conditional" },
-            { "label": "Unsatisfactory", "value": "unsatisfactory" }
+            {
+              "label": "Satisfactory",
+              "value": "satisfactory"
+            },
+            {
+              "label": "Conditional",
+              "value": "conditional"
+            },
+            {
+              "label": "Unsatisfactory",
+              "value": "unsatisfactory"
+            }
           ],
           "id": "Field_029"
         },
@@ -219,10 +296,13 @@
           "type": "textarea",
           "key": "dueDiligenceNotes",
           "label": "Due Diligence Notes",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_030"
         }
       ]
     }
-  ]
+  ],
+  "type": "default"
 }

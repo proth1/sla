@@ -105,15 +105,15 @@
           "label": "Resource Availability",
           "values": [
             {
-              "label": "Available — resources can be allocated",
+              "label": "Available \u2014 resources can be allocated",
               "value": "available"
             },
             {
-              "label": "Constrained — limited resources, may delay",
+              "label": "Constrained \u2014 limited resources, may delay",
               "value": "constrained"
             },
             {
-              "label": "Unavailable — no resources until next quarter",
+              "label": "Unavailable \u2014 no resources until next quarter",
               "value": "unavailable"
             }
           ],
@@ -146,15 +146,15 @@
           },
           "values": [
             {
-              "label": "Approve — proceed to planning",
+              "label": "Approve \u2014 proceed to planning",
               "value": "approve"
             },
             {
-              "label": "Reject — does not meet criteria",
+              "label": "Reject \u2014 does not meet criteria",
               "value": "reject"
             },
             {
-              "label": "Return for Information — additional details needed",
+              "label": "Return for Information \u2014 additional details needed",
               "value": "return-for-info"
             }
           ],
@@ -202,5 +202,6 @@
       ],
       "id": "Field_422"
     }
-  ]
+  ],
+  "type": "default"
 }

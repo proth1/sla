@@ -40,19 +40,19 @@
           },
           "values": [
             {
-              "label": "Critical — regulatory deadline or compliance gap",
+              "label": "Critical \u2014 regulatory deadline or compliance gap",
               "value": "critical"
             },
             {
-              "label": "High — significant business impact if delayed",
+              "label": "High \u2014 significant business impact if delayed",
               "value": "high"
             },
             {
-              "label": "Standard — normal business priority",
+              "label": "Standard \u2014 normal business priority",
               "value": "standard"
             },
             {
-              "label": "Exploratory — research or proof of concept",
+              "label": "Exploratory \u2014 research or proof of concept",
               "value": "exploratory"
             }
           ],
@@ -67,19 +67,19 @@
           },
           "values": [
             {
-              "label": "Buy — procure from vendor",
+              "label": "Buy \u2014 procure from vendor",
               "value": "buy"
             },
             {
-              "label": "Build — develop internally",
+              "label": "Build \u2014 develop internally",
               "value": "build"
             },
             {
-              "label": "Hybrid — combination of buy and build",
+              "label": "Hybrid \u2014 combination of buy and build",
               "value": "hybrid"
             },
             {
-              "label": "Unsure — need evaluation",
+              "label": "Unsure \u2014 need evaluation",
               "value": "unsure"
             }
           ],
@@ -104,19 +104,19 @@
           },
           "values": [
             {
-              "label": "Critical — failure causes significant financial or regulatory impact",
+              "label": "Critical \u2014 failure causes significant financial or regulatory impact",
               "value": "critical"
             },
             {
-              "label": "Significant — failure disrupts key business processes",
+              "label": "Significant \u2014 failure disrupts key business processes",
               "value": "significant"
             },
             {
-              "label": "Moderate — failure causes inconvenience but workarounds exist",
+              "label": "Moderate \u2014 failure causes inconvenience but workarounds exist",
               "value": "moderate"
             },
             {
-              "label": "Low — minimal business impact if unavailable",
+              "label": "Low \u2014 minimal business impact if unavailable",
               "value": "low"
             }
           ],
@@ -348,5 +348,6 @@
       ],
       "id": "Field_227"
     }
-  ]
+  ],
+  "type": "default"
 }

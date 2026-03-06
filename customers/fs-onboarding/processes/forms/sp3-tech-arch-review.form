@@ -31,12 +31,26 @@
           "type": "select",
           "key": "architecturePattern",
           "label": "Architecture Pattern",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Monolith", "value": "monolith" },
-            { "label": "Microservices", "value": "microservices" },
-            { "label": "Serverless", "value": "serverless" },
-            { "label": "Hybrid", "value": "hybrid" }
+            {
+              "label": "Monolith",
+              "value": "monolith"
+            },
+            {
+              "label": "Microservices",
+              "value": "microservices"
+            },
+            {
+              "label": "Serverless",
+              "value": "serverless"
+            },
+            {
+              "label": "Hybrid",
+              "value": "hybrid"
+            }
           ],
           "id": "Field_005"
         },
@@ -44,20 +58,39 @@
           "type": "textarea",
           "key": "technologyStack",
           "label": "Technology Stack Description",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_006"
         },
         {
           "type": "select",
           "key": "deploymentModel",
           "label": "Deployment Model",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "SaaS", "value": "saas" },
-            { "label": "IaaS", "value": "iaas" },
-            { "label": "PaaS", "value": "paas" },
-            { "label": "On-Premise", "value": "on-premise" },
-            { "label": "Hybrid", "value": "hybrid" }
+            {
+              "label": "SaaS",
+              "value": "saas"
+            },
+            {
+              "label": "IaaS",
+              "value": "iaas"
+            },
+            {
+              "label": "PaaS",
+              "value": "paas"
+            },
+            {
+              "label": "On-Premise",
+              "value": "on-premise"
+            },
+            {
+              "label": "Hybrid",
+              "value": "hybrid"
+            }
           ],
           "id": "Field_007"
         },
@@ -71,7 +104,9 @@
           "type": "textarea",
           "key": "dataResidencyLocations",
           "label": "Data Residency Locations",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_009"
         }
       ]
@@ -107,11 +142,22 @@
           "type": "select",
           "key": "integrationComplexity",
           "label": "Integration Complexity",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Low", "value": "low" },
-            { "label": "Medium", "value": "medium" },
-            { "label": "High", "value": "high" }
+            {
+              "label": "Low",
+              "value": "low"
+            },
+            {
+              "label": "Medium",
+              "value": "medium"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            }
           ],
           "id": "Field_015"
         },
@@ -171,12 +217,26 @@
           "type": "select",
           "key": "architectureFitAssessment",
           "label": "Architecture Fit Assessment",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Strong Fit", "value": "strong-fit" },
-            { "label": "Acceptable", "value": "acceptable" },
-            { "label": "Poor Fit", "value": "poor-fit" },
-            { "label": "Incompatible", "value": "incompatible" }
+            {
+              "label": "Strong Fit",
+              "value": "strong-fit"
+            },
+            {
+              "label": "Acceptable",
+              "value": "acceptable"
+            },
+            {
+              "label": "Poor Fit",
+              "value": "poor-fit"
+            },
+            {
+              "label": "Incompatible",
+              "value": "incompatible"
+            }
           ],
           "id": "Field_025"
         },
@@ -184,7 +244,9 @@
           "type": "textarea",
           "key": "architectureReviewNotes",
           "label": "Architecture Review Notes",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_026"
         },
         {
@@ -192,8 +254,14 @@
           "key": "remediationRequired",
           "label": "Remediation Required",
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_027"
         },
@@ -205,5 +273,6 @@
         }
       ]
     }
-  ]
+  ],
+  "type": "default"
 }

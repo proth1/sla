@@ -31,7 +31,9 @@
           "type": "number",
           "key": "annualLicenseCost",
           "label": "Annual License/Subscription Cost",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_005"
         },
         {
@@ -62,7 +64,9 @@
           "type": "number",
           "key": "tco3Year",
           "label": "Total Cost of Ownership (3-year)",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_010"
         },
         {
@@ -86,7 +90,9 @@
           "type": "textfield",
           "key": "roiEstimate",
           "label": "ROI Estimate",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_014"
         },
         {
@@ -122,10 +128,18 @@
           "type": "radio",
           "key": "budgetAuthorized",
           "label": "Budget Authorized",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_020"
         },
@@ -133,7 +147,9 @@
           "type": "textfield",
           "key": "budgetSource",
           "label": "Budget Source",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_021"
         },
         {
@@ -158,12 +174,21 @@
       "type": "radio",
       "key": "financialApproved",
       "label": "Financial Approved",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "values": [
-        { "label": "Yes", "value": "yes" },
-        { "label": "No", "value": "no" }
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        }
       ],
       "id": "Field_025"
     }
-  ]
+  ],
+  "type": "default"
 }

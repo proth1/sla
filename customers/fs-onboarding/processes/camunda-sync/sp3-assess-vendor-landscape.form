@@ -31,26 +31,44 @@
           "type": "number",
           "key": "vendorsEvaluated",
           "label": "Vendors Evaluated",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_005"
         },
         {
           "type": "textarea",
           "key": "vendorShortlist",
           "label": "Vendor Shortlist",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_006"
         },
         {
           "type": "select",
           "key": "marketMaturityAssessment",
           "label": "Market Maturity Assessment",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Emerging", "value": "emerging" },
-            { "label": "Growing", "value": "growing" },
-            { "label": "Mature", "value": "mature" },
-            { "label": "Declining", "value": "declining" }
+            {
+              "label": "Emerging",
+              "value": "emerging"
+            },
+            {
+              "label": "Growing",
+              "value": "growing"
+            },
+            {
+              "label": "Mature",
+              "value": "mature"
+            },
+            {
+              "label": "Declining",
+              "value": "declining"
+            }
           ],
           "id": "Field_007"
         },
@@ -75,21 +93,27 @@
           "type": "textarea",
           "key": "evaluationCriteriaUsed",
           "label": "Evaluation Criteria Used",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_011"
         },
         {
           "type": "textfield",
           "key": "topVendorRecommendation",
           "label": "Top Vendor Recommendation",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_012"
         },
         {
           "type": "textarea",
           "key": "recommendationRationale",
           "label": "Recommendation Rationale",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_013"
         },
         {
@@ -113,28 +137,41 @@
           "type": "textfield",
           "key": "vendorSelectedName",
           "label": "Vendor Selected",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_017"
         },
         {
           "type": "textarea",
           "key": "selectionDecisionRationale",
           "label": "Selection Decision Rationale",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_018"
         },
         {
           "type": "radio",
           "key": "vendorSelected",
           "label": "Vendor Selected",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "values": [
-            { "label": "Yes", "value": "yes" },
-            { "label": "No", "value": "no" }
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
           ],
           "id": "Field_019"
         }
       ]
     }
-  ]
+  ],
+  "type": "default"
 }

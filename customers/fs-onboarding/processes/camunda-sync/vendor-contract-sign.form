@@ -1,7 +1,10 @@
 {
   "executionPlatform": "Camunda Cloud",
   "executionPlatformVersion": "8.6.0",
-  "exporter": { "name": "Camunda Modeler", "version": "5.28.0" },
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
   "schemaVersion": 16,
   "id": "Form_VendorContractSign",
   "components": [
@@ -10,11 +13,51 @@
       "label": "Execution",
       "id": "Field_001",
       "components": [
-        { "type": "textfield", "key": "contractReferenceNumber", "label": "Contract reference number", "validate": { "required": true }, "id": "Field_002" },
-        { "type": "textfield", "key": "executionDate", "label": "Execution date", "validate": { "required": true }, "id": "Field_003" },
-        { "type": "textfield", "key": "authorizedSignatoryName", "label": "Authorized signatory name", "validate": { "required": true }, "id": "Field_004" },
-        { "type": "checkbox", "key": "signatoryAuthorityVerified", "label": "Signatory authority verified", "validate": { "required": true }, "id": "Field_005" },
-        { "type": "checkbox", "key": "allSchedulesIncluded", "label": "All schedules included — MSA, SLA, DPA, SOW", "validate": { "required": true }, "id": "Field_006" }
+        {
+          "type": "textfield",
+          "key": "contractReferenceNumber",
+          "label": "Contract reference number",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_002"
+        },
+        {
+          "type": "textfield",
+          "key": "executionDate",
+          "label": "Execution date",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_003"
+        },
+        {
+          "type": "textfield",
+          "key": "authorizedSignatoryName",
+          "label": "Authorized signatory name",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004"
+        },
+        {
+          "type": "checkbox",
+          "key": "signatoryAuthorityVerified",
+          "label": "Signatory authority verified",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        },
+        {
+          "type": "checkbox",
+          "key": "allSchedulesIncluded",
+          "label": "All schedules included \u2014 MSA, SLA, DPA, SOW",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_006"
+        }
       ]
     },
     {
@@ -22,12 +65,58 @@
       "label": "Post-Execution Confirmation",
       "id": "Field_007",
       "components": [
-        { "type": "checkbox", "key": "dpaExecuted", "label": "DPA executed", "validate": { "required": true }, "id": "Field_008" },
-        { "type": "checkbox", "key": "insuranceCertificatesCurrent", "label": "Insurance certificates current", "validate": { "required": true }, "id": "Field_009" },
-        { "type": "checkbox", "key": "ndaInForce", "label": "NDA in force", "validate": { "required": true }, "id": "Field_010" }
+        {
+          "type": "checkbox",
+          "key": "dpaExecuted",
+          "label": "DPA executed",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_008"
+        },
+        {
+          "type": "checkbox",
+          "key": "insuranceCertificatesCurrent",
+          "label": "Insurance certificates current",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_009"
+        },
+        {
+          "type": "checkbox",
+          "key": "ndaInForce",
+          "label": "NDA in force",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_010"
+        }
       ]
     },
-    { "type": "separator", "id": "Field_011" },
-    { "type": "radio", "key": "contractExecuted", "label": "Contract executed", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_012" }
-  ]
+    {
+      "type": "separator",
+      "id": "Field_011"
+    },
+    {
+      "type": "radio",
+      "key": "contractExecuted",
+      "label": "Contract executed",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        }
+      ],
+      "validate": {
+        "required": true
+      },
+      "id": "Field_012"
+    }
+  ],
+  "type": "default"
 }
