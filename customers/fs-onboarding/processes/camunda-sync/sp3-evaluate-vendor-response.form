@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_EvaluateVendorResponse",
+  "id": "sp3-evaluate-vendor-response",
   "components": [
     {
       "type": "text",
