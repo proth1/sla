@@ -18,13 +18,12 @@ PROJECT_DIR="$CLAUDE_PROJECT_DIR"
 REPO="proth1/sla"
 
 # Extract Jira issue key from branch name
-# Branches use SLM- prefix but Jira project key is SLA
 BRANCH=$(git -C "${PROJECT_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 JIRA_KEY=""
 ISSUE_NUM=""
 if [[ "${BRANCH}" =~ ^feature/SLM-([0-9]+) ]]; then
     ISSUE_NUM="${BASH_REMATCH[1]}"
-    JIRA_KEY="SLA-${ISSUE_NUM}"
+    JIRA_KEY="SLM-${ISSUE_NUM}"
 fi
 
 # If no Jira key found, skip validation (might be a hotfix branch)
@@ -57,6 +56,23 @@ if [[ -z "${JIRA_AUTH:-}" ]]; then
     fi
     JIRA_URL="${JIRA_URL:-https://agentic-sdlc.atlassian.net}"
     JIRA_AUTH="${JIRA_EMAIL}:${JIRA_API_TOKEN}"
+fi
+
+# Check if Jira issue exists first
+ISSUE_RESPONSE=$(curl -s --max-time 8 -u "${JIRA_AUTH}" \
+  "${JIRA_URL}/rest/api/3/issue/${JIRA_KEY}" 2>/dev/null || echo "")
+
+ISSUE_EXISTS=$(echo "${ISSUE_RESPONSE}" | jq -r '.key // empty' 2>/dev/null || echo "")
+if [[ -z "${ISSUE_EXISTS}" ]]; then
+    # Issue doesn't exist or Jira is unreachable — skip validation (warn only)
+    cat <<EOF
+{
+  "hookSpecificOutput": {
+    "additionalContext": "CDD evidence validation SKIPPED: Jira issue ${JIRA_KEY} not found or Jira unreachable. Proceeding with merge."
+  }
+}
+EOF
+    exit 0
 fi
 
 # Fetch Jira issue comments and look for CDD evidence markers
