@@ -90,7 +90,20 @@
 | Cross-Cutting Sub-Processes | 5 |
 | Presentation Slides | ~33 (onboarding-only) |
 
+## In Progress
+
+### OneTrust Integration Planning (2026-03-06)
+- Created knowledge base: `customers/fs-onboarding/docs/discovery/onetrust-integration.md`
+- Two integration points identified in SP3 (Evaluation & Due Diligence):
+  1. Risk assessment intake (Task_RiskCompliance, Task_SecurityAssessment)
+  2. Vendor due diligence (Task_VendorDueDiligence + vendor pool tasks)
+- Integration pattern: Zeebe service tasks calling OneTrust APIs (OAuth2)
+- Email drafted for Shane (TPRM owner) with integration questions
+- **Next**: Update presentation with OneTrust roadmap slide, await Shane's answers on module licensing and integration preferences
+
 ## Recommended Next Steps
+- Await Shane's response on OneTrust module licensing and integration preferences
+- Add OneTrust integration roadmap slide to presentation
 - Deploy updated presentation to Cloudflare Pages
 - Review Phases 1, 3, 4 layouts for similar compaction opportunities
 - Rotate PROXY_SECRET (old value in git history)
@@ -111,9 +124,12 @@
 
 ---
 
+
+---
+
 ## SESSION END WARNING (Auto-generated)
 
-**Session ended**: 2026-03-05T16:18:55Z
+**Session ended**: 2026-03-06T01:06:03Z
 **activeContext.md was NOT updated** before session ended.
 
 The previous Claude may not have documented:

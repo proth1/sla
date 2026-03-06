@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_MockAwaitSignedContract",
+  "id": "mock-await-signed-contract",
   "components": [
     {
       "id": "Field_001",

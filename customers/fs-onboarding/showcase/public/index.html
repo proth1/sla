@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SLA Governance - Software Onboarding Showcase</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1e293b;--surface3:#283548;
+  --border:#334155;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#3b82f6;--accent2:#6366f1;--accent3:#8b5cf6;
+  --success:#22c55e;--warn:#f59e0b;--danger:#ef4444;
+  --glow:rgba(99,102,241,0.15);
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* --- HEADER --- */
+.header{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+.header-left{display:flex;align-items:center;gap:16px}
+.logo{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),var(--accent3));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;box-shadow:0 0 30px rgba(99,102,241,0.3)}
+.header h1{font-size:22px;font-weight:600;background:linear-gradient(135deg,#e2e8f0,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-sub{font-size:13px;color:var(--text3);font-weight:400}
+.header-right{display:flex;gap:12px;align-items:center}
+.cluster-badge{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.cluster-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px rgba(34,197,94,0.5);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* --- PROCESS FLOW --- */
+.flow-container{padding:30px 40px;background:linear-gradient(180deg,rgba(30,27,75,0.3) 0%,transparent 100%)}
+.flow-bar{display:flex;align-items:center;justify-content:center;gap:4px;position:relative}
+.flow-phase{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .3s}
+.flow-node{width:52px;height:52px;border-radius:14px;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;transition:all .4s;position:relative}
+.flow-node.active{border-color:var(--accent);background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(99,102,241,0.15));box-shadow:0 0 25px rgba(59,130,246,0.25);animation:nodeGlow 2s ease-in-out infinite}
+.flow-node.completed{border-color:var(--success);background:rgba(34,197,94,0.1);color:var(--success)}
+.flow-node.completed::after{content:'';position:absolute;inset:-3px;border-radius:16px;border:1px solid rgba(34,197,94,0.2)}
+@keyframes nodeGlow{0%,100%{box-shadow:0 0 25px rgba(59,130,246,0.25)}50%{box-shadow:0 0 40px rgba(59,130,246,0.4)}}
+.flow-label{font-size:11px;color:var(--text3);text-align:center;max-width:80px;line-height:1.3;font-weight:500;transition:color .3s}
+.flow-phase:hover .flow-label{color:var(--text2)}
+.flow-phase.active .flow-label{color:var(--accent)}
+.flow-phase.completed .flow-label{color:var(--success)}
+.flow-connector{width:36px;height:2px;background:var(--border);position:relative;margin-bottom:26px}
+.flow-connector.completed{background:linear-gradient(90deg,var(--success),var(--success))}
+.flow-connector.active{background:linear-gradient(90deg,var(--success),var(--accent));animation:flowPulse 1.5s infinite}
+@keyframes flowPulse{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
+
+/* --- MAIN LAYOUT --- */
+.main{display:grid;grid-template-columns:380px 1fr;gap:0;min-height:calc(100vh - 180px)}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;max-height:calc(100vh - 180px)}
+.sidebar-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sidebar-header h2{font-size:15px;font-weight:600;color:var(--text)}
+.task-count{background:var(--accent);color:#fff;font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px}
+
+.task-list{list-style:none}
+.task-item{padding:16px 24px;border-bottom:1px solid rgba(51,65,85,0.5);cursor:pointer;transition:all .2s;position:relative}
+.task-item:hover{background:rgba(59,130,246,0.05)}
+.task-item.active{background:linear-gradient(90deg,rgba(59,130,246,0.1),transparent);border-left:3px solid var(--accent)}
+.task-item.completed{opacity:.6}
+.task-item.completed::before{content:'';position:absolute;left:20px;top:50%;transform:translateY(-50%);width:6px;height:6px;border-radius:50%;background:var(--success)}
+.task-name{font-size:14px;font-weight:500;margin-bottom:4px}
+.task-meta{font-size:12px;color:var(--text3);display:flex;gap:12px;align-items:center}
+.task-badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.badge-business{background:rgba(59,130,246,0.15);color:#60a5fa}
+.badge-governance{background:rgba(168,85,247,0.15);color:#c084fc}
+.badge-contracting{background:rgba(245,158,11,0.15);color:#fbbf24}
+.badge-technical{background:rgba(34,197,94,0.15);color:#4ade80}
+.badge-vendor{background:rgba(236,72,153,0.15);color:#f472b6}
+.badge-automation{background:rgba(99,102,241,0.15);color:#818cf8}
+
+/* --- CONTENT AREA --- */
+.content{padding:32px 40px;overflow-y:auto;max-height:calc(100vh - 180px)}
+.content-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:16px}
+.content-empty-icon{font-size:64px;opacity:.3}
+.content-empty h3{font-size:20px;color:var(--text2)}
+.content-empty p{color:var(--text3);max-width:400px;line-height:1.6}
+
+/* --- TASK DETAIL --- */
+.task-detail{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.task-header{margin-bottom:28px}
+.task-header h2{font-size:24px;font-weight:600;margin-bottom:8px}
+.task-header-meta{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.meta-chip{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);background:var(--surface2);padding:4px 12px;border-radius:6px;border:1px solid var(--border)}
+.meta-chip .icon{font-size:14px}
+
+/* --- FORM RENDERING --- */
+.form-container{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:24px}
+.form-group{margin-bottom:24px}
+.form-group:last-child{margin-bottom:0}
+.form-label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.form-input,.form-textarea,.form-select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:14px;font-family:inherit;transition:all .2s;outline:none}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+.form-textarea{min-height:100px;resize:vertical}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.form-select option{background:var(--surface2);color:var(--text)}
+.form-radio-group{display:flex;gap:12px;flex-wrap:wrap}
+.form-radio{display:flex;align-items:center;gap:8px;padding:10px 18px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.form-radio:hover{border-color:var(--accent)}
+.form-radio input{accent-color:var(--accent)}
+.form-radio.selected{border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.form-text{padding:16px 20px;background:linear-gradient(135deg,rgba(99,102,241,0.05),rgba(139,92,246,0.05));border:1px solid rgba(99,102,241,0.15);border-radius:12px;color:var(--text2);font-size:14px;line-height:1.7}
+.form-text h2,.form-text h3{color:var(--text);margin-bottom:8px;font-size:16px}
+.form-separator{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+/* --- BUTTONS --- */
+.btn{padding:12px 28px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 15px rgba(59,130,246,0.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 25px rgba(59,130,246,0.4)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--surface3)}
+.btn-success{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 15px rgba(34,197,94,0.3)}
+.btn-danger{background:var(--surface2);color:var(--danger);border:1px solid rgba(239,68,68,0.3)}
+.form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
+
+/* --- START SCREEN --- */
+.start-screen{max-width:640px;margin:0 auto;text-align:center;padding:60px 0}
+.start-screen h2{font-size:32px;font-weight:700;margin-bottom:12px;background:linear-gradient(135deg,#e2e8f0,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.start-screen p{color:var(--text3);font-size:15px;line-height:1.7;margin-bottom:36px}
+.start-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:left;margin-bottom:24px}
+.start-card h3{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--text)}
+.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.start-field{display:flex;flex-direction:column;gap:4px}
+.start-field.full{grid-column:1/-1}
+
+/* --- TOAST --- */
+.toast-container{position:fixed;top:20px;right:20px;z-index:1000;display:flex;flex-direction:column;gap:8px}
+.toast{padding:14px 20px;border-radius:10px;font-size:13px;font-weight:500;animation:toastIn .3s ease;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,0.3)}
+.toast-success{background:linear-gradient(135deg,#065f46,#064e3b);border:1px solid rgba(34,197,94,0.3);color:#6ee7b7}
+.toast-error{background:linear-gradient(135deg,#7f1d1d,#991b1b);border:1px solid rgba(239,68,68,0.3);color:#fca5a5}
+.toast-info{background:linear-gradient(135deg,#1e3a5f,#1e40af);border:1px solid rgba(59,130,246,0.3);color:#93c5fd}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+
+/* --- COMPLETED --- */
+.completion-screen{text-align:center;padding:80px 40px;animation:fadeIn .5s ease}
+.completion-icon{font-size:80px;margin-bottom:24px;animation:bounceIn .6s ease}
+@keyframes bounceIn{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+.completion-screen h2{font-size:36px;font-weight:700;margin-bottom:12px;background:linear-gradient(135deg,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.completion-stats{display:flex;gap:24px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 28px;min-width:140px}
+.stat-value{font-size:28px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:12px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+
+/* --- LOADING --- */
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay{position:absolute;inset:0;background:rgba(10,14,26,0.8);display:flex;align-items:center;justify-content:center;z-index:50;border-radius:16px}
+
+/* --- VARIABLES PANEL --- */
+.vars-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-top:20px}
+.vars-panel h3{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text2);display:flex;align-items:center;gap:8px;cursor:pointer}
+.vars-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.var-item{display:flex;flex-direction:column;gap:2px;padding:8px 12px;background:var(--surface2);border-radius:8px;font-size:12px}
+.var-name{color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:11px}
+.var-value{color:var(--text);font-family:'JetBrains Mono',monospace;font-weight:500;word-break:break-all}
+
+/* --- SCROLLBAR --- */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">SG</div>
+    <div>
+      <h1>Software Onboarding Showcase</h1>
+      <div class="header-sub">Enterprise Governance Lifecycle | Camunda 8</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="cluster-badge">
+      <span class="dot"></span>
+      sla-onboarding-dev | us-east-1
+    </div>
+  </div>
+</div>
+
+<div class="flow-container" id="flowContainer">
+  <div class="flow-bar" id="flowBar"></div>
+</div>
+
+<div class="main" id="mainApp">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>Tasks</h2>
+      <span class="task-count" id="taskCount">0</span>
+    </div>
+    <ul class="task-list" id="taskList"></ul>
+  </div>
+  <div class="content" id="content">
+    <div class="start-screen" id="startScreen">
+      <h2>Software Onboarding</h2>
+      <p>Experience the full 5-phase vendor onboarding governance lifecycle. Start a new process instance to walk through each user task with live Camunda 8 forms.</p>
+      <div class="start-card">
+        <h3>Start New Process Instance</h3>
+        <div class="start-grid">
+          <div class="start-field">
+            <label class="form-label">Software Name</label>
+            <input class="form-input" id="startSoftware" value="Acme Analytics Platform">
+          </div>
+          <div class="start-field">
+            <label class="form-label">Vendor Name</label>
+            <input class="form-input" id="startVendor" value="Acme Corp">
+          </div>
+          <div class="start-field">
+            <label class="form-label">Requester</label>
+            <input class="form-input" id="startRequester" value="Paul Roth">
+          </div>
+          <div class="start-field">
+            <label class="form-label">Department</label>
+            <input class="form-input" id="startDepartment" value="Technology">
+          </div>
+          <div class="start-field full">
+            <label class="form-label">Estimated Cost ($)</label>
+            <input class="form-input" type="number" id="startCost" value="250000">
+          </div>
+        </div>
+        <div class="form-actions" style="border:none;padding-top:16px">
+          <button class="btn btn-primary" onclick="startProcess()" id="startBtn">Launch Process Instance</button>
+        </div>
+      </div>
+      <div class="start-card" id="resumeCard" style="display:none">
+        <h3>Resume Existing Process</h3>
+        <p style="color:var(--text2);font-size:14px;margin-bottom:16px">An active process instance was detected with tasks waiting.</p>
+        <div class="form-actions" style="border:none;padding-top:0">
+          <button class="btn btn-success" onclick="resumeProcess()" id="resumeBtn">Resume Walkthrough</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script src="defaults.js"></script>
+<script>
+const PHASES = [
+  { id: 'SP_RequestTriage', name: 'Request &\nTriage', short: 'SP1', tasks: ['Task_ReviewExisting','Task_LeverageExisting','Task_GatherDocs','Task_SubmitRequest','Task_InitialTriage'] },
+  { id: 'SP_PlanningRouting', name: 'Planning &\nRouting', short: 'SP2', tasks: ['Task_PrelimAnalysis','Task_BacklogPrioritization','Task_PathwayRouting'] },
+  { id: 'SP_EvalDD', name: 'Evaluation &\nDue Diligence', short: 'SP3', tasks: ['Task_TechArchReview','Task_SecurityAssessment','Task_RiskCompliance','Task_FinancialAnalysis','Task_AssessVendorLandscape','Task_VendorDD','Receive_VendorResponse','Task_EvaluateResponse','Task_AIGovernanceReview'] },
+  { id: 'SP_ContractBuild', name: 'Contracting &\nBuild', short: 'SP4', tasks: ['Task_RefineRequirements','Task_PerformPoC','Task_TechRiskEval','Task_NegotiateContract','Receive_SignedContract','Task_FinalizeContract','Task_DefineBuildReqs'] },
+  { id: 'SP_UATGoLive', name: 'UAT &\nGo-Live', short: 'SP5', tasks: ['Task_PerformUAT','Task_FinalApproval','Task_OnboardSoftware','Activity_0zf4l0g','Task_CloseRequest'] },
+];
+
+const LANE_COLORS = {
+  'business-lane': 'badge-business',
+  'governance-lane': 'badge-governance',
+  'contracting-lane': 'badge-contracting',
+  'technical-assessment': 'badge-technical',
+  'ai-review': 'badge-governance',
+  'compliance-lane': 'badge-governance',
+  'oversight-lane': 'badge-governance',
+  'automation-lane': 'badge-automation',
+  'vendor-response': 'badge-vendor',
+  'procurement-lane': 'badge-vendor',
+};
+
+let state = {
+  processKey: null,
+  tasks: [],
+  completedTasks: [],
+  selectedTask: null,
+  pollTimer: null,
+  currentPhase: -1,
+};
+
+function renderFlowBar() {
+  const bar = document.getElementById('flowBar');
+  bar.innerHTML = '';
+  PHASES.forEach((phase, i) => {
+    const isCompleted = i < state.currentPhase;
+    const isActive = i === state.currentPhase;
+    const div = document.createElement('div');
+    div.className = `flow-phase ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`;
+    div.innerHTML = `
+      <div class="flow-node ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">
+        ${isCompleted ? '<svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M13.485 3.515a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-3.5-3.5a1 1 0 011.414-1.414L5.75 9.793l6.293-6.278a1 1 0 011.414 0z"/></svg>' : (i + 1)}
+      </div>
+      <div class="flow-label">${phase.name.replace('\n',' ')}</div>
+    `;
+    bar.appendChild(div);
+    if (i < PHASES.length - 1) {
+      const conn = document.createElement('div');
+      conn.className = `flow-connector ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`;
+      bar.appendChild(conn);
+    }
+  });
+}
+
+function toast(message, type = 'info') {
+  const container = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  const icons = { success: '\u2713', error: '\u2717', info: '\u2139' };
+  el.innerHTML = `<span>${icons[type] || ''}</span> ${message}`;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+async function startProcess() {
+  const btn = document.getElementById('startBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Starting...';
+  try {
+    const vars = {
+      softwareName: document.getElementById('startSoftware').value,
+      vendorName: document.getElementById('startVendor').value,
+      requesterName: document.getElementById('startRequester').value,
+      department: document.getElementById('startDepartment').value,
+      estimatedCost: parseInt(document.getElementById('startCost').value) || 0,
+      requesterEmail: 'proth1@gmail.com',
+      riskCategory: 'High',
+      approved: true,
+      buildPathway: false,
+      needsAssessment: true,
+      bypassProcess: false,
+      vendorSelected: true,
+      evalApproved: true,
+      vendorQualified: true,
+      selectedPathway: 'buy',
+      testsPassed: true,
+      finalApproved: true,
+    };
+    const res = await fetch('/api/process/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variables: vars }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    state.processKey = data.processInstanceKey;
+    state.currentPhase = 0;
+    toast(`Process instance started: ${state.processKey}`, 'success');
+    renderFlowBar();
+    document.getElementById('startScreen').style.display = 'none';
+    pollTasks();
+  } catch (e) {
+    toast(`Failed to start: ${e.message}`, 'error');
+    btn.disabled = false;
+    btn.innerHTML = 'Launch Process Instance';
+  }
+}
+
+async function pollTasks() {
+  try {
+    const res = await fetch('/api/tasks');
+    const tasks = await res.json();
+    if (Array.isArray(tasks)) {
+      state.tasks = tasks;
+      detectPhase(tasks);
+      renderTaskList();
+      if (tasks.length === 0 && state.processKey) {
+        const pRes = await fetch(`/api/process/${state.processKey}`);
+        const pData = await pRes.json();
+        if (pData.state === 'COMPLETED') {
+          showCompletion();
+          return;
+        }
+      }
+      if (tasks.length > 0 && !state.selectedTask) {
+        selectTask(tasks[0]);
+      }
+    }
+  } catch (e) {
+    console.error('Poll error:', e);
+  }
+  state.pollTimer = setTimeout(pollTasks, 2500);
+}
+
+function detectPhase(tasks) {
+  if (tasks.length === 0) return;
+  const taskId = tasks[0].taskDefinitionId;
+  for (let i = 0; i < PHASES.length; i++) {
+    if (PHASES[i].tasks.includes(taskId)) {
+      if (state.currentPhase !== i) {
+        state.currentPhase = i;
+        renderFlowBar();
+      }
+      return;
+    }
+  }
+}
+
+function getLaneBadge(groups) {
+  if (!groups || !groups.length) return '';
+  const g = groups[0];
+  const cls = LANE_COLORS[g] || 'badge-business';
+  const label = g.replace('-lane','').replace('-',' ');
+  return `<span class="task-badge ${cls}">${label}</span>`;
+}
+
+function renderTaskList() {
+  const list = document.getElementById('taskList');
+  const count = document.getElementById('taskCount');
+  const allTasks = [...state.completedTasks.map(t => ({...t, done: true})), ...state.tasks.map(t => ({...t, done: false}))];
+  count.textContent = state.tasks.length;
+  list.innerHTML = '';
+  allTasks.forEach(task => {
+    const li = document.createElement('li');
+    li.className = `task-item ${task.done ? 'completed' : ''} ${state.selectedTask?.id === task.id ? 'active' : ''}`;
+    const name = (task.name || 'Unnamed Task').replace(/\n/g, ' ');
+    li.innerHTML = `
+      <div class="task-name">${name}</div>
+      <div class="task-meta">
+        ${getLaneBadge(task.candidateGroups)}
+        <span>${task.done ? 'Completed' : 'Open'}</span>
+      </div>
+    `;
+    if (!task.done) li.onclick = () => selectTask(task);
+    list.appendChild(li);
+  });
+}
+
+async function selectTask(task) {
+  state.selectedTask = task;
+  renderTaskList();
+  const content = document.getElementById('content');
+  content.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:200px"><span class="spinner"></span></div>`;
+
+  try {
+    // Get task details and variables
+    const [taskDetail, varsData] = await Promise.all([
+      fetch(`/api/tasks/${task.id}`).then(r => r.json()),
+      fetch(`/api/tasks/${task.id}/variables`).then(r => r.json()),
+    ]);
+
+    // Try to get form
+    let formSchema = null;
+    if (taskDetail.formId) {
+      try {
+        const formRes = await fetch(`/api/forms/${taskDetail.formId}?processDefinitionKey=${taskDetail.processDefinitionKey || ''}`);
+        const formData = await formRes.json();
+        if (formData.schema) formSchema = JSON.parse(formData.schema);
+      } catch (e) { console.warn('Form fetch failed:', e); }
+    }
+
+    renderTaskDetail(taskDetail, formSchema, varsData);
+  } catch (e) {
+    content.innerHTML = `<div class="content-empty"><h3>Error loading task</h3><p>${e.message}</p></div>`;
+  }
+}
+
+function renderTaskDetail(task, formSchema, variables) {
+  const content = document.getElementById('content');
+  const name = (task.name || 'Unnamed').replace(/\n/g, ' ');
+  const groups = task.candidateGroups || [];
+
+  let formHtml = '';
+  if (formSchema && formSchema.components) {
+    formHtml = renderFormComponents(formSchema.components);
+  } else {
+    formHtml = `
+      <div class="form-text">
+        <h3>Task: ${name}</h3>
+        <p>This task does not have a linked form schema. Complete it to proceed to the next step.</p>
+      </div>
+    `;
+  }
+
+  let varsHtml = '';
+  if (variables && variables.length) {
+    const varsItems = variables.map(v => {
+      let val = v.value;
+      try { val = JSON.parse(val); val = typeof val === 'string' ? `"${val}"` : String(val); } catch(e) { val = String(v.value); }
+      return `<div class="var-item"><span class="var-name">${v.name}</span><span class="var-value">${val}</span></div>`;
+    }).join('');
+    varsHtml = `
+      <div class="vars-panel">
+        <h3 onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'grid':'none'">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M4 8a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7A.5.5 0 014 8z"/><path d="M8 4a.5.5 0 01.5.5v7a.5.5 0 01-1 0v-7A.5.5 0 018 4z"/></svg>
+          Process Variables (${variables.length})
+        </h3>
+        <div class="vars-grid">${varsItems}</div>
+      </div>
+    `;
+  }
+
+  content.innerHTML = `
+    <div class="task-detail">
+      <div class="task-header">
+        <h2>${name}</h2>
+        <div class="task-header-meta">
+          ${groups.map(g => `<div class="meta-chip"><span class="icon">&#9679;</span> ${g}</div>`).join('')}
+          <div class="meta-chip"><span class="icon">&#128196;</span> ${task.formId || 'no form'}</div>
+          <div class="meta-chip"><span class="icon">#</span> ${task.id}</div>
+        </div>
+      </div>
+      <div class="form-container" id="formContainer">
+        ${formHtml}
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="skipTask('${task.id}')">Skip (Auto-fill)</button>
+          <button class="btn btn-primary" onclick="completeTask('${task.id}')" id="completeBtn">Complete Task &rarr;</button>
+        </div>
+      </div>
+      ${varsHtml}
+    </div>
+  `;
+}
+
+function renderFormComponents(components) {
+  return components.map(comp => {
+    switch (comp.type) {
+      case 'text':
+        const md = (comp.text || '').replace(/## (.*)/g, '<h3>$1</h3>').replace(/\\n/g, '<br>');
+        return `<div class="form-group"><div class="form-text">${md}</div></div>`;
+
+      case 'textfield':
+        return `<div class="form-group">
+          <label class="form-label">${comp.label || comp.key}</label>
+          <input class="form-input" data-key="${comp.key}" placeholder="Enter ${comp.label || ''}..." ${comp.validate?.required ? 'required' : ''}>
+        </div>`;
+
+      case 'textarea':
+        return `<div class="form-group">
+          <label class="form-label">${comp.label || comp.key}</label>
+          <textarea class="form-textarea" data-key="${comp.key}" placeholder="Enter ${comp.label || ''}..." ${comp.validate?.required ? 'required' : ''}></textarea>
+        </div>`;
+
+      case 'number':
+        return `<div class="form-group">
+          <label class="form-label">${comp.label || comp.key}</label>
+          <input class="form-input" type="number" data-key="${comp.key}" ${comp.validate?.required ? 'required' : ''}>
+        </div>`;
+
+      case 'select':
+        const opts = (comp.values || []).map(v => `<option value="${v.value}">${v.label}</option>`).join('');
+        return `<div class="form-group">
+          <label class="form-label">${comp.label || comp.key}</label>
+          <select class="form-select" data-key="${comp.key}" ${comp.validate?.required ? 'required' : ''}>
+            <option value="">Select...</option>${opts}
+          </select>
+        </div>`;
+
+      case 'radio':
+        const radios = (comp.values || []).map(v =>
+          `<label class="form-radio" onclick="this.parentElement.querySelectorAll('.form-radio').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')">
+            <input type="radio" name="${comp.key}" data-key="${comp.key}" value="${v.value}"> ${v.label}
+          </label>`
+        ).join('');
+        return `<div class="form-group">
+          <label class="form-label">${comp.label || comp.key}</label>
+          <div class="form-radio-group">${radios}</div>
+        </div>`;
+
+      case 'checkbox':
+        return `<div class="form-group">
+          <label class="form-radio" onclick="this.classList.toggle('selected')">
+            <input type="checkbox" data-key="${comp.key}"> ${comp.label || comp.key}
+          </label>
+        </div>`;
+
+      case 'separator':
+        return '<hr class="form-separator">';
+
+      case 'group':
+        const inner = comp.components ? renderFormComponents(comp.components) : '';
+        return `<div class="form-group" style="border:1px solid var(--border);border-radius:12px;padding:20px;background:rgba(30,41,59,0.3)">
+          <label class="form-label" style="font-size:14px;margin-bottom:16px;color:var(--text)">${comp.label || ''}</label>
+          ${inner}
+        </div>`;
+
+      default:
+        return '';
+    }
+  }).join('');
+}
+
+function gatherFormValues() {
+  const vars = [];
+  document.querySelectorAll('#formContainer [data-key]').forEach(el => {
+    const key = el.dataset.key;
+    let value;
+    if (el.type === 'radio') {
+      if (el.checked) value = el.value;
+      else return;
+    } else if (el.type === 'checkbox') {
+      value = el.checked;
+    } else if (el.type === 'number') {
+      value = el.value ? Number(el.value) : 0;
+    } else {
+      value = el.value;
+    }
+    if (value !== undefined && value !== '') {
+      vars.push({ name: key, value: JSON.stringify(value) });
+    }
+  });
+  return vars;
+}
+
+function autoFillForm() {
+  document.querySelectorAll('#formContainer [data-key]').forEach(el => {
+    const key = el.dataset.key;
+    if (el.type === 'radio') {
+      const radios = document.querySelectorAll(`[name="${el.name}"]`);
+      if (radios.length && !document.querySelector(`[name="${el.name}"]:checked`)) {
+        radios[0].checked = true;
+        radios[0].closest('.form-radio')?.classList.add('selected');
+      }
+    } else if (el.tagName === 'SELECT') {
+      if (!el.value && el.options.length > 1) el.selectedIndex = 1;
+    } else if (el.tagName === 'TEXTAREA') {
+      if (!el.value) el.value = DEFAULTS[key] || '';
+    } else if (el.type === 'checkbox') {
+      el.checked = true;
+    } else if (el.type === 'number') {
+      if (!el.value) el.value = DEFAULTS[key] || '0';
+    } else {
+      if (!el.value) el.value = DEFAULTS[key] || '';
+    }
+  });
+}
+
+async function skipTask(taskId) {
+  autoFillForm();
+  await completeTask(taskId);
+}
+
+async function completeTask(taskId) {
+  const btn = document.getElementById('completeBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Completing...'; }
+
+  try {
+    // Assign first
+    await fetch(`/api/tasks/${taskId}/assign`, { method: 'POST' });
+
+    const vars = gatherFormValues();
+    const res = await fetch(`/api/tasks/${taskId}/complete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variables: vars }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    // Move task to completed
+    const completedTask = state.tasks.find(t => t.id === taskId);
+    if (completedTask) {
+      state.completedTasks.push(completedTask);
+      state.tasks = state.tasks.filter(t => t.id !== taskId);
+    }
+    state.selectedTask = null;
+    toast(`Task completed: ${completedTask?.name?.replace(/\n/g,' ') || taskId}`, 'success');
+
+    // Brief pause then poll for next task
+    await new Promise(r => setTimeout(r, 1200));
+    clearTimeout(state.pollTimer);
+    await pollTasks();
+  } catch (e) {
+    toast(`Error: ${e.message}`, 'error');
+    if (btn) { btn.disabled = false; btn.innerHTML = 'Complete Task &rarr;'; }
+  }
+}
+
+function showCompletion() {
+  clearTimeout(state.pollTimer);
+  state.currentPhase = PHASES.length;
+  renderFlowBar();
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="completion-screen">
+      <div class="completion-icon">&#127881;</div>
+      <h2>Process Complete!</h2>
+      <p style="color:var(--text2);font-size:16px;margin-top:8px">The software onboarding lifecycle has been completed successfully.</p>
+      <div class="completion-stats">
+        <div class="stat-card"><div class="stat-value">${state.completedTasks.length}</div><div class="stat-label">Tasks Completed</div></div>
+        <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Phases Passed</div></div>
+        <div class="stat-card"><div class="stat-value">${state.processKey}</div><div class="stat-label">Instance Key</div></div>
+      </div>
+      <div style="margin-top:40px">
+        <button class="btn btn-primary" onclick="location.reload()">Start New Process</button>
+      </div>
+    </div>
+  `;
+}
+
+async function resumeProcess() {
+  state.processKey = state.detectedProcessKey;
+  state.currentPhase = 0;
+  renderFlowBar();
+  document.getElementById('startScreen').style.display = 'none';
+  toast(`Resumed process instance: ${state.processKey}`, 'info');
+  pollTasks();
+}
+
+async function checkExistingTasks() {
+  try {
+    const res = await fetch('/api/tasks');
+    const tasks = await res.json();
+    if (Array.isArray(tasks) && tasks.length > 0) {
+      state.detectedProcessKey = tasks[0].processInstanceKey;
+      const card = document.getElementById('resumeCard');
+      card.style.display = 'block';
+      card.querySelector('p').textContent = `Process instance ${state.detectedProcessKey} has ${tasks.length} active task(s): "${(tasks[0].name || '').replace(/\n/g,' ')}"`;
+    }
+  } catch (e) { /* ignore */ }
+}
+
+// Initialize
+renderFlowBar();
+checkExistingTasks();
+</script>
+</body>
+</html>

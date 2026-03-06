@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_VendorComplianceReview",
+  "id": "vendor-compliance-review",
   "components": [
     {
       "type": "group",
