@@ -1,5 +1,20 @@
 # Changelog
 
+## [2026.03.30] - 2026-03-06
+
+### Changed
+- Redesigned onboarding presentation: 28 slides → 32 slides with business-focused narrative, as-is/to-be framing, stakeholder quotes (PR #39)
+- Auth worker authorization: replaced `agentic-innovations.com` with `kpmg.com` domain (PR #39)
+
+### Added
+- 7 BPMN SVG/PNG images rendered from v5 hierarchical model (top-level, SP1-SP5, PDLC) (PR #39)
+- DMN decision table visuals (OB-DMN-1, OB-DMN-2, OB-DMN-4) as styled HTML tables in presentation (PR #39)
+- Discovery documentation: stakeholder interviews (30+ stakeholders), gap analysis (16 gaps), OneTrust integration (PR #39)
+- v2-roadmap presentation variant with PPTX generator script (PR #39)
+- Showcase app for live BPMN/form demonstration (PR #39)
+- fix-c8-for-deploy.py script for Camunda 8 deployment preparation (PR #39)
+- 42 Camunda form schema version syncs (PR #39)
+
 ## [2026.03.29] - 2026-03-06
 
 ### Changed

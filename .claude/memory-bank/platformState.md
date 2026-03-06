@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.29
+**Current Version**: 2026.03.30
 **Last Release**: 2026-03-06
-**Total Releases**: 29
+**Total Releases**: 30
 
 ## Artifact Counts
 
@@ -11,8 +11,8 @@
 | DMN Decision Tables | 8 |
 | BPMN Process Models | 10 |
 | Cross-Cutting Sub-Processes | 5 |
-| Presentation Slides | 33 |
-| BPMN SVG Diagrams | 10 |
+| Presentation Slides | 32 |
+| BPMN SVG Diagrams | 17 |
 | Regulatory Frameworks | 13 |
 | Pools | 2 |
 | Swim Lanes | 9+1 |
@@ -25,11 +25,15 @@
 | Auth Worker | sla-presentation-auth.proth1.workers.dev | Deployed |
 | Pages | sla-presentation.pages.dev | Deployed |
 | Public | sla.agentic-innovations.com | OTP-protected |
+| Onboarding Auth | sla-onboarding-auth.proth1.workers.dev | Deployed |
+| Onboarding Pages | sla-onboarding.pages.dev | Deployed |
+| Onboarding Public | onboarding.agentic-innovations.com | OTP-protected (kpmg.com) |
 
 ## Recent Releases
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.30 | 2026-03-06 | #39 | 32-slide presentation redesign, 7 BPMN SVGs, discovery docs, kpmg.com auth, showcase app |
 | 2026.03.29 | 2026-03-06 | #38 | Monorepo restructure, 33-slide onboarding presentation, 39 forms, onboarding auth worker |
 | 2026.03.28 | 2026-03-05 | #37 | Add /review-model slash command for BPMN change review |
 | 2026.03.27 | 2026-03-05 | #35 | Codify hierarchical sub-process BPMN modeling patterns from v5 reference model |
