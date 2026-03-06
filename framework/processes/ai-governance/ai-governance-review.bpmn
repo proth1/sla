@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_AIGovernanceReview"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="Collaboration_AIGov">
+    <bpmn:participant id="Participant_AIGovReview" name="AI Governance Review" processRef="Process_AIGovernanceReview" />
+    <bpmn:participant id="Participant_VendorTechSME" name="Vendor / Technology SME" processRef="Process_VendorTechSME" />
+    <bpmn:messageFlow id="MsgFlow_SendQuestionnaire" name="Risk Questionnaire Sent" sourceRef="Task_SendRiskQuestionnaire" targetRef="Start_VendorEngagement" />
+    <bpmn:messageFlow id="MsgFlow_CompletedQ" name="Completed Risk Questionnaire" sourceRef="Task_VendorCompleteQ" targetRef="Task_ReceiveCompletedQ" />
+    <bpmn:textAnnotation id="Annotation_Regulatory">
+      <bpmn:text>SR 11-7 (Model Risk) | EU AI Act (Art. 9) | NIST AI RMF | FS AI RMF | OCC 2023-17 (Vendor AI) | GDPR Art. 35 (DPIA)</bpmn:text>
+    </bpmn:textAnnotation>
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_AIGovernanceReview" name="AI Governance Review" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_AIGov">
+      <bpmn:lane id="Lane_AIGovCommittee" name="AI Governance Committee">
+        <bpmn:flowNodeRef>Task_CommitteeMeeting</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_CommitteeDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_CommitteeRejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_AIWorkingGroup" name="AI Working Group">
+        <bpmn:flowNodeRef>GW_RiskRating</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_AIRiskSMEs" name="AI Risk SMEs">
+        <bpmn:flowNodeRef>Task_SMEReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_QANeeded</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_MergeQA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_SMESLABreach</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_AIGovTeam" name="AI Governance Team">
+        <bpmn:flowNodeRef>Task_SendRiskQuestionnaire</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ReceiveCompletedQ</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_QASession</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PresentToWG</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_NotifyOutcome</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BizSponsor" name="Business Solution Sponsor">
+        <bpmn:flowNodeRef>Start_AIGovReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IntakeForm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CompleteRiskQ</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ConfirmInfoSec</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_InfoSecApproved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_MergeApproval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_IntakeSLABreach</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_RiskQSLABreach</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_InfoSecBlocked</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_AIUseApproved</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="Start_AIGovReview" name="AI Use Case&#10;Submitted">
+      <bpmn:outgoing>Flow_Start_Intake</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_IntakeForm" name="1. Submit AI&#10;Use Case Intake" camunda:candidateGroups="business-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="Business Solution Sponsor" />
+          <camunda:property name="keyParticipants" value="AI Governance Team (advisory)" />
+          <camunda:property name="sla" value="2 business days" />
+          <camunda:property name="inputs" value="AI use case idea, business justification" />
+          <camunda:property name="outputs" value="Completed intake form, process flow diagrams, E2E document, value proposition" />
+          <camunda:property name="requiredDocuments" value="Process flow diagram; End-to-end document; Value proposition" />
+          <camunda:property name="regulation_SR117" value="SR 11-7: Model risk identification at intake" />
+          <camunda:property name="regulation_EUAIAct" value="EU AI Act Art. 6: Initial risk classification" />
+          <camunda:property name="regulation_NIST" value="NIST AI RMF: MAP function — context establishment" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>The Business Solution Sponsor submits an AI Use Case Intake form describing the proposed AI/ML solution. Required attachments include a process flow diagram, end-to-end document, and value proposition. The AI Governance Team provides guidance on form completion. This is the entry point for all new AI use cases requiring governance review.</bpmn:documentation>
+      <bpmn:incoming>Flow_Start_Intake</bpmn:incoming>
+      <bpmn:outgoing>Flow_Intake_SendQ</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_IntakeSLA" name="P2D&#10;SLA" attachedToRef="Task_IntakeForm" cancelActivity="false">
+      <bpmn:outgoing>Flow_IntakeSLA_End</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_IntakeSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="End_IntakeSLABreach" name="Intake SLA&#10;Breach">
+      <bpmn:incoming>Flow_IntakeSLA_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_SendRiskQuestionnaire" name="2a. Send Risk&#10;Questionnaire" camunda:candidateGroups="governance-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="AI Governance Team" />
+          <camunda:property name="keyParticipants" value="Vendor / Technology SME (recipient)" />
+          <camunda:property name="sla" value="1 business day after intake" />
+          <camunda:property name="inputs" value="Completed intake form" />
+          <camunda:property name="outputs" value="Risk questionnaire sent to vendor/technology SME" />
+          <camunda:property name="regulation_OCC" value="OCC 2023-17: Vendor AI risk questionnaire distribution" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>The AI Governance Team reviews the intake submission and sends the AI Risk Questionnaire to the relevant vendor or technology SME. The questionnaire covers data handling, model transparency, bias testing, security controls, and regulatory compliance aspects of the proposed AI solution.</bpmn:documentation>
+      <bpmn:incoming>Flow_Intake_SendQ</bpmn:incoming>
+      <bpmn:outgoing>Flow_SendQ_CompleteQ</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_CompleteRiskQ" name="2b. Complete Risk&#10;Questionnaire" camunda:candidateGroups="business-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="Business Solution Sponsor" />
+          <camunda:property name="keyParticipants" value="Vendor / Technology SME (collaborator)" />
+          <camunda:property name="sla" value="2 business days" />
+          <camunda:property name="inputs" value="Risk questionnaire template" />
+          <camunda:property name="outputs" value="Completed risk questionnaire with vendor responses" />
+          <camunda:property name="regulation_GDPR" value="GDPR Art. 35: Data protection impact assessment inputs" />
+          <camunda:property name="regulation_SR117" value="SR 11-7: Model risk factor documentation" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>The Business Solution Sponsor coordinates with the vendor/technology SME to complete the AI Risk Questionnaire. This includes detailed responses on model architecture, training data provenance, bias mitigation strategies, explainability capabilities, and ongoing monitoring plans. The completed questionnaire is the primary input for SME risk assessment.</bpmn:documentation>
+      <bpmn:incoming>Flow_SendQ_CompleteQ</bpmn:incoming>
+      <bpmn:outgoing>Flow_CompleteQ_Receive</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_RiskQSLA" name="P2D&#10;SLA" attachedToRef="Task_CompleteRiskQ" cancelActivity="false">
+      <bpmn:outgoing>Flow_RiskQSLA_End</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_RiskQSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="End_RiskQSLABreach" name="Risk Q SLA&#10;Breach">
+      <bpmn:incoming>Flow_RiskQSLA_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_ReceiveCompletedQ" name="Receive Completed&#10;Questionnaire" camunda:candidateGroups="governance-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="AI Governance Team" />
+          <camunda:property name="inputs" value="Completed risk questionnaire from vendor" />
+          <camunda:property name="outputs" value="Questionnaire forwarded to AI Risk SMEs" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>The AI Governance Team receives the completed risk questionnaire from the Business Solution Sponsor (with vendor input) and forwards it to the AI Risk SME panel for detailed assessment.</bpmn:documentation>
+      <bpmn:incoming>Flow_CompleteQ_Receive</bpmn:incoming>
+      <bpmn:outgoing>Flow_Receive_SMEReview</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_SMEReview" name="3. SME Risk&#10;Assessment" camunda:candidateGroups="ai-review">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="AI Risk SMEs (rotating panel)" />
+          <camunda:property name="keyParticipants" value="Data Science, InfoSec, Privacy, Legal, Ethics SMEs" />
+          <camunda:property name="sla" value="7 business days" />
+          <camunda:property name="inputs" value="Completed risk questionnaire, intake form, supporting documents" />
+          <camunda:property name="outputs" value="Risk assessment findings, risk rating recommendation" />
+          <camunda:property name="regulation_SR117" value="SR 11-7: Independent model risk assessment" />
+          <camunda:property name="regulation_EUAIAct" value="EU AI Act Art. 9: Risk management system assessment" />
+          <camunda:property name="regulation_NIST" value="NIST AI RMF: MEASURE function — risk quantification" />
+          <camunda:property name="regulation_ISO27001" value="ISO 27001: Information security risk assessment" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>A panel of AI Risk Subject Matter Experts reviews the completed questionnaire and supporting documentation. The SME panel includes representatives from data science, information security, privacy, legal, and ethics. Each SME assesses the AI use case against their domain-specific risk criteria and contributes to a consolidated risk assessment. The panel may request a Q&amp;A session with the sponsor if clarification is needed.</bpmn:documentation>
+      <bpmn:incoming>Flow_Receive_SMEReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_SMEReview_QAGateway</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_SMESLA" name="P7D&#10;SLA" attachedToRef="Task_SMEReview" cancelActivity="false">
+      <bpmn:outgoing>Flow_SMESLA_End</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_SMESLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P7D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="End_SMESLABreach" name="SME Review SLA&#10;Breach">
+      <bpmn:incoming>Flow_SMESLA_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:exclusiveGateway id="GW_QANeeded" name="Q&amp;A Session&#10;Needed?" default="Flow_QANeeded_No">
+      <bpmn:incoming>Flow_SMEReview_QAGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_QANeeded_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_QANeeded_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_QASession" name="4. Q&amp;A Session" camunda:candidateGroups="governance-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="AI Governance Team (facilitator)" />
+          <camunda:property name="keyParticipants" value="AI Risk SMEs, Business Solution Sponsor, Vendor SME" />
+          <camunda:property name="sla" value="Scheduled within 5 business days of request" />
+          <camunda:property name="inputs" value="SME questions and clarification requests" />
+          <camunda:property name="outputs" value="Clarified responses, updated risk assessment" />
+          <camunda:property name="regulation_SR117" value="SR 11-7: Model risk challenge and effective challenge" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>When the AI Risk SME panel identifies gaps or needs clarification, the AI Governance Team facilitates a Q&amp;A session between the SMEs, the Business Solution Sponsor, and the vendor/technology SME. This session addresses outstanding questions about model architecture, data handling, bias testing results, and control effectiveness. Outcomes are documented and incorporated into the risk assessment.</bpmn:documentation>
+      <bpmn:incoming>Flow_QANeeded_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_QASession_Merge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_MergeQA">
+      <bpmn:incoming>Flow_QASession_Merge</bpmn:incoming>
+      <bpmn:incoming>Flow_QANeeded_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_MergeQA_InfoSec</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_ConfirmInfoSec" name="5. Confirm InfoSec&#10;Review Complete" camunda:candidateGroups="business-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="Business Solution Sponsor" />
+          <camunda:property name="keyParticipants" value="InfoSec team (external confirmation)" />
+          <camunda:property name="sla" value="3 business days" />
+          <camunda:property name="inputs" value="InfoSec review request, vendor security documentation" />
+          <camunda:property name="outputs" value="InfoSec approval status (approved / not approved)" />
+          <camunda:property name="regulation_ISO27001" value="ISO 27001: Information security controls verification" />
+          <camunda:property name="regulation_NIST" value="NIST CSF 2.0: Protect and Detect functions" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>The Business Solution Sponsor confirms that the Information Security review has been completed for the AI use case. This is a prerequisite gate — if InfoSec has not approved the solution, the AI governance process cannot proceed to the working group presentation. The sponsor provides evidence of InfoSec clearance or flags that the review is blocked.</bpmn:documentation>
+      <bpmn:incoming>Flow_MergeQA_InfoSec</bpmn:incoming>
+      <bpmn:outgoing>Flow_InfoSec_Gateway</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_InfoSecApproved" name="InfoSec&#10;Approved?">
+      <bpmn:incoming>Flow_InfoSec_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_InfoSec_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_InfoSec_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="End_InfoSecBlocked" name="InfoSec&#10;Blocked">
+      <bpmn:incoming>Flow_InfoSec_No</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_PresentToWG" name="6. Present to&#10;AI Working Group" camunda:candidateGroups="governance-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="AI Governance Team (presenter)" />
+          <camunda:property name="keyParticipants" value="AI Working Group members, Business Solution Sponsor" />
+          <camunda:property name="sla" value="Next bi-weekly meeting" />
+          <camunda:property name="inputs" value="Risk assessment, InfoSec approval, intake form, questionnaire" />
+          <camunda:property name="outputs" value="Risk rating (Minor, Moderate, Major, Critical), disposition" />
+          <camunda:property name="meetingCadence" value="Bi-weekly" />
+          <camunda:property name="queueNote" value="Use cases queue for next available bi-weekly slot" />
+          <camunda:property name="regulation_SR117" value="SR 11-7: Model risk governance committee review" />
+          <camunda:property name="regulation_EUAIAct" value="EU AI Act Art. 9: Risk management oversight" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>The AI Governance Team presents the AI use case and consolidated risk assessment to the AI Working Group at the next bi-weekly meeting. The Working Group assigns a risk rating (Minor, Moderate, Major, or Critical). Minor and Moderate risk cases are approved at this level. Major and Critical risk cases are escalated to the AI Governance Committee for final decision.</bpmn:documentation>
+      <bpmn:incoming>Flow_InfoSec_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_PresentWG_RiskRating</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_RiskRating" name="Risk Rating?">
+      <bpmn:incoming>Flow_PresentWG_RiskRating</bpmn:incoming>
+      <bpmn:outgoing>Flow_RiskRating_MinorModerate</bpmn:outgoing>
+      <bpmn:outgoing>Flow_RiskRating_MajorCritical</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_CommitteeMeeting" name="7. AI Governance&#10;Committee Review" camunda:candidateGroups="oversight-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="AI Governance Committee Chair" />
+          <camunda:property name="keyParticipants" value="CRO, CTO, CDO, CISO, General Counsel, Head of Compliance" />
+          <camunda:property name="sla" value="Next monthly meeting" />
+          <camunda:property name="inputs" value="Working Group risk assessment, risk rating (Major/Critical), full documentation package" />
+          <camunda:property name="outputs" value="Committee decision (Approved / Rejected), conditions if any" />
+          <camunda:property name="meetingCadence" value="Monthly" />
+          <camunda:property name="queueNote" value="Major/Critical cases queue for next monthly committee meeting" />
+          <camunda:property name="committeeComposition" value="CRO, CTO, CDO, CISO, General Counsel, Head of Compliance" />
+          <camunda:property name="regulation_SR117" value="SR 11-7: Senior management model risk oversight" />
+          <camunda:property name="regulation_EUAIAct" value="EU AI Act Art. 9: High-risk AI system approval authority" />
+          <camunda:property name="regulation_FSAI" value="FS AI RMF: Board-level AI risk governance" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>The AI Governance Committee — composed of senior executives including CRO, CTO, CDO, CISO, General Counsel, and Head of Compliance — reviews Major and Critical risk AI use cases at the monthly committee meeting. The committee makes the final approval or rejection decision, may impose conditions, and documents the rationale. This is the highest-level governance gate for AI use cases.</bpmn:documentation>
+      <bpmn:incoming>Flow_RiskRating_MajorCritical</bpmn:incoming>
+      <bpmn:outgoing>Flow_Committee_Decision</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_CommitteeDecision" name="Committee&#10;Approved?">
+      <bpmn:incoming>Flow_Committee_Decision</bpmn:incoming>
+      <bpmn:outgoing>Flow_Committee_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Committee_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="End_CommitteeRejected" name="Committee&#10;Rejected">
+      <bpmn:incoming>Flow_Committee_No</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:exclusiveGateway id="GW_MergeApproval">
+      <bpmn:incoming>Flow_RiskRating_MinorModerate</bpmn:incoming>
+      <bpmn:incoming>Flow_Committee_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_MergeApproval_Notify</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_NotifyOutcome" name="Notify Governance&#10;Outcome" camunda:candidateGroups="governance-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="AI Governance Team" />
+          <camunda:property name="keyParticipants" value="Business Solution Sponsor (recipient)" />
+          <camunda:property name="sla" value="1 business day after decision" />
+          <camunda:property name="inputs" value="Governance decision, risk rating, any conditions" />
+          <camunda:property name="outputs" value="Formal notification to sponsor, updated governance register" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>The AI Governance Team notifies the Business Solution Sponsor of the governance outcome. This includes the risk rating, approval decision, and any conditions imposed. The governance register is updated with the final disposition.</bpmn:documentation>
+      <bpmn:incoming>Flow_MergeApproval_Notify</bpmn:incoming>
+      <bpmn:outgoing>Flow_Notify_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_AIUseApproved" name="AI Use Case&#10;Approved">
+      <bpmn:incoming>Flow_Notify_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:association id="Assoc_Regulatory" sourceRef="Task_IntakeForm" targetRef="Annotation_Regulatory" />
+
+    <bpmn:sequenceFlow id="Flow_Start_Intake" sourceRef="Start_AIGovReview" targetRef="Task_IntakeForm" />
+    <bpmn:sequenceFlow id="Flow_Intake_SendQ" sourceRef="Task_IntakeForm" targetRef="Task_SendRiskQuestionnaire" />
+    <bpmn:sequenceFlow id="Flow_SendQ_CompleteQ" sourceRef="Task_SendRiskQuestionnaire" targetRef="Task_CompleteRiskQ" />
+    <bpmn:sequenceFlow id="Flow_CompleteQ_Receive" sourceRef="Task_CompleteRiskQ" targetRef="Task_ReceiveCompletedQ" />
+    <bpmn:sequenceFlow id="Flow_Receive_SMEReview" sourceRef="Task_ReceiveCompletedQ" targetRef="Task_SMEReview" />
+
+    <bpmn:sequenceFlow id="Flow_SMEReview_QAGateway" sourceRef="Task_SMEReview" targetRef="GW_QANeeded" />
+    <bpmn:sequenceFlow id="Flow_QANeeded_Yes" name="Yes" sourceRef="GW_QANeeded" targetRef="Task_QASession">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${qaSessionNeeded == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_QANeeded_No" name="No" sourceRef="GW_QANeeded" targetRef="GW_MergeQA" />
+    <bpmn:sequenceFlow id="Flow_QASession_Merge" sourceRef="Task_QASession" targetRef="GW_MergeQA" />
+    <bpmn:sequenceFlow id="Flow_MergeQA_InfoSec" sourceRef="GW_MergeQA" targetRef="Task_ConfirmInfoSec" />
+
+    <bpmn:sequenceFlow id="Flow_InfoSec_Gateway" sourceRef="Task_ConfirmInfoSec" targetRef="GW_InfoSecApproved" />
+    <bpmn:sequenceFlow id="Flow_InfoSec_Yes" name="Yes" sourceRef="GW_InfoSecApproved" targetRef="Task_PresentToWG">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${infoSecApproved == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_InfoSec_No" name="No" sourceRef="GW_InfoSecApproved" targetRef="End_InfoSecBlocked">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${infoSecApproved == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_PresentWG_RiskRating" sourceRef="Task_PresentToWG" targetRef="GW_RiskRating" />
+    <bpmn:sequenceFlow id="Flow_RiskRating_MinorModerate" name="Minor /&#10;Moderate" sourceRef="GW_RiskRating" targetRef="GW_MergeApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${riskRating == 'Minor' || riskRating == 'Moderate'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_RiskRating_MajorCritical" name="Major /&#10;Critical" sourceRef="GW_RiskRating" targetRef="Task_CommitteeMeeting">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${riskRating == 'Major' || riskRating == 'Critical'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Committee_Decision" sourceRef="Task_CommitteeMeeting" targetRef="GW_CommitteeDecision" />
+    <bpmn:sequenceFlow id="Flow_Committee_Yes" name="Yes" sourceRef="GW_CommitteeDecision" targetRef="GW_MergeApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${committeeDecision == 'APPROVED'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Committee_No" name="No" sourceRef="GW_CommitteeDecision" targetRef="End_CommitteeRejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${committeeDecision == 'REJECTED'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_MergeApproval_Notify" sourceRef="GW_MergeApproval" targetRef="Task_NotifyOutcome" />
+    <bpmn:sequenceFlow id="Flow_Notify_End" sourceRef="Task_NotifyOutcome" targetRef="End_AIUseApproved" />
+
+    <bpmn:sequenceFlow id="Flow_IntakeSLA_End" sourceRef="Timer_IntakeSLA" targetRef="End_IntakeSLABreach" />
+    <bpmn:sequenceFlow id="Flow_RiskQSLA_End" sourceRef="Timer_RiskQSLA" targetRef="End_RiskQSLABreach" />
+    <bpmn:sequenceFlow id="Flow_SMESLA_End" sourceRef="Timer_SMESLA" targetRef="End_SMESLABreach" />
+
+  </bpmn:process>
+
+  <bpmn:process id="Process_VendorTechSME" name="Vendor / Technology SME" isExecutable="false" camunda:historyTimeToLive="180">
+    <bpmn:laneSet id="LaneSet_Vendor">
+      <bpmn:lane id="Lane_VendorResponse" name="Vendor / Technology SME">
+        <bpmn:flowNodeRef>Start_VendorEngagement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_VendorCompleteQ</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_VendorQSubmitted</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="Start_VendorEngagement" name="Questionnaire&#10;Received">
+      <bpmn:outgoing>Flow_VendorStart_Complete</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_VendorStart" />
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_VendorCompleteQ" name="Complete AI Risk&#10;Questionnaire" camunda:candidateGroups="vendor-response">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="owner" value="Vendor / Technology SME" />
+          <camunda:property name="sla" value="5 business days" />
+          <camunda:property name="inputs" value="Risk questionnaire template" />
+          <camunda:property name="outputs" value="Completed risk questionnaire with technical details" />
+          <camunda:property name="regulation_OCC" value="OCC 2023-17: Vendor due diligence response" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:documentation>The vendor or technology SME completes the AI Risk Questionnaire with detailed technical information about the AI solution including model architecture, training data, bias testing, security controls, data handling practices, and compliance certifications.</bpmn:documentation>
+      <bpmn:incoming>Flow_VendorStart_Complete</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorComplete_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_VendorQSubmitted" name="Questionnaire&#10;Submitted">
+      <bpmn:incoming>Flow_VendorComplete_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_VendorStart_Complete" sourceRef="Start_VendorEngagement" targetRef="Task_VendorCompleteQ" />
+    <bpmn:sequenceFlow id="Flow_VendorComplete_End" sourceRef="Task_VendorCompleteQ" targetRef="End_VendorQSubmitted" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_AIGov">
+    <bpmndi:BPMNPlane id="BPMNPlane_AIGov" bpmnElement="Collaboration_AIGov">
+
+      <bpmndi:BPMNShape id="Participant_AIGovReview_di" bpmnElement="Participant_AIGovReview" isHorizontal="true">
+        <dc:Bounds x="155" y="80" width="2400" height="940" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_AIGovCommittee_di" bpmnElement="Lane_AIGovCommittee" isHorizontal="true">
+        <dc:Bounds x="185" y="80" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_AIWorkingGroup_di" bpmnElement="Lane_AIWorkingGroup" isHorizontal="true">
+        <dc:Bounds x="185" y="240" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_AIRiskSMEs_di" bpmnElement="Lane_AIRiskSMEs" isHorizontal="true">
+        <dc:Bounds x="185" y="400" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_AIGovTeam_di" bpmnElement="Lane_AIGovTeam" isHorizontal="true">
+        <dc:Bounds x="185" y="560" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BizSponsor_di" bpmnElement="Lane_BizSponsor" isHorizontal="true">
+        <dc:Bounds x="185" y="720" width="2370" height="300" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Participant_VendorTechSME_di" bpmnElement="Participant_VendorTechSME" isHorizontal="true">
+        <dc:Bounds x="155" y="1120" width="2400" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_VendorResponse_di" bpmnElement="Lane_VendorResponse" isHorizontal="true">
+        <dc:Bounds x="185" y="1120" width="2370" height="160" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Start_AIGovReview_di" bpmnElement="Start_AIGovReview">
+        <dc:Bounds x="242" y="842" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="224" y="885" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_IntakeForm_di" bpmnElement="Task_IntakeForm">
+        <dc:Bounds x="330" y="820" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_IntakeSLA_di" bpmnElement="Timer_IntakeSLA">
+        <dc:Bounds x="362" y="882" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="406" y="886" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_IntakeSLABreach_di" bpmnElement="End_IntakeSLABreach">
+        <dc:Bounds x="362" y="952" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="344" y="995" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_SendRiskQuestionnaire_di" bpmnElement="Task_SendRiskQuestionnaire">
+        <dc:Bounds x="490" y="600" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_CompleteRiskQ_di" bpmnElement="Task_CompleteRiskQ">
+        <dc:Bounds x="650" y="820" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_RiskQSLA_di" bpmnElement="Timer_RiskQSLA">
+        <dc:Bounds x="682" y="882" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="726" y="886" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_RiskQSLABreach_di" bpmnElement="End_RiskQSLABreach">
+        <dc:Bounds x="682" y="952" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="664" y="995" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_ReceiveCompletedQ_di" bpmnElement="Task_ReceiveCompletedQ">
+        <dc:Bounds x="810" y="600" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_SMEReview_di" bpmnElement="Task_SMEReview">
+        <dc:Bounds x="970" y="440" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_SMESLA_di" bpmnElement="Timer_SMESLA">
+        <dc:Bounds x="1002" y="502" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1046" y="506" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_SMESLABreach_di" bpmnElement="End_SMESLABreach">
+        <dc:Bounds x="1102" y="502" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1078" y="545" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_QANeeded_di" bpmnElement="GW_QANeeded" isMarkerVisible="true">
+        <dc:Bounds x="1125" y="455" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1110" y="418" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_QASession_di" bpmnElement="Task_QASession">
+        <dc:Bounds x="1230" y="600" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_MergeQA_di" bpmnElement="GW_MergeQA" isMarkerVisible="true">
+        <dc:Bounds x="1385" y="455" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_ConfirmInfoSec_di" bpmnElement="Task_ConfirmInfoSec">
+        <dc:Bounds x="1490" y="820" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_InfoSecApproved_di" bpmnElement="GW_InfoSecApproved" isMarkerVisible="true">
+        <dc:Bounds x="1645" y="835" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1640" y="892" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_InfoSecBlocked_di" bpmnElement="End_InfoSecBlocked">
+        <dc:Bounds x="1752" y="952" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1740" y="995" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_PresentToWG_di" bpmnElement="Task_PresentToWG">
+        <dc:Bounds x="1770" y="600" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_RiskRating_di" bpmnElement="GW_RiskRating" isMarkerVisible="true">
+        <dc:Bounds x="1925" y="295" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1916" y="352" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_CommitteeMeeting_di" bpmnElement="Task_CommitteeMeeting">
+        <dc:Bounds x="2040" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_CommitteeDecision_di" bpmnElement="GW_CommitteeDecision" isMarkerVisible="true">
+        <dc:Bounds x="2195" y="135" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2185" y="100" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_CommitteeRejected_di" bpmnElement="End_CommitteeRejected">
+        <dc:Bounds x="2322" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2310" y="185" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_MergeApproval_di" bpmnElement="GW_MergeApproval" isMarkerVisible="true">
+        <dc:Bounds x="2195" y="835" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_NotifyOutcome_di" bpmnElement="Task_NotifyOutcome">
+        <dc:Bounds x="2290" y="600" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_AIUseApproved_di" bpmnElement="End_AIUseApproved">
+        <dc:Bounds x="2452" y="842" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2434" y="885" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Annotation_Regulatory_di" bpmnElement="Annotation_Regulatory">
+        <dc:Bounds x="240" y="740" width="420" height="40" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Start_VendorEngagement_di" bpmnElement="Start_VendorEngagement">
+        <dc:Bounds x="522" y="1182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="504" y="1225" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_VendorCompleteQ_di" bpmnElement="Task_VendorCompleteQ">
+        <dc:Bounds x="620" y="1160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_VendorQSubmitted_di" bpmnElement="End_VendorQSubmitted">
+        <dc:Bounds x="782" y="1182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="764" y="1225" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Start_Intake_di" bpmnElement="Flow_Start_Intake">
+        <di:waypoint x="278" y="860" />
+        <di:waypoint x="330" y="860" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Intake_SendQ_di" bpmnElement="Flow_Intake_SendQ">
+        <di:waypoint x="430" y="860" />
+        <di:waypoint x="460" y="860" />
+        <di:waypoint x="460" y="640" />
+        <di:waypoint x="490" y="640" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SendQ_CompleteQ_di" bpmnElement="Flow_SendQ_CompleteQ">
+        <di:waypoint x="590" y="640" />
+        <di:waypoint x="620" y="640" />
+        <di:waypoint x="620" y="860" />
+        <di:waypoint x="650" y="860" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_CompleteQ_Receive_di" bpmnElement="Flow_CompleteQ_Receive">
+        <di:waypoint x="750" y="860" />
+        <di:waypoint x="780" y="860" />
+        <di:waypoint x="780" y="640" />
+        <di:waypoint x="810" y="640" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Receive_SMEReview_di" bpmnElement="Flow_Receive_SMEReview">
+        <di:waypoint x="910" y="640" />
+        <di:waypoint x="940" y="640" />
+        <di:waypoint x="940" y="480" />
+        <di:waypoint x="970" y="480" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SMEReview_QAGateway_di" bpmnElement="Flow_SMEReview_QAGateway">
+        <di:waypoint x="1070" y="480" />
+        <di:waypoint x="1125" y="480" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_QANeeded_Yes_di" bpmnElement="Flow_QANeeded_Yes">
+        <di:waypoint x="1150" y="505" />
+        <di:waypoint x="1150" y="640" />
+        <di:waypoint x="1230" y="640" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1158" y="523" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_QANeeded_No_di" bpmnElement="Flow_QANeeded_No">
+        <di:waypoint x="1175" y="480" />
+        <di:waypoint x="1385" y="480" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1270" y="462" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_QASession_Merge_di" bpmnElement="Flow_QASession_Merge">
+        <di:waypoint x="1330" y="640" />
+        <di:waypoint x="1410" y="640" />
+        <di:waypoint x="1410" y="505" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_MergeQA_InfoSec_di" bpmnElement="Flow_MergeQA_InfoSec">
+        <di:waypoint x="1410" y="505" />
+        <di:waypoint x="1410" y="860" />
+        <di:waypoint x="1490" y="860" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_InfoSec_Gateway_di" bpmnElement="Flow_InfoSec_Gateway">
+        <di:waypoint x="1590" y="860" />
+        <di:waypoint x="1645" y="860" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_InfoSec_Yes_di" bpmnElement="Flow_InfoSec_Yes">
+        <di:waypoint x="1670" y="835" />
+        <di:waypoint x="1670" y="640" />
+        <di:waypoint x="1770" y="640" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1678" y="773" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_InfoSec_No_di" bpmnElement="Flow_InfoSec_No">
+        <di:waypoint x="1670" y="885" />
+        <di:waypoint x="1670" y="970" />
+        <di:waypoint x="1752" y="970" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1678" y="913" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PresentWG_RiskRating_di" bpmnElement="Flow_PresentWG_RiskRating">
+        <di:waypoint x="1870" y="640" />
+        <di:waypoint x="1950" y="640" />
+        <di:waypoint x="1950" y="345" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_RiskRating_MinorModerate_di" bpmnElement="Flow_RiskRating_MinorModerate">
+        <di:waypoint x="1950" y="345" />
+        <di:waypoint x="1950" y="860" />
+        <di:waypoint x="2195" y="860" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1958" y="560" width="44" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_RiskRating_MajorCritical_di" bpmnElement="Flow_RiskRating_MajorCritical">
+        <di:waypoint x="1950" y="295" />
+        <di:waypoint x="1950" y="160" />
+        <di:waypoint x="2040" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1958" y="218" width="44" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Committee_Decision_di" bpmnElement="Flow_Committee_Decision">
+        <di:waypoint x="2140" y="160" />
+        <di:waypoint x="2195" y="160" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Committee_Yes_di" bpmnElement="Flow_Committee_Yes">
+        <di:waypoint x="2220" y="185" />
+        <di:waypoint x="2220" y="835" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2228" y="460" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Committee_No_di" bpmnElement="Flow_Committee_No">
+        <di:waypoint x="2245" y="160" />
+        <di:waypoint x="2322" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2270" y="142" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_MergeApproval_Notify_di" bpmnElement="Flow_MergeApproval_Notify">
+        <di:waypoint x="2220" y="835" />
+        <di:waypoint x="2220" y="640" />
+        <di:waypoint x="2290" y="640" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Notify_End_di" bpmnElement="Flow_Notify_End">
+        <di:waypoint x="2390" y="640" />
+        <di:waypoint x="2420" y="640" />
+        <di:waypoint x="2420" y="860" />
+        <di:waypoint x="2452" y="860" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_IntakeSLA_End_di" bpmnElement="Flow_IntakeSLA_End">
+        <di:waypoint x="380" y="918" />
+        <di:waypoint x="380" y="952" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_RiskQSLA_End_di" bpmnElement="Flow_RiskQSLA_End">
+        <di:waypoint x="700" y="918" />
+        <di:waypoint x="700" y="952" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SMESLA_End_di" bpmnElement="Flow_SMESLA_End">
+        <di:waypoint x="1038" y="520" />
+        <di:waypoint x="1102" y="520" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_VendorStart_Complete_di" bpmnElement="Flow_VendorStart_Complete">
+        <di:waypoint x="558" y="1200" />
+        <di:waypoint x="620" y="1200" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_VendorComplete_End_di" bpmnElement="Flow_VendorComplete_End">
+        <di:waypoint x="720" y="1200" />
+        <di:waypoint x="782" y="1200" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="MsgFlow_SendQuestionnaire_di" bpmnElement="MsgFlow_SendQuestionnaire">
+        <di:waypoint x="540" y="680" />
+        <di:waypoint x="540" y="1182" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="548" y="1060" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="MsgFlow_CompletedQ_di" bpmnElement="MsgFlow_CompletedQ">
+        <di:waypoint x="720" y="1160" />
+        <di:waypoint x="720" y="1050" />
+        <di:waypoint x="860" y="1050" />
+        <di:waypoint x="860" y="680" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="750" y="1053" width="78" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_Regulatory_di" bpmnElement="Assoc_Regulatory">
+        <di:waypoint x="380" y="820" />
+        <di:waypoint x="380" y="780" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

@@ -85,7 +85,7 @@ else
     # Validate all BPMN files in the project (excluding archive)
     while IFS= read -r -d '' file; do
         validate_file "$file"
-    done < <(find "$PROJECT_DIR/processes" -name "*.bpmn" ! -path "*/archive/*" -print0 2>/dev/null)
+    done < <(find "$PROJECT_DIR/framework/processes" "$PROJECT_DIR/customers" -name "*.bpmn" ! -path "*/archive/*" -print0 2>/dev/null)
 fi
 
 # Scan DMN files (security scanner only — skip BPMN-specific validators)
@@ -100,7 +100,7 @@ while IFS= read -r -d '' file; do
         ((DMN_FAILED++))
     fi
     echo ""
-done < <(find "$PROJECT_DIR/decisions/dmn" -name "*.dmn" -print0 2>/dev/null)
+done < <(find "$PROJECT_DIR/framework/decisions" "$PROJECT_DIR/customers" -name "*.dmn" -print0 2>/dev/null)
 
 echo -e "${BLUE}=== Validation Summary ===${NC}"
 echo -e "BPMN Passed: ${GREEN}$PASSED${NC}"

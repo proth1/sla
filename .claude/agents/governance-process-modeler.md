@@ -314,15 +314,17 @@ Before finalizing, check:
 
 ### File Naming Convention
 - Phase-specific models: named per phase directory conventions
-  - Example: `processes/phase-1-intake/initiation-and-intake.bpmn`
-  - Example: `processes/phase-3-due-diligence/due-diligence-and-swarm.bpmn`
-- Master orchestrator: `processes/master/sla-governance-master.bpmn`
-- Cross-cutting: `processes/cross-cutting/cross-cutting-event-subprocesses.bpmn`
+  - Example: `framework/processes/phase-1-intake/initiation-and-intake.bpmn`
+  - Example: `framework/processes/phase-3-due-diligence/due-diligence-and-swarm.bpmn`
+- Master orchestrator: `framework/processes/master/sla-governance-master.bpmn`
+- Cross-cutting: `framework/processes/cross-cutting/cross-cutting-event-subprocesses.bpmn`
+- Customer models: `customers/fs-onboarding/processes/`
 
 ### File Location
-- Phase-specific: `processes/phase-{1..8}-*/`
-- Master: `processes/master/`
-- Cross-cutting: `processes/cross-cutting/`
+- Phase-specific: `framework/processes/phase-{1..8}-*/`
+- Master: `framework/processes/master/`
+- Cross-cutting: `framework/processes/cross-cutting/`
+- Customer (onboarding): `customers/fs-onboarding/processes/`
 - Process ID: `ESG-E2E-Master-v4.0`
 
 ### File Validation

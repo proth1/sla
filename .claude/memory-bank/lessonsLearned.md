@@ -12,7 +12,7 @@
 
 ### Always Verify the Correct Base File
 
-**Problem**: The fix script operated on `processes/Onboarding-only/` (a stale copy) instead of the user's authoritative `processes/onboarding-to-be-ideal-state-v4.bpmn` (root). The stale copy was missing the user's manual Camunda Modeler changes.
+**Problem**: The fix script operated on a stale copy instead of the user's authoritative BPMN file (now at `customers/fs-onboarding/processes/`). The stale copy was missing the user's manual Camunda Modeler changes.
 
 **Solution**: Before any automated edit:
 1. Identify which file is authoritative (check modification timestamps, ask the user)

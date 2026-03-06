@@ -1,0 +1,352 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_GatherDocumentation",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Software Onboarding Intake Form\nComplete all required fields to initiate the governance process. This maps to Vendor Intake Form Sections 1-2.",
+      "id": "Field_201"
+    },
+    {
+      "type": "separator",
+      "id": "Field_202"
+    },
+    {
+      "type": "group",
+      "label": "Business Need",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "businessProblem",
+          "label": "Business Problem Description",
+          "validate": {
+            "required": true
+          },
+          "description": "Describe the business problem or opportunity this software addresses.",
+          "id": "Field_203"
+        },
+        {
+          "type": "select",
+          "key": "urgencyLevel",
+          "label": "Urgency",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Critical — regulatory deadline or compliance gap",
+              "value": "critical"
+            },
+            {
+              "label": "High — significant business impact if delayed",
+              "value": "high"
+            },
+            {
+              "label": "Standard — normal business priority",
+              "value": "standard"
+            },
+            {
+              "label": "Exploratory — research or proof of concept",
+              "value": "exploratory"
+            }
+          ],
+          "id": "Field_204"
+        },
+        {
+          "type": "select",
+          "key": "pathwayPreference",
+          "label": "Pathway Preference",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Buy — procure from vendor",
+              "value": "buy"
+            },
+            {
+              "label": "Build — develop internally",
+              "value": "build"
+            },
+            {
+              "label": "Hybrid — combination of buy and build",
+              "value": "hybrid"
+            },
+            {
+              "label": "Unsure — need evaluation",
+              "value": "unsure"
+            }
+          ],
+          "id": "Field_205"
+        },
+        {
+          "type": "textarea",
+          "key": "intendedUseCases",
+          "label": "Intended Use Cases",
+          "validate": {
+            "required": true
+          },
+          "description": "Describe how the software will be used and by whom.",
+          "id": "Field_206"
+        },
+        {
+          "type": "select",
+          "key": "criticality",
+          "label": "Business Criticality",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Critical — failure causes significant financial or regulatory impact",
+              "value": "critical"
+            },
+            {
+              "label": "Significant — failure disrupts key business processes",
+              "value": "significant"
+            },
+            {
+              "label": "Moderate — failure causes inconvenience but workarounds exist",
+              "value": "moderate"
+            },
+            {
+              "label": "Low — minimal business impact if unavailable",
+              "value": "low"
+            }
+          ],
+          "id": "Field_207"
+        }
+      ],
+      "id": "Field_208"
+    },
+    {
+      "type": "separator",
+      "id": "Field_209"
+    },
+    {
+      "type": "group",
+      "label": "Financial Information",
+      "components": [
+        {
+          "type": "select",
+          "key": "estimatedBudget",
+          "label": "Estimated Annual Budget",
+          "values": [
+            {
+              "label": "Under $25,000",
+              "value": "under25k"
+            },
+            {
+              "label": "$25,000 - $100,000",
+              "value": "25k-100k"
+            },
+            {
+              "label": "$100,000 - $500,000",
+              "value": "100k-500k"
+            },
+            {
+              "label": "Over $500,000",
+              "value": "500k+"
+            },
+            {
+              "label": "Unknown",
+              "value": "unknown"
+            }
+          ],
+          "id": "Field_210"
+        },
+        {
+          "type": "textfield",
+          "key": "costCenter",
+          "label": "Cost Center",
+          "id": "Field_211"
+        }
+      ],
+      "id": "Field_212"
+    },
+    {
+      "type": "separator",
+      "id": "Field_213"
+    },
+    {
+      "type": "group",
+      "label": "Data and Compliance",
+      "components": [
+        {
+          "type": "radio",
+          "key": "hasAI",
+          "label": "Does this software involve AI/ML capabilities?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "Unsure",
+              "value": "unsure"
+            }
+          ],
+          "id": "Field_214"
+        },
+        {
+          "type": "checklist",
+          "key": "dataTypes",
+          "label": "Data Types Processed",
+          "values": [
+            {
+              "label": "PII (Personally Identifiable Information)",
+              "value": "PII"
+            },
+            {
+              "label": "PHI (Protected Health Information)",
+              "value": "PHI"
+            },
+            {
+              "label": "Financial / SOX-regulated",
+              "value": "Financial"
+            },
+            {
+              "label": "Public / Non-sensitive",
+              "value": "Public"
+            },
+            {
+              "label": "Intellectual Property",
+              "value": "IP"
+            },
+            {
+              "label": "Other Regulated Data",
+              "value": "OtherRegulated"
+            }
+          ],
+          "id": "Field_215"
+        },
+        {
+          "type": "checklist",
+          "key": "applicableRegulations",
+          "label": "Applicable Regulations",
+          "values": [
+            {
+              "label": "GDPR",
+              "value": "GDPR"
+            },
+            {
+              "label": "CCPA",
+              "value": "CCPA"
+            },
+            {
+              "label": "HIPAA",
+              "value": "HIPAA"
+            },
+            {
+              "label": "SOX",
+              "value": "SOX"
+            },
+            {
+              "label": "EU AI Act",
+              "value": "EU_AI_Act"
+            },
+            {
+              "label": "DORA",
+              "value": "DORA"
+            },
+            {
+              "label": "OCC 2023-17",
+              "value": "OCC_2023_17"
+            }
+          ],
+          "id": "Field_216"
+        }
+      ],
+      "id": "Field_217"
+    },
+    {
+      "type": "separator",
+      "id": "Field_218"
+    },
+    {
+      "type": "group",
+      "label": "Organizational Details",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "businessUnit",
+          "label": "Business Unit",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_219"
+        },
+        {
+          "type": "number",
+          "key": "expectedUserCount",
+          "label": "Expected User Count",
+          "id": "Field_220"
+        },
+        {
+          "type": "select",
+          "key": "deploymentModel",
+          "label": "Deployment Model Preference",
+          "values": [
+            {
+              "label": "Cloud (SaaS)",
+              "value": "cloud"
+            },
+            {
+              "label": "On-Premise",
+              "value": "on-premise"
+            },
+            {
+              "label": "Hybrid",
+              "value": "hybrid"
+            }
+          ],
+          "id": "Field_221"
+        },
+        {
+          "type": "textarea",
+          "key": "integrationRequirements",
+          "label": "Integration Requirements",
+          "description": "Describe systems this software must integrate with.",
+          "id": "Field_222"
+        }
+      ],
+      "id": "Field_223"
+    },
+    {
+      "type": "separator",
+      "id": "Field_224"
+    },
+    {
+      "type": "group",
+      "label": "Executive Sponsor",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "executiveSponsorName",
+          "label": "Executive Sponsor Name",
+          "id": "Field_225"
+        },
+        {
+          "type": "textfield",
+          "key": "executiveSponsorEmail",
+          "label": "Executive Sponsor Email",
+          "id": "Field_226"
+        }
+      ],
+      "id": "Field_227"
+    }
+  ]
+}

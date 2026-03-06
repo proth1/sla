@@ -4,14 +4,20 @@
 
 **Date**: 2026-03-05
 **Branch**: main
-**Release Version**: 2026.03.27
+**Release Version**: 2026.03.28
+
+### Completed — /review-model Slash Command
+- **PR #37**: New Claude Code command (`.claude/commands/review-model.md`) for reviewing manual BPMN model changes against standards → merged, release 2026.03.28
+- 7-step workflow: diff → parse → ask intent → evaluate rules → validate → codify → report
+- Test-driven: validated against v5 onboarding model (untracked file scenario, AskUserQuestion flow, validator integration)
+- Found 3 validator false positives (boundary timer overlap, message flow direction, loop-back flows) — separate fix needed
 
 ### Completed — Hierarchical BPMN Modeling Rules Codification
 - **PR #35**: Codified 18 patterns from user's v5 onboarding reference model into `.claude/rules/bpmn-hierarchical-subprocess.md` → merged, release 2026.03.27
 - User manually edited v5 in Camunda Modeler; extracted patterns include: no top-level swim lanes, collapsed sub-process conventions, bypass flow routing (above main flow), merge gateway pattern, two-channel message flow routing (y=430 outbound / y=470 inbound), parallel fan-out (~100px spacing), two-path execution (Buy/Build), loop-back targeting merge gateways, nested sub-processes, timer patterns (boundary + standalone intermediate), BPMNDiagram ID uniqueness
 - Enterprise pool height 290px, inter-pool gap 120px
 - PR reviewed by pr-orchestrator twice (round 1 + round 2): APPROVE with suggestions, all addressed
-- Reference model: `processes/Onboarding-only/onboarding-to-be-ideal-state-v5.bpmn` (untracked, user's working file)
+- Reference model: `customers/fs-onboarding/processes/onboarding-to-be-ideal-state-v5.bpmn` (untracked, user's working file)
 
 ### Completed — Onboarding v4 Vendor Sequencing Fix
 - **PR #25**: Restored correct v4 base, applied vendor sequencing fix using text-based edits (not lxml), codified v3→v4 modeling patterns → merged, release 2026.03.26
@@ -57,19 +63,19 @@
 ### Completed — DMN Quality Fixes (WP4)
 - **PR #19**: DMN quality fixes and governance metadata → release 2026.03.13
 
-### 8-Phase Governance Framework — Complete
+### 8-Phase Governance Framework — Complete (moved to `framework/`)
 | Phase | File | Status |
 |-------|------|--------|
-| Master | `processes/master/sla-governance-master.bpmn` | Deployed |
-| Phase 1 | `processes/phase-1-intake/initiation-and-intake.bpmn` | Deployed |
-| Phase 2 | `processes/phase-2-planning/planning-and-risk-scoping.bpmn` | Layout fixed |
-| Phase 3 | `processes/phase-3-due-diligence/due-diligence-and-swarm.bpmn` | Deployed |
-| Phase 4 | `processes/phase-4-governance/governance-review-and-approval.bpmn` | Deployed |
-| Phase 5 | `processes/phase-5-contracting/contracting-and-controls.bpmn` | Layout fixed |
-| Phase 6 | `processes/phase-6-sdlc/sdlc-development-and-testing.bpmn` | Layout fixed |
-| Phase 7 | `processes/phase-7-deployment/deployment-and-go-live.bpmn` | Layout fixed |
-| Phase 8 | `processes/phase-8-operations/operations-monitoring-retirement.bpmn` | Layout fixed |
-| Cross-Cutting | `processes/cross-cutting/cross-cutting-event-subprocesses.bpmn` | Deployed |
+| Master | `framework/processes/master/sla-governance-master.bpmn` | Deployed |
+| Phase 1 | `framework/processes/phase-1-intake/initiation-and-intake.bpmn` | Deployed |
+| Phase 2 | `framework/processes/phase-2-planning/planning-and-risk-scoping.bpmn` | Layout fixed |
+| Phase 3 | `framework/processes/phase-3-due-diligence/due-diligence-and-swarm.bpmn` | Deployed |
+| Phase 4 | `framework/processes/phase-4-governance/governance-review-and-approval.bpmn` | Deployed |
+| Phase 5 | `framework/processes/phase-5-contracting/contracting-and-controls.bpmn` | Layout fixed |
+| Phase 6 | `framework/processes/phase-6-sdlc/sdlc-development-and-testing.bpmn` | Layout fixed |
+| Phase 7 | `framework/processes/phase-7-deployment/deployment-and-go-live.bpmn` | Layout fixed |
+| Phase 8 | `framework/processes/phase-8-operations/operations-monitoring-retirement.bpmn` | Layout fixed |
+| Cross-Cutting | `framework/processes/cross-cutting/cross-cutting-event-subprocesses.bpmn` | Deployed |
 
 ## Platform Stats
 
@@ -80,7 +86,7 @@
 | BPMN Models | 10 |
 | BPMN SVG Diagrams | 10 |
 | Cross-Cutting Sub-Processes | 5 |
-| Presentation Slides | 37 |
+| Presentation Slides | ~33 (onboarding-only) |
 
 ## Recommended Next Steps
 - Deploy updated presentation to Cloudflare Pages
@@ -100,9 +106,12 @@
 
 ---
 
+
+---
+
 ## SESSION END WARNING (Auto-generated)
 
-**Session ended**: 2026-03-05T13:04:14Z
+**Session ended**: 2026-03-05T16:18:55Z
 **activeContext.md was NOT updated** before session ended.
 
 The previous Claude may not have documented:

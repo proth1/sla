@@ -1,0 +1,63 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": { "name": "Camunda Modeler", "version": "5.28.0" },
+  "schemaVersion": 16,
+  "id": "Form_VendorSecurityReview",
+  "components": [
+    {
+      "type": "group",
+      "label": "Information Security Program",
+      "id": "Field_001",
+      "components": [
+        { "type": "radio", "key": "iso27001Certified", "label": "ISO 27001 certified", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_002" },
+        { "type": "radio", "key": "soc2Type2Available", "label": "SOC 2 Type II report available", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_003" },
+        { "type": "radio", "key": "pciDssCompliant", "label": "PCI DSS compliant", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "id": "Field_004" },
+        { "type": "textfield", "key": "encryptionAtRest", "label": "Encryption at rest — algorithm and key length", "validate": { "required": true }, "id": "Field_005" },
+        { "type": "textfield", "key": "encryptionInTransit", "label": "Encryption in transit — protocol", "validate": { "required": true }, "id": "Field_006" }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Access Control",
+      "id": "Field_007",
+      "components": [
+        { "type": "textfield", "key": "mfaEnforcementPercentage", "label": "MFA enforcement percentage", "validate": { "required": true }, "id": "Field_008" },
+        { "type": "radio", "key": "privilegedAccessManagement", "label": "Privileged access management", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_009" },
+        { "type": "textfield", "key": "accessReviewFrequency", "label": "Access review frequency", "id": "Field_010" }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Vulnerability Management",
+      "id": "Field_011",
+      "components": [
+        { "type": "textfield", "key": "lastPenTestDate", "label": "Last penetration test date", "validate": { "required": true }, "id": "Field_012" },
+        { "type": "textarea", "key": "penTestExecutiveSummary", "label": "Pen test executive summary", "validate": { "required": true }, "id": "Field_013" },
+        { "type": "textfield", "key": "meanTimeToPatchCritical", "label": "Mean time to patch critical vulns", "validate": { "required": true }, "id": "Field_014" },
+        { "type": "radio", "key": "vulnerabilityDisclosurePolicy", "label": "Vulnerability disclosure policy", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_015" }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Business Continuity",
+      "id": "Field_016",
+      "components": [
+        { "type": "radio", "key": "bcpDrPlan", "label": "BCP/DR plan", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_017" },
+        { "type": "textfield", "key": "rtoCommitment", "label": "RTO commitment", "validate": { "required": true }, "id": "Field_018" },
+        { "type": "textfield", "key": "rpoCommitment", "label": "RPO commitment", "validate": { "required": true }, "id": "Field_019" },
+        { "type": "textfield", "key": "drTestFrequency", "label": "DR test frequency", "validate": { "required": true }, "id": "Field_020" }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Incident History",
+      "id": "Field_021",
+      "components": [
+        { "type": "radio", "key": "securityBreachesPast3Years", "label": "Security breaches in past 3 years", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_022" },
+        { "type": "textarea", "key": "breachDetails", "label": "Breach details", "id": "Field_023" },
+        { "type": "textfield", "key": "incidentResponseSla", "label": "Incident response SLA", "validate": { "required": true }, "id": "Field_024" }
+      ]
+    }
+  ]
+}

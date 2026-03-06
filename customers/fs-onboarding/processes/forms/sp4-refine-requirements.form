@@ -1,0 +1,116 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RefineRequirements",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Requirements Refinement",
+      "id": "Field_001"
+    },
+    {
+      "type": "group",
+      "label": "Requirements Refinement",
+      "id": "Field_002",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "originalRequirementsSummary",
+          "label": "Original Requirements Summary",
+          "disabled": true,
+          "id": "Field_003"
+        },
+        {
+          "type": "textarea",
+          "key": "updatedRequirements",
+          "label": "Updated Requirements",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004"
+        },
+        {
+          "type": "textarea",
+          "key": "requirementsChangesRationale",
+          "label": "Requirements Changes Rationale",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        },
+        {
+          "type": "textarea",
+          "key": "acceptanceCriteria",
+          "label": "Acceptance Criteria",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_006"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_007"
+    },
+    {
+      "type": "group",
+      "label": "Evaluation Feedback Integration",
+      "id": "Field_008",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "securityFindingsToAddress",
+          "label": "Security Findings to Address",
+          "id": "Field_009"
+        },
+        {
+          "type": "textarea",
+          "key": "complianceRequirementsToIncorporate",
+          "label": "Compliance Requirements to Incorporate",
+          "id": "Field_010"
+        },
+        {
+          "type": "textarea",
+          "key": "architectureConstraints",
+          "label": "Architecture Constraints",
+          "id": "Field_011"
+        },
+        {
+          "type": "textarea",
+          "key": "aiGovernanceRequirements",
+          "label": "AI Governance Requirements",
+          "id": "Field_012"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_013"
+    },
+    {
+      "type": "radio",
+      "key": "requirementsApproved",
+      "label": "Requirements Approved?",
+      "validate": {
+        "required": true
+      },
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        }
+      ],
+      "id": "Field_014"
+    }
+  ]
+}

@@ -50,42 +50,42 @@ Every DMN table created for this platform must be one of the following 8 defined
 ### 1. DMN_RiskTierClassification
 **Purpose**: Classify vendor/system risk as Unacceptable, High, Limited, or Minimal to drive phase routing
 **Hit Policy**: UNIQUE
-**File**: `decisions/dmn/DMN-1-risk-tier-classification.dmn`
+**File**: `framework/decisions/dmn/DMN-1-risk-tier-classification.dmn`
 
 ### 2. DMN_PathwayRouting
 **Purpose**: Route each engagement to Fast-Track, Build, Buy, or Hybrid pathway based on risk and procurement characteristics
 **Hit Policy**: UNIQUE
-**File**: `decisions/dmn/DMN-2-pathway-routing.dmn`
+**File**: `framework/decisions/dmn/DMN-2-pathway-routing.dmn`
 
 ### 3. DMN_GovernanceReviewRouting
 **Purpose**: Determine the governance review board and approval authority required based on risk tier and pathway
 **Hit Policy**: UNIQUE
-**File**: `decisions/dmn/DMN-3-governance-review-routing.dmn`
+**File**: `framework/decisions/dmn/DMN-3-governance-review-routing.dmn`
 
 ### 4. DMN_AutomationTierAssignment
 **Purpose**: Assign an automation execution tier (Tier 1-4) to control how much of a phase is automated vs. human-driven
 **Hit Policy**: UNIQUE
-**File**: `decisions/dmn/DMN-4-automation-tier-assignment.dmn`
+**File**: `framework/decisions/dmn/DMN-4-automation-tier-assignment.dmn`
 
 ### 5. DMN_AgentConfidenceEscalation
 **Purpose**: Escalate to human review when an AI agent's confidence score falls below the acceptable threshold
 **Hit Policy**: FIRST (priority-ordered — most conservative rule wins)
-**File**: `decisions/dmn/DMN-5-agent-confidence-escalation.dmn`
+**File**: `framework/decisions/dmn/DMN-5-agent-confidence-escalation.dmn`
 
 ### 6. DMN_ChangeRiskScoring
 **Purpose**: Score the risk level of a proposed change in Phase 8 to determine the change management path
 **Hit Policy**: UNIQUE
-**File**: `decisions/dmn/DMN-6-change-risk-scoring.dmn`
+**File**: `framework/decisions/dmn/DMN-6-change-risk-scoring.dmn`
 
 ### 7. DMN_VulnerabilityRemediationRouting
 **Purpose**: Route identified vulnerabilities (from cross-cutting SP-Cross-2) to the appropriate remediation track and SLA
 **Hit Policy**: UNIQUE
-**File**: `decisions/dmn/DMN-7-vulnerability-remediation-routing.dmn`
+**File**: `framework/decisions/dmn/DMN-7-vulnerability-remediation-routing.dmn`
 
 ### 8. DMN_MonitoringCadenceAssignment
 **Purpose**: Assign the monitoring and review cadence for a vendor/system in Phase 8 Operations
 **Hit Policy**: UNIQUE
-**File**: `decisions/dmn/DMN-8-monitoring-cadence-assignment.dmn`
+**File**: `framework/decisions/dmn/DMN-8-monitoring-cadence-assignment.dmn`
 
 ## Hit Policies
 
@@ -368,7 +368,8 @@ grep -n "hitPolicy" path/to/table.dmn
 - Examples: `DMN-1-risk-tier-classification.dmn`, `DMN-2-pathway-routing.dmn`
 
 ### File Location
-- All DMN files: `decisions/dmn/` directory in repository root
+- Framework DMN files: `framework/decisions/dmn/` directory
+- Customer DMN files: `customers/fs-onboarding/processes/dmn/`
 
 ### File Validation After Writing
 1. XML well-formed check (xmllint)
@@ -408,7 +409,7 @@ grep -n "hitPolicy" path/to/table.dmn
 ## Output Format
 
 For each DMN table creation task, provide:
-1. Complete, valid DMN 1.3 XML file saved to `decisions/dmn/DMN-N-description.dmn`
+1. Complete, valid DMN 1.3 XML file saved to `framework/framework/decisions/dmn/DMN-N-description.dmn`
 2. Rule summary table:
    | Rule # | Description | Key Conditions | Output |
    |--------|-------------|---------------|--------|
