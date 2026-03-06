@@ -5,13 +5,18 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const CONFIG = {
-  clusterId: '425f10fa-c898-4b4b-b303-eac095286716',
-  region: 'ric-1',
-  clientId: '96u7wkGJjLzomBaPolLzV5fCEe1hs.UH',
-  clientSecret: 'MVCtq~A2QHyTaoQz27mRNBgYWngKmZRsToMDy6Cp7fX3Gm5X_3WlbT1k.WU4GpLF',
+  clusterId: process.env.CAMUNDA_CLUSTER_ID || '425f10fa-c898-4b4b-b303-eac095286716',
+  region: process.env.CAMUNDA_REGION || 'ric-1',
+  clientId: process.env.CAMUNDA_CLIENT_ID,
+  clientSecret: process.env.CAMUNDA_CLIENT_SECRET,
   authUrl: 'https://login.cloud.camunda.io/oauth/token',
   processId: 'Process_Onboarding_v5',
 };
+
+if (!CONFIG.clientId || !CONFIG.clientSecret) {
+  console.error('Missing CAMUNDA_CLIENT_ID or CAMUNDA_CLIENT_SECRET environment variables');
+  process.exit(1);
+}
 
 CONFIG.zeebeUrl = `https://${CONFIG.region}.zeebe.camunda.io/${CONFIG.clusterId}`;
 CONFIG.tasklistUrl = `https://${CONFIG.region}.tasklist.camunda.io/${CONFIG.clusterId}`;
@@ -176,6 +181,6 @@ app.post('/api/tasks/:id/complete', async (req, res) => {
   }
 });
 
-app.listen(3847, () => {
-  console.log('SLA Onboarding Showcase running at http://localhost:3847');
+app.listen(3847, '127.0.0.1', () => {
+  console.log('SLA Onboarding Showcase running at http://127.0.0.1:3847');
 });
