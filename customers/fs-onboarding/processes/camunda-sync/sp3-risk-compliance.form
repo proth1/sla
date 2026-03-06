@@ -1,0 +1,205 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RiskCompliance",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Risk, Compliance & Legal Review",
+      "id": "Field_001"
+    },
+    {
+      "type": "text",
+      "text": "Assess regulatory compliance, data protection requirements, and overall risk posture.",
+      "id": "Field_002"
+    },
+    {
+      "type": "separator",
+      "id": "Field_003"
+    },
+    {
+      "type": "group",
+      "label": "Regulatory Compliance",
+      "id": "Field_004",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "applicableRegulations",
+          "label": "Applicable Regulations Confirmed",
+          "validate": { "required": true },
+          "id": "Field_005"
+        },
+        {
+          "type": "textarea",
+          "key": "regulatoryGapAnalysis",
+          "label": "Regulatory Gap Analysis",
+          "validate": { "required": true },
+          "id": "Field_006"
+        },
+        {
+          "type": "select",
+          "key": "complianceAssessmentStatus",
+          "label": "Compliance Assessment Status",
+          "validate": { "required": true },
+          "values": [
+            { "label": "Compliant", "value": "compliant" },
+            { "label": "Gaps Identified", "value": "gaps-identified" },
+            { "label": "Non-Compliant", "value": "non-compliant" }
+          ],
+          "id": "Field_007"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_008"
+    },
+    {
+      "type": "group",
+      "label": "Data Protection",
+      "id": "Field_009",
+      "components": [
+        {
+          "type": "select",
+          "key": "dataClassificationConfirmed",
+          "label": "Data Classification Confirmed",
+          "validate": { "required": true },
+          "values": [
+            { "label": "Public", "value": "public" },
+            { "label": "Internal", "value": "internal" },
+            { "label": "Confidential", "value": "confidential" },
+            { "label": "Restricted", "value": "restricted" }
+          ],
+          "id": "Field_010"
+        },
+        {
+          "type": "radio",
+          "key": "dpiaRequired",
+          "label": "DPIA Required",
+          "validate": { "required": true },
+          "values": [
+            { "label": "Yes", "value": "yes" },
+            { "label": "No", "value": "no" }
+          ],
+          "id": "Field_011"
+        },
+        {
+          "type": "select",
+          "key": "dpiaStatus",
+          "label": "DPIA Status",
+          "values": [
+            { "label": "Not Started", "value": "not-started" },
+            { "label": "In Progress", "value": "in-progress" },
+            { "label": "Completed", "value": "completed" },
+            { "label": "Not Required", "value": "not-required" }
+          ],
+          "id": "Field_012"
+        },
+        {
+          "type": "radio",
+          "key": "crossBorderDataTransfers",
+          "label": "Cross-Border Data Transfers",
+          "values": [
+            { "label": "Yes", "value": "yes" },
+            { "label": "No", "value": "no" }
+          ],
+          "id": "Field_013"
+        },
+        {
+          "type": "textfield",
+          "key": "transferMechanism",
+          "label": "Transfer Mechanism (e.g. SCCs, adequacy decision)",
+          "id": "Field_014"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_015"
+    },
+    {
+      "type": "group",
+      "label": "Legal Review",
+      "id": "Field_016",
+      "components": [
+        {
+          "type": "select",
+          "key": "legalReviewStatus",
+          "label": "Legal Review Status",
+          "validate": { "required": true },
+          "values": [
+            { "label": "Pending", "value": "pending" },
+            { "label": "In Progress", "value": "in-progress" },
+            { "label": "Complete", "value": "complete" }
+          ],
+          "id": "Field_017"
+        },
+        {
+          "type": "textarea",
+          "key": "legalConcerns",
+          "label": "Legal Concerns Identified",
+          "id": "Field_018"
+        },
+        {
+          "type": "textarea",
+          "key": "contractualRequirements",
+          "label": "Contractual Requirements",
+          "id": "Field_019"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_020"
+    },
+    {
+      "type": "group",
+      "label": "Risk Assessment",
+      "id": "Field_021",
+      "components": [
+        {
+          "type": "select",
+          "key": "residualRiskRating",
+          "label": "Residual Risk Rating",
+          "validate": { "required": true },
+          "values": [
+            { "label": "Low", "value": "low" },
+            { "label": "Medium", "value": "medium" },
+            { "label": "High", "value": "high" },
+            { "label": "Critical", "value": "critical" }
+          ],
+          "id": "Field_022"
+        },
+        {
+          "type": "textarea",
+          "key": "riskMitigationPlan",
+          "label": "Risk Mitigation Plan",
+          "id": "Field_023"
+        },
+        {
+          "type": "select",
+          "key": "complianceApproval",
+          "label": "Compliance Approval",
+          "validate": { "required": true },
+          "values": [
+            { "label": "Approved", "value": "approved" },
+            { "label": "Conditional", "value": "conditional" },
+            { "label": "Rejected", "value": "rejected" }
+          ],
+          "id": "Field_024"
+        },
+        {
+          "type": "textarea",
+          "key": "complianceConditions",
+          "label": "Conditions",
+          "id": "Field_025"
+        }
+      ]
+    }
+  ]
+}

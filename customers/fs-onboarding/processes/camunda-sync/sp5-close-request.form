@@ -1,0 +1,43 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": { "name": "Camunda Modeler", "version": "5.28.0" },
+  "schemaVersion": 16,
+  "id": "Form_CloseRequest",
+  "components": [
+    {
+      "type": "group",
+      "label": "Closure Summary",
+      "id": "Field_001",
+      "components": [
+        { "type": "number", "key": "totalOnboardingDurationDays", "label": "Total onboarding duration days", "validate": { "required": true }, "id": "Field_002" },
+        { "type": "select", "key": "pathwayTaken", "label": "Pathway taken", "values": [{ "label": "Buy", "value": "buy" }, { "label": "Build", "value": "build" }, { "label": "Hybrid", "value": "hybrid" }], "validate": { "required": true }, "id": "Field_003" },
+        { "type": "select", "key": "riskTierFinal", "label": "Risk tier final", "values": [{ "label": "Critical", "value": "critical" }, { "label": "Significant", "value": "significant" }, { "label": "Limited", "value": "limited" }, { "label": "Minimal", "value": "minimal" }], "validate": { "required": true }, "id": "Field_004" },
+        { "type": "select", "key": "monitoringCadenceAssigned", "label": "Monitoring cadence assigned", "values": [{ "label": "Monthly", "value": "monthly" }, { "label": "Quarterly", "value": "quarterly" }, { "label": "Semi-Annual", "value": "semi-annual" }, { "label": "Annual", "value": "annual" }], "validate": { "required": true }, "id": "Field_005" },
+        { "type": "textfield", "key": "nextScheduledReviewDate", "label": "Next scheduled review date", "validate": { "required": true }, "id": "Field_006" }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Evidence Archival",
+      "id": "Field_007",
+      "components": [
+        { "type": "number", "key": "evidenceArtifactsArchivedCount", "label": "Evidence artifacts archived count", "validate": { "required": true }, "id": "Field_008" },
+        { "type": "checkbox", "key": "archiveLocationConfirmed", "label": "Archive location confirmed", "validate": { "required": true }, "id": "Field_009" },
+        { "type": "checkbox", "key": "retentionPeriodSet", "label": "Retention period set", "validate": { "required": true }, "id": "Field_010" }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Lessons Learned",
+      "id": "Field_011",
+      "components": [
+        { "type": "textarea", "key": "processImprovementRecommendations", "label": "Process improvement recommendations", "id": "Field_012" },
+        { "type": "number", "key": "lessonsLearnedCount", "label": "Lessons learned count", "id": "Field_013" },
+        { "type": "checkbox", "key": "stakeholdersNotified", "label": "Stakeholders notified", "validate": { "required": true }, "id": "Field_014" }
+      ]
+    },
+    { "type": "separator", "id": "Field_015" },
+    { "type": "radio", "key": "requestClosed", "label": "Request closed", "values": [{ "label": "Yes", "value": "yes" }, { "label": "No", "value": "no" }], "validate": { "required": true }, "id": "Field_016" }
+  ]
+}

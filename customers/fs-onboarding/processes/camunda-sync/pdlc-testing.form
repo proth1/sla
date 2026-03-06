@@ -1,0 +1,180 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_PDLCTesting",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Testing and QA",
+      "id": "Field_001"
+    },
+    {
+      "type": "group",
+      "label": "Testing",
+      "id": "Field_002",
+      "components": [
+        {
+          "type": "radio",
+          "key": "testPlanExecuted",
+          "label": "Test Plan Executed?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_003"
+        },
+        {
+          "type": "textarea",
+          "key": "functionalTestResults",
+          "label": "Functional Test Results",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004"
+        },
+        {
+          "type": "textarea",
+          "key": "integrationTestResults",
+          "label": "Integration Test Results",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        },
+        {
+          "type": "textarea",
+          "key": "performanceTestResults",
+          "label": "Performance Test Results",
+          "id": "Field_006"
+        },
+        {
+          "type": "textarea",
+          "key": "securityTestResults",
+          "label": "Security Test Results",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_007"
+        },
+        {
+          "type": "textarea",
+          "key": "accessibilityTestResults",
+          "label": "Accessibility Test Results",
+          "id": "Field_008"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_009"
+    },
+    {
+      "type": "group",
+      "label": "Quality Metrics",
+      "id": "Field_010",
+      "components": [
+        {
+          "type": "number",
+          "key": "totalTestCases",
+          "label": "Total Test Cases",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_011"
+        },
+        {
+          "type": "number",
+          "key": "testsPassed",
+          "label": "Tests Passed",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_012"
+        },
+        {
+          "type": "number",
+          "key": "testsFailed",
+          "label": "Tests Failed",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_013"
+        },
+        {
+          "type": "number",
+          "key": "criticalDefectsOpen",
+          "label": "Critical Defects Open",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_014"
+        },
+        {
+          "type": "textfield",
+          "key": "codeCoverage",
+          "label": "Code Coverage",
+          "id": "Field_015"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_016"
+    },
+    {
+      "type": "group",
+      "label": "QA Decision",
+      "id": "Field_017",
+      "components": [
+        {
+          "type": "radio",
+          "key": "testsPassedDecision",
+          "label": "Tests Passed?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_018"
+        },
+        {
+          "type": "textarea",
+          "key": "qaNotes",
+          "label": "QA Notes",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_019"
+        },
+        {
+          "type": "textarea",
+          "key": "defectsDeferredWithRiskAcceptance",
+          "label": "Defects Deferred with Risk Acceptance",
+          "id": "Field_020"
+        }
+      ]
+    }
+  ]
+}

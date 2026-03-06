@@ -1,0 +1,209 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_TechArchReview",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Technical Architecture Review",
+      "id": "Field_001"
+    },
+    {
+      "type": "text",
+      "text": "Assess the proposed solution's architecture, integration requirements, and scalability characteristics.",
+      "id": "Field_002"
+    },
+    {
+      "type": "separator",
+      "id": "Field_003"
+    },
+    {
+      "type": "group",
+      "label": "Solution Architecture",
+      "id": "Field_004",
+      "components": [
+        {
+          "type": "select",
+          "key": "architecturePattern",
+          "label": "Architecture Pattern",
+          "validate": { "required": true },
+          "values": [
+            { "label": "Monolith", "value": "monolith" },
+            { "label": "Microservices", "value": "microservices" },
+            { "label": "Serverless", "value": "serverless" },
+            { "label": "Hybrid", "value": "hybrid" }
+          ],
+          "id": "Field_005"
+        },
+        {
+          "type": "textarea",
+          "key": "technologyStack",
+          "label": "Technology Stack Description",
+          "validate": { "required": true },
+          "id": "Field_006"
+        },
+        {
+          "type": "select",
+          "key": "deploymentModel",
+          "label": "Deployment Model",
+          "validate": { "required": true },
+          "values": [
+            { "label": "SaaS", "value": "saas" },
+            { "label": "IaaS", "value": "iaas" },
+            { "label": "PaaS", "value": "paas" },
+            { "label": "On-Premise", "value": "on-premise" },
+            { "label": "Hybrid", "value": "hybrid" }
+          ],
+          "id": "Field_007"
+        },
+        {
+          "type": "textfield",
+          "key": "cloudProvider",
+          "label": "Cloud Provider",
+          "id": "Field_008"
+        },
+        {
+          "type": "textarea",
+          "key": "dataResidencyLocations",
+          "label": "Data Residency Locations",
+          "validate": { "required": true },
+          "id": "Field_009"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_010"
+    },
+    {
+      "type": "group",
+      "label": "Integration Assessment",
+      "id": "Field_011",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "apiStandards",
+          "label": "API Standards Supported",
+          "id": "Field_012"
+        },
+        {
+          "type": "textfield",
+          "key": "authenticationMethods",
+          "label": "Authentication Methods (SSO/SAML/OIDC/API-key)",
+          "id": "Field_013"
+        },
+        {
+          "type": "textarea",
+          "key": "dataFormatCompatibility",
+          "label": "Data Format Compatibility",
+          "id": "Field_014"
+        },
+        {
+          "type": "select",
+          "key": "integrationComplexity",
+          "label": "Integration Complexity",
+          "validate": { "required": true },
+          "values": [
+            { "label": "Low", "value": "low" },
+            { "label": "Medium", "value": "medium" },
+            { "label": "High", "value": "high" }
+          ],
+          "id": "Field_015"
+        },
+        {
+          "type": "textarea",
+          "key": "estimatedCustomizationEffort",
+          "label": "Estimated Customization Effort",
+          "id": "Field_016"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_017"
+    },
+    {
+      "type": "group",
+      "label": "Scalability & Performance",
+      "id": "Field_018",
+      "components": [
+        {
+          "type": "number",
+          "key": "concurrentUserCapacity",
+          "label": "Concurrent User Capacity",
+          "id": "Field_019"
+        },
+        {
+          "type": "textfield",
+          "key": "responseTimeSLA",
+          "label": "Response Time SLA",
+          "id": "Field_020"
+        },
+        {
+          "type": "textfield",
+          "key": "availabilityTarget",
+          "label": "Availability Target (e.g. 99.9%)",
+          "id": "Field_021"
+        },
+        {
+          "type": "textfield",
+          "key": "rtoRpoCommitments",
+          "label": "RTO/RPO Commitments",
+          "id": "Field_022"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_023"
+    },
+    {
+      "type": "group",
+      "label": "Architecture Decision",
+      "id": "Field_024",
+      "components": [
+        {
+          "type": "select",
+          "key": "architectureFitAssessment",
+          "label": "Architecture Fit Assessment",
+          "validate": { "required": true },
+          "values": [
+            { "label": "Strong Fit", "value": "strong-fit" },
+            { "label": "Acceptable", "value": "acceptable" },
+            { "label": "Poor Fit", "value": "poor-fit" },
+            { "label": "Incompatible", "value": "incompatible" }
+          ],
+          "id": "Field_025"
+        },
+        {
+          "type": "textarea",
+          "key": "architectureReviewNotes",
+          "label": "Architecture Review Notes",
+          "validate": { "required": true },
+          "id": "Field_026"
+        },
+        {
+          "type": "radio",
+          "key": "remediationRequired",
+          "label": "Remediation Required",
+          "values": [
+            { "label": "Yes", "value": "yes" },
+            { "label": "No", "value": "no" }
+          ],
+          "id": "Field_027"
+        },
+        {
+          "type": "textarea",
+          "key": "remediationDetails",
+          "label": "Remediation Details",
+          "id": "Field_028"
+        }
+      ]
+    }
+  ]
+}

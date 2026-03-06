@@ -1,0 +1,169 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_FinancialAnalysis",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Financial & TCO Analysis",
+      "id": "Field_001"
+    },
+    {
+      "type": "text",
+      "text": "Evaluate total cost of ownership, ROI, and budget authorization for the proposed solution.",
+      "id": "Field_002"
+    },
+    {
+      "type": "separator",
+      "id": "Field_003"
+    },
+    {
+      "type": "group",
+      "label": "Cost Analysis",
+      "id": "Field_004",
+      "components": [
+        {
+          "type": "number",
+          "key": "annualLicenseCost",
+          "label": "Annual License/Subscription Cost",
+          "validate": { "required": true },
+          "id": "Field_005"
+        },
+        {
+          "type": "number",
+          "key": "implementationCost",
+          "label": "Implementation Cost",
+          "id": "Field_006"
+        },
+        {
+          "type": "number",
+          "key": "annualMaintenanceCost",
+          "label": "Annual Maintenance/Support Cost",
+          "id": "Field_007"
+        },
+        {
+          "type": "number",
+          "key": "infrastructureCost",
+          "label": "Infrastructure Cost",
+          "id": "Field_008"
+        },
+        {
+          "type": "number",
+          "key": "trainingCost",
+          "label": "Training Cost",
+          "id": "Field_009"
+        },
+        {
+          "type": "number",
+          "key": "tco3Year",
+          "label": "Total Cost of Ownership (3-year)",
+          "validate": { "required": true },
+          "id": "Field_010"
+        },
+        {
+          "type": "number",
+          "key": "tco5Year",
+          "label": "Total Cost of Ownership (5-year)",
+          "id": "Field_011"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_012"
+    },
+    {
+      "type": "group",
+      "label": "Financial Justification",
+      "id": "Field_013",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "roiEstimate",
+          "label": "ROI Estimate",
+          "validate": { "required": true },
+          "id": "Field_014"
+        },
+        {
+          "type": "number",
+          "key": "npvCalculation",
+          "label": "NPV Calculation",
+          "id": "Field_015"
+        },
+        {
+          "type": "textfield",
+          "key": "paybackPeriod",
+          "label": "Payback Period",
+          "id": "Field_016"
+        },
+        {
+          "type": "textarea",
+          "key": "costAvoidanceVsAlternatives",
+          "label": "Cost Avoidance vs Alternatives",
+          "id": "Field_017"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_018"
+    },
+    {
+      "type": "group",
+      "label": "Budget",
+      "id": "Field_019",
+      "components": [
+        {
+          "type": "radio",
+          "key": "budgetAuthorized",
+          "label": "Budget Authorized",
+          "validate": { "required": true },
+          "values": [
+            { "label": "Yes", "value": "yes" },
+            { "label": "No", "value": "no" }
+          ],
+          "id": "Field_020"
+        },
+        {
+          "type": "textfield",
+          "key": "budgetSource",
+          "label": "Budget Source",
+          "validate": { "required": true },
+          "id": "Field_021"
+        },
+        {
+          "type": "textfield",
+          "key": "approvalAuthority",
+          "label": "Approval Authority",
+          "id": "Field_022"
+        },
+        {
+          "type": "textarea",
+          "key": "financialAnalysisNotes",
+          "label": "Financial Analysis Notes",
+          "id": "Field_023"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_024"
+    },
+    {
+      "type": "radio",
+      "key": "financialApproved",
+      "label": "Financial Approved",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Yes", "value": "yes" },
+        { "label": "No", "value": "no" }
+      ],
+      "id": "Field_025"
+    }
+  ]
+}
