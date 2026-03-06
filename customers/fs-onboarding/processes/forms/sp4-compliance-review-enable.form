@@ -1,0 +1,69 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_ComplianceReviewEnable",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Compliance Review \u2014 Enable Pathway\nConduct compliance review for the Enable (fast-track) pathway.",
+      "id": "Field_730"
+    },
+    {
+      "type": "separator",
+      "id": "Field_731"
+    },
+    {
+      "type": "group",
+      "label": "Compliance Assessment",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "complianceFindings",
+          "label": "Compliance Findings",
+          "validate": {
+            "required": true
+          },
+          "description": "Document compliance review findings and observations.",
+          "id": "Field_732"
+        },
+        {
+          "type": "select",
+          "key": "complianceDecision",
+          "label": "Compliance Decision",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Pass",
+              "value": "pass"
+            },
+            {
+              "label": "Conditional",
+              "value": "conditional"
+            },
+            {
+              "label": "Fail",
+              "value": "fail"
+            }
+          ],
+          "id": "Field_733"
+        },
+        {
+          "type": "textarea",
+          "key": "enablePathConditions",
+          "label": "Enable Path Conditions",
+          "description": "Specify any conditions that must be met for the Enable pathway to proceed.",
+          "id": "Field_734"
+        }
+      ],
+      "id": "Field_735"
+    }
+  ],
+  "type": "default"
+}

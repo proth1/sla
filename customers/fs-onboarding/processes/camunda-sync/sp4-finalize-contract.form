@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "sp4-finalize-contract",
+  "id": "Form_FinalizeContract",
   "components": [
     {
       "type": "text",
@@ -126,6 +126,30 @@
     {
       "type": "separator",
       "id": "Field_014"
+    },
+    {
+      "type": "group",
+      "label": "Contract Deviations",
+      "id": "Field_820",
+      "components": [
+        {
+          "type": "number",
+          "key": "contractDeviations",
+          "label": "Number of Contract Deviations",
+          "id": "Field_821"
+        },
+        {
+          "type": "textarea",
+          "key": "deviationSummary",
+          "label": "Deviation Summary",
+          "description": "Summarize any deviations from standard contract terms.",
+          "id": "Field_822"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_823"
     },
     {
       "type": "group",

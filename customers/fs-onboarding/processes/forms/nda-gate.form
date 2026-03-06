@@ -1,0 +1,71 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_NDAGate",
+  "components": [
+    {
+      "type": "text",
+      "text": "## NDA Gate\nVerify NDA execution status before proceeding with vendor engagement.",
+      "id": "Field_710"
+    },
+    {
+      "type": "separator",
+      "id": "Field_711"
+    },
+    {
+      "type": "group",
+      "label": "NDA Details",
+      "components": [
+        {
+          "type": "date",
+          "key": "ndaExecutionDate",
+          "label": "NDA Execution Date",
+          "id": "Field_712"
+        },
+        {
+          "type": "textfield",
+          "key": "ndaParties",
+          "label": "NDA Parties",
+          "description": "Names of the parties covered by the NDA.",
+          "id": "Field_713"
+        },
+        {
+          "type": "select",
+          "key": "ndaStatus",
+          "label": "NDA Status",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Executed",
+              "value": "executed"
+            },
+            {
+              "label": "Pending",
+              "value": "pending"
+            },
+            {
+              "label": "Not Required",
+              "value": "not-required"
+            }
+          ],
+          "id": "Field_714"
+        },
+        {
+          "type": "textfield",
+          "key": "ndaReferenceNumber",
+          "label": "NDA Reference Number",
+          "id": "Field_715"
+        }
+      ],
+      "id": "Field_716"
+    }
+  ],
+  "type": "default"
+}
