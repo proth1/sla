@@ -1,0 +1,46 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_MockAwaitVendorResponse",
+  "components": [
+    {
+      "id": "Field_001",
+      "type": "text",
+      "text": "## Await Vendor Response\\n\\nThis is a mock task replacing the receive task. In production, this would wait for a message from the vendor. For testing, complete this form to simulate the vendor response."
+    },
+    {
+      "id": "Field_002",
+      "type": "textfield",
+      "key": "vendorResponseSummary",
+      "label": "Vendor Response Summary",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "id": "Field_003",
+      "type": "select",
+      "key": "vendorSelected",
+      "label": "Vendor Selected?",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "true"
+        },
+        {
+          "label": "No",
+          "value": "false"
+        }
+      ],
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default"
+}

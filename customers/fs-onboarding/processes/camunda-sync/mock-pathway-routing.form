@@ -1,0 +1,43 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_MockPathwayRouting",
+  "components": [
+    {
+      "id": "Field_001",
+      "type": "text",
+      "text": "## Pathway Routing\\n\\nThis is a mock task replacing the DMN business rule task (OB_DMN_PathwayRouting). In production, this would be automatically determined by the DMN decision table. For testing, select the pathway manually."
+    },
+    {
+      "id": "Field_002",
+      "type": "select",
+      "key": "selectedPathway",
+      "label": "Selected Pathway",
+      "values": [
+        {
+          "label": "Buy",
+          "value": "buy"
+        },
+        {
+          "label": "Build",
+          "value": "build"
+        }
+      ],
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "id": "Field_003",
+      "type": "textarea",
+      "key": "routingRationale",
+      "label": "Routing Rationale"
+    }
+  ],
+  "type": "default"
+}
