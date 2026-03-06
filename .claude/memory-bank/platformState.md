@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.28
-**Last Release**: 2026-03-05
-**Total Releases**: 28
+**Current Version**: 2026.03.29
+**Last Release**: 2026-03-06
+**Total Releases**: 29
 
 ## Artifact Counts
 
@@ -11,7 +11,7 @@
 | DMN Decision Tables | 8 |
 | BPMN Process Models | 10 |
 | Cross-Cutting Sub-Processes | 5 |
-| Presentation Slides | 37 |
+| Presentation Slides | 33 |
 | BPMN SVG Diagrams | 10 |
 | Regulatory Frameworks | 13 |
 | Pools | 2 |
@@ -30,6 +30,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.29 | 2026-03-06 | #38 | Monorepo restructure, 33-slide onboarding presentation, 39 forms, onboarding auth worker |
 | 2026.03.28 | 2026-03-05 | #37 | Add /review-model slash command for BPMN change review |
 | 2026.03.27 | 2026-03-05 | #35 | Codify hierarchical sub-process BPMN modeling patterns from v5 reference model |
 | 2026.03.26 | 2026-03-05 | #25 | Onboarding v4: vendor sequencing fix, receive tasks with SLA timers, modeling rules |

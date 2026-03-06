@@ -1,5 +1,18 @@
 # Changelog
 
+## [2026.03.29] - 2026-03-06
+
+### Changed
+- Monorepo restructure: separated strategic IP (`framework/`) from customer engagement (`customers/fs-onboarding/`) using `git mv` for history preservation (PR #38)
+- Presentation rebuild: 51 mixed slides → 33 onboarding-only slides with build script for deterministic assembly (PR #38)
+- CDD evidence hook: fixed SLM→SLA project key mismatch, skip validation when Jira issue not found (PR #38)
+
+### Added
+- 39 Camunda JSON forms for onboarding sub-processes (SP1-SP5, vendor, PDLC) (PR #38)
+- Onboarding auth worker (`infrastructure/cloudflare-workers/sla-onboarding-auth/`) for `onboarding.agentic-innovations.com` (PR #38)
+- Build script (`scripts/build-onboarding-presentation.py`) for deterministic HTML presentation assembly (PR #38)
+- Strategic archive (`framework/docs/presentations/strategic-esg-framework.html`) preserving original 8-phase slides (PR #38)
+
 ## [2026.03.28] - 2026-03-05
 
 ### Added

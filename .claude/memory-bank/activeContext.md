@@ -2,15 +2,17 @@
 
 ## Last Session Summary
 
-**Date**: 2026-03-05
+**Date**: 2026-03-06
 **Branch**: main
-**Release Version**: 2026.03.28
+**Release Version**: 2026.03.29
 
-### Completed — /review-model Slash Command
-- **PR #37**: New Claude Code command (`.claude/commands/review-model.md`) for reviewing manual BPMN model changes against standards → merged, release 2026.03.28
-- 7-step workflow: diff → parse → ask intent → evaluate rules → validate → codify → report
-- Test-driven: validated against v5 onboarding model (untracked file scenario, AskUserQuestion flow, validator integration)
-- Found 3 validator false positives (boundary timer overlap, message flow direction, loop-back flows) — separate fix needed
+### Completed — Monorepo Restructure & Onboarding Presentation (PR #38)
+- Separated strategic IP (`framework/`) from customer engagement (`customers/fs-onboarding/`)
+- Rebuilt `docs/presentations/index.html`: 51 mixed slides → 33 onboarding-only slides
+- Added 39 Camunda JSON forms for onboarding sub-processes
+- Added onboarding auth worker (`infrastructure/cloudflare-workers/sla-onboarding-auth/`)
+- Fixed CDD evidence hook (SLM→SLA key mismatch, skip when Jira unreachable)
+- Build script (`scripts/build-onboarding-presentation.py`) for deterministic HTML assembly
 
 ### Completed — Hierarchical BPMN Modeling Rules Codification
 - **PR #35**: Codified 18 patterns from user's v5 onboarding reference model into `.claude/rules/bpmn-hierarchical-subprocess.md` → merged, release 2026.03.27
@@ -81,7 +83,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.17 |
+| Release Version | 2026.03.29 |
 | DMN Tables | 8 |
 | BPMN Models | 10 |
 | BPMN SVG Diagrams | 10 |
