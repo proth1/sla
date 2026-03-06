@@ -1,0 +1,87 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_AssignOwnership",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Assign Ownership\nAssign business and vendor owners for ongoing management.",
+      "id": "Field_750"
+    },
+    {
+      "type": "separator",
+      "id": "Field_751"
+    },
+    {
+      "type": "group",
+      "label": "Business Owner",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "businessOwner",
+          "label": "Business Owner",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_752"
+        },
+        {
+          "type": "textfield",
+          "key": "businessOwnerEmail",
+          "label": "Business Owner Email",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_753"
+        }
+      ],
+      "id": "Field_754"
+    },
+    {
+      "type": "separator",
+      "id": "Field_755"
+    },
+    {
+      "type": "group",
+      "label": "Vendor Owner",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "vendorOwner",
+          "label": "Vendor Owner",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_756"
+        },
+        {
+          "type": "textfield",
+          "key": "vendorOwnerEmail",
+          "label": "Vendor Owner Email",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_757"
+        }
+      ],
+      "id": "Field_758"
+    },
+    {
+      "type": "separator",
+      "id": "Field_759"
+    },
+    {
+      "type": "textarea",
+      "key": "ownershipNotes",
+      "label": "Ownership Notes",
+      "description": "Additional notes about ownership assignments or responsibilities.",
+      "id": "Field_760"
+    }
+  ],
+  "type": "default"
+}

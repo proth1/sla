@@ -10,7 +10,7 @@ const CONFIG = {
   clientId: process.env.CAMUNDA_CLIENT_ID,
   clientSecret: process.env.CAMUNDA_CLIENT_SECRET,
   authUrl: 'https://login.cloud.camunda.io/oauth/token',
-  processId: 'Process_Onboarding_v5',
+  processId: 'Process_Onboarding_v7',
 };
 
 if (!CONFIG.clientId || !CONFIG.clientSecret) {
@@ -87,6 +87,16 @@ app.get('/api/process/:key', async (req, res) => {
   try {
     const result = await zeebeApi('GET', `/v2/process-instances/${req.params.key}`);
     res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Cancel a process instance
+app.delete('/api/process/:key', async (req, res) => {
+  try {
+    const result = await zeebeApi('POST', `/v2/process-instances/${req.params.key}/cancellation`);
+    res.json({ cancelled: true, key: req.params.key });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -176,6 +186,85 @@ app.post('/api/tasks/:id/complete', async (req, res) => {
       variables: req.body.variables || [],
     });
     res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Search process instances (for dashboard)
+app.post('/api/instances/search', async (req, res) => {
+  try {
+    const result = await zeebeApi('POST', '/v2/process-instances/search', req.body || {});
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Search all tasks (any state, for dashboard)
+app.post('/api/tasks/search', async (req, res) => {
+  try {
+    const result = await tasklistApi('POST', '/v1/tasks/search', req.body || {});
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Get variables for a process instance (via Zeebe search)
+app.get('/api/process/:key/variables', async (req, res) => {
+  try {
+    // Get variables via tasklist - search tasks for this instance to find variables
+    const tasks = await tasklistApi('POST', '/v1/tasks/search', {
+      processInstanceKey: req.params.key,
+    });
+    if (tasks.length > 0) {
+      const vars = await tasklistApi('POST', `/v1/tasks/${tasks[0].id}/variables/search`, {});
+      res.json(vars);
+    } else {
+      res.json([]);
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Deploy BPMN + forms to cluster
+app.post('/api/deploy', async (req, res) => {
+  try {
+    const fs = require('fs');
+    const token = await getToken('zeebe.camunda.io');
+    const syncDir = path.join(__dirname, '..', 'processes', 'camunda-sync');
+    const files = fs.readdirSync(syncDir).filter(f => f.endsWith('.bpmn') || f.endsWith('.form'));
+
+    const boundary = '----ZeebeDeploy' + Date.now();
+    const parts = [];
+    for (const file of files) {
+      const content = fs.readFileSync(path.join(syncDir, file));
+      parts.push(
+        `--${boundary}\r\n` +
+        `Content-Disposition: form-data; name="resources"; filename="${file}"\r\n` +
+        `Content-Type: application/octet-stream\r\n\r\n`
+      );
+      parts.push(content);
+      parts.push('\r\n');
+    }
+    parts.push(`--${boundary}--\r\n`);
+
+    const buffers = parts.map(p => typeof p === 'string' ? Buffer.from(p) : p);
+    const body = Buffer.concat(buffers);
+
+    const deployRes = await fetch(`${CONFIG.zeebeUrl}/v2/deployments`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': `multipart/form-data; boundary=${boundary}`,
+      },
+      body,
+    });
+    const text = await deployRes.text();
+    if (!deployRes.ok) throw new Error(`Deploy ${deployRes.status}: ${text}`);
+    res.json(JSON.parse(text));
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
