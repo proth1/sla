@@ -38,8 +38,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.54 |
-| Total PRs Merged | 68 |
+| Release Version | 2026.03.55 |
+| Total PRs Merged | 69 |
 | BPMN Models | v4, v5, v6-c8, v7-c8, v8-c8 + orchestrator + 5 phase models |
 | DMN Tables | OB-DMN-1 through OB-DMN-9 |
 | Camunda 8 Forms | 64 (48 existing + 6 wizard + 10 vendor category) |

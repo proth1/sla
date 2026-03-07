@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026.03.55] - 2026-03-07
+
+### Changed
+- Committee voting BPMN: new merge gateway (`Gateway_091ha3q`) separating QA phase/timer convergence from QA bypass merge, DI coordinate shifts for remediation loop elements (PR #69)
+- Add `.gitignore` entry for `.playwright-mcp/` (removed console logs with cluster IDs per reviewer finding)
+
 ## [2026.03.54] - 2026-03-07
 
 ### Added
