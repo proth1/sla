@@ -1,5 +1,0 @@
-[     795ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'ambient-light-sensor'. @ :0
-[     795ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'speaker-selection'. @ :0
-[     929ms] [ERROR] Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516' violates the following Content Security Policy directive: "script-src-elem 'self' cdn.jsdelivr.net *.mixpanel.com osano.com *.osano.com *.appcues.com appcues.com cloudflareinsights.com". The action has been blocked. @ https://ric-1.tasklist.camunda.io/425f10fa-c898-4b4b-b303-eac095286716/tasklist:0
-[    1034ms] [WARNING] No app elements and user config provided. Please provide at least one of them. @ https://ric-1.tasklist.camunda.io/425f10fa-c898-4b4b-b303-eac095286716/tasklist/assets/c3-data-table-D4d159Zn.js:1
-[    1160ms] [WARNING] No app elements and user config provided. Please provide at least one of them. @ https://ric-1.tasklist.camunda.io/425f10fa-c898-4b4b-b303-eac095286716/tasklist/assets/c3-data-table-D4d159Zn.js:1
