@@ -1,18 +1,20 @@
 # Gap Analysis — Current State vs. BPMN Model
 
-Derived from 9 stakeholder sessions (Feb-Mar 2026) mapped against `onboarding-to-be-ideal-state-v5.bpmn`.
+Derived from 14 stakeholder sessions (Feb-Mar 2026) plus 10-perspective analysis mapped against `onboarding-to-be-ideal-state-v7-c8.bpmn`.
 
 ---
 
 ## Summary
 
-The v5 BPMN model addresses most structural needs. The primary gaps are in **intake consolidation**, **form usability**, **prioritization formalization**, **completeness quality gates**, **3-pathway routing** (Buy/Build/Vendor Affinity), **security baseline definition**, **time-bound risk acceptance**, **ownership tracking**, and **pre-onboarding idea funnel**.
+The v7-c8 BPMN model addresses most structural needs including unified intake, prioritization scoring, 3-pathway routing, and ownership assignment. The remaining gaps focus on **process orchestration roles**, **parallel engagement**, **contract automation**, **OneTrust integration**, **distributed pod governance**, **AI questionnaire consolidation**, **async governance decisions**, **security baseline controls**, and **measurement infrastructure**.
 
 ---
 
 ## Gap Detail
 
 ### GAP-1: Unified Intake Gateway (SP1)
+
+**Status**: Implemented in v7-c8 (Task_ClassifyRequest + GW_RequestType)
 
 **Current Model**: SP1 starts with `Task_ReviewExisting` → gateway → gather/leverage split.
 
@@ -29,6 +31,8 @@ The v5 BPMN model addresses most structural needs. The primary gaps are in **int
 ---
 
 ### GAP-2: Formal Prioritization Scoring (SP2)
+
+**Status**: Implemented in v7-c8 (OB-DMN-5 Prioritization Scoring)
 
 **Current Model**: SP2 has `Task_PrelimAnalysis` → `GW_NeedsFullEval` → `Task_Backlog` → `Task_PathwayRouting`.
 
@@ -79,6 +83,8 @@ The v5 BPMN model addresses most structural needs. The primary gaps are in **int
 ---
 
 ### GAP-5: Vendor Partnership Fast-Track Pathway
+
+**Status**: Subsumed by GAP-11 Enable pathway in v7-c8
 
 **Current Model**: Top-level `GW_BuyOrBuild` routes Buy → SP3 or Build → SP4. No differentiation for pre-approved vendor partnership products.
 
@@ -177,6 +183,8 @@ The v5 BPMN model addresses most structural needs. The primary gaps are in **int
 
 ### GAP-11: 3-Pathway Routing — Buy / Build / Enable (Top-level)
 
+**Status**: Implemented in v7-c8 (Buy/Build/Enable routing + OB-DMN-2)
+
 **Current Model**: Top-level `GW_BuyOrBuild` is a binary gateway (Buy → SP3, Build → SP4).
 
 **Stakeholder Need**: A third pathway — "Enable" (Vendor Affinity Program) — where the organization evaluates and approves tools that advisors purchase directly. No org investment, no development, lower risk, advisor expectation of ~1 month turnaround. Current 2-way gateway doesn't accommodate this (Product Manager 1, 2/13; confirmed Product Manager, 3/5).
@@ -212,6 +220,8 @@ The v5 BPMN model addresses most structural needs. The primary gaps are in **int
 - Baseline checks run as `bpmn:serviceTask` in Automation lane
 - Only Elevated/Major route to manual `Task_SecurityAssessment`
 
+**Note**: Elevated to P1 — all 10 analysis perspectives converge on security staffing as the binding constraint. OB-DMN-6 exists in v7-c8 but is not wired into SP3.
+
 **Effort**: Medium (new DMN table or extend OB-DMN-1, new service task, conditional routing in SP3)
 
 ---
@@ -234,6 +244,8 @@ The v5 BPMN model addresses most structural needs. The primary gaps are in **int
 ---
 
 ### GAP-14: Mandatory Ownership Assignment (SP5 / Post-Onboarding)
+
+**Status**: Implemented in v7-c8 (Task_AssignOwnership)
 
 **Current Model**: SP5 `Task_OnboardSoftware` provisions the software but does not formally assign ownership.
 
@@ -282,23 +294,172 @@ The v5 BPMN model addresses most structural needs. The primary gaps are in **int
 
 ---
 
+### GAP-17: NDA Gate (SP3 / Pre-Evaluation)
+
+**Status**: Partially implemented in v7-c8 (Task_ExecuteNDA for Defined Need path)
+
+**Current Model**: No mandatory NDA step before detailed vendor evaluation begins.
+
+**Stakeholder Need**: Mandatory NDA execution before sharing detailed evaluation criteria or proprietary requirements with vendors. Security Architect and Legal alignment — NDA must be in place before any substantive vendor engagement. Current process sometimes shares evaluation details before NDA is signed.
+
+**Proposed Change**:
+- Add `Task_ExecuteNDA` as a gateway condition before SP3 evaluation tasks begin
+- For Buy/Enable paths: NDA required before vendor receives evaluation questionnaires
+- For Build path: NDA required before sharing detailed requirements with external development partners
+- DMN-driven: determine NDA type (standard, mutual, custom) based on data classification and vendor tier
+- Block SP3 parallel evaluation start until NDA status = "Executed"
+
+**Effort**: Low (task exists for Defined Need path; extend to all paths with gateway condition)
+
+---
+
+### GAP-18: Concierge / Quarterback Role (Cross-cutting)
+
+**Current Model**: No single point of accountability for end-to-end process orchestration. Requests pass between lanes without a consistent owner.
+
+**Stakeholder Need**: E2E process orchestration modeled on Architecture's Governance Facilitator role. Pre-screens artifacts for completeness, removes incomplete items from review queues, manages follow-ups with requestors and SMEs, serves as single point of contact for status inquiries. "We have a governance facilitator who pre-screens everything. If he didn't, the whole thing falls apart" — Architecture Lead.
+
+**Proposed Change**:
+- Define a `concierge` candidateGroup (or extend `governance-lane`)
+- Add `Task_ConciergeReview` at phase transitions (between SP1→SP2, SP2→SP3, SP3→SP4)
+- Concierge validates completeness, resolves blockers, manages SLA escalations
+- Concierge owns the status notification tasks (GAP-7)
+- Model as a cross-cutting responsibility rather than a new lane
+
+**Effort**: Medium (role definition + tasks at phase boundaries + process ownership model)
+
+---
+
+### GAP-19: Simultaneous Engagement (SP3)
+
+**Current Model**: SP3 parallel gateway fans out to 5 evaluation branches, but DART (due diligence assessment review team) formation and engagement is sequential in practice.
+
+**Stakeholder Need**: Replace sequential DART formation with parallel engagement of all major stakeholders from day one. "Simultaneous engagement of all the major players that have a vote" — Architecture Lead. Current sequential approach means a single delayed reviewer blocks the entire evaluation.
+
+**Proposed Change**:
+- Restructure SP3 to enforce true parallel execution from process start, not just model structure
+- Add `Task_FormDART` before the parallel gateway that identifies all required reviewers upfront
+- Set individual reviewer SLA timers (P3D per reviewer) rather than one SP-level timer
+- Non-response after SLA: auto-escalate to reviewer's manager, proceed with available assessments
+- Add `Task_ConsolidateFindings` after join gateway that reconciles conflicting assessments
+
+**Effort**: Medium (SP3 restructure + individual SLA timers + escalation logic)
+
+---
+
+### GAP-20: Contract Automation (SP4)
+
+**Current Model**: SP4 contracting is modeled as sequential user tasks with manual document handling. No automation for standard contract terms or deviation tracking.
+
+**Stakeholder Need**: 2 people negotiating 30+ contracts per month. Contract deviation tracking, automated standard-terms review, and template-based drafting needed. "That team desperately needs automation" — TPRM Lead.
+
+**Proposed Change**:
+- Add `bpmn:serviceTask` "Auto-Generate Contract Draft" in Automation lane that pre-populates standard terms from templates
+- Add `Task_DeviationReview` that flags non-standard terms for legal review (only deviations, not full contract)
+- DMN-driven: `OB-DMN-7: Contract Complexity Routing` — standard terms auto-approved, custom terms route to legal
+- Track deviation metrics for continuous improvement (which clauses most frequently modified)
+- Integrate with CLM (Contract Lifecycle Management) platform if available
+
+**Effort**: High (service task + DMN table + CLM integration + template management)
+
+---
+
+### GAP-21: OneTrust Integration (SP3 / Cross-cutting)
+
+**Current Model**: Risk assessment and vendor due diligence tasks are modeled as standalone Camunda user tasks with manual data entry.
+
+**Stakeholder Need**: Assessment Automation + TPRM module + deviation tracking integration with Camunda 8 via Zeebe service tasks. OneTrust already in use for risk assessments; need bidirectional integration rather than duplicate data entry. Source: TPRM Lead + discovery doc.
+
+**Proposed Change**:
+- Replace manual assessment tasks with Zeebe service task → OneTrust API pattern:
+  1. Service task creates assessment in OneTrust Assessment Automation
+  2. Human completes assessment in OneTrust UI (receive task waits for webhook/callback)
+  3. Service task retrieves results via `GET /api/assessment/v2/assessments/{id}/export`
+- Wire OneTrust risk scores into OB-DMN-1 (Risk Classification) and OB-DMN-6 (Security Assessment Level)
+- Vendor due diligence: OneTrust TPRM module manages questionnaires, results feed SP3 evaluation
+- See `customers/fs-onboarding/docs/discovery/onetrust-integration.md` for API details
+
+**Effort**: High (Zeebe connector development + OneTrust API integration + webhook infrastructure)
+
+---
+
+### GAP-22: Distributed Pod Model (Cross-cutting)
+
+**Current Model**: Centralized lane-based governance where all requests flow through the same review queues regardless of domain.
+
+**Stakeholder Need**: Domain-specific pods (Cyber, Architecture, Legal, AI, TPRM) controlling their own prioritization and cadence. Central team ensures consistency and resolves cross-pod conflicts. "Each pod should own their piece of the process" — Vendor Mgmt Lead.
+
+**Proposed Change**:
+- Model pod-based routing in SP3: after DART formation (GAP-19), route to domain-specific pod queues
+- Each pod has independent SLA timers and escalation paths
+- Central governance lane retains authority for cross-pod decisions and final approval
+- DMN-driven pod assignment based on request type, risk tier, and data classification
+- Pods report completion independently; join gateway waits for all required pods
+
+**Effort**: Medium-High (pod routing logic + independent SLA management + coordination model)
+
+---
+
+### GAP-23: AI Questionnaire Consolidation (SP3)
+
+**Current Model**: AI governance review in SP3 uses a single evaluation branch, but in practice 3+ additional AI-specific questionnaires have been introduced outside the modeled process.
+
+**Stakeholder Need**: 3 additional AI-specific questionnaires "snuck up" on the team. Need to merge into a single consolidated dataset rather than asking vendors to complete overlapping questionnaires. Source: TPRM Lead.
+
+**Proposed Change**:
+- Audit existing AI questionnaires (identify overlap, unique fields, regulatory requirements)
+- Create consolidated `Form_AIGovernanceAssessment` that covers all requirements in one submission
+- Map consolidated fields to regulatory requirements (EU AI Act, SR 11-7, FS AI RMF)
+- Wire consolidated form into SP3 AI Review branch via `zeebe:formDefinition`
+- Deprecate redundant questionnaires with migration path for in-flight assessments
+
+**Effort**: Medium (questionnaire audit + form consolidation + regulatory mapping)
+
+---
+
+### GAP-24: Async Governance Decisions (SP5)
+
+**Current Model**: Business Council approval in SP5 requires synchronous quorum at scheduled meetings. Meeting cadence creates bottleneck.
+
+**Stakeholder Need**: Business Council quorum fix — email voting with 48-hour SLA, non-response treated as abstention. Prevents single absentee from blocking approval. Source: Vendor Mgmt Lead.
+
+**Proposed Change**:
+- Replace `Task_BusinessCouncilApproval` with a multi-instance user task (one per council member)
+- Add boundary timer (P2D) for 48-hour voting window
+- DMN-driven quorum calculation: minimum N of M votes required based on risk tier
+- Non-response after timer: auto-record as abstention
+- If quorum met: proceed with majority decision
+- If quorum not met: escalate to executive sponsor for override decision
+
+**Effort**: Medium (multi-instance task + timer + quorum logic + escalation path)
+
+---
+
 ## Priority Matrix
 
 | Gap | Business Impact | BPMN Complexity | Stakeholder Urgency | Recommended Priority |
 |-----|----------------|-----------------|---------------------|---------------------|
-| GAP-1 Unified Intake | High | Medium | Critical | P1 |
-| GAP-2 Prioritization | High | Medium | Critical | P1 |
+| GAP-1 Unified Intake | High | Medium | Critical | P1 (implemented v7) |
+| GAP-2 Prioritization | High | Medium | Critical | P1 (implemented v7) |
 | GAP-7 Status Visibility | High | Low | Critical | P1 |
 | GAP-9 Completeness Gate | High | Low | Critical | P1 |
-| GAP-11 3-Pathway Routing | High | High | Critical | P1 (fundamental model change) |
+| GAP-11 3-Pathway Routing | High | High | Critical | P1 (implemented v7) |
+| GAP-12 Security Baseline | High | Medium | Critical | P1 (binding constraint) |
 | GAP-16 Deal-Killer Pre-Screen | High | Low-Medium | High | P1 (quick win) |
+| GAP-17 NDA Gate | High | Low | High | P1 (partially in v7) |
+| GAP-18 Concierge/Quarterback | High | Medium | Critical | P1 (linchpin role) |
+| GAP-19 Simultaneous Engagement | High | Medium | Critical | P1 (Architecture Lead) |
+| GAP-20 Contract Automation | High | High | Critical | P1 (capacity crisis) |
+| GAP-23 AI Questionnaire | High | Medium | High | P1 (quick consolidation win) |
 | GAP-3 Progressive Forms | Medium | Low | High | P2 |
 | GAP-4 Finance Rework | Medium | Low | High | P2 |
 | GAP-6 AI Fast-Track | High | High | Critical | P2 (needs risk posture decision first) |
 | GAP-10 Workload Dashboard | High | Low (metadata) | High | P2 (platform dependency) |
-| GAP-12 Security Baseline | High | Medium | High | P2 (needs baseline definition) |
 | GAP-13 Time-Bound Approval | Medium | Medium | High | P2 |
-| GAP-14 Ownership Assignment | High | Low | High | P2 (quick win) |
+| GAP-14 Ownership Assignment | High | Low | High | P2 (implemented v7) |
+| GAP-21 OneTrust Integration | High | High | High | P2 (needs module licensing clarity) |
+| GAP-22 Distributed Pod Model | Medium | Medium-High | Medium | P2 (organizational change) |
+| GAP-24 Async Governance | Medium | Medium | High | P2 (process change, low tech) |
 | GAP-5 VPP Fast-Track | Medium | Medium-High | Medium | P3 (subsumed by GAP-11) |
 | GAP-8 Exception Routing | Medium | Medium | Medium | P3 |
 | GAP-15 Idea Funnel | Medium | Medium | Medium | P3 (needs existing platform eval) |
@@ -316,8 +477,43 @@ GAP-12 (Security Baseline) ──→ Requires baseline controls definition (exte
 GAP-13 (Time-Bound Approval) ──→ GAP-12 (needs risk categorization to define condition types)
 GAP-14 (Ownership Assignment) ──→ standalone (no blockers, quick win)
 GAP-10 (Workload Dashboard) ──→ Requires Camunda Optimize / C8 migration (platform dependency)
+GAP-17 (NDA Gate) ──→ GAP-1 (needs request classification to determine NDA type)
+GAP-18 (Concierge) ──→ GAP-9 (Completeness Gate) + GAP-7 (Status Visibility) — concierge owns both
+GAP-19 (Simultaneous Engagement) ──→ GAP-18 (concierge coordinates DART formation)
+GAP-20 (Contract Automation) ──→ standalone (no process blockers, but needs CLM platform evaluation)
+GAP-21 (OneTrust Integration) ──→ GAP-12 (Security Baseline) — OneTrust risk scores feed security assessment routing
+                               └──→ Requires OneTrust module licensing decisions (external: TPRM Lead)
+GAP-22 (Distributed Pod Model) ──→ GAP-19 (Simultaneous Engagement) + GAP-18 (Concierge role for cross-pod coordination)
+GAP-23 (AI Questionnaire) ──→ GAP-6 (AI Fast-Track) — consolidated form is prerequisite for AI pathway
+GAP-24 (Async Governance) ──→ standalone (process change, no technology dependency)
 ```
 
 ---
 
-*Created: 2026-03-05 | Sources: 9 stakeholder sessions + committee inventory + intake forms analysis | Next review: After Finance Manager interview*
+## Cross-Cutting Themes (10-Perspective Analysis)
+
+Five themes emerged from analyzing the gap inventory across 10 analytical perspectives (bottleneck analysis, stakeholder pain points, regulatory compliance, automation potential, organizational readiness, data flow integrity, SLA achievability, risk management coverage, technology integration, and process maturity).
+
+### 1. Security Staffing Is the Binding Constraint
+
+Every optimization initiative ultimately bottlenecks at security review capacity. GAP-12 (tiered assessment) is the highest-leverage single change because it reduces the volume of requests requiring manual security review by routing low-risk items through automated baseline checks. Without this, faster intake (GAP-1) and parallel engagement (GAP-19) simply move the queue from one bottleneck to another.
+
+### 2. The Governance Facilitator Role Is the Linchpin
+
+Architecture's existing Governance Facilitator role (GAP-18) is the most successful process pattern observed across all stakeholder sessions. This role pre-screens artifacts, removes incomplete items, and serves as single point of contact. Scaling this pattern to the full onboarding process — as a "Concierge" or "Quarterback" — would address GAP-7 (visibility), GAP-9 (completeness), and the coordination failures that cause most delays.
+
+### 3. Proportionality Is Missing Everywhere
+
+The current process applies the same rigor to a no-cost vendor affinity tool as to a $2M platform build. GAP-11 (3-pathway routing), GAP-12 (tiered security), GAP-17 (NDA gating), and GAP-20 (contract complexity routing) all address the same root cause: lack of proportional effort based on risk and investment level.
+
+### 4. Measurement Is the Prerequisite for Everything
+
+Multiple gaps (GAP-10, GAP-7, GAP-20) cannot be addressed without baseline metrics. You cannot prove the process improved if you never measured how long it takes today. ServiceNow data exists but is not being mined. Establishing measurement infrastructure in the first 30 days (before any technology changes) is critical.
+
+### 5. Ownership Gaps Cause Process Failures
+
+Requests stall not because of process design flaws but because no one owns the end-to-end outcome (GAP-18), no one owns the technology asset after onboarding (GAP-14), and no one owns the security baseline definition (GAP-12). Every structural process change must include explicit ownership assignment.
+
+---
+
+*Created: 2026-03-06 | Sources: 14 stakeholder sessions + committee inventory + intake forms analysis + 10-perspective analysis | Next review: After OneTrust module licensing decision*
