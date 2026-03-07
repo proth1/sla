@@ -1,0 +1,231 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Cat10",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Category 10: AI Governance\nAI model governance, EU AI Act compliance, SR 11-7, and ethical AI practices.\n\n**Governance topics**: AI Governance, Compliance, Privacy",
+      "id": "Field_Cat10_Header"
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat10_Sep1"
+    },
+    {
+      "id": "Field_C10_1",
+      "label": "C10.1: AI/ML models used (names, versions, types)",
+      "type": "textarea",
+      "key": "c10_1"
+    },
+    {
+      "id": "Field_C10_2",
+      "label": "C10.2: Models: own or third-party APIs",
+      "type": "select",
+      "key": "c10_2",
+      "values": [
+        {
+          "label": "Own Models",
+          "value": "own_models"
+        },
+        {
+          "label": "Third-Party APIs",
+          "value": "third-party_apis"
+        },
+        {
+          "label": "Both",
+          "value": "both"
+        },
+        {
+          "label": "Not Applicable",
+          "value": "not_applicable"
+        }
+      ]
+    },
+    {
+      "id": "Field_C10_3",
+      "label": "C10.3: AI governance policies documentation",
+      "type": "textarea",
+      "key": "c10_3"
+    },
+    {
+      "id": "Field_C10_4",
+      "label": "C10.4: Designated AI risk management owner/team",
+      "type": "textarea",
+      "key": "c10_4"
+    },
+    {
+      "id": "Field_C10_5",
+      "label": "C10.5: Model versioning, audit trails, and change logs",
+      "type": "textarea",
+      "key": "c10_5"
+    },
+    {
+      "id": "Field_C10_6",
+      "label": "C10.6: Ethical review and bias mitigation mechanisms",
+      "type": "textarea",
+      "key": "c10_6"
+    },
+    {
+      "id": "Field_C10_7",
+      "label": "C10.7: Fairness, bias, and drift monitoring metrics",
+      "type": "textarea",
+      "key": "c10_7"
+    },
+    {
+      "id": "Field_C10_8",
+      "label": "C10.8: AI performance metrics tracked over time",
+      "type": "textarea",
+      "key": "c10_8"
+    },
+    {
+      "id": "Field_C10_9",
+      "label": "C10.9: Explainability tools available",
+      "type": "checklist",
+      "key": "c10_9",
+      "values": [
+        {
+          "label": "SHAP",
+          "value": "shap"
+        },
+        {
+          "label": "LIME",
+          "value": "lime"
+        },
+        {
+          "label": "Model Cards",
+          "value": "model_cards"
+        },
+        {
+          "label": "Feature Importance",
+          "value": "feature_importance"
+        },
+        {
+          "label": "Attention Maps",
+          "value": "attention_maps"
+        },
+        {
+          "label": "None",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "id": "Field_C10_10",
+      "label": "C10.10: Customer data used for model training + opt-out",
+      "type": "textarea",
+      "key": "c10_10"
+    },
+    {
+      "id": "Field_C10_11",
+      "label": "C10.11: Adversarial attack evaluation (model inversion, prompt injection)",
+      "type": "textarea",
+      "key": "c10_11"
+    },
+    {
+      "id": "Field_C10_12",
+      "label": "C10.12: Model drift and poisoning detection controls",
+      "type": "textarea",
+      "key": "c10_12"
+    },
+    {
+      "id": "Field_C10_13",
+      "label": "C10.13: Continuous monitoring and alerting for AI systems",
+      "type": "textarea",
+      "key": "c10_13"
+    },
+    {
+      "id": "Field_C10_14",
+      "label": "C10.14: Rollback and fail-safe mechanisms",
+      "type": "textarea",
+      "key": "c10_14"
+    },
+    {
+      "id": "Field_C10_15",
+      "label": "C10.15: Incident response protocol specific to AI failures",
+      "type": "textarea",
+      "key": "c10_15"
+    },
+    {
+      "id": "Field_C10_16",
+      "label": "C10.16: MCP (Model Context Protocol) support and management",
+      "type": "textarea",
+      "key": "c10_16"
+    },
+    {
+      "id": "Field_C10_17",
+      "label": "C10.17: EU AI Act risk classification (if applicable)",
+      "type": "select",
+      "key": "c10_17",
+      "values": [
+        {
+          "label": "Unacceptable Risk",
+          "value": "unacceptable_risk"
+        },
+        {
+          "label": "High Risk",
+          "value": "high_risk"
+        },
+        {
+          "label": "Limited Risk",
+          "value": "limited_risk"
+        },
+        {
+          "label": "Minimal Risk",
+          "value": "minimal_risk"
+        },
+        {
+          "label": "Not Classified",
+          "value": "not_classified"
+        }
+      ]
+    },
+    {
+      "id": "Field_C10_18",
+      "label": "C10.18: Human-in-the-loop oversight capabilities",
+      "type": "textarea",
+      "key": "c10_18"
+    },
+    {
+      "id": "Field_C10_19",
+      "label": "C10.19: EU AI Act conformity assessment status (high-risk AI per Annex III)",
+      "type": "textarea",
+      "key": "c10_19"
+    },
+    {
+      "id": "Field_C10_20",
+      "label": "C10.20: EU AI Database registration status (Art. 71)",
+      "type": "textarea",
+      "key": "c10_20"
+    },
+    {
+      "id": "Field_C10_21",
+      "label": "C10.21: Model risk tier for SR 11-7 model inventory",
+      "type": "select",
+      "key": "c10_21",
+      "values": [
+        {
+          "label": "Tier 1 (High)",
+          "value": "tier_1_(high)"
+        },
+        {
+          "label": "Tier 2 (Medium)",
+          "value": "tier_2_(medium)"
+        },
+        {
+          "label": "Tier 3 (Low)",
+          "value": "tier_3_(low)"
+        },
+        {
+          "label": "Not Applicable",
+          "value": "not_applicable"
+        }
+      ]
+    }
+  ]
+}

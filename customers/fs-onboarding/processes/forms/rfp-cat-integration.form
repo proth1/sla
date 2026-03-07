@@ -1,0 +1,195 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Cat5",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Category 5: Integration and Architecture\nAPI capabilities, integration options, and infrastructure requirements.\n\n**Governance topics**: EA, Cyber",
+      "id": "Field_Cat5_Header"
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat5_Sep1"
+    },
+    {
+      "id": "Field_C5_1",
+      "label": "C5.1: API types available",
+      "type": "checklist",
+      "key": "c5_1",
+      "values": [
+        {
+          "label": "REST",
+          "value": "rest"
+        },
+        {
+          "label": "GraphQL",
+          "value": "graphql"
+        },
+        {
+          "label": "SOAP",
+          "value": "soap"
+        },
+        {
+          "label": "gRPC",
+          "value": "grpc"
+        },
+        {
+          "label": "WebSocket",
+          "value": "websocket"
+        }
+      ]
+    },
+    {
+      "id": "Field_C5_2",
+      "label": "C5.2: Authentication methods for API access",
+      "type": "checklist",
+      "key": "c5_2",
+      "values": [
+        {
+          "label": "OAuth 2.0",
+          "value": "oauth_2.0"
+        },
+        {
+          "label": "API Key",
+          "value": "api_key"
+        },
+        {
+          "label": "JWT",
+          "value": "jwt"
+        },
+        {
+          "label": "mTLS",
+          "value": "mtls"
+        },
+        {
+          "label": "Basic Auth",
+          "value": "basic_auth"
+        }
+      ]
+    },
+    {
+      "id": "Field_C5_3",
+      "label": "C5.3: Webhook/event notification support",
+      "type": "radio",
+      "key": "c5_3",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "label": "Partial",
+          "value": "partial"
+        }
+      ]
+    },
+    {
+      "id": "Field_C5_4",
+      "label": "C5.4: Data import/export formats",
+      "type": "checklist",
+      "key": "c5_4",
+      "values": [
+        {
+          "label": "CSV",
+          "value": "csv"
+        },
+        {
+          "label": "JSON",
+          "value": "json"
+        },
+        {
+          "label": "XML",
+          "value": "xml"
+        },
+        {
+          "label": "Parquet",
+          "value": "parquet"
+        },
+        {
+          "label": "XLSX",
+          "value": "xlsx"
+        }
+      ]
+    },
+    {
+      "id": "Field_C5_5",
+      "label": "C5.5: Pre-built integrations with common enterprise tools",
+      "type": "textarea",
+      "key": "c5_5"
+    },
+    {
+      "id": "Field_C5_6",
+      "label": "C5.6: Rate limiting and throttling policies",
+      "type": "textarea",
+      "key": "c5_6"
+    },
+    {
+      "id": "Field_C5_7",
+      "label": "C5.7: API versioning and deprecation policy",
+      "type": "textarea",
+      "key": "c5_7"
+    },
+    {
+      "id": "Field_C5_8",
+      "label": "C5.8: SDK availability (languages/platforms)",
+      "type": "textarea",
+      "key": "c5_8"
+    },
+    {
+      "id": "Field_C5_9",
+      "label": "C5.9: Infrastructure requirements (CPU, memory, storage)",
+      "type": "textarea",
+      "key": "c5_9"
+    },
+    {
+      "id": "Field_C5_10",
+      "label": "C5.10: Network requirements (ports, protocols, bandwidth)",
+      "type": "textarea",
+      "key": "c5_10"
+    },
+    {
+      "id": "Field_C5_11",
+      "label": "C5.11: Database requirements and supported databases",
+      "type": "textarea",
+      "key": "c5_11"
+    },
+    {
+      "id": "Field_C5_12",
+      "label": "C5.12: Container/orchestration support",
+      "type": "checklist",
+      "key": "c5_12",
+      "values": [
+        {
+          "label": "Docker",
+          "value": "docker"
+        },
+        {
+          "label": "Kubernetes",
+          "value": "kubernetes"
+        },
+        {
+          "label": "OpenShift",
+          "value": "openshift"
+        },
+        {
+          "label": "ECS",
+          "value": "ecs"
+        },
+        {
+          "label": "None",
+          "value": "none"
+        }
+      ]
+    }
+  ]
+}

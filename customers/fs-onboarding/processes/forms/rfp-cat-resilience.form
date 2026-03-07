@@ -1,0 +1,93 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Cat9",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Category 9: Operational Resilience\nUptime, disaster recovery, and operational resilience capabilities.\n\n**Governance topics**: Cyber, EA, TPRM",
+      "id": "Field_Cat9_Header"
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat9_Sep1"
+    },
+    {
+      "id": "Field_C9_1",
+      "label": "C9.1: Uptime SLA and historical uptime (past 12 months)",
+      "type": "textfield",
+      "key": "c9_1"
+    },
+    {
+      "id": "Field_C9_2",
+      "label": "C9.2: Redundancy and failover architecture",
+      "type": "textarea",
+      "key": "c9_2"
+    },
+    {
+      "id": "Field_C9_3",
+      "label": "C9.3: Geographic redundancy (multi-region/multi-AZ)",
+      "type": "textarea",
+      "key": "c9_3"
+    },
+    {
+      "id": "Field_C9_4",
+      "label": "C9.4: Disaster recovery RTO/RPO by service tier",
+      "type": "textarea",
+      "key": "c9_4"
+    },
+    {
+      "id": "Field_C9_5",
+      "label": "C9.5: Last DR test date and results summary",
+      "type": "textarea",
+      "key": "c9_5"
+    },
+    {
+      "id": "Field_C9_6",
+      "label": "C9.6: Incident management process (ITIL or equivalent)",
+      "type": "textarea",
+      "key": "c9_6"
+    },
+    {
+      "id": "Field_C9_7",
+      "label": "C9.7: Status page and real-time monitoring availability",
+      "type": "textarea",
+      "key": "c9_7"
+    },
+    {
+      "id": "Field_C9_8",
+      "label": "C9.8: Capacity planning and auto-scaling capabilities",
+      "type": "textarea",
+      "key": "c9_8"
+    },
+    {
+      "id": "Field_C9_9",
+      "label": "C9.9: Dependency mapping (critical upstream/downstream services)",
+      "type": "textarea",
+      "key": "c9_9"
+    },
+    {
+      "id": "Field_C9_10",
+      "label": "C9.10: Planned maintenance windows and notification process",
+      "type": "textarea",
+      "key": "c9_10"
+    },
+    {
+      "id": "Field_C9_11",
+      "label": "C9.11: DORA compliance (if EU-regulated)",
+      "type": "textarea",
+      "key": "c9_11"
+    },
+    {
+      "id": "Field_C9_12",
+      "label": "C9.12: Maximum tolerable downtime per month",
+      "type": "textfield",
+      "key": "c9_12"
+    }
+  ]
+}

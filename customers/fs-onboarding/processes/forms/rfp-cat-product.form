@@ -1,0 +1,275 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Cat2",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Category 2: Product/Solution Capabilities\nProduct features, technology stack, and deployment options.\n\n**Governance topics**: EA, Intake, Prioritization",
+      "id": "Field_Cat2_Header"
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat2_Sep1"
+    },
+    {
+      "id": "Field_C2_1",
+      "label": "C2.1: Product/solution name and version",
+      "type": "textfield",
+      "key": "c2_1"
+    },
+    {
+      "id": "Field_C2_2",
+      "label": "C2.2: Product description and key capabilities",
+      "type": "textarea",
+      "key": "c2_2"
+    },
+    {
+      "id": "Field_C2_3",
+      "label": "C2.3: Technology stack (languages, frameworks, databases)",
+      "type": "textarea",
+      "key": "c2_3"
+    },
+    {
+      "id": "Field_C2_4",
+      "label": "C2.4: Deployment options (SaaS, on-prem, hybrid)",
+      "type": "checklist",
+      "key": "c2_4",
+      "values": [
+        {
+          "label": "SaaS",
+          "value": "saas"
+        },
+        {
+          "label": "On-Premise",
+          "value": "on-premise"
+        },
+        {
+          "label": "Hybrid",
+          "value": "hybrid"
+        },
+        {
+          "label": "Private Cloud",
+          "value": "private_cloud"
+        }
+      ]
+    },
+    {
+      "id": "Field_C2_5",
+      "label": "C2.5: Current customer count and industry verticals",
+      "type": "textfield",
+      "key": "c2_5"
+    },
+    {
+      "id": "Field_C2_6",
+      "label": "C2.6: Product roadmap \u2014 major features planned next 12 months",
+      "type": "textarea",
+      "key": "c2_6"
+    },
+    {
+      "id": "Field_C2_7",
+      "label": "C2.7: SLA commitments (uptime, response time)",
+      "type": "textarea",
+      "key": "c2_7"
+    },
+    {
+      "id": "Field_C2_8",
+      "label": "C2.8: Licensing model",
+      "type": "select",
+      "key": "c2_8",
+      "values": [
+        {
+          "label": "Per User",
+          "value": "per_user"
+        },
+        {
+          "label": "Per Transaction",
+          "value": "per_transaction"
+        },
+        {
+          "label": "Flat Fee",
+          "value": "flat_fee"
+        },
+        {
+          "label": "Consumption",
+          "value": "consumption"
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise"
+        }
+      ]
+    },
+    {
+      "id": "Field_C2_9",
+      "label": "C2.9: Supported browsers/platforms",
+      "type": "textarea",
+      "key": "c2_9"
+    },
+    {
+      "id": "Field_C2_10",
+      "label": "C2.10: Mobile support",
+      "type": "radio",
+      "key": "c2_10",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "label": "Partial",
+          "value": "partial"
+        }
+      ]
+    },
+    {
+      "id": "Field_C2_11",
+      "label": "C2.11: Multi-tenancy architecture",
+      "type": "select",
+      "key": "c2_11",
+      "values": [
+        {
+          "label": "Single-tenant",
+          "value": "single-tenant"
+        },
+        {
+          "label": "Multi-tenant shared",
+          "value": "multi-tenant_shared"
+        },
+        {
+          "label": "Multi-tenant isolated",
+          "value": "multi-tenant_isolated"
+        },
+        {
+          "label": "Configurable",
+          "value": "configurable"
+        }
+      ]
+    },
+    {
+      "id": "Field_C2_12",
+      "label": "C2.12: Customization/configuration capabilities",
+      "type": "textarea",
+      "key": "c2_12"
+    },
+    {
+      "id": "Field_C2_13",
+      "label": "C2.13: API availability and documentation",
+      "type": "textarea",
+      "key": "c2_13"
+    },
+    {
+      "id": "Field_C2_14",
+      "label": "C2.14: Data export/portability capabilities",
+      "type": "textarea",
+      "key": "c2_14"
+    },
+    {
+      "id": "Field_C2_15",
+      "label": "C2.15: Sandbox/test environment availability",
+      "type": "radio",
+      "key": "c2_15",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "label": "Partial",
+          "value": "partial"
+        }
+      ]
+    },
+    {
+      "id": "Field_C2_16",
+      "label": "C2.16: AI/ML model types supported",
+      "type": "checklist",
+      "key": "c2_16",
+      "values": [
+        {
+          "label": "NLP",
+          "value": "nlp"
+        },
+        {
+          "label": "Computer Vision",
+          "value": "computer_vision"
+        },
+        {
+          "label": "Predictive",
+          "value": "predictive"
+        },
+        {
+          "label": "Generative",
+          "value": "generative"
+        },
+        {
+          "label": "Classification",
+          "value": "classification"
+        },
+        {
+          "label": "Other",
+          "value": "other"
+        }
+      ]
+    },
+    {
+      "id": "Field_C2_17",
+      "label": "C2.17: Model training infrastructure",
+      "type": "textarea",
+      "key": "c2_17"
+    },
+    {
+      "id": "Field_C2_18",
+      "label": "C2.18: Model lifecycle management capabilities",
+      "type": "textarea",
+      "key": "c2_18"
+    },
+    {
+      "id": "Field_C2_19",
+      "label": "C2.19: Explainability tools (SHAP, LIME, model cards)",
+      "type": "checklist",
+      "key": "c2_19",
+      "values": [
+        {
+          "label": "SHAP",
+          "value": "shap"
+        },
+        {
+          "label": "LIME",
+          "value": "lime"
+        },
+        {
+          "label": "Model Cards",
+          "value": "model_cards"
+        },
+        {
+          "label": "Feature Importance",
+          "value": "feature_importance"
+        },
+        {
+          "label": "None",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "id": "Field_C2_20",
+      "label": "C2.20: Human-in-the-loop oversight support",
+      "type": "textarea",
+      "key": "c2_20"
+    }
+  ]
+}
