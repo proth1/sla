@@ -202,6 +202,19 @@ GOOD: Yes continues right on main line, No goes down
          +--No--> [End Event or Alternative]
 ```
 
+### Common-Path-Forward Exception
+
+When the "No" answer is the **expected/common case** (i.e., the majority of process instances follow the "No" path), the "No" flow MAY continue right as the forward flow. The gateway question should be reworded if possible to make "Yes" the forward flow, but if the question is clearer as-is (e.g., "Do you have a signed NDA?" — most requesters do not), the common-path exception applies.
+
+```
+ACCEPTABLE: "No" continues right when it's the common path
+    [Do you have a signed NDA?] --No--> [Execute NDA] --> [Merge] --> [Continue]
+         |
+         +--Yes--> (bypass below, L-shape to merge)
+```
+
+**When to apply**: The gateway question has a natural phrasing where "No" means "proceed with the standard process" and "Yes" means "skip ahead." Rewording the question to flip the logic (e.g., "Need NDA execution?") would make it less intuitive for business stakeholders reading the diagram.
+
 ### Wrong: Both paths go in different Y-directions from main
 
 ```
@@ -405,6 +418,6 @@ grep -c "bpmnElement=" after.bpmn
 
 ---
 
-**Rule Version**: 1.3.0
-**Created**: 2026-03-02 | **Updated**: 2026-03-05
+**Rule Version**: 1.4.0
+**Created**: 2026-03-02 | **Updated**: 2026-03-07
 **Source**: Adapted from ACMOS change management visual clarity standards for SLA multi-lane governance

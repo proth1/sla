@@ -92,12 +92,18 @@ async function zeebeApi(method, path, body) {
   const token = await getToken('zeebe.camunda.io');
   const opts = { method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } };
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(`${CONFIG.zeebeUrl}${path}`, opts);
+  const url = `${CONFIG.zeebeUrl}${path}`;
+  const t0 = Date.now();
+  console.log(`\x1b[36m→ ZEEBE ${method} ${path}\x1b[0m${body ? ' ' + JSON.stringify(body).slice(0, 200) : ''}`);
+  const res = await fetch(url, opts);
+  const ms = Date.now() - t0;
   if (!res.ok) {
     const text = await res.text();
+    console.log(`\x1b[31m← ZEEBE ${res.status} ${ms}ms\x1b[0m ${text.slice(0, 200)}`);
     throw new Error(`Zeebe ${res.status}: ${text}`);
   }
   const text = await res.text();
+  console.log(`\x1b[32m← ZEEBE ${res.status} ${ms}ms\x1b[0m ${text.slice(0, 150)}${text.length > 150 ? '...' : ''}`);
   return text ? JSON.parse(text) : {};
 }
 
@@ -105,12 +111,20 @@ async function tasklistApi(method, path, body) {
   const token = await getToken('tasklist.camunda.io');
   const opts = { method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } };
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(`${CONFIG.tasklistUrl}${path}`, opts);
+  const url = `${CONFIG.tasklistUrl}${path}`;
+  const t0 = Date.now();
+  console.log(`\x1b[33m→ TASKLIST ${method} ${path}\x1b[0m${body ? ' ' + JSON.stringify(body).slice(0, 200) : ''}`);
+  const res = await fetch(url, opts);
+  const ms = Date.now() - t0;
   if (!res.ok) {
     const text = await res.text();
+    console.log(`\x1b[31m← TASKLIST ${res.status} ${ms}ms\x1b[0m ${text.slice(0, 200)}`);
     throw new Error(`Tasklist ${res.status}: ${text}`);
   }
-  return res.json();
+  const data = await res.json();
+  const preview = JSON.stringify(data).slice(0, 150);
+  console.log(`\x1b[32m← TASKLIST ${res.status} ${ms}ms\x1b[0m ${preview}${preview.length >= 150 ? '...' : ''}`);
+  return data;
 }
 
 // Start a new process instance

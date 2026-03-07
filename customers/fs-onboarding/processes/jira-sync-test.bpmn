@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
+  xmlns:modeler="http://camunda.org/schema/modeler/1.0"
+  id="Definitions_JiraSyncTest"
+  targetNamespace="http://bpmn.io/schema/bpmn"
+  exporter="Claude Code"
+  exporterVersion="1.0.0"
+  modeler:executionPlatform="Camunda Cloud"
+  modeler:executionPlatformVersion="8.8.0">
+  <bpmn:process id="Process_JiraSync_Test_v1" name="Jira Sync Test Driver" isExecutable="true">
+    <bpmn:startEvent id="Start_JiraSync" name="Start&#10;Jira Sync Test">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_SecurityReview" name="Security&#10;Review">
+      <bpmn:extensionElements>
+        <zeebe:assignmentDefinition candidateGroups="technical-assessment" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_ComplianceCheck" name="Compliance&#10;Check">
+      <bpmn:extensionElements>
+        <zeebe:assignmentDefinition candidateGroups="compliance-lane" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_BusinessApproval" name="Business&#10;Approval">
+      <bpmn:extensionElements>
+        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_FinalSignoff" name="Final&#10;Sign-off">
+      <bpmn:extensionElements>
+        <zeebe:assignmentDefinition candidateGroups="governance-lane" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_JiraSync" name="Jira Sync&#10;Complete">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="Start_JiraSync" targetRef="Task_SecurityReview" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_SecurityReview" targetRef="Task_ComplianceCheck" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_ComplianceCheck" targetRef="Task_BusinessApproval" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_BusinessApproval" targetRef="Task_FinalSignoff" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_FinalSignoff" targetRef="End_JiraSync" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_JiraSync_Test_v1">
+      <bpmndi:BPMNShape id="Start_JiraSync_di" bpmnElement="Start_JiraSync">
+        <dc:Bounds x="180" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="160" y="235" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SecurityReview_di" bpmnElement="Task_SecurityReview">
+        <dc:Bounds x="280" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ComplianceCheck_di" bpmnElement="Task_ComplianceCheck">
+        <dc:Bounds x="440" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BusinessApproval_di" bpmnElement="Task_BusinessApproval">
+        <dc:Bounds x="600" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FinalSignoff_di" bpmnElement="Task_FinalSignoff">
+        <dc:Bounds x="760" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_JiraSync_di" bpmnElement="End_JiraSync">
+        <dc:Bounds x="922" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="909" y="235" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="216" y="210" />
+        <di:waypoint x="280" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="380" y="210" />
+        <di:waypoint x="440" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="540" y="210" />
+        <di:waypoint x="600" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="700" y="210" />
+        <di:waypoint x="760" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="860" y="210" />
+        <di:waypoint x="922" y="210" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

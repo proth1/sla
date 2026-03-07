@@ -207,6 +207,31 @@ Example: A 3-way Request Type gateway routes "Defined Need" through an NDA task 
 
 **Rule**: When a skip/bypass flow and a normal flow must reach the same downstream gateway, insert a merge gateway between them. Never route two flows directly into a decision gateway — the merge gateway separates structural convergence from decision logic.
 
+### Separate Merge Gateways Per Convergence Concern
+
+When two logically distinct bypass flows converge before the same downstream task, use **separate merge gateways** — one per convergence concern. Do not overload a single merge gateway with unrelated bypass paths.
+
+```
+[NDA merge] → [RFP?] → Mini RFP → [Mini RFP merge] → [RFP merge] → [Next Task]
+                    └─── RFP Yes ──────────────────────→ ↑
+```
+
+In this example, `Mini RFP merge` handles the Mini RFP Yes/No convergence, and `RFP merge` handles the RFP Yes bypass convergence. Combining both into a single gateway obscures the two independent decision domains.
+
+**Rule**: Each merge gateway should represent ONE convergence concern. If a merge gateway would collect flows from two unrelated decision points, split it into two sequential merge gateways.
+
+### Legal Prerequisite Tasks on Main Flow
+
+Legal prerequisite tasks (NDA, DPA, confidentiality agreements) that apply to the **majority** of requests should be placed ON the main horizontal flow line, not as a branch. The skip path (e.g., "already signed") routes below via L-shape to a merge gateway.
+
+```
+y=100    [NDA Gateway] --No--> [Execute NDA] --> [Merge] --> [Next Task]
+              |                                     ↑
+y=180         +-- Yes (L-shape below) ──────────────┘
+```
+
+**Rationale**: Most new software requests do not have a pre-existing NDA. Placing the NDA execution task on the main flow keeps the common path straight and horizontal, with the less-common skip path as the visual detour.
+
 ---
 
 ## Vendor Pool at Top Level
@@ -338,9 +363,11 @@ y=460                                                           [SLA Breach End]
 - SLA escalation end events positioned BELOW the timer (~100px)
 - Vertical gap between levels: **160px**
 
-### Pattern B: Bypass Below Main Flow (SP2 — Planning & Routing)
+### Pattern B: Bypass Below Main Flow (Internal Sub-Process Convention)
 
-When a gateway's "No" path skips a task to reach a merge gateway:
+In **internal sub-process diagrams**, bypass/skip flows route **BELOW** the main flow. This differs from the top-level pattern where bypasses route ABOVE. Internal diagrams have limited vertical space above the start event, and routing below keeps the main processing path as the topmost horizontal line.
+
+This pattern applies to all internal bypass scenarios: planning bypasses (SP2), NDA "already signed" skips (SP1), RFP "already completed" skips (SP1), etc.
 
 ```
 y=140    [Start] → [Prelim] → [GW Needs?] ──Yes──→ [Backlog] → [Merge] → [Routing] → [End]
@@ -349,7 +376,7 @@ y=220                               └─────── No ─────�
                                     (routes UNDER main flow)
 ```
 
-- "No" bypass exits from gateway **bottom**, routes horizontally below tasks, enters merge gateway **bottom**
+- "No" or skip bypass exits from gateway **bottom**, routes horizontally below tasks, enters merge gateway **bottom**
 - Vertical drop: ~80px below main flow
 - Merge gateway has NO name (structural purpose only)
 
@@ -642,5 +669,5 @@ Before saving any hierarchical BPMN file:
 
 ---
 
-**Version**: 1.1.0 | **Created**: 2026-03-05 | **Updated**: 2026-03-05
+**Version**: 1.2.0 | **Created**: 2026-03-05 | **Updated**: 2026-03-07
 **Source**: Extracted from user's manual Camunda Modeler edits to onboarding-to-be-ideal-state-v5.bpmn
