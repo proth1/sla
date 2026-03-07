@@ -53,14 +53,15 @@ while [[ "${COLLECTED}" -lt "${TOTAL}" && -n "${SEARCH_ID}" ]]; do
 
     PAGE_DATA=$(echo "${RESPONSE}" | python3 -c "import sys, json; print(json.dumps(json.load(sys.stdin).get('data', [])))")
 
-    # Merge arrays
-    ALL_DATA=$(python3 -c "
+    # Merge arrays (pass both via stdin to avoid shell injection)
+    ALL_DATA=$(printf '%s\n%s' "${ALL_DATA}" "${PAGE_DATA}" | python3 -c "
 import json, sys
-existing = json.loads('${ALL_DATA}')
-new = json.loads(sys.stdin.read())
+lines = sys.stdin.read().split('\n', 1)
+existing = json.loads(lines[0])
+new = json.loads(lines[1])
 existing.extend(new)
 print(json.dumps(existing))
-" <<< "${PAGE_DATA}")
+")
 
     COLLECTED=$((COLLECTED + PAGE_COUNT))
 
