@@ -912,7 +912,7 @@
             </zeebe:properties>
           </bpmn:extensionElements>
         </bpmn:userTask>
-        <bpmn:exclusiveGateway id="PDLC_GW_TestResult" name="Tests&#10;Passed?" />
+        <bpmn:exclusiveGateway id="PDLC_GW_TestResult" name="Tests&#10;Passed?" default="Flow_PDLC_No" />
         <bpmn:userTask id="PDLC_Integration" name="Integration&#10;and Deployment">
           <bpmn:documentation>Execute integration testing with enterprise systems and deploy the build artifact to the target environment. Validate all integration points function correctly with production-like data. Follow the organization's change management process for deployment — change request, impact assessment, approval, implementation, and post-implementation review. Establish configuration baselines and verify rollback procedures before go-live.</bpmn:documentation>
           <bpmn:extensionElements>
@@ -932,7 +932,9 @@
         <bpmn:sequenceFlow id="Flow_PDLC2" sourceRef="PDLC_ArchReview" targetRef="Gateway_0q35ha8" />
         <bpmn:sequenceFlow id="Flow_PDLC3" sourceRef="PDLC_Development" targetRef="PDLC_Testing" />
         <bpmn:sequenceFlow id="Flow_PDLC4" sourceRef="PDLC_Testing" targetRef="PDLC_GW_TestResult" />
-        <bpmn:sequenceFlow id="Flow_PDLC_Yes" name="Yes" sourceRef="PDLC_GW_TestResult" targetRef="PDLC_Integration" />
+        <bpmn:sequenceFlow id="Flow_PDLC_Yes" name="Yes" sourceRef="PDLC_GW_TestResult" targetRef="PDLC_Integration">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=testsPassed = true</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
         <bpmn:sequenceFlow id="Flow_PDLC_No" name="No" sourceRef="PDLC_GW_TestResult" targetRef="Gateway_0q35ha8" />
         <bpmn:sequenceFlow id="Flow_PDLC5" sourceRef="PDLC_Integration" targetRef="PDLC_End" />
         <bpmn:exclusiveGateway id="Gateway_0q35ha8">
@@ -1121,7 +1123,7 @@
     <bpmn:endEvent id="End_Rejected" name="Request&#10;Rejected">
       <bpmn:incoming>Flow_v5_4</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:exclusiveGateway id="GW_RequestType" name="Request Type?">
+    <bpmn:exclusiveGateway id="GW_RequestType" name="Request Type?" default="Flow_v7_RT_Defined">
       <bpmn:incoming>Flow_v5_3</bpmn:incoming>
       <bpmn:outgoing>Flow_v7_RT_Defined</bpmn:outgoing>
       <bpmn:outgoing>Flow_v7_RT_Speculative</bpmn:outgoing>
