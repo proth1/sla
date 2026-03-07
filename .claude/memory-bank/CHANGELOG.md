@@ -1,5 +1,19 @@
 # Changelog
 
+## [2026.03.35] - 2026-03-07
+
+### Fixed
+- PDLC_GW_TestResult gateway: added `default="Flow_PDLC_No"` and `conditionExpression` on Yes flow (PR #45)
+- GW_RequestType 3-way gateway: added `default="Flow_v7_RT_Defined"` for unexpected requestType values (PR #45)
+- 15 JUEL-to-FEEL expression conversions (`${var == 'val'}` → `=var = "val"`) for Camunda 8 compatibility (PR #45)
+- 9 exclusive gateways missing `default` attribute for Zeebe deployment (PR #45)
+- 9 conditional "Yes" flows missing `conditionExpression` elements (PR #45)
+- 3 receive tasks and message event definitions missing `messageRef` attributes (PR #45)
+- Broken outgoing flow reference on Task_ContractDeviation (`Flow_SP4_DeviationToCode` → `Flow_SP4_DeviationToGW`) (PR #45)
+
+### Added
+- 3 BPMN message definitions with Zeebe correlation subscriptions (VendorEngagement, VendorResponse, SignedContract) (PR #45)
+
 ## [2026.03.34] - 2026-03-06
 
 ### Added

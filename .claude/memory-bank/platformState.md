@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.34
-**Last Release**: 2026-03-06
-**Total Releases**: 34
+**Current Version**: 2026.03.35
+**Last Release**: 2026-03-07
+**Total Releases**: 35
 
 ## Artifact Counts
 
@@ -33,6 +33,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.35 | 2026-03-07 | #45 | Camunda 8 deployment compatibility: JUEL→FEEL, gateway defaults, message refs |
 | 2026.03.34 | 2026-03-06 | #44 | v8 BPMN (6 enhancements), 24-gap analysis, 62-slide presentation, implementation roadmap |
 | 2026.03.33 | 2026-03-06 | #43 | Fix Enable pathway routing, wire 4 orphaned forms, SP4/SP5 flow fixes |
 | 2026.03.32 | 2026-03-06 | #41 | v7-c8 BPMN discovery enhancements, 5 meeting notes, 3 DMN tables, showcase |
