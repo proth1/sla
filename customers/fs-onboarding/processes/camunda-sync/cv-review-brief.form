@@ -1,0 +1,59 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_CVReviewBrief",
+  "components": [
+    {
+      "type": "group",
+      "label": "Review and Finalize Committee Brief",
+      "id": "Field_CV_RB_001",
+      "components": [
+        {
+          "type": "text",
+          "text": "Review and finalize the evidence brief before distributing to committee members for voting.",
+          "id": "Field_CV_RB_002"
+        },
+        {
+          "type": "textarea",
+          "key": "executiveSummary",
+          "label": "Executive summary",
+          "validate": { "required": true },
+          "id": "Field_CV_RB_003"
+        },
+        {
+          "type": "textarea",
+          "key": "recommendation",
+          "label": "Recommendation",
+          "validate": { "required": true },
+          "id": "Field_CV_RB_004"
+        },
+        {
+          "type": "textarea",
+          "key": "keyRisks",
+          "label": "Key risks",
+          "validate": { "required": true },
+          "id": "Field_CV_RB_005"
+        },
+        {
+          "type": "textarea",
+          "key": "mitigatingFactors",
+          "label": "Mitigating factors",
+          "id": "Field_CV_RB_006"
+        },
+        {
+          "type": "checkbox",
+          "key": "briefComplete",
+          "label": "Brief is complete and ready for distribution",
+          "validate": { "required": true },
+          "id": "Field_CV_RB_007"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

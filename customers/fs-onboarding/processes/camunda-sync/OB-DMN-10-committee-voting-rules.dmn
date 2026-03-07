@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="OB-DMN10-CommitteeVotingRules-definitions"
+             name="OB-DMN-10: Committee Voting Rules"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="OB_DMN_CommitteeVotingRules"
+            name="Committee Voting Rules"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="OB_DMN_CommitteeVotingRules-table" hitPolicy="FIRST">
+
+      <input id="ob10-input-riskTier" label="Risk Tier">
+        <inputExpression id="ob10-inputExpr-riskTier" typeRef="string">
+          <text>riskTier</text>
+        </inputExpression>
+        <inputValues id="ob10-inputVals-riskTier">
+          <text>"High","Limited","Minimal"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob10-input-governancePhase" label="Governance Phase">
+        <inputExpression id="ob10-inputExpr-governancePhase" typeRef="string">
+          <text>governancePhase</text>
+        </inputExpression>
+        <inputValues id="ob10-inputVals-governancePhase">
+          <text>"SP3_Evaluation","SP5_FinalApproval"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob10-input-contractValueBand" label="Contract Value Band">
+        <inputExpression id="ob10-inputExpr-contractValueBand" typeRef="string">
+          <text>contractValueBand</text>
+        </inputExpression>
+        <inputValues id="ob10-inputVals-contractValueBand">
+          <text>"Under100K","100K_500K","500K_1M","Over1M"</text>
+        </inputValues>
+      </input>
+
+      <output id="ob10-output-votingMethod"
+              label="Voting Method"
+              name="votingMethod"
+              typeRef="string" />
+
+      <output id="ob10-output-committeeRoles"
+              label="Committee Roles"
+              name="committeeRoles"
+              typeRef="string" />
+
+      <output id="ob10-output-quorumThreshold"
+              label="Quorum Threshold"
+              name="quorumThreshold"
+              typeRef="integer" />
+
+      <output id="ob10-output-vetoCapableRoles"
+              label="Veto Capable Roles"
+              name="vetoCapableRoles"
+              typeRef="string" />
+
+      <output id="ob10-output-qaEnabled"
+              label="Q&amp;A Enabled"
+              name="qaEnabled"
+              typeRef="boolean" />
+
+      <output id="ob10-output-qaPeriodDuration"
+              label="Q&amp;A Period Duration"
+              name="qaPeriodDuration"
+              typeRef="string" />
+
+      <output id="ob10-output-reminderDuration"
+              label="Reminder Duration"
+              name="reminderDuration"
+              typeRef="string" />
+
+      <output id="ob10-output-escalationDuration"
+              label="Escalation Duration"
+              name="escalationDuration"
+              typeRef="string" />
+
+      <output id="ob10-output-deadlineDuration"
+              label="Deadline Duration"
+              name="deadlineDuration"
+              typeRef="string" />
+
+      <output id="ob10-output-maxRemediationLoops"
+              label="Max Remediation Loops"
+              name="maxRemediationLoops"
+              typeRef="integer" />
+
+      <output id="ob10-output-tiebreakerRule"
+              label="Tiebreaker Rule"
+              name="tiebreakerRule"
+              typeRef="string" />
+
+      <!-- R1: High risk + Final Approval + Over $1M => Unanimous with full committee -->
+      <rule id="ob10-rule-1">
+        <description>High risk, final approval, over $1M requires unanimous full committee vote</description>
+        <inputEntry id="ob10-ie-1-1"><text>"High"</text></inputEntry>
+        <inputEntry id="ob10-ie-1-2"><text>"SP5_FinalApproval"</text></inputEntry>
+        <inputEntry id="ob10-ie-1-3"><text>"Over1M"</text></inputEntry>
+        <outputEntry id="ob10-oe-1-1"><text>"unanimous"</text></outputEntry>
+        <outputEntry id="ob10-oe-1-2"><text>"governance-lane,compliance-lane,oversight-lane,ai-review"</text></outputEntry>
+        <outputEntry id="ob10-oe-1-3"><text>4</text></outputEntry>
+        <outputEntry id="ob10-oe-1-4"><text>"oversight-lane"</text></outputEntry>
+        <outputEntry id="ob10-oe-1-5"><text>true</text></outputEntry>
+        <outputEntry id="ob10-oe-1-6"><text>"P3D"</text></outputEntry>
+        <outputEntry id="ob10-oe-1-7"><text>"P2D"</text></outputEntry>
+        <outputEntry id="ob10-oe-1-8"><text>"P5D"</text></outputEntry>
+        <outputEntry id="ob10-oe-1-9"><text>"P10D"</text></outputEntry>
+        <outputEntry id="ob10-oe-1-10"><text>2</text></outputEntry>
+        <outputEntry id="ob10-oe-1-11"><text>"chair_decides"</text></outputEntry>
+      </rule>
+
+      <!-- R2: High risk + Final Approval (any contract value) => Super majority -->
+      <rule id="ob10-rule-2">
+        <description>High risk final approval requires super majority</description>
+        <inputEntry id="ob10-ie-2-1"><text>"High"</text></inputEntry>
+        <inputEntry id="ob10-ie-2-2"><text>"SP5_FinalApproval"</text></inputEntry>
+        <inputEntry id="ob10-ie-2-3"><text>-</text></inputEntry>
+        <outputEntry id="ob10-oe-2-1"><text>"super_majority"</text></outputEntry>
+        <outputEntry id="ob10-oe-2-2"><text>"governance-lane,compliance-lane,oversight-lane"</text></outputEntry>
+        <outputEntry id="ob10-oe-2-3"><text>3</text></outputEntry>
+        <outputEntry id="ob10-oe-2-4"><text>"oversight-lane"</text></outputEntry>
+        <outputEntry id="ob10-oe-2-5"><text>true</text></outputEntry>
+        <outputEntry id="ob10-oe-2-6"><text>"P2D"</text></outputEntry>
+        <outputEntry id="ob10-oe-2-7"><text>"P1D"</text></outputEntry>
+        <outputEntry id="ob10-oe-2-8"><text>"P3D"</text></outputEntry>
+        <outputEntry id="ob10-oe-2-9"><text>"P7D"</text></outputEntry>
+        <outputEntry id="ob10-oe-2-10"><text>2</text></outputEntry>
+        <outputEntry id="ob10-oe-2-11"><text>"chair_decides"</text></outputEntry>
+      </rule>
+
+      <!-- R3: High risk + Evaluation => Veto-capable -->
+      <rule id="ob10-rule-3">
+        <description>High risk evaluation requires veto-capable committee</description>
+        <inputEntry id="ob10-ie-3-1"><text>"High"</text></inputEntry>
+        <inputEntry id="ob10-ie-3-2"><text>"SP3_Evaluation"</text></inputEntry>
+        <inputEntry id="ob10-ie-3-3"><text>-</text></inputEntry>
+        <outputEntry id="ob10-oe-3-1"><text>"veto"</text></outputEntry>
+        <outputEntry id="ob10-oe-3-2"><text>"governance-lane,compliance-lane,technical-assessment"</text></outputEntry>
+        <outputEntry id="ob10-oe-3-3"><text>3</text></outputEntry>
+        <outputEntry id="ob10-oe-3-4"><text>"compliance-lane"</text></outputEntry>
+        <outputEntry id="ob10-oe-3-5"><text>true</text></outputEntry>
+        <outputEntry id="ob10-oe-3-6"><text>"P2D"</text></outputEntry>
+        <outputEntry id="ob10-oe-3-7"><text>"P1D"</text></outputEntry>
+        <outputEntry id="ob10-oe-3-8"><text>"P3D"</text></outputEntry>
+        <outputEntry id="ob10-oe-3-9"><text>"P7D"</text></outputEntry>
+        <outputEntry id="ob10-oe-3-10"><text>2</text></outputEntry>
+        <outputEntry id="ob10-oe-3-11"><text>"conditional_approval"</text></outputEntry>
+      </rule>
+
+      <!-- R4: Limited risk + Final Approval + Over $1M => Majority with oversight -->
+      <rule id="ob10-rule-4">
+        <description>Limited risk, final approval, over $1M requires majority with oversight</description>
+        <inputEntry id="ob10-ie-4-1"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ob10-ie-4-2"><text>"SP5_FinalApproval"</text></inputEntry>
+        <inputEntry id="ob10-ie-4-3"><text>"Over1M"</text></inputEntry>
+        <outputEntry id="ob10-oe-4-1"><text>"majority"</text></outputEntry>
+        <outputEntry id="ob10-oe-4-2"><text>"governance-lane,compliance-lane,oversight-lane"</text></outputEntry>
+        <outputEntry id="ob10-oe-4-3"><text>3</text></outputEntry>
+        <outputEntry id="ob10-oe-4-4"><text>""</text></outputEntry>
+        <outputEntry id="ob10-oe-4-5"><text>true</text></outputEntry>
+        <outputEntry id="ob10-oe-4-6"><text>"P2D"</text></outputEntry>
+        <outputEntry id="ob10-oe-4-7"><text>"P1D"</text></outputEntry>
+        <outputEntry id="ob10-oe-4-8"><text>"P3D"</text></outputEntry>
+        <outputEntry id="ob10-oe-4-9"><text>"P5D"</text></outputEntry>
+        <outputEntry id="ob10-oe-4-10"><text>2</text></outputEntry>
+        <outputEntry id="ob10-oe-4-11"><text>"conditional_approval"</text></outputEntry>
+      </rule>
+
+      <!-- R5: Limited risk + Final Approval (any contract) => Majority governance+compliance -->
+      <rule id="ob10-rule-5">
+        <description>Limited risk final approval requires majority vote</description>
+        <inputEntry id="ob10-ie-5-1"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ob10-ie-5-2"><text>"SP5_FinalApproval"</text></inputEntry>
+        <inputEntry id="ob10-ie-5-3"><text>-</text></inputEntry>
+        <outputEntry id="ob10-oe-5-1"><text>"majority"</text></outputEntry>
+        <outputEntry id="ob10-oe-5-2"><text>"governance-lane,compliance-lane"</text></outputEntry>
+        <outputEntry id="ob10-oe-5-3"><text>2</text></outputEntry>
+        <outputEntry id="ob10-oe-5-4"><text>""</text></outputEntry>
+        <outputEntry id="ob10-oe-5-5"><text>false</text></outputEntry>
+        <outputEntry id="ob10-oe-5-6"><text>""</text></outputEntry>
+        <outputEntry id="ob10-oe-5-7"><text>"P1D"</text></outputEntry>
+        <outputEntry id="ob10-oe-5-8"><text>"P3D"</text></outputEntry>
+        <outputEntry id="ob10-oe-5-9"><text>"P5D"</text></outputEntry>
+        <outputEntry id="ob10-oe-5-10"><text>2</text></outputEntry>
+        <outputEntry id="ob10-oe-5-11"><text>"conditional_approval"</text></outputEntry>
+      </rule>
+
+      <!-- R6: Limited risk + Evaluation => Majority governance+tech -->
+      <rule id="ob10-rule-6">
+        <description>Limited risk evaluation requires majority vote</description>
+        <inputEntry id="ob10-ie-6-1"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ob10-ie-6-2"><text>"SP3_Evaluation"</text></inputEntry>
+        <inputEntry id="ob10-ie-6-3"><text>-</text></inputEntry>
+        <outputEntry id="ob10-oe-6-1"><text>"majority"</text></outputEntry>
+        <outputEntry id="ob10-oe-6-2"><text>"governance-lane,technical-assessment"</text></outputEntry>
+        <outputEntry id="ob10-oe-6-3"><text>2</text></outputEntry>
+        <outputEntry id="ob10-oe-6-4"><text>""</text></outputEntry>
+        <outputEntry id="ob10-oe-6-5"><text>false</text></outputEntry>
+        <outputEntry id="ob10-oe-6-6"><text>""</text></outputEntry>
+        <outputEntry id="ob10-oe-6-7"><text>"P1D"</text></outputEntry>
+        <outputEntry id="ob10-oe-6-8"><text>"P3D"</text></outputEntry>
+        <outputEntry id="ob10-oe-6-9"><text>"P5D"</text></outputEntry>
+        <outputEntry id="ob10-oe-6-10"><text>2</text></outputEntry>
+        <outputEntry id="ob10-oe-6-11"><text>"reject"</text></outputEntry>
+      </rule>
+
+      <!-- R7: Minimal risk (any phase/contract) => Single reviewer -->
+      <rule id="ob10-rule-7">
+        <description>Minimal risk requires single reviewer only</description>
+        <inputEntry id="ob10-ie-7-1"><text>"Minimal"</text></inputEntry>
+        <inputEntry id="ob10-ie-7-2"><text>-</text></inputEntry>
+        <inputEntry id="ob10-ie-7-3"><text>-</text></inputEntry>
+        <outputEntry id="ob10-oe-7-1"><text>"single_reviewer"</text></outputEntry>
+        <outputEntry id="ob10-oe-7-2"><text>"governance-lane"</text></outputEntry>
+        <outputEntry id="ob10-oe-7-3"><text>1</text></outputEntry>
+        <outputEntry id="ob10-oe-7-4"><text>""</text></outputEntry>
+        <outputEntry id="ob10-oe-7-5"><text>false</text></outputEntry>
+        <outputEntry id="ob10-oe-7-6"><text>""</text></outputEntry>
+        <outputEntry id="ob10-oe-7-7"><text>"P1D"</text></outputEntry>
+        <outputEntry id="ob10-oe-7-8"><text>"P2D"</text></outputEntry>
+        <outputEntry id="ob10-oe-7-9"><text>"P3D"</text></outputEntry>
+        <outputEntry id="ob10-oe-7-10"><text>1</text></outputEntry>
+        <outputEntry id="ob10-oe-7-11"><text>"reject"</text></outputEntry>
+      </rule>
+
+      <!-- R8: Default fallback => Majority governance+compliance -->
+      <rule id="ob10-rule-8">
+        <description>Default fallback: majority vote with governance and compliance</description>
+        <inputEntry id="ob10-ie-8-1"><text>-</text></inputEntry>
+        <inputEntry id="ob10-ie-8-2"><text>-</text></inputEntry>
+        <inputEntry id="ob10-ie-8-3"><text>-</text></inputEntry>
+        <outputEntry id="ob10-oe-8-1"><text>"majority"</text></outputEntry>
+        <outputEntry id="ob10-oe-8-2"><text>"governance-lane,compliance-lane"</text></outputEntry>
+        <outputEntry id="ob10-oe-8-3"><text>2</text></outputEntry>
+        <outputEntry id="ob10-oe-8-4"><text>""</text></outputEntry>
+        <outputEntry id="ob10-oe-8-5"><text>false</text></outputEntry>
+        <outputEntry id="ob10-oe-8-6"><text>""</text></outputEntry>
+        <outputEntry id="ob10-oe-8-7"><text>"P1D"</text></outputEntry>
+        <outputEntry id="ob10-oe-8-8"><text>"P3D"</text></outputEntry>
+        <outputEntry id="ob10-oe-8-9"><text>"P5D"</text></outputEntry>
+        <outputEntry id="ob10-oe-8-10"><text>2</text></outputEntry>
+        <outputEntry id="ob10-oe-8-11"><text>"conditional_approval"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="OB-DMN10-diagram">
+      <dmndi:DMNShape id="OB-DMN10-shape" dmnElementRef="OB_DMN_CommitteeVotingRules">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
