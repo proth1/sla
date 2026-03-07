@@ -557,7 +557,7 @@ Each category has 3 tiers (basic/standard/full) with questions selected dynamica
 
 **Governance topics served**: Privacy, Compliance
 
-**Triggered by**: `dataClassification` in [PII, PHI, Financial] or `dataTypes` includes PII/PHI/Financial
+**Triggered by**: `dataTypes` includes PII/PHI/Financial or `dataClassification` in [confidential, restricted]
 
 | # | Question | Response Type | Consumers |
 |---|----------|--------------|-----------|
@@ -681,7 +681,7 @@ Each category has 3 tiers (basic/standard/full) with questions selected dynamica
 
 **Governance topics served**: Cyber, EA, TPRM
 
-**Triggered by**: `criticality` in [critical, significant] or `technologyType` = "Infrastructure"
+**Triggered by**: `businessCriticality` in [mission-critical, business-critical] or `technologyType` = "Infrastructure"
 
 | # | Question | Response Type | Consumers |
 |---|----------|--------------|-----------|
@@ -971,8 +971,8 @@ These inputs come from vendor Mini RFP responses (Step 7 data):
 | R4 | `hasAI` = "yes" | `ai-review` | full | 5 | AI system requires AI governance review |
 | R5 | `vendor.crossBorderTransfer` = true | `compliance-lane` | enhanced | 5 | Cross-border data requires compliance + privacy review |
 | R6 | `dataTypes` contains any of ["PII","PHI"] | `compliance-lane` | standard | 3 | Personal data requires compliance review |
-| R7 | `budgetRange` = "500k+" | `contracting-lane` | full | 7 | High-value contract requires full contracting review |
-| R8 | `budgetRange` = "500k+" | `oversight-lane` | standard | 3 | High-value contract requires oversight |
+| R7 | `budgetRange` = "over_500k" | `contracting-lane` | full | 7 | High-value contract requires full contracting review |
+| R8 | `budgetRange` = "over_500k" | `oversight-lane` | standard | 3 | High-value contract requires oversight |
 | R9 | `regulatoryScope` contains "OCC_2023_17" | `governance-lane` | enhanced | 5 | TPRM-regulated engagement requires enhanced governance |
 | R10 | `vendor.certificationGapCount` > 3 | `technical-assessment` | full | 10 | Multiple certification gaps require full security assessment |
 | R11 | `deploymentModel` = "on-premise" | `technical-assessment` | enhanced | 5 | On-prem requires enhanced architecture review |
@@ -1115,7 +1115,7 @@ Category-level scoring (0-100) based on response completeness and deal-killer fl
 | 40-59 | Gaps Identified | Orange |
 | 0-39 | Significant Concerns | Red |
 
-**Overall score**: Weighted average across active categories. Weights configurable per engagement (default: equal weighting).
+**Overall score**: Weighted average across active categories. Weights configurable per engagement (default: Security 25%, Product 20%, Pricing 15%, TPRM 15%, Privacy 10%, Integration 10%, AI 5%).
 
 ### 9.5 Vendor Selection
 
@@ -1217,7 +1217,7 @@ Variables created by SP0 that do not map to existing forms but enrich downstream
 
 ## 11. Form Specifications
 
-### 11.1 Requester Wizard Forms (9 Forms)
+### 11.1 Requester Wizard Forms (10 Forms)
 
 | Form ID | Step | Label | Key Fields | Est. Fields |
 |---------|------|-------|-----------|-------------|
@@ -1373,7 +1373,7 @@ Auto-generated cover letter sent with questionnaire (Step 5). Template-driven, n
 
 **DMN deliverables**:
 - OB-DMN-8 decision table (question selection, COLLECT hit policy)
-- Question bank JSON file (all 159 questions with metadata)
+- Question bank JSON file (all 167 questions with metadata)
 
 **Form deliverables**:
 - `rfp-step1-understand-need.form` through `rfp-step5-send-vendor.form`
