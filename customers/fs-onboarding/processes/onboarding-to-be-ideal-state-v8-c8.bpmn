@@ -157,13 +157,13 @@
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_SP5_3" sourceRef="Task_FinalApproval" targetRef="GW_ApprovalDecision" />
       <bpmn:sequenceFlow id="Flow_SP5_Approved" name="Approved" sourceRef="GW_ApprovalDecision" targetRef="GW_MergeOnboard">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approvalDecision == 'Approved'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approvalDecision = "Approved"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP5_Conditional" name="Conditions" sourceRef="GW_ApprovalDecision" targetRef="Task_ConditionVerification">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approvalDecision == 'Conditional'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approvalDecision = "Conditional"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP5_Rejected" name="Rejected" sourceRef="GW_ApprovalDecision" targetRef="End_SP5_Rejected">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approvalDecision == 'Rejected'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approvalDecision = "Rejected"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP5_CV" sourceRef="Task_ConditionVerification" targetRef="GW_MergeOnboard" />
       <bpmn:sequenceFlow id="Flow_SP5_MergeToOnboard" sourceRef="GW_MergeOnboard" targetRef="Task_OnboardSoftware" />
@@ -171,7 +171,7 @@
       <bpmn:sequenceFlow id="Flow_SP5_5" sourceRef="Activity_0zf4l0g" targetRef="Task_AssignOwnership" />
       <bpmn:sequenceFlow id="Flow_SP5_6" sourceRef="Task_CloseRequest" targetRef="SP5_End" />
     </bpmn:subProcess>
-    <bpmn:exclusiveGateway id="GW_FinalDecision" name="Approved?">
+    <bpmn:exclusiveGateway id="GW_FinalDecision" default="Flow_v5_16" name="Approved?">
       <bpmn:incoming>Flow_v5_14</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_15</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_16</bpmn:outgoing>
@@ -183,7 +183,9 @@
       <bpmn:incoming>Flow_v5_16</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_v5_14" sourceRef="SP_UATGoLive" targetRef="GW_FinalDecision" />
-    <bpmn:sequenceFlow id="Flow_v5_15" name="Yes" sourceRef="GW_FinalDecision" targetRef="End_SoftwareOnboarded" />
+    <bpmn:sequenceFlow id="Flow_v5_15" name="Yes" sourceRef="GW_FinalDecision" targetRef="End_SoftwareOnboarded" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_16" name="No" sourceRef="GW_FinalDecision" targetRef="End_FinalRejected" />
     <bpmn:startEvent id="Start_SoftwareNeed" name="Software need&#10;defined">
       <bpmn:outgoing>Flow_v5_1</bpmn:outgoing>
@@ -210,7 +212,7 @@
         <bpmn:incoming>Flow_SP1_1</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_2</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:exclusiveGateway id="GW_BypassProcess" name="Bypass formal&#10;process?">
+      <bpmn:exclusiveGateway id="GW_BypassProcess" default="Flow_SP1_No" name="Bypass formal&#10;process?">
         <bpmn:incoming>Flow_SP1_2</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_Yes</bpmn:outgoing>
         <bpmn:outgoing>Flow_SP1_No</bpmn:outgoing>
@@ -311,7 +313,9 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP1_1" sourceRef="SP1_Start" targetRef="Task_ReviewExisting" />
       <bpmn:sequenceFlow id="Flow_SP1_2" sourceRef="Task_ReviewExisting" targetRef="GW_BypassProcess" />
-      <bpmn:sequenceFlow id="Flow_SP1_Yes" name="Yes" sourceRef="GW_BypassProcess" targetRef="Task_LeverageExisting" />
+      <bpmn:sequenceFlow id="Flow_SP1_Yes" name="Yes" sourceRef="GW_BypassProcess" targetRef="Task_LeverageExisting" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_No" name="No" sourceRef="GW_BypassProcess" targetRef="Task_GatherDocs" />
       <bpmn:sequenceFlow id="Flow_SP1_EndLev" sourceRef="Task_LeverageExisting" targetRef="End_Leveraged" />
       <bpmn:sequenceFlow id="Flow_SP1_3" sourceRef="Task_GatherDocs" targetRef="GW_MergeSubmit" />
@@ -337,10 +341,10 @@
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_SP1_CG1" sourceRef="Task_CompletenessGate" targetRef="GW_Complete" />
       <bpmn:sequenceFlow id="Flow_SP1_CG_Yes" name="Yes" sourceRef="GW_Complete" targetRef="Task_ClassifyRequest">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${completenessDecision == 'Complete'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=completenessDecision = "Complete"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_CG_No" name="No" sourceRef="GW_Complete" targetRef="Task_SubmitRequest">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${completenessDecision == 'Incomplete'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=completenessDecision = "Incomplete"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_6" sourceRef="Task_ClassifyRequest" targetRef="Task_DealKillerCheck" />
       <bpmn:businessRuleTask id="Task_DealKillerCheck" name="Deal Killer&#10;Pre-Screen">
@@ -365,10 +369,10 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP1_DK1" sourceRef="Task_DealKillerCheck" targetRef="GW_DealKiller" />
       <bpmn:sequenceFlow id="Flow_SP1_DK_No" name="No" sourceRef="GW_DealKiller" targetRef="Task_InitialTriage">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${dealKillerResult == 'Proceed'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dealKillerResult = "Proceed"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_DK_Yes" name="Yes" sourceRef="GW_DealKiller" targetRef="End_DealKiller">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${dealKillerResult == 'Blocked'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dealKillerResult = "Blocked"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_5" sourceRef="Task_InitialTriage" targetRef="SP1_End" />
       <bpmn:sequenceFlow id="Flow_SP1_SLA" sourceRef="Timer_TriageSLA" targetRef="End_TriageSLAEscalation" />
@@ -379,7 +383,7 @@
         </bpmn:timerEventDefinition>
       </bpmn:intermediateCatchEvent>
     </bpmn:subProcess>
-    <bpmn:exclusiveGateway id="GW_TriageDecision" name="Approved ?">
+    <bpmn:exclusiveGateway id="GW_TriageDecision" default="Flow_v5_4" name="Approved ?">
       <bpmn:incoming>Flow_v8_NotifyToTriage</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_3</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_4</bpmn:outgoing>
@@ -407,7 +411,7 @@
         <bpmn:incoming>Flow_SP2_1</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_2</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:exclusiveGateway id="GW_NeedsAssessment" name="Needs further&#10;assessment?">
+      <bpmn:exclusiveGateway id="GW_NeedsAssessment" default="Flow_SP2_No" name="Needs further&#10;assessment?">
         <bpmn:incoming>Flow_SP2_2</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_Yes</bpmn:outgoing>
         <bpmn:outgoing>Flow_SP2_No</bpmn:outgoing>
@@ -463,14 +467,16 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP2_1" sourceRef="SP2_Start" targetRef="Task_PrelimAnalysis" />
       <bpmn:sequenceFlow id="Flow_SP2_2" sourceRef="Task_PrelimAnalysis" targetRef="GW_NeedsAssessment" />
-      <bpmn:sequenceFlow id="Flow_SP2_Yes" name="Yes" sourceRef="GW_NeedsAssessment" targetRef="Task_Backlog" />
+      <bpmn:sequenceFlow id="Flow_SP2_Yes" name="Yes" sourceRef="GW_NeedsAssessment" targetRef="Task_Backlog" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP2_No" name="No" sourceRef="GW_NeedsAssessment" targetRef="GW_MergeBacklog" />
       <bpmn:sequenceFlow id="Flow_SP2_3" sourceRef="Task_Backlog" targetRef="GW_MergeBacklog" />
       <bpmn:sequenceFlow id="Flow_SP2_4" sourceRef="GW_MergeBacklog" targetRef="Task_PrioritizationScoring" />
       <bpmn:sequenceFlow id="Flow_SP2_6" sourceRef="Task_PrioritizationScoring" targetRef="Task_PathwayRouting" />
       <bpmn:sequenceFlow id="Flow_SP2_5" sourceRef="Task_PathwayRouting" targetRef="SP2_End" />
     </bpmn:subProcess>
-    <bpmn:exclusiveGateway id="GW_BuyVsBuild" name="Do we Build ?">
+    <bpmn:exclusiveGateway id="GW_BuyVsBuild" default="Flow_v5_7" name="Do we Build ?">
       <bpmn:incoming>Flow_v8_NotifyToBuyBuild</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_6</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_7</bpmn:outgoing>
@@ -612,7 +618,7 @@
         <bpmn:incoming>Flow_0f4002g</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_3</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:receiveTask id="Receive_VendorResponse" name="Await Vendor&#10;Response">
+      <bpmn:receiveTask id="Receive_VendorResponse" name="Await Vendor&#10;Response" messageRef="Message_VendorResponse">
         <bpmn:extensionElements>
           <zeebe:properties>
             <zeebe:property name="topics" value="Sourcing" />
@@ -707,10 +713,10 @@
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_SP3_SAR1" sourceRef="Task_SecurityAssessmentRouting" targetRef="GW_SecurityLevel" />
       <bpmn:sequenceFlow id="Flow_SP3_SAR_Baseline" name="Baseline" sourceRef="GW_SecurityLevel" targetRef="Task_BaselineSecurityCheck">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${securityAssessmentLevel == 'Baseline'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=securityAssessmentLevel = "Baseline"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP3_SAR_Elevated" name="Elevated/Major" sourceRef="GW_SecurityLevel" targetRef="Task_SecurityAssessment">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${securityAssessmentLevel != 'Baseline'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=securityAssessmentLevel != "Baseline"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP3_SAR_BaselineJoin" sourceRef="Task_BaselineSecurityCheck" targetRef="GW_MergeSecurityAssessment" />
       <bpmn:sequenceFlow id="Flow_SP3_P4" sourceRef="GW_ParallelSplit" targetRef="Task_FinancialAnalysis" />
@@ -730,7 +736,7 @@
       <bpmn:sequenceFlow id="Flow_SP3_P6" sourceRef="GW_ParallelSplit" targetRef="Task_AIGovernanceReview" />
       <bpmn:sequenceFlow id="Flow_SP3_P6J" sourceRef="Task_AIGovernanceReview" targetRef="GW_ParallelJoin" />
     </bpmn:subProcess>
-    <bpmn:exclusiveGateway id="GW_VendorSelected" name="Vendor&#10;Selected?">
+    <bpmn:exclusiveGateway id="GW_VendorSelected" default="Flow_v5_9" name="Vendor&#10;Selected?">
       <bpmn:incoming>Flow_v8_NotifyToVendorSel</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_9</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_10</bpmn:outgoing>
@@ -741,7 +747,7 @@
       <bpmn:startEvent id="SP4_Start">
         <bpmn:outgoing>Flow_SP4_1</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:exclusiveGateway id="GW_PathwayExec" name="Pathway&#10;Execution">
+      <bpmn:exclusiveGateway id="GW_PathwayExec" default="Flow_SP4_Buy" name="Pathway&#10;Execution">
         <bpmn:incoming>Flow_SP4_1</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_Buy</bpmn:outgoing>
         <bpmn:outgoing>Flow_SP4_Build</bpmn:outgoing>
@@ -812,7 +818,7 @@
         <bpmn:incoming>Flow_SP4_4</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_5</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:receiveTask id="Receive_SignedContract" name="Await Signed&#10;Contract">
+      <bpmn:receiveTask id="Receive_SignedContract" name="Await Signed&#10;Contract" messageRef="Message_SignedContract">
         <bpmn:incoming>Flow_SP4_5</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_6</bpmn:outgoing>
       </bpmn:receiveTask>
@@ -906,7 +912,7 @@
             </zeebe:properties>
           </bpmn:extensionElements>
         </bpmn:userTask>
-        <bpmn:exclusiveGateway id="PDLC_GW_TestResult" name="Tests&#10;Passed?" />
+        <bpmn:exclusiveGateway id="PDLC_GW_TestResult" name="Tests&#10;Passed?" default="Flow_PDLC_No" />
         <bpmn:userTask id="PDLC_Integration" name="Integration&#10;and Deployment">
           <bpmn:documentation>Execute integration testing with enterprise systems and deploy the build artifact to the target environment. Validate all integration points function correctly with production-like data. Follow the organization's change management process for deployment — change request, impact assessment, approval, implementation, and post-implementation review. Establish configuration baselines and verify rollback procedures before go-live.</bpmn:documentation>
           <bpmn:extensionElements>
@@ -926,7 +932,9 @@
         <bpmn:sequenceFlow id="Flow_PDLC2" sourceRef="PDLC_ArchReview" targetRef="Gateway_0q35ha8" />
         <bpmn:sequenceFlow id="Flow_PDLC3" sourceRef="PDLC_Development" targetRef="PDLC_Testing" />
         <bpmn:sequenceFlow id="Flow_PDLC4" sourceRef="PDLC_Testing" targetRef="PDLC_GW_TestResult" />
-        <bpmn:sequenceFlow id="Flow_PDLC_Yes" name="Yes" sourceRef="PDLC_GW_TestResult" targetRef="PDLC_Integration" />
+        <bpmn:sequenceFlow id="Flow_PDLC_Yes" name="Yes" sourceRef="PDLC_GW_TestResult" targetRef="PDLC_Integration">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=testsPassed = true</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
         <bpmn:sequenceFlow id="Flow_PDLC_No" name="No" sourceRef="PDLC_GW_TestResult" targetRef="Gateway_0q35ha8" />
         <bpmn:sequenceFlow id="Flow_PDLC5" sourceRef="PDLC_Integration" targetRef="PDLC_End" />
         <bpmn:exclusiveGateway id="Gateway_0q35ha8">
@@ -973,7 +981,7 @@
           </zeebe:properties>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_SP4_BuyMerge</bpmn:incoming>
-        <bpmn:outgoing>Flow_SP4_DeviationToCode</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP4_DeviationToGW</bpmn:outgoing>
       </bpmn:userTask>
       <bpmn:exclusiveGateway id="GW_MergeExec">
         <bpmn:incoming>Flow_SP4_CodeToMerge</bpmn:incoming>
@@ -987,7 +995,9 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP4_1" sourceRef="SP4_Start" targetRef="GW_PathwayExec" />
       <bpmn:sequenceFlow id="Flow_SP4_Buy" name="No" sourceRef="GW_PathwayExec" targetRef="Task_RefineRequirements" />
-      <bpmn:sequenceFlow id="Flow_SP4_Build" name="Yes" sourceRef="GW_PathwayExec" targetRef="Task_DefineBuildReqs" />
+      <bpmn:sequenceFlow id="Flow_SP4_Build" name="Yes" sourceRef="GW_PathwayExec" targetRef="Task_DefineBuildReqs" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP4_2" sourceRef="Task_RefineRequirements" targetRef="Task_PerformPoC" />
       <bpmn:sequenceFlow id="Flow_SP4_3" sourceRef="Task_PerformPoC" targetRef="Task_TechRiskEval" />
       <bpmn:sequenceFlow id="Flow_SP4_4" sourceRef="Task_TechRiskEval" targetRef="Task_NegotiateContract" />
@@ -1014,14 +1024,14 @@
         <bpmn:outgoing>Flow_SP4_CodingNo</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_SP4_CodingYes" name="Yes" sourceRef="GW_CodingCorrect" targetRef="GW_MergeExec">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${codingMatrixCorrect == true}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=codingMatrixCorrect = true</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP4_CodingNo" name="No" sourceRef="GW_CodingCorrect" targetRef="Task_CodingCorrection">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${codingMatrixCorrect == false}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=codingMatrixCorrect = false</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP4_CodeToMerge" sourceRef="Task_CodingCorrection" targetRef="GW_MergeExec" />
       <bpmn:sequenceFlow id="Flow_SP4_Enable" name="Enable" sourceRef="GW_PathwayExec" targetRef="Task_ComplianceReview">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'Enable'}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=selectedPathway = "Enable"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP4_Enable2" sourceRef="Task_ComplianceReview" targetRef="Task_EnableContractExec" />
       <bpmn:sequenceFlow id="Flow_SP4_EnableMerge" sourceRef="Task_EnableContractExec" targetRef="GW_MergeExec" />
@@ -1043,16 +1053,18 @@
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_v8_SP1toNotify" sourceRef="SP_RequestTriage" targetRef="SendTask_SP1Complete" />
     <bpmn:sequenceFlow id="Flow_v8_NotifyToTriage" sourceRef="SendTask_SP1Complete" targetRef="GW_TriageDecision" />
-    <bpmn:sequenceFlow id="Flow_v5_3" name="Yes" sourceRef="GW_TriageDecision" targetRef="GW_RequestType" />
+    <bpmn:sequenceFlow id="Flow_v5_3" name="Yes" sourceRef="GW_TriageDecision" targetRef="GW_RequestType" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_4" name="No" sourceRef="GW_TriageDecision" targetRef="End_Rejected" />
     <bpmn:sequenceFlow id="Flow_v7_RT_Defined" name="Defined Need" sourceRef="GW_RequestType" targetRef="Task_ExecuteNDA">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${requestType == 'defined-need'}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=requestType = "defined-need"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v7_RT_Speculative" name="Speculative" sourceRef="GW_RequestType" targetRef="End_IdeaFunnel">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${requestType == 'speculative'}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=requestType = "speculative"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v7_RT_Forced" name="Forced Update" sourceRef="GW_RequestType" targetRef="SP_EvalDD">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${requestType == 'forced-update'}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=requestType = "forced-update"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v7_NDA" sourceRef="Task_ExecuteNDA" targetRef="SP_PlanningRouting" />
     <bpmn:serviceTask id="SendTask_SP2Complete" name="SP2&#10;Notification">
@@ -1067,7 +1079,9 @@
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_v8_SP2toNotify" sourceRef="SP_PlanningRouting" targetRef="SendTask_SP2Complete" />
     <bpmn:sequenceFlow id="Flow_v8_NotifyToBuyBuild" sourceRef="SendTask_SP2Complete" targetRef="GW_BuyVsBuild" />
-    <bpmn:sequenceFlow id="Flow_v5_6" name="No" sourceRef="GW_BuyVsBuild" targetRef="SP_EvalDD" />
+    <bpmn:sequenceFlow id="Flow_v5_6" name="No" sourceRef="GW_BuyVsBuild" targetRef="SP_EvalDD" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_7" name="Yes" sourceRef="GW_BuyVsBuild" targetRef="Gateway_0gh936r" />
     <bpmn:serviceTask id="SendTask_SP3Complete" name="SP3&#10;Notification">
       <bpmn:extensionElements>
@@ -1082,8 +1096,12 @@
     <bpmn:sequenceFlow id="Flow_v8_SP3toNotify" sourceRef="SP_EvalDD" targetRef="SendTask_SP3Complete" />
     <bpmn:sequenceFlow id="Flow_v8_NotifyToVendorSel" sourceRef="SendTask_SP3Complete" targetRef="GW_VendorSelected" />
     <bpmn:sequenceFlow id="Flow_v5_9" name="No" sourceRef="GW_VendorSelected" targetRef="End_VendorNotSelected" />
-    <bpmn:sequenceFlow id="Flow_v5_10" name="Yes" sourceRef="GW_VendorSelected" targetRef="GW_EvalApproved" />
-    <bpmn:sequenceFlow id="Flow_v5_12" name="Yes" sourceRef="GW_EvalApproved" targetRef="Gateway_0gh936r" />
+    <bpmn:sequenceFlow id="Flow_v5_10" name="Yes" sourceRef="GW_VendorSelected" targetRef="GW_EvalApproved" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_v5_12" name="Yes" sourceRef="GW_EvalApproved" targetRef="Gateway_0gh936r" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1oux8e4" sourceRef="Gateway_0gh936r" targetRef="SP_ContractBuild" />
     <bpmn:exclusiveGateway id="Gateway_0gh936r">
       <bpmn:incoming>Flow_v5_12</bpmn:incoming>
@@ -1091,7 +1109,7 @@
       <bpmn:outgoing>Flow_1oux8e4</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_v5_11" name="No" sourceRef="GW_EvalApproved" targetRef="End_EvalRejected" />
-    <bpmn:exclusiveGateway id="GW_EvalApproved" name="Evaluation&#10;Approved?">
+    <bpmn:exclusiveGateway id="GW_EvalApproved" default="Flow_v5_11" name="Evaluation&#10;Approved?">
       <bpmn:incoming>Flow_v5_10</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_11</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_12</bpmn:outgoing>
@@ -1105,7 +1123,7 @@
     <bpmn:endEvent id="End_Rejected" name="Request&#10;Rejected">
       <bpmn:incoming>Flow_v5_4</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:exclusiveGateway id="GW_RequestType" name="Request Type?">
+    <bpmn:exclusiveGateway id="GW_RequestType" name="Request Type?" default="Flow_v7_RT_Defined">
       <bpmn:incoming>Flow_v5_3</bpmn:incoming>
       <bpmn:outgoing>Flow_v7_RT_Defined</bpmn:outgoing>
       <bpmn:outgoing>Flow_v7_RT_Speculative</bpmn:outgoing>
@@ -1132,7 +1150,7 @@
   <bpmn:process id="Process_Vendor" name="Vendor / Third Party" isExecutable="true">
     <bpmn:startEvent id="Start_VendorEngagement" name="Vendor&#10;Engagement&#10;Initiated">
       <bpmn:outgoing>Flow_V1</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MsgDef_VendorEngagement" />
+      <bpmn:messageEventDefinition id="MsgDef_VendorEngagement" messageRef="Message_VendorEngagement" />
     </bpmn:startEvent>
     <bpmn:userTask id="Task_VendorIntake" name="Vendor&#10;Intake and&#10;Qualification">
       <bpmn:documentation>Form: vendor-questionnaire.html Sections 1-3 (Basics + Governance + Risk) — vendor persona view, pre-populated with company name and reference number. Screen vendor eligibility and establish baseline qualification before any substantive information exchange begins. Collect vendor legal entity details, ownership structure, financial stability indicators, geographic footprint, and existing certifications. Perform conflict-of-interest screening and preliminary risk tier classification. Verify the vendor is not on any sanctions or exclusion lists. Establish the lawful basis for data collection under applicable privacy regulations.</bpmn:documentation>
@@ -1150,7 +1168,7 @@
       <bpmn:incoming>Flow_V1</bpmn:incoming>
       <bpmn:outgoing>Flow_V2</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:exclusiveGateway id="GW_VendorQualified" name="Vendor&#10;Qualified?">
+    <bpmn:exclusiveGateway id="GW_VendorQualified" default="Flow_V_QualNo" name="Vendor&#10;Qualified?">
       <bpmn:incoming>Flow_V2</bpmn:incoming>
       <bpmn:outgoing>Flow_V_QualYes</bpmn:outgoing>
       <bpmn:outgoing>Flow_V_QualNo</bpmn:outgoing>
@@ -1268,7 +1286,9 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_V1" sourceRef="Start_VendorEngagement" targetRef="Task_VendorIntake" />
     <bpmn:sequenceFlow id="Flow_V2" sourceRef="Task_VendorIntake" targetRef="GW_VendorQualified" />
-    <bpmn:sequenceFlow id="Flow_V_QualYes" name="Yes" sourceRef="GW_VendorQualified" targetRef="Task_VendorProposal" />
+    <bpmn:sequenceFlow id="Flow_V_QualYes" name="Yes" sourceRef="GW_VendorQualified" targetRef="Task_VendorProposal" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_V_QualNo" name="No" sourceRef="GW_VendorQualified" targetRef="End_VendorDisqualified" />
     <bpmn:sequenceFlow id="Flow_V3" sourceRef="Task_VendorProposal" targetRef="GW_VendorParSplit" />
     <bpmn:sequenceFlow id="Flow_V_VP1" sourceRef="GW_VendorParSplit" targetRef="Task_VendorSecurityReview" />
@@ -1335,7 +1355,22 @@
       <bpmn:outgoing>Flow_V_VP2J</bpmn:outgoing>
     </bpmn:userTask>
   </bpmn:process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_Main">
+    <bpmn:message id="Message_VendorEngagement" name="VendorEngagementMessage">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=vendorId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="Message_VendorResponse" name="VendorResponseMessage">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=vendorId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="Message_SignedContract" name="SignedContractMessage">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=contractId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+<bpmndi:BPMNDiagram id="BPMNDiagram_Main">
     <bpmndi:BPMNPlane id="BPMNPlane_Main" bpmnElement="Collaboration_IdealState_v8">
       <bpmndi:BPMNShape id="Participant_Enterprise_di" bpmnElement="Participant_Enterprise" isHorizontal="true">
         <dc:Bounds x="160" y="80" width="2100" height="290" />
