@@ -570,13 +570,13 @@
       <bpmn:sequenceFlow id="Flow_SP5_5" sourceRef="Activity_0zf4l0g" targetRef="Task_AssignOwnership" />
       <bpmn:sequenceFlow id="Flow_SP5_6" sourceRef="Task_CloseRequest" targetRef="SP5_End" />
     </bpmn:subProcess>
-    <bpmn:subProcess id="SP_ContractBuild" name="Contracting&#10;and Build">
+    <bpmn:subProcess id="SP_ContractBuild" name="Contracting">
       <bpmn:incoming>Flow_1oux8e4</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_13</bpmn:outgoing>
       <bpmn:startEvent id="SP4_Start">
         <bpmn:outgoing>Flow_SP4_1</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:exclusiveGateway id="GW_PathwayExec" name="Pathway&#10;Execution" default="Flow_SP4_Buy">
+      <bpmn:exclusiveGateway id="GW_PathwayExec" name="Pathway ?" default="Flow_SP4_Buy">
         <bpmn:incoming>Flow_SP4_1</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_Buy</bpmn:outgoing>
         <bpmn:outgoing>Flow_SP4_Build</bpmn:outgoing>
@@ -1000,7 +1000,7 @@
       <bpmn:outgoing>Flow_v5_9</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_10</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:subProcess id="SP_EvalDD" name="Evaluation&#10;and Due Diligence">
+    <bpmn:subProcess id="SP_EvalDD" name="Vendor&#10;Evaluation">
       <bpmn:incoming>Flow_v5_6</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_8</bpmn:outgoing>
       <bpmn:startEvent id="SP3_Start">
@@ -1265,7 +1265,7 @@
       <bpmn:sequenceFlow id="Flow_SP3_P6" sourceRef="GW_ParallelSplit" targetRef="Task_AIGovernanceReview" />
       <bpmn:sequenceFlow id="Flow_SP3_P6J" sourceRef="Task_AIGovernanceReview" targetRef="GW_ParallelJoin" />
     </bpmn:subProcess>
-    <bpmn:exclusiveGateway id="GW_BuyVsBuild" name="Do we Build ?" default="Flow_v5_7">
+    <bpmn:exclusiveGateway id="GW_BuyVsBuild" name="Build or Buy ?" default="Flow_v5_7">
       <bpmn:incoming>Flow_06joozj</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_6</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_7</bpmn:outgoing>
