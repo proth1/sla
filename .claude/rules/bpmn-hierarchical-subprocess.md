@@ -365,24 +365,45 @@ y=220                               └─────── No ─────�
 
 ### Pattern C: Parallel Fan-Out (SP3 — Evaluation & DD)
 
-5 parallel branches spread vertically from a center split gateway:
+9 parallel branches spread vertically from a center split gateway:
 
 ```
-y=80     [Tech Arch Review]          → ↘
-y=183    [Security Assessment]       → →
-y=291    [Risk, Compliance, Legal]   → → [Join] → [Vendor DD] → [Await] → [Evaluate] → [End]
-y=399    [Financial Analysis]        → ↗              │timer
-y=500    [Assess Vendor Landscape]   → ↗           [SLA Breach]
-          ↑                            ↑
-     [Split GW at y=306]        [Join GW at y=306]
+y=140    [Security Assessment Routing] → [XOR: Level?] → [Baseline] / [Elevated] → [Merge] → ↘
+y=370    [Tech Arch Review]            → ────────────────────────────────────────────────────→ ↘
+y=486    [Risk Assessment]             → ─────────────────────────────────────────────────────→ ↘
+y=607    [Compliance Review]           → ──────────────────────────────────────────────────────→ →
+                                         ↑ Split GW at y=660                    Join GW at y=660 ↑
+y=728    [Privacy Assessment]          → ──────────────────────────────────────────────────────→ ↗
+y=849    [Legal Review]                → ─────────────────────────────────────────────────────→ ↗
+y=970    [Financial Analysis]          → ────────────────────────────────────────────────────→ ↗
+y=1091   [Assess Vendor Landscape]     → ───────────────────────────────────────────────────→ ↗
+y=1210   [AI Governance Review]        → ──────────────────────────────────────────────────→ ↗
 ```
 
 Rules:
-- Split and join gateways centered vertically among branches (y=306 for 5 branches spanning y=80-540)
-- **~100-110px vertical spacing** between branches (tighter than the 170-180px used in flat multi-lane models, because internal diagrams have no lane structure)
+- Split and join gateways centered vertically among branches (y=660 for 9 branches spanning y=100-1250)
+- **~120px vertical spacing** between branches — wider than the old ~80-100px to improve readability when branch count exceeds 5
+- **Branches with internal sub-routing** (e.g., Security Assessment with its own XOR gateway) get **extra vertical space** (~230px to the next branch) to accommodate the sub-routing elements
 - Branches fan both UP and DOWN from center
 - L-shaped routing: vertical from gateway → horizontal into task
+- **L-shaped join routing**: each branch routes horizontally RIGHT from the task end to the join gateway's X-coordinate, then vertically to the join gateway center. This ensures consistent, non-overlapping join paths
 - Post-join flow continues on the center Y-level
+
+### Branch Sub-Routing Within Parallel Fan-Out
+
+When a parallel branch contains its own decision gateway (e.g., Security Assessment Routing → XOR: Baseline vs Elevated), the sub-routing elements occupy the same vertical band as the branch:
+
+```
+y=100    [SAR Task] → [XOR: Level?] ──Baseline──→ [Baseline Check] → [Merge] → (to join)
+                           │                                            ↑
+y=224                      └──Elevated or Major──→ [Full Assessment] ──┘
+```
+
+Rules:
+- The XOR gateway sits at the same Y as the branch task (right of task)
+- Sub-branches spread vertically within the branch's allocated space
+- A merge gateway (no name) collects sub-branches before routing to the parallel join
+- Allocate ~230px vertical span for branches with sub-routing (vs ~120px for simple branches)
 
 ### Pattern D: Two-Path Execution (SP4 — Contracting & Build)
 
@@ -599,7 +620,7 @@ Before saving any hierarchical BPMN file:
 ### Internal Diagrams
 - [ ] Independent coordinate spaces (start at x=180)
 - [ ] 60px gap between tasks
-- [ ] Parallel branches: ~100px vertical spacing
+- [ ] Parallel branches: ~120px vertical spacing (~230px for branches with internal sub-routing)
 - [ ] Loop-back flows route ABOVE main flow
 - [ ] Timer + SLA breach: L-shape routing
 - [ ] Internal start events have NO name

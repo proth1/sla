@@ -25,6 +25,61 @@ Timer boundary events without outgoing flows are **INVALID**.
 
 **Default**: Use `cancelActivity="false"` for SLA timers.
 
+## Boundary Timers on Receive Tasks (Camunda 8 / Zeebe)
+
+**Rule: Wrap receive tasks in an expanded sub-process when attaching boundary timers**
+
+In Camunda 8 (Zeebe), boundary timer events on receive tasks require a sub-process wrapper. The receive task goes inside an expanded sub-process, and the boundary timers attach to the sub-process — not the receive task directly.
+
+```xml
+<!-- Sub-process wrapping the receive task -->
+<bpmn:subProcess id="SP_AwaitResponse">
+  <bpmn:incoming>Flow_In</bpmn:incoming>
+  <bpmn:outgoing>Flow_Out</bpmn:outgoing>
+  <bpmn:startEvent id="SP_Start">
+    <bpmn:outgoing>Flow_ToReceive</bpmn:outgoing>
+  </bpmn:startEvent>
+  <bpmn:receiveTask id="Receive_Response" name="Await&#10;Response" messageRef="Message_Ref">
+    <bpmn:incoming>Flow_ToReceive</bpmn:incoming>
+    <bpmn:outgoing>Flow_ToEnd</bpmn:outgoing>
+  </bpmn:receiveTask>
+  <bpmn:endEvent id="SP_End">
+    <bpmn:incoming>Flow_ToEnd</bpmn:incoming>
+  </bpmn:endEvent>
+  <bpmn:sequenceFlow id="Flow_ToReceive" sourceRef="SP_Start" targetRef="Receive_Response" />
+  <bpmn:sequenceFlow id="Flow_ToEnd" sourceRef="Receive_Response" targetRef="SP_End" />
+</bpmn:subProcess>
+
+<!-- Timers attach to the SUB-PROCESS, not the receive task -->
+<bpmn:boundaryEvent id="Timer_SLA" cancelActivity="false" attachedToRef="SP_AwaitResponse">
+  <bpmn:outgoing>Flow_ToEscalation</bpmn:outgoing>
+  <bpmn:timerEventDefinition>
+    <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+  </bpmn:timerEventDefinition>
+</bpmn:boundaryEvent>
+```
+
+### Visual Layout
+
+The expanded sub-process provides more room for boundary timers than a 100px-wide task:
+
+```
+[Expanded Sub-Process: 390x140px]
+┌──────────────────────────────────────────┐
+│ (Start) → [Receive Task: 100x80] → (End)│
+└──────────────────────────────────────────┘
+   ⏱D3        ⏱D7        ⏱D11       ⏱SLA
+   │           │           │           │
+   ↓           ↓           ↓           └→ [SLA Breach End]
+ [Send D3]  [Send D7]   [Send D11]
+   │           │           │
+  (End)      (End)       (End)
+```
+
+**Spacing**: With a ~390px-wide sub-process, space timers at ~130px intervals along the bottom edge. Each timer drops straight down to its service task. SLA breach routes down-right via L-shape to an end event to the RIGHT of the sub-process.
+
+**Why not attach directly?** Camunda Modeler enforces this pattern for Zeebe-targeted models. Direct boundary timers on receive tasks may cause deployment errors.
+
 ## Phase Transition Events
 
 **Rule: Use Intermediate Throw Events for Phase Transitions**
@@ -400,6 +455,18 @@ Do NOT use action-specific labels like "Approve"/"Reject", "Build"/"Buy", or "Pa
 ```
 
 The gateway name provides the question context ("Approved?"), and the flows provide the answer ("Yes" / "No"). This creates a natural reading: "Approved? → Yes / No".
+
+**Exception: Multi-value routing gateways** — When an XOR gateway routes to 3+ branches based on enumerated values (e.g., "Baseline" vs "Elevated or Major"), use descriptive value labels instead of "Yes"/"No". For multi-value labels, use `"or"` with `&#10;` line breaks — never use `"/"` as a separator:
+
+```xml
+<!-- CORRECT: "or" with line break -->
+<bpmn:sequenceFlow id="Flow_Elevated" name="Elevated or&#10;Major" ... />
+
+<!-- WRONG: "/" separator -->
+<bpmn:sequenceFlow id="Flow_Elevated" name="Elevated/Major" ... />
+```
+
+**Why?** The "/" character is visually ambiguous — it can look like a path separator or abbreviation. "or" with a line break is unambiguous and fits within BPMN label bounding boxes.
 
 ## Cross-Lane Notification Pattern
 
