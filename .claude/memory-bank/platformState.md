@@ -1,17 +1,17 @@
 # Platform State
 
-**Current Version**: 2026.03.38
+**Current Version**: 2026.03.52
 **Last Release**: 2026-03-07
-**Total Releases**: 38
+**Total Releases**: 52
 
 ## Artifact Counts
 
 | Artifact | Count |
 |----------|-------|
-| DMN Decision Tables | 8 |
-| BPMN Process Models | 10 |
+| DMN Decision Tables | 11 |
+| BPMN Process Models | 12 |
 | Cross-Cutting Sub-Processes | 5 |
-| Presentation Slides | 32 |
+| Presentation Slides | 41 |
 | BPMN SVG Diagrams | 17 |
 | Regulatory Frameworks | 13 |
 | Pools | 2 |
@@ -33,6 +33,18 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.51 | 2026-03-07 | #65 | Dashboard drill-down, task reassignment, process ID fix |
+| 2026.03.50 | 2026-03-07 | #64 | Fix showcase server: processId v8, zbctl token fallback |
+| 2026.03.49 | 2026-03-07 | #63 | SP3 fan-out spacing widened to ~120px + label conventions codified |
+| 2026.03.48 | 2026-03-07 | #62 | SP3 inclusive gateway restructuring + team separation + Facilitator role |
+| 2026.03.46 | 2026-03-07 | #58 | Fix layout regression: expand enterprise pool, shift vendor pool +100px |
+| 2026.03.45 | 2026-03-07 | #56 | Vendor Mini RFP message path + SP0 P20D abandonment timer + Concierge cancel |
+| 2026.03.44 | 2026-03-07 | #55 | SP0 internal BPMN: 6 user tasks, 2 BRTs, deal-killer gateway + PRD fixes |
+| 2026.03.43 | 2026-03-07 | #54 | SP0 Mini RFP sub-process insertion: GW_MiniRFP, SP0 placeholder, pool expansion +340px |
+| 2026.03.42 | 2026-03-07 | #53 | 10 vendor category forms: 167 questions, weighted scoring, evidence uploads |
+| 2026.03.41 | 2026-03-07 | #52 | 6 Mini RFP wizard forms (Steps 1-5 + Classification Validation) |
+| 2026.03.40 | 2026-03-07 | #51 | OB-DMN-8/9 decision tables + question bank JSON schema |
+| 2026.03.39 | 2026-03-07 | #50 | Mini RFP PRD v1.1.0: 37 findings, weighted scoring, question bank schema |
 | 2026.03.38 | 2026-03-07 | #49 | v8-c8 Modeler re-save: merge gateway for Forced Update path, layout normalization |
 | 2026.03.37 | 2026-03-06 | #48 | Fix v8-c8 layout regression: move notification tasks inside sub-processes |
 | 2026.03.36 | 2026-03-07 | #47 | Build summary, PRD, BDD tests, Optimize infrastructure, command injection fix |
