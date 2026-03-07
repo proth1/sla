@@ -121,10 +121,10 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_v5_14" sourceRef="SP_UATGoLive" targetRef="GW_FinalDecision" />
     <bpmn:sequenceFlow id="Flow_v5_15" name="Yes" sourceRef="GW_FinalDecision" targetRef="End_SoftwareOnboarded">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= finalApproved = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_16" name="No" sourceRef="GW_FinalDecision" targetRef="End_FinalRejected">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= finalApproved = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:startEvent id="Start_SoftwareNeed" name="Software need&#10;defined">
       <bpmn:outgoing>Flow_v5_1</bpmn:outgoing>
@@ -230,10 +230,10 @@
       <bpmn:sequenceFlow id="Flow_SP1_1" sourceRef="SP1_Start" targetRef="Task_ReviewExisting" />
       <bpmn:sequenceFlow id="Flow_SP1_2" sourceRef="Task_ReviewExisting" targetRef="GW_BypassProcess" />
       <bpmn:sequenceFlow id="Flow_SP1_Yes" name="Yes" sourceRef="GW_BypassProcess" targetRef="Task_LeverageExisting">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= bypassProcess = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_No" name="No" sourceRef="GW_BypassProcess" targetRef="Task_GatherDocs">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= bypassProcess = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_EndLev" sourceRef="Task_LeverageExisting" targetRef="End_Leveraged" />
       <bpmn:sequenceFlow id="Flow_SP1_3" sourceRef="Task_GatherDocs" targetRef="Task_SubmitRequest" />
@@ -314,10 +314,10 @@
       <bpmn:sequenceFlow id="Flow_SP2_1" sourceRef="SP2_Start" targetRef="Task_PrelimAnalysis" />
       <bpmn:sequenceFlow id="Flow_SP2_2" sourceRef="Task_PrelimAnalysis" targetRef="GW_NeedsAssessment" />
       <bpmn:sequenceFlow id="Flow_SP2_Yes" name="Yes" sourceRef="GW_NeedsAssessment" targetRef="Task_Backlog">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= needsAssessment = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP2_No" name="No" sourceRef="GW_NeedsAssessment" targetRef="GW_MergeBacklog">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= needsAssessment = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP2_3" sourceRef="Task_Backlog" targetRef="GW_MergeBacklog" />
       <bpmn:sequenceFlow id="Flow_SP2_4" sourceRef="GW_MergeBacklog" targetRef="Task_PathwayRouting" />
@@ -727,10 +727,10 @@
         <bpmn:sequenceFlow id="Flow_PDLC3" sourceRef="PDLC_Development" targetRef="PDLC_Testing" />
         <bpmn:sequenceFlow id="Flow_PDLC4" sourceRef="PDLC_Testing" targetRef="PDLC_GW_TestResult" />
         <bpmn:sequenceFlow id="Flow_PDLC_Yes" name="Yes" sourceRef="PDLC_GW_TestResult" targetRef="PDLC_Integration">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= testsPassed = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
         <bpmn:sequenceFlow id="Flow_PDLC_No" name="No" sourceRef="PDLC_GW_TestResult" targetRef="Gateway_0q35ha8">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= testsPassed = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
         <bpmn:sequenceFlow id="Flow_PDLC5" sourceRef="PDLC_Integration" targetRef="PDLC_End" />
         <bpmn:exclusiveGateway id="Gateway_0q35ha8">
@@ -750,10 +750,10 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP4_1" sourceRef="SP4_Start" targetRef="GW_PathwayExec" />
       <bpmn:sequenceFlow id="Flow_SP4_Buy" name="No" sourceRef="GW_PathwayExec" targetRef="Task_RefineRequirements">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= "buy"</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= selectedPathway = "buy"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP4_Build" name="Yes" sourceRef="GW_PathwayExec" targetRef="Task_DefineBuildReqs">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= "build"</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= selectedPathway = "build"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP4_2" sourceRef="Task_RefineRequirements" targetRef="Task_PerformPoC" />
       <bpmn:sequenceFlow id="Flow_SP4_3" sourceRef="Task_PerformPoC" targetRef="Task_TechRiskEval" />
@@ -769,27 +769,27 @@
     <bpmn:sequenceFlow id="Flow_v5_1" sourceRef="Start_SoftwareNeed" targetRef="SP_RequestTriage" />
     <bpmn:sequenceFlow id="Flow_v5_2" sourceRef="SP_RequestTriage" targetRef="GW_TriageDecision" />
     <bpmn:sequenceFlow id="Flow_v5_3" name="Yes" sourceRef="GW_TriageDecision" targetRef="SP_PlanningRouting">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= approved = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_4" name="No" sourceRef="GW_TriageDecision" targetRef="End_Rejected">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= approved = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_5" sourceRef="SP_PlanningRouting" targetRef="GW_BuyVsBuild" />
     <bpmn:sequenceFlow id="Flow_v5_6" name="No" sourceRef="GW_BuyVsBuild" targetRef="SP_EvalDD">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= buildPathway = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_7" name="Yes" sourceRef="GW_BuyVsBuild" targetRef="Gateway_0gh936r">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= buildPathway = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_8" sourceRef="SP_EvalDD" targetRef="GW_VendorSelected" />
     <bpmn:sequenceFlow id="Flow_v5_9" name="No" sourceRef="GW_VendorSelected" targetRef="End_VendorNotSelected">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= vendorSelected = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_10" name="Yes" sourceRef="GW_VendorSelected" targetRef="GW_EvalApproved">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= vendorSelected = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_12" name="Yes" sourceRef="GW_EvalApproved" targetRef="Gateway_0gh936r">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= evalApproved = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1oux8e4" sourceRef="Gateway_0gh936r" targetRef="SP_ContractBuild" />
     <bpmn:exclusiveGateway id="Gateway_0gh936r">
@@ -798,7 +798,7 @@
       <bpmn:outgoing>Flow_1oux8e4</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_v5_11" name="No" sourceRef="GW_EvalApproved" targetRef="End_EvalRejected">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= evalApproved = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="GW_EvalApproved" name="Evaluation&#10;Approved?">
       <bpmn:incoming>Flow_v5_10</bpmn:incoming>
@@ -954,10 +954,10 @@
     <bpmn:sequenceFlow id="Flow_V1" sourceRef="Start_VendorEngagement" targetRef="Task_VendorIntake" />
     <bpmn:sequenceFlow id="Flow_V2" sourceRef="Task_VendorIntake" targetRef="GW_VendorQualified" />
     <bpmn:sequenceFlow id="Flow_V_QualYes" name="Yes" sourceRef="GW_VendorQualified" targetRef="Task_VendorProposal">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= vendorQualified = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_V_QualNo" name="No" sourceRef="GW_VendorQualified" targetRef="End_VendorDisqualified">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= vendorQualified = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_V3" sourceRef="Task_VendorProposal" targetRef="GW_VendorParSplit" />
     <bpmn:sequenceFlow id="Flow_V_VP1" sourceRef="GW_VendorParSplit" targetRef="Task_VendorSecurityReview" />

@@ -6,8 +6,33 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "sp5-close-request",
+  "id": "Form_CloseRequest",
   "components": [
+    {
+      "type": "group",
+      "label": "Ownership",
+      "id": "Field_830",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "businessOwner",
+          "label": "Business Owner",
+          "disabled": true,
+          "id": "Field_831"
+        },
+        {
+          "type": "textfield",
+          "key": "vendorOwner",
+          "label": "Vendor Owner",
+          "disabled": true,
+          "id": "Field_832"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_833"
+    },
     {
       "type": "group",
       "label": "Closure Summary",

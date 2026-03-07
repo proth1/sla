@@ -125,6 +125,45 @@
           "label": "Preliminary Risk Indicators",
           "description": "Note any early risk signals (regulatory, technical, financial).",
           "id": "Field_415"
+        },
+        {
+          "type": "select",
+          "key": "requestType",
+          "label": "Request Type",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Defined Need",
+              "value": "defined-need"
+            },
+            {
+              "label": "Forced Update",
+              "value": "forced-update"
+            },
+            {
+              "label": "Speculative",
+              "value": "speculative"
+            }
+          ],
+          "id": "Field_780"
+        },
+        {
+          "type": "textfield",
+          "key": "ndaStatus",
+          "label": "NDA Status",
+          "disabled": true,
+          "description": "NDA execution status (read-only).",
+          "id": "Field_781"
+        },
+        {
+          "type": "textfield",
+          "key": "dealKillerResult",
+          "label": "Deal Killer Result",
+          "disabled": true,
+          "description": "Automated deal killer check result (read-only).",
+          "id": "Field_782"
         }
       ],
       "id": "Field_416"

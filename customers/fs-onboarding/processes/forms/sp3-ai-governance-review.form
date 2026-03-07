@@ -10,7 +10,7 @@
   "components": [
     {
       "type": "text",
-      "text": "## AI Governance Review",
+      "text": "## Consolidated AI Governance Assessment",
       "id": "Field_001"
     },
     {
@@ -21,6 +21,60 @@
     {
       "type": "separator",
       "id": "Field_003"
+    },
+    {
+      "type": "group",
+      "label": "AI Model Overview",
+      "id": "Field_810",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "aiModelType",
+          "label": "AI Model Type",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_811"
+        },
+        {
+          "type": "select",
+          "key": "aiRiskClassificationEuAiAct",
+          "label": "AI Risk Classification (EU AI Act)",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Unacceptable",
+              "value": "unacceptable"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            },
+            {
+              "label": "Limited",
+              "value": "limited"
+            },
+            {
+              "label": "Minimal",
+              "value": "minimal"
+            }
+          ],
+          "id": "Field_812"
+        },
+        {
+          "type": "textarea",
+          "key": "modelValidationPlan",
+          "label": "Model Validation Plan",
+          "description": "Describe the planned approach for model validation and testing.",
+          "id": "Field_813"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_814"
     },
     {
       "type": "group",

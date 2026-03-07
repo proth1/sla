@@ -1,0 +1,77 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_CodingCorrection",
+  "components": [
+    {
+      "type": "text",
+      "text": "## GL Coding Correction\nReview and correct general ledger coding for the contract.",
+      "id": "Field_740"
+    },
+    {
+      "type": "separator",
+      "id": "Field_741"
+    },
+    {
+      "type": "group",
+      "label": "Coding Details",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "glAccountCode",
+          "label": "GL Account Code",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_742"
+        },
+        {
+          "type": "textfield",
+          "key": "costCenter",
+          "label": "Cost Center",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_743"
+        },
+        {
+          "type": "textarea",
+          "key": "codingCorrectionNotes",
+          "label": "Coding Correction Notes",
+          "description": "Explain the coding correction or adjustment needed.",
+          "id": "Field_744"
+        },
+        {
+          "type": "select",
+          "key": "codingStatus",
+          "label": "Coding Status",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Corrected",
+              "value": "corrected"
+            },
+            {
+              "label": "Pending",
+              "value": "pending"
+            },
+            {
+              "label": "Escalated",
+              "value": "escalated"
+            }
+          ],
+          "id": "Field_745"
+        }
+      ],
+      "id": "Field_746"
+    }
+  ],
+  "type": "default"
+}

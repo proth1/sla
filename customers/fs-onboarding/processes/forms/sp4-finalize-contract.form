@@ -129,6 +129,30 @@
     },
     {
       "type": "group",
+      "label": "Contract Deviations",
+      "id": "Field_820",
+      "components": [
+        {
+          "type": "number",
+          "key": "contractDeviations",
+          "label": "Number of Contract Deviations",
+          "id": "Field_821"
+        },
+        {
+          "type": "textarea",
+          "key": "deviationSummary",
+          "label": "Deviation Summary",
+          "description": "Summarize any deviations from standard contract terms.",
+          "id": "Field_822"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_823"
+    },
+    {
+      "type": "group",
       "label": "Post-Execution",
       "id": "Field_015",
       "components": [

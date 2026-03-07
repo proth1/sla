@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "vendor-onboarding",
+  "id": "Form_VendorOnboarding",
   "components": [
     {
       "type": "group",

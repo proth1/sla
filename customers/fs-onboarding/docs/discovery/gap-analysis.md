@@ -175,17 +175,25 @@ The v5 BPMN model addresses most structural needs. The primary gaps are in **int
 
 ---
 
-### GAP-11: 3-Pathway Routing — Buy / Build / Vendor Affinity (Top-level)
+### GAP-11: 3-Pathway Routing — Buy / Build / Enable (Top-level)
 
 **Current Model**: Top-level `GW_BuyOrBuild` is a binary gateway (Buy → SP3, Build → SP4).
 
-**Stakeholder Need**: A third pathway — "Vendor Affinity" — where the organization evaluates and approves tools that advisors purchase directly. No org investment, lower risk, advisor expectation of ~1 month turnaround. Current 2-way gateway doesn't accommodate this (Product Manager 1, 2/13).
+**Stakeholder Need**: A third pathway — "Enable" (Vendor Affinity Program) — where the organization evaluates and approves tools that advisors purchase directly. No org investment, no development, lower risk, advisor expectation of ~1 month turnaround. Current 2-way gateway doesn't accommodate this (Product Manager 1, 2/13; confirmed Product Manager, 3/5).
+
+**Pathway Details** (per Product Manager, 3/5):
+- Treats advisors as independent businesses
+- Curated vendor list with organizational approval
+- Revenue sharing or negotiated discounts
+- Advisors purchase "organizational version" of tools
+- Not a closed ecosystem — "You can use anything you'd like so long as it doesn't conflict with policies"
+- Process currently forces funding validation on Enable pathway, creating unnecessary friction
 
 **Proposed Change**:
-- Rename `GW_BuyOrBuild` to `GW_Pathway` with 3 outputs: Buy, Build, Vendor Affinity
-- OB-DMN-2 (Pathway Routing) adds `Vendor Affinity` output with inputs: org investment (none), advisor-direct purchase (true), vendor partnership program (true)
-- Vendor Affinity path: SP3 with reduced scope (skip financial analysis, skip vendor landscape assessment) → SP4 streamlined (compliance review + contract execution only, skip negotiation) → SP5
-- SLA target for Vendor Affinity: P30D (30 days end-to-end)
+- Rename `GW_BuyOrBuild` to `GW_Pathway` with 3 outputs: Buy, Build, Enable
+- OB-DMN-2 (Pathway Routing) adds `Enable` output with inputs: org investment (none), advisor-direct purchase (true), vendor partnership program (true)
+- Enable path: SP3 with reduced scope (skip financial analysis, skip vendor landscape assessment) → SP4 streamlined (compliance review + contract execution only, skip negotiation/funding) → SP5
+- SLA target for Enable: P30D (30 days end-to-end)
 
 **Effort**: High (gateway restructure + DMN expansion + conditional SP3/SP4 branches)
 
