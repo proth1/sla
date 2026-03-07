@@ -246,10 +246,39 @@ When BPMN files are saved through Camunda Modeler (Desktop or Web), the Modeler 
 |-----------|-----------------|---------|
 | **Attribute order** | `name` before `default` | `name="Approved?" default="Flow_No"` |
 | **Indentation** | Consistent depth per nesting level | Extension elements at 10 spaces inside tasks |
-| **Entity encoding** | `'` instead of `&#39;` in documentation | Apostrophes in prose |
+| **Entity encoding** | `&#38;` for ampersands, `&gt;` for greater-than in FEEL | `Q&#38;A` not `Q&amp;A`; `&gt;=` not `>=` in expressions |
+| **Default attribute stripping** | Removes `cancelActivity="true"` from interrupting timers | Only `cancelActivity="false"` appears explicitly |
 | **Trailing whitespace** | No space before `>` in self-closing tags | `targetRef="Task_X">` not `targetRef="Task_X" >` |
 | **Element ordering** | Modeler's canonical order (may differ from hand-edited order) | Start events, flows, gateways, sub-processes reordered |
+| **Internal SP edge grouping** | Edges for elements inside an expanded sub-process are placed INSIDE the parent `BPMNShape` block in the DI section, not at the end | SP_QAPhase edges appear right after SP_QAPhase shapes |
 | **Exporter version** | Updated to match Modeler version | `exporterVersion="5.42.0"` |
+
+### Timer Label Positioning (Modeler Convention)
+
+When boundary timers are attached to the bottom edge of an expanded sub-process, the Modeler positions timer labels **below** the timer icon (y + 34), not beside it:
+
+```xml
+<!-- Timer at y=372, label at y=406 (below) -->
+<bpmndi:BPMNShape id="Timer_Reminder_di" bpmnElement="Timer_Reminder">
+  <dc:Bounds x="1992" y="372" width="36" height="36" />
+  <bpmndi:BPMNLabel>
+    <dc:Bounds x="2026" y="406" width="48" height="27" />
+  </bpmndi:BPMNLabel>
+</bpmndi:BPMNShape>
+```
+
+This differs from the earlier convention of labels beside timers (same y). Accept the Modeler's below-timer positioning.
+
+### Multi-Outcome Gateway End Event Spread
+
+When an XOR gateway routes to 3+ end events, space them with **~100px vertical gaps** to prevent label overlap:
+
+```
+y=182    [End: Approved]            (gateway y=275, offset -93)
+y=282    [End: Approved Conditional] (gateway y=275, offset +7)
+y=382    [End: Rejected]            (gateway y=275, offset +107)
+y=480    [Task: Revise Brief]       (gateway y=275, offset +205, remediation path)
+```
 
 **Rule**: After manual Modeler edits, the resulting diff will show massive reordering/reformatting. This is expected. Focus PR review on **semantic changes** (new elements, rerouted flows, removed elements) not formatting noise.
 
