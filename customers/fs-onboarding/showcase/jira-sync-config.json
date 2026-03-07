@@ -1,0 +1,19 @@
+{
+  "processDefinitionKey": "Process_JiraSync_Test_v1",
+  "jira": {
+    "baseUrl": "https://agentic-sdlc.atlassian.net",
+    "projectKey": "AP",
+    "issueType": "Task",
+    "doneStatusCategory": "done"
+  },
+  "polling": {
+    "outboundIntervalMs": 15000,
+    "inboundIntervalMs": 15000
+  },
+  "candidateGroupLabels": {
+    "technical-assessment": "security-review",
+    "compliance-lane": "compliance-check",
+    "business-lane": "business-approval",
+    "governance-lane": "governance-signoff"
+  }
+}

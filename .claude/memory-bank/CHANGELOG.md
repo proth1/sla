@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026.03.53] - 2026-03-07
+
+### Changed
+- Accept Camunda Modeler canonical re-serialization of committee-voting-process.bpmn: entity encoding (`&#38;`), default attribute stripping, DI element reordering, SP edge grouping, timer label repositioning, end event vertical spread (PR #67)
+- Codify 4 new Modeler normalization patterns in `bpmn-modeling-standards.md`: entity encoding, default attribute stripping, internal SP edge grouping, timer labels below timers, multi-outcome end event spread
+
 ## [2026.03.52] - 2026-03-07
 
 ### Added

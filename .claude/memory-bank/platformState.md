@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.52
+**Current Version**: 2026.03.53
 **Last Release**: 2026-03-07
-**Total Releases**: 52
+**Total Releases**: 53
 
 ## Artifact Counts
 
@@ -33,12 +33,13 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.53 | 2026-03-07 | #67 | Modeler cosmetic normalization + 4 codified patterns |
+| 2026.03.52 | 2026-03-07 | #66 | Committee Governance Assurance subsystem (voting process + test driver + DMN-10 + 8 forms) |
 | 2026.03.51 | 2026-03-07 | #65 | Dashboard drill-down, task reassignment, process ID fix |
 | 2026.03.50 | 2026-03-07 | #64 | Fix showcase server: processId v8, zbctl token fallback |
 | 2026.03.49 | 2026-03-07 | #63 | SP3 fan-out spacing widened to ~120px + label conventions codified |
 | 2026.03.48 | 2026-03-07 | #62 | SP3 inclusive gateway restructuring + team separation + Facilitator role |
 | 2026.03.46 | 2026-03-07 | #58 | Fix layout regression: expand enterprise pool, shift vendor pool +100px |
-| 2026.03.45 | 2026-03-07 | #56 | Vendor Mini RFP message path + SP0 P20D abandonment timer + Concierge cancel |
 | 2026.03.44 | 2026-03-07 | #55 | SP0 internal BPMN: 6 user tasks, 2 BRTs, deal-killer gateway + PRD fixes |
 | 2026.03.43 | 2026-03-07 | #54 | SP0 Mini RFP sub-process insertion: GW_MiniRFP, SP0 placeholder, pool expansion +340px |
 | 2026.03.42 | 2026-03-07 | #53 | 10 vendor category forms: 167 questions, weighted scoring, evidence uploads |

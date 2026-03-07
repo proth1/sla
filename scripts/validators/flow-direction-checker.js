@@ -21,6 +21,14 @@ const LOOP_LABELS = ['retry', 'revise', 'negotiate', 'refine', 'loop', 'rework']
 function extractEdgesFromXml(xml) {
   const edges = [];
 
+  // Collect all messageFlow IDs so we can skip them (cross-pool flows may go right-to-left per BPMN spec)
+  const messageFlowIds = new Set();
+  const msgFlowRegex = /<bpmn:messageFlow[^>]*id="([^"]*)"/g;
+  let msgMatch;
+  while ((msgMatch = msgFlowRegex.exec(xml)) !== null) {
+    messageFlowIds.add(msgMatch[1]);
+  }
+
   const edgeRegex = /<bpmndi:BPMNEdge[^>]*id="([^"]*)"[^>]*bpmnElement="([^"]*)"[^>]*>([\s\S]*?)<\/bpmndi:BPMNEdge>/g;
   let match;
 
@@ -28,6 +36,11 @@ function extractEdgesFromXml(xml) {
     const edgeId = match[1];
     const bpmnElementId = match[2];
     const edgeContent = match[3];
+
+    // Skip message flows — cross-pool direction is unrestricted
+    if (messageFlowIds.has(bpmnElementId)) {
+      continue;
+    }
 
     // Extract waypoints
     const waypointRegex = /<di:waypoint\s+x="([^"]+)"\s+y="([^"]+)"\s*\/>/g;
@@ -45,16 +58,34 @@ function extractEdgesFromXml(xml) {
       const nameMatch = xml.match(new RegExp(`<bpmn:sequenceFlow[^>]*id="${bpmnElementId}"[^>]*name="([^"]*)"`, 'i'));
       const name = nameMatch ? nameMatch[1].replace(/&#10;/g, ' ') : '';
 
+      // Detect if this edge lives inside a sub-process BPMNDiagram (not the main diagram)
+      const isInSubProcess = isEdgeInSubProcessDiagram(xml, edgeId);
+
       edges.push({
         id: bpmnElementId,
         diId: edgeId,
         name,
-        waypoints
+        waypoints,
+        isInSubProcess
       });
     }
   }
 
   return edges;
+}
+
+function isEdgeInSubProcessDiagram(xml, edgeId) {
+  // Find which BPMNDiagram contains this edge. If it's not the first (main) diagram, it's a sub-process.
+  const diagRegex = /<bpmndi:BPMNDiagram[^>]*id="([^"]*)"[^>]*>([\s\S]*?)<\/bpmndi:BPMNDiagram>/g;
+  let diagMatch;
+  let isFirst = true;
+  while ((diagMatch = diagRegex.exec(xml)) !== null) {
+    if (diagMatch[2].includes(`id="${edgeId}"`)) {
+      return !isFirst;
+    }
+    isFirst = false;
+  }
+  return false;
 }
 
 function checkFlowDirection(edges, result) {
@@ -65,13 +96,16 @@ function checkFlowDirection(edges, result) {
     const last = edge.waypoints[edge.waypoints.length - 1];
 
     if (last.x < first.x - 5) { // 5px tolerance
-      // Check if this is a named loop-back flow
+      // Check if this is a named loop-back flow or a backward flow inside a sub-process diagram
+      // Sub-process internal diagrams commonly have loop-back patterns (e.g., "No" from completion/test gateways)
       const isLoop = LOOP_LABELS.some(label =>
         edge.name.toLowerCase().includes(label)
       );
+      const isSubProcessLoop = edge.isInSubProcess;
 
-      if (isLoop) {
-        result.info.push(`Loop-back flow accepted: "${edge.name}" (${edge.id})`);
+      if (isLoop || isSubProcessLoop) {
+        const reason = isLoop ? `label "${edge.name}"` : 'sub-process internal loop';
+        result.info.push(`Loop-back flow accepted (${reason}): ${edge.id}${edge.name ? ` ("${edge.name}")` : ''}`);
       } else {
         backwardCount++;
         result.errors.push({
