@@ -284,6 +284,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=remediationLoopCount >= votingConfig.maxRemediationLoops</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_MaxIterations_No" name="No" sourceRef="GW_MaxIterations" targetRef="GW_DistributeMerge" />
+    <bpmn:sequenceFlow id="Flow_AutoEscalate_EndEscalated" sourceRef="Task_AutoEscalate" targetRef="End_Escalated" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Main">
     <bpmndi:BPMNPlane id="BPMNPlane_Main" bpmnElement="Process_CommitteeVoting">
