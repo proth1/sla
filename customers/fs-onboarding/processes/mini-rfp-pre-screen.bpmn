@@ -289,7 +289,7 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_MiniRFP">
       <bpmndi:BPMNShape id="Participant_Enterprise_di" bpmnElement="Participant_Enterprise" isHorizontal="true">
-        <dc:Bounds x="160" y="80" width="2140" height="500" />
+        <dc:Bounds x="160" y="80" width="2140" height="540" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Start_MiniRFP_di" bpmnElement="Start_MiniRFP">
@@ -353,27 +353,27 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Timer_Reminder_Day3_di" bpmnElement="Timer_Reminder_Day3">
-        <dc:Bounds x="1762" y="342" width="36" height="36" />
+        <dc:Bounds x="1755" y="342" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1717" y="380" width="30" height="27" />
+          <dc:Bounds x="1710" y="376" width="30" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Timer_Reminder_Day7_di" bpmnElement="Timer_Reminder_Day7">
-        <dc:Bounds x="1792" y="342" width="36" height="36" />
+        <dc:Bounds x="1790" y="342" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1797" y="380" width="30" height="27" />
+          <dc:Bounds x="1793" y="376" width="30" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Timer_Reminder_Day11_di" bpmnElement="Timer_Reminder_Day11">
-        <dc:Bounds x="1822" y="342" width="36" height="36" />
+        <dc:Bounds x="1825" y="342" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1863" y="380" width="36" height="27" />
+          <dc:Bounds x="1866" y="376" width="36" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Timer_VendorResponseSLA_di" bpmnElement="Timer_VendorResponseSLA">
-        <dc:Bounds x="1732" y="342" width="36" height="36" />
+        <dc:Bounds x="1832" y="296" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1680" y="346" width="29" height="27" />
+          <dc:Bounds x="1872" y="300" width="29" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_SendReminder_D3_di" bpmnElement="Task_SendReminder_D3">
@@ -395,9 +395,9 @@
         <dc:Bounds x="2062" y="522" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_VendorResponseSLABreach_di" bpmnElement="End_VendorResponseSLABreach">
-        <dc:Bounds x="2212" y="522" width="36" height="36" />
+        <dc:Bounds x="1882" y="202" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2187" y="565" width="88" height="27" />
+          <dc:Bounds x="1857" y="172" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
@@ -470,18 +470,18 @@
         <di:waypoint x="2202" y="320" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_R3_di" bpmnElement="Flow_R3">
-        <di:waypoint x="1780" y="378" />
-        <di:waypoint x="1780" y="420" />
+        <di:waypoint x="1773" y="378" />
+        <di:waypoint x="1773" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_R7_di" bpmnElement="Flow_R7">
-        <di:waypoint x="1810" y="378" />
-        <di:waypoint x="1810" y="400" />
+        <di:waypoint x="1808" y="378" />
+        <di:waypoint x="1808" y="400" />
         <di:waypoint x="1930" y="400" />
         <di:waypoint x="1930" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_R11_di" bpmnElement="Flow_R11">
-        <di:waypoint x="1840" y="378" />
-        <di:waypoint x="1840" y="400" />
+        <di:waypoint x="1843" y="378" />
+        <di:waypoint x="1843" y="400" />
         <di:waypoint x="2080" y="400" />
         <di:waypoint x="2080" y="420" />
       </bpmndi:BPMNEdge>
@@ -498,52 +498,51 @@
         <di:waypoint x="2080" y="522" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SLA_di" bpmnElement="Flow_SLA">
-        <di:waypoint x="1750" y="378" />
-        <di:waypoint x="1750" y="450" />
-        <di:waypoint x="2230" y="450" />
-        <di:waypoint x="2230" y="522" />
+        <di:waypoint x="1856" y="300" />
+        <di:waypoint x="1856" y="220" />
+        <di:waypoint x="1882" y="220" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Participant_Vendor_di" bpmnElement="Participant_Vendor" isHorizontal="true">
-        <dc:Bounds x="160" y="660" width="2140" height="200" />
+        <dc:Bounds x="160" y="720" width="2140" height="200" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Start_VendorMiniRFP_di" bpmnElement="Start_VendorMiniRFP">
-        <dc:Bounds x="1482" y="742" width="36" height="36" />
+        <dc:Bounds x="1482" y="802" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1471" y="785" width="58" height="27" />
+          <dc:Bounds x="1471" y="845" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorComplete_di" bpmnElement="Task_VendorComplete">
-        <dc:Bounds x="1570" y="720" width="100" height="80" />
+        <dc:Bounds x="1570" y="780" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_VendorSubmitted_di" bpmnElement="End_VendorSubmitted">
-        <dc:Bounds x="1722" y="742" width="36" height="36" />
+        <dc:Bounds x="1722" y="802" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1711" y="785" width="58" height="27" />
+          <dc:Bounds x="1711" y="845" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_V1_di" bpmnElement="Flow_V1">
-        <di:waypoint x="1518" y="760" />
-        <di:waypoint x="1570" y="760" />
+        <di:waypoint x="1518" y="820" />
+        <di:waypoint x="1570" y="820" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V2_di" bpmnElement="Flow_V2">
-        <di:waypoint x="1670" y="760" />
-        <di:waypoint x="1722" y="760" />
+        <di:waypoint x="1670" y="820" />
+        <di:waypoint x="1722" y="820" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MsgFlow_SendQuestionnaire_di" bpmnElement="MsgFlow_SendQuestionnaire">
         <di:waypoint x="1500" y="210" />
-        <di:waypoint x="1500" y="742" />
+        <di:waypoint x="1500" y="802" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1506" y="600" width="48" height="27" />
+          <dc:Bounds x="1506" y="660" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MsgFlow_VendorResponse_di" bpmnElement="MsgFlow_VendorResponse">
-        <di:waypoint x="1650" y="720" />
-        <di:waypoint x="1650" y="600" />
-        <di:waypoint x="1800" y="600" />
+        <di:waypoint x="1650" y="780" />
+        <di:waypoint x="1650" y="670" />
+        <di:waypoint x="1800" y="670" />
         <di:waypoint x="1800" y="360" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1700" y="583" width="57" height="27" />
+          <dc:Bounds x="1700" y="653" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
