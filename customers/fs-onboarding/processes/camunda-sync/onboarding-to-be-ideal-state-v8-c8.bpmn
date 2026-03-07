@@ -9,20 +9,8 @@
     <bpmn:messageFlow id="MsgFlow_SignedContract" name="Signed Contract" sourceRef="Task_VendorContractSign" targetRef="SP_ContractBuild" />
   </bpmn:collaboration>
   <bpmn:process id="Process_Onboarding_v8" name="Product Management — Software Onboarding v8 (Camunda 8)" isExecutable="true">
-    <bpmn:serviceTask id="SendTask_SP4Complete" name="SP4&#10;Notification">
-      <bpmn:extensionElements>
-        <zeebe:taskDefinition type="status-notification" />
-        <zeebe:properties>
-          <zeebe:property name="phase" value="SP4_Complete" />
-        </zeebe:properties>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_v8_SP4toNotify</bpmn:incoming>
-      <bpmn:outgoing>Flow_v8_NotifyToUAT</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_v8_SP4toNotify" sourceRef="SP_ContractBuild" targetRef="SendTask_SP4Complete" />
-    <bpmn:sequenceFlow id="Flow_v8_NotifyToUAT" sourceRef="SendTask_SP4Complete" targetRef="SP_UATGoLive" />
     <bpmn:subProcess id="SP_UATGoLive" name="UAT&#10;and Go-Live">
-      <bpmn:incoming>Flow_v8_NotifyToUAT</bpmn:incoming>
+      <bpmn:incoming>Flow_v5_13</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_14</bpmn:outgoing>
       <bpmn:startEvent id="SP5_Start">
         <bpmn:outgoing>Flow_SP5_1</bpmn:outgoing>
@@ -192,7 +180,7 @@
     </bpmn:startEvent>
     <bpmn:subProcess id="SP_RequestTriage" name="Request&#10;and Triage">
       <bpmn:incoming>Flow_v5_1</bpmn:incoming>
-      <bpmn:outgoing>Flow_v8_SP1toNotify</bpmn:outgoing>
+      <bpmn:outgoing>Flow_v5_2</bpmn:outgoing>
       <bpmn:startEvent id="SP1_Start">
         <bpmn:outgoing>Flow_SP1_1</bpmn:outgoing>
       </bpmn:startEvent>
@@ -308,8 +296,19 @@
         <bpmn:incoming>Flow_SP1_4</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_6</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:endEvent id="SP1_End" name="Triage&#10;Complete">
+      <bpmn:serviceTask id="SendTask_SP1Complete" name="SP1&#10;Notification">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="status-notification" />
+          <zeebe:properties>
+            <zeebe:property name="phase" value="SP1_Complete" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_SP1_5</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP1_Notify</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_SP1_Notify" sourceRef="SendTask_SP1Complete" targetRef="SP1_End" />
+      <bpmn:endEvent id="SP1_End" name="Triage&#10;Complete">
+        <bpmn:incoming>Flow_SP1_Notify</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP1_1" sourceRef="SP1_Start" targetRef="Task_ReviewExisting" />
       <bpmn:sequenceFlow id="Flow_SP1_2" sourceRef="Task_ReviewExisting" targetRef="GW_BypassProcess" />
@@ -374,7 +373,7 @@
       <bpmn:sequenceFlow id="Flow_SP1_DK_Yes" name="Yes" sourceRef="GW_DealKiller" targetRef="End_DealKiller">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dealKillerResult = "Blocked"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_SP1_5" sourceRef="Task_InitialTriage" targetRef="SP1_End" />
+      <bpmn:sequenceFlow id="Flow_SP1_5" sourceRef="Task_InitialTriage" targetRef="SendTask_SP1Complete" />
       <bpmn:sequenceFlow id="Flow_SP1_SLA" sourceRef="Timer_TriageSLA" targetRef="End_TriageSLAEscalation" />
       <bpmn:intermediateCatchEvent id="Timer_TriageSLA" name="2 Day&#10;SLA">
         <bpmn:outgoing>Flow_SP1_SLA</bpmn:outgoing>
@@ -384,13 +383,13 @@
       </bpmn:intermediateCatchEvent>
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="GW_TriageDecision" default="Flow_v5_4" name="Approved ?">
-      <bpmn:incoming>Flow_v8_NotifyToTriage</bpmn:incoming>
+      <bpmn:incoming>Flow_v5_2</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_3</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_4</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:subProcess id="SP_PlanningRouting" name="Planning&#10;and Routing">
       <bpmn:incoming>Flow_v7_NDA</bpmn:incoming>
-      <bpmn:outgoing>Flow_v8_SP2toNotify</bpmn:outgoing>
+      <bpmn:outgoing>Flow_v5_5</bpmn:outgoing>
       <bpmn:startEvent id="SP2_Start">
         <bpmn:outgoing>Flow_SP2_1</bpmn:outgoing>
       </bpmn:startEvent>
@@ -462,8 +461,19 @@
         <bpmn:incoming>Flow_SP2_4</bpmn:incoming>
         <bpmn:outgoing>Flow_SP2_6</bpmn:outgoing>
       </bpmn:businessRuleTask>
-      <bpmn:endEvent id="SP2_End">
+      <bpmn:serviceTask id="SendTask_SP2Complete" name="SP2&#10;Notification">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="status-notification" />
+          <zeebe:properties>
+            <zeebe:property name="phase" value="SP2_Complete" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_SP2_5</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP2_Notify</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_SP2_Notify" sourceRef="SendTask_SP2Complete" targetRef="SP2_End" />
+      <bpmn:endEvent id="SP2_End">
+        <bpmn:incoming>Flow_SP2_Notify</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP2_1" sourceRef="SP2_Start" targetRef="Task_PrelimAnalysis" />
       <bpmn:sequenceFlow id="Flow_SP2_2" sourceRef="Task_PrelimAnalysis" targetRef="GW_NeedsAssessment" />
@@ -474,17 +484,17 @@
       <bpmn:sequenceFlow id="Flow_SP2_3" sourceRef="Task_Backlog" targetRef="GW_MergeBacklog" />
       <bpmn:sequenceFlow id="Flow_SP2_4" sourceRef="GW_MergeBacklog" targetRef="Task_PrioritizationScoring" />
       <bpmn:sequenceFlow id="Flow_SP2_6" sourceRef="Task_PrioritizationScoring" targetRef="Task_PathwayRouting" />
-      <bpmn:sequenceFlow id="Flow_SP2_5" sourceRef="Task_PathwayRouting" targetRef="SP2_End" />
+      <bpmn:sequenceFlow id="Flow_SP2_5" sourceRef="Task_PathwayRouting" targetRef="SendTask_SP2Complete" />
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="GW_BuyVsBuild" default="Flow_v5_7" name="Do we Build ?">
-      <bpmn:incoming>Flow_v8_NotifyToBuyBuild</bpmn:incoming>
+      <bpmn:incoming>Flow_v5_5</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_6</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_7</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:subProcess id="SP_EvalDD" name="Evaluation&#10;and Due Diligence">
       <bpmn:incoming>Flow_v5_6</bpmn:incoming>
       <bpmn:incoming>Flow_v7_RT_Forced</bpmn:incoming>
-      <bpmn:outgoing>Flow_v8_SP3toNotify</bpmn:outgoing>
+      <bpmn:outgoing>Flow_v5_8</bpmn:outgoing>
       <bpmn:startEvent id="SP3_Start">
         <bpmn:outgoing>Flow_SP3_1</bpmn:outgoing>
       </bpmn:startEvent>
@@ -671,8 +681,19 @@
         <bpmn:incoming>Flow_SP3_P6</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_P6J</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:endEvent id="SP3_End">
+      <bpmn:serviceTask id="SendTask_SP3Complete" name="SP3&#10;Notification">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="status-notification" />
+          <zeebe:properties>
+            <zeebe:property name="phase" value="SP3_Complete" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_SP3_5</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_Notify</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_SP3_Notify" sourceRef="SendTask_SP3Complete" targetRef="SP3_End" />
+      <bpmn:endEvent id="SP3_End">
+        <bpmn:incoming>Flow_SP3_Notify</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP3_1" sourceRef="SP3_Start" targetRef="Task_DARTFormation" />
       <bpmn:sequenceFlow id="Flow_SP3_P1" sourceRef="GW_ParallelSplit" targetRef="Task_TechArchReview" />
@@ -728,7 +749,7 @@
       <bpmn:sequenceFlow id="Flow_SP3_P5J" sourceRef="Task_AssessVendorLandscape" targetRef="GW_ParallelJoin" />
       <bpmn:sequenceFlow id="Flow_SP3_3" sourceRef="Task_VendorDueDiligence" targetRef="Receive_VendorResponse" />
       <bpmn:sequenceFlow id="Flow_SP3_4" sourceRef="Receive_VendorResponse" targetRef="Task_EvaluateVendorResponse" />
-      <bpmn:sequenceFlow id="Flow_SP3_5" sourceRef="Task_EvaluateVendorResponse" targetRef="SP3_End" />
+      <bpmn:sequenceFlow id="Flow_SP3_5" sourceRef="Task_EvaluateVendorResponse" targetRef="SendTask_SP3Complete" />
       <bpmn:sequenceFlow id="Flow_SP3_SLA" sourceRef="Timer_VendorResponseSLA" targetRef="End_VendorResponseSLABreach" />
       <bpmn:sequenceFlow id="Flow_16tnf77" sourceRef="Task_RiskCompliance" targetRef="GW_ParallelJoin" />
       <bpmn:sequenceFlow id="Flow_0f4002g" sourceRef="GW_ParallelJoin" targetRef="Task_VendorDueDiligence" />
@@ -737,13 +758,13 @@
       <bpmn:sequenceFlow id="Flow_SP3_P6J" sourceRef="Task_AIGovernanceReview" targetRef="GW_ParallelJoin" />
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="GW_VendorSelected" default="Flow_v5_9" name="Vendor&#10;Selected?">
-      <bpmn:incoming>Flow_v8_NotifyToVendorSel</bpmn:incoming>
+      <bpmn:incoming>Flow_v5_8</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_9</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_10</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:subProcess id="SP_ContractBuild" name="Contracting&#10;and Build">
       <bpmn:incoming>Flow_1oux8e4</bpmn:incoming>
-      <bpmn:outgoing>Flow_v8_SP4toNotify</bpmn:outgoing>
+      <bpmn:outgoing>Flow_v5_13</bpmn:outgoing>
       <bpmn:startEvent id="SP4_Start">
         <bpmn:outgoing>Flow_SP4_1</bpmn:outgoing>
       </bpmn:startEvent>
@@ -990,8 +1011,19 @@
         <bpmn:incoming>Flow_SP4_EnableMerge</bpmn:incoming>
         <bpmn:outgoing>Flow_1fshpro</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:endEvent id="SP4_End">
+      <bpmn:serviceTask id="SendTask_SP4Complete" name="SP4&#10;Notification">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="status-notification" />
+          <zeebe:properties>
+            <zeebe:property name="phase" value="SP4_Complete" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_1fshpro</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_Notify</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_SP4_Notify" sourceRef="SendTask_SP4Complete" targetRef="SP4_End" />
+      <bpmn:endEvent id="SP4_End">
+        <bpmn:incoming>Flow_SP4_Notify</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP4_1" sourceRef="SP4_Start" targetRef="GW_PathwayExec" />
       <bpmn:sequenceFlow id="Flow_SP4_Buy" name="No" sourceRef="GW_PathwayExec" targetRef="Task_RefineRequirements" />
@@ -1038,21 +1070,10 @@
       <bpmn:sequenceFlow id="Flow_SP4_7" sourceRef="Task_DefineBuildReqs" targetRef="SP_PDLC" />
       <bpmn:sequenceFlow id="Flow_SP4_BuildMerge" sourceRef="SP_PDLC" targetRef="GW_MergeExec" />
       <bpmn:sequenceFlow id="Flow_SP4_SLA" sourceRef="Timer_ContractSLA" targetRef="End_ContractSLABreach" />
-      <bpmn:sequenceFlow id="Flow_1fshpro" sourceRef="GW_MergeExec" targetRef="SP4_End" />
+      <bpmn:sequenceFlow id="Flow_1fshpro" sourceRef="GW_MergeExec" targetRef="SendTask_SP4Complete" />
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_v5_1" sourceRef="Start_SoftwareNeed" targetRef="SP_RequestTriage" />
-    <bpmn:serviceTask id="SendTask_SP1Complete" name="SP1&#10;Notification">
-      <bpmn:extensionElements>
-        <zeebe:taskDefinition type="status-notification" />
-        <zeebe:properties>
-          <zeebe:property name="phase" value="SP1_Complete" />
-        </zeebe:properties>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_v8_SP1toNotify</bpmn:incoming>
-      <bpmn:outgoing>Flow_v8_NotifyToTriage</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_v8_SP1toNotify" sourceRef="SP_RequestTriage" targetRef="SendTask_SP1Complete" />
-    <bpmn:sequenceFlow id="Flow_v8_NotifyToTriage" sourceRef="SendTask_SP1Complete" targetRef="GW_TriageDecision" />
+    <bpmn:sequenceFlow id="Flow_v5_2" sourceRef="SP_RequestTriage" targetRef="GW_TriageDecision" />
     <bpmn:sequenceFlow id="Flow_v5_3" name="Yes" sourceRef="GW_TriageDecision" targetRef="GW_RequestType" >
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
@@ -1067,34 +1088,12 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=requestType = "forced-update"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v7_NDA" sourceRef="Task_ExecuteNDA" targetRef="SP_PlanningRouting" />
-    <bpmn:serviceTask id="SendTask_SP2Complete" name="SP2&#10;Notification">
-      <bpmn:extensionElements>
-        <zeebe:taskDefinition type="status-notification" />
-        <zeebe:properties>
-          <zeebe:property name="phase" value="SP2_Complete" />
-        </zeebe:properties>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_v8_SP2toNotify</bpmn:incoming>
-      <bpmn:outgoing>Flow_v8_NotifyToBuyBuild</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_v8_SP2toNotify" sourceRef="SP_PlanningRouting" targetRef="SendTask_SP2Complete" />
-    <bpmn:sequenceFlow id="Flow_v8_NotifyToBuyBuild" sourceRef="SendTask_SP2Complete" targetRef="GW_BuyVsBuild" />
+    <bpmn:sequenceFlow id="Flow_v5_5" sourceRef="SP_PlanningRouting" targetRef="GW_BuyVsBuild" />
     <bpmn:sequenceFlow id="Flow_v5_6" name="No" sourceRef="GW_BuyVsBuild" targetRef="SP_EvalDD" >
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_7" name="Yes" sourceRef="GW_BuyVsBuild" targetRef="Gateway_0gh936r" />
-    <bpmn:serviceTask id="SendTask_SP3Complete" name="SP3&#10;Notification">
-      <bpmn:extensionElements>
-        <zeebe:taskDefinition type="status-notification" />
-        <zeebe:properties>
-          <zeebe:property name="phase" value="SP3_Complete" />
-        </zeebe:properties>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_v8_SP3toNotify</bpmn:incoming>
-      <bpmn:outgoing>Flow_v8_NotifyToVendorSel</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_v8_SP3toNotify" sourceRef="SP_EvalDD" targetRef="SendTask_SP3Complete" />
-    <bpmn:sequenceFlow id="Flow_v8_NotifyToVendorSel" sourceRef="SendTask_SP3Complete" targetRef="GW_VendorSelected" />
+    <bpmn:sequenceFlow id="Flow_v5_8" sourceRef="SP_EvalDD" targetRef="GW_VendorSelected" />
     <bpmn:sequenceFlow id="Flow_v5_9" name="No" sourceRef="GW_VendorSelected" targetRef="End_VendorNotSelected" />
     <bpmn:sequenceFlow id="Flow_v5_10" name="Yes" sourceRef="GW_VendorSelected" targetRef="GW_EvalApproved" >
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
@@ -1102,6 +1101,7 @@
     <bpmn:sequenceFlow id="Flow_v5_12" name="Yes" sourceRef="GW_EvalApproved" targetRef="Gateway_0gh936r" >
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_v5_13" sourceRef="SP_ContractBuild" targetRef="SP_UATGoLive" />
     <bpmn:sequenceFlow id="Flow_1oux8e4" sourceRef="Gateway_0gh936r" targetRef="SP_ContractBuild" />
     <bpmn:exclusiveGateway id="Gateway_0gh936r">
       <bpmn:incoming>Flow_v5_12</bpmn:incoming>
@@ -1489,18 +1489,8 @@
           <dc:Bounds x="1526" y="174" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SendTask_SP4Complete_di" bpmnElement="SendTask_SP4Complete">
-        <dc:Bounds x="1645" y="165" width="40" height="40" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1641" y="212" width="48" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_v8_SP4toNotify_di" bpmnElement="Flow_v8_SP4toNotify">
+      <bpmndi:BPMNEdge id="Flow_v5_13_di" bpmnElement="Flow_v5_13">
         <di:waypoint x="1620" y="190" />
-        <di:waypoint x="1645" y="190" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_v8_NotifyToUAT_di" bpmnElement="Flow_v8_NotifyToUAT">
-        <di:waypoint x="1685" y="190" />
         <di:waypoint x="1720" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_14_di" bpmnElement="Flow_v5_14">
@@ -1526,18 +1516,8 @@
         <di:waypoint x="256" y="190" />
         <di:waypoint x="310" y="190" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="SendTask_SP1Complete_di" bpmnElement="SendTask_SP1Complete">
-        <dc:Bounds x="415" y="165" width="40" height="40" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="411" y="212" width="48" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_v8_SP1toNotify_di" bpmnElement="Flow_v8_SP1toNotify">
+      <bpmndi:BPMNEdge id="Flow_v5_2_di" bpmnElement="Flow_v5_2">
         <di:waypoint x="410" y="190" />
-        <di:waypoint x="415" y="190" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_v8_NotifyToTriage_di" bpmnElement="Flow_v8_NotifyToTriage">
-        <di:waypoint x="455" y="190" />
         <di:waypoint x="465" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_3_di" bpmnElement="Flow_v5_3">
@@ -1555,18 +1535,8 @@
           <dc:Bounds x="513" y="257" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="SendTask_SP2Complete_di" bpmnElement="SendTask_SP2Complete">
-        <dc:Bounds x="838" y="165" width="40" height="40" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="834" y="212" width="48" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_v8_SP2toNotify_di" bpmnElement="Flow_v8_SP2toNotify">
+      <bpmndi:BPMNEdge id="Flow_v5_5_di" bpmnElement="Flow_v5_5">
         <di:waypoint x="830" y="190" />
-        <di:waypoint x="838" y="190" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_v8_NotifyToBuyBuild_di" bpmnElement="Flow_v8_NotifyToBuyBuild">
-        <di:waypoint x="878" y="190" />
         <di:waypoint x="885" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_6_di" bpmnElement="Flow_v5_6">
@@ -1585,18 +1555,8 @@
           <dc:Bounds x="1158" y="103" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="SendTask_SP3Complete_di" bpmnElement="SendTask_SP3Complete">
-        <dc:Bounds x="1095" y="165" width="40" height="40" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1091" y="212" width="48" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_v8_SP3toNotify_di" bpmnElement="Flow_v8_SP3toNotify">
+      <bpmndi:BPMNEdge id="Flow_v5_8_di" bpmnElement="Flow_v5_8">
         <di:waypoint x="1090" y="190" />
-        <di:waypoint x="1095" y="190" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_v8_NotifyToVendorSel_di" bpmnElement="Flow_v8_NotifyToVendorSel">
-        <di:waypoint x="1135" y="190" />
         <di:waypoint x="1145" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_9_di" bpmnElement="Flow_v5_9">
@@ -1873,10 +1833,13 @@
           <dc:Bounds x="1712" y="486" width="55" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendTask_SP1Complete_di" bpmnElement="SendTask_SP1Complete">
+        <dc:Bounds x="1780" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP1_End_di" bpmnElement="SP1_End">
-        <dc:Bounds x="1672" y="342" width="36" height="36" />
+        <dc:Bounds x="1942" y="342" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1666" y="386" width="48" height="27" />
+          <dc:Bounds x="1936" y="386" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0r7onmo_di" bpmnElement="Timer_TriageSLA">
@@ -2001,7 +1964,11 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_5_di" bpmnElement="Flow_SP1_5">
         <di:waypoint x="1610" y="360" />
-        <di:waypoint x="1672" y="360" />
+        <di:waypoint x="1780" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP1_Notify_di" bpmnElement="Flow_SP1_Notify">
+        <di:waypoint x="1880" y="360" />
+        <di:waypoint x="1942" y="360" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_SLA_di" bpmnElement="Flow_SP1_SLA">
         <di:waypoint x="1638" y="418" />
@@ -2016,8 +1983,11 @@
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_SP2">
     <bpmndi:BPMNPlane id="BPMNPlane_SP2" bpmnElement="SP_PlanningRouting">
+      <bpmndi:BPMNShape id="SendTask_SP2Complete_di" bpmnElement="SendTask_SP2Complete">
+        <dc:Bounds x="1062" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP2_End_di" bpmnElement="SP2_End">
-        <dc:Bounds x="1062" y="122" width="36" height="36" />
+        <dc:Bounds x="1224" y="122" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP2_Start_di" bpmnElement="SP2_Start">
         <dc:Bounds x="152" y="122" width="36" height="36" />
@@ -2050,6 +2020,10 @@
       <bpmndi:BPMNEdge id="Flow_SP2_5_di" bpmnElement="Flow_SP2_5">
         <di:waypoint x="1013" y="140" />
         <di:waypoint x="1062" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP2_Notify_di" bpmnElement="Flow_SP2_Notify">
+        <di:waypoint x="1162" y="140" />
+        <di:waypoint x="1224" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP2_1_di" bpmnElement="Flow_SP2_1">
         <di:waypoint x="188" y="140" />
@@ -2141,8 +2115,11 @@
       <bpmndi:BPMNShape id="Task_EvaluateVendorResponse_di" bpmnElement="Task_EvaluateVendorResponse">
         <dc:Bounds x="1097" y="291" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendTask_SP3Complete_di" bpmnElement="SendTask_SP3Complete">
+        <dc:Bounds x="1252" y="291" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP3_End_di" bpmnElement="SP3_End">
-        <dc:Bounds x="1252" y="313" width="36" height="36" />
+        <dc:Bounds x="1414" y="313" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP3_Start_di" bpmnElement="SP3_Start">
         <dc:Bounds x="180" y="313" width="36" height="36" />
@@ -2242,6 +2219,10 @@
       <bpmndi:BPMNEdge id="Flow_SP3_5_di" bpmnElement="Flow_SP3_5">
         <di:waypoint x="1197" y="331" />
         <di:waypoint x="1252" y="331" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP3_Notify_di" bpmnElement="Flow_SP3_Notify">
+        <di:waypoint x="1352" y="331" />
+        <di:waypoint x="1414" y="331" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP3_SLA_di" bpmnElement="Flow_SP3_SLA">
         <di:waypoint x="1036" y="389" />
@@ -2385,8 +2366,11 @@
       <bpmndi:BPMNShape id="GW_MergeExec_shifted_di" bpmnElement="GW_MergeExec" isMarkerVisible="true">
         <dc:Bounds x="1650" y="257" width="50" height="50" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendTask_SP4Complete_di" bpmnElement="SendTask_SP4Complete">
+        <dc:Bounds x="1752" y="242" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP4_End_shifted_di" bpmnElement="SP4_End">
-        <dc:Bounds x="1752" y="264" width="36" height="36" />
+        <dc:Bounds x="1914" y="264" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP4_BuyMerge_di" bpmnElement="Flow_SP4_BuyMerge">
         <di:waypoint x="1270" y="282" />
@@ -2447,6 +2431,10 @@
       <bpmndi:BPMNEdge id="Flow_1fshpro_di" bpmnElement="Flow_1fshpro">
         <di:waypoint x="1700" y="282" />
         <di:waypoint x="1752" y="282" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP4_Notify_di" bpmnElement="Flow_SP4_Notify">
+        <di:waypoint x="1852" y="282" />
+        <di:waypoint x="1914" y="282" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP4_7_di" bpmnElement="Flow_SP4_7">
         <di:waypoint x="470" y="470" />
