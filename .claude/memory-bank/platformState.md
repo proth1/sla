@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.35
-**Last Release**: 2026-03-07
-**Total Releases**: 35
+**Current Version**: 2026.03.37
+**Last Release**: 2026-03-06
+**Total Releases**: 37
 
 ## Artifact Counts
 
@@ -33,6 +33,8 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.37 | 2026-03-06 | #48 | Fix v8-c8 layout regression: move notification tasks inside sub-processes |
+| 2026.03.36 | 2026-03-07 | #47 | Build summary, PRD, BDD tests, Optimize infrastructure, command injection fix |
 | 2026.03.35 | 2026-03-07 | #45 | Camunda 8 deployment compatibility: JUEL→FEEL, gateway defaults, message refs |
 | 2026.03.34 | 2026-03-06 | #44 | v8 BPMN (6 enhancements), 24-gap analysis, 62-slide presentation, implementation roadmap |
 | 2026.03.33 | 2026-03-06 | #43 | Fix Enable pathway routing, wire 4 orphaned forms, SP4/SP5 flow fixes |

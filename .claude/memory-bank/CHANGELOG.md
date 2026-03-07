@@ -1,5 +1,26 @@
 # Changelog
 
+## [2026.03.37] - 2026-03-06
+
+### Fixed
+- Move 4 notification service tasks (`SendTask_SP1-4Complete`) from top-level orchestrator into their respective sub-processes (SP1-SP4) (PR #48)
+- Restore 4 direct flows (`Flow_v5_2/5/8/13`) connecting sub-processes to downstream gateways, matching v7 layout (PR #48)
+
+### Added
+- Migration script `scripts/fix-v8-layout.py` for reproducible BPMN layout transformations (PR #48)
+
+## [2026.03.36] - 2026-03-07
+
+### Added
+- Build summary document: complete artifact inventory (BPMN v1-v8, 48 forms, 3 DMNs, 2 web apps) (PR #47)
+- FS-Onboarding PRD: 15-section product requirements document with web app specs, integration requirements, architecture, NFRs, and 24-gap status tracker (PR #47)
+- BDD test suite: 10 Cucumber.js features + 9 step definitions for structural BPMN validation (PR #47)
+- Camunda Optimize infrastructure: dashboard setup guide, export/import scripts, API reference (PR #47)
+- Draft OneTrust stakeholder communication email (PR #47)
+
+### Security
+- Fixed command injection vulnerability in `export-report-data.sh` — pass JSON via stdin instead of shell interpolation (PR #47)
+
 ## [2026.03.35] - 2026-03-07
 
 ### Fixed
