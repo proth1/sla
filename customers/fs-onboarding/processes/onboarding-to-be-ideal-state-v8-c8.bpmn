@@ -1282,6 +1282,32 @@
       <bpmn:sequenceFlow id="Flow_SP0_8" sourceRef="SP0_Step4_QuestionPreview" targetRef="SP0_Step5_SendVendor" />
       <bpmn:sequenceFlow id="Flow_SP0_9" sourceRef="SP0_Step5_SendVendor" targetRef="SP0_End" />
     </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Timer_SP0_Abandon" name="20 Day&#10;Abandon" cancelActivity="true" attachedToRef="SP0_MiniRFP">
+      <bpmn:outgoing>Flow_SP0_Abandon</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P20D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:userTask id="Task_ConciergeCancel" name="Concierge&#10;Cancel&#10;Review">
+      <bpmn:documentation>Concierge reviews the abandoned Mini RFP. The SP0 sub-process timed out after 20 days without completion. Concierge decides whether to: (1) close the request permanently, (2) reach out to the requester to re-engage, or (3) escalate to governance. All partial data collected during SP0 is preserved for audit trail purposes.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="rfp-concierge-cancel" />
+        <zeebe:assignmentDefinition candidateGroups="governance-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Mini RFP" />
+          <zeebe:property name="raci_r" value="Governance" />
+          <zeebe:property name="raci_a" value="Governance" />
+          <zeebe:property name="raci_c" value="Business" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_SP0_Abandon</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP0_AbandonEnd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_SP0_Abandoned" name="Mini RFP&#10;Abandoned">
+      <bpmn:incoming>Flow_SP0_AbandonEnd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_SP0_Abandon" sourceRef="Timer_SP0_Abandon" targetRef="Task_ConciergeCancel" />
+    <bpmn:sequenceFlow id="Flow_SP0_AbandonEnd" sourceRef="Task_ConciergeCancel" targetRef="End_SP0_Abandoned" />
     <bpmn:exclusiveGateway id="GW_MiniRFP_Merge">
       <bpmn:incoming>Flow_SP0_Out</bpmn:incoming>
       <bpmn:incoming>Flow_MiniRFP_No</bpmn:incoming>
@@ -2011,6 +2037,14 @@
           <dc:Bounds x="1310" y="503" width="79" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP0_Abandon_di" bpmnElement="Flow_SP0_Abandon">
+        <di:waypoint x="480" y="248" />
+        <di:waypoint x="480" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP0_AbandonEnd_di" bpmnElement="Flow_SP0_AbandonEnd">
+        <di:waypoint x="540" y="320" />
+        <di:waypoint x="592" y="320" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MsgFlow_MiniRFPRequest_di" bpmnElement="MsgFlow_MiniRFPRequest">
         <di:waypoint x="430" y="230" />
         <di:waypoint x="430" y="400" />
@@ -2039,6 +2073,21 @@
         <dc:Bounds x="400" y="150" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="406" y="174" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_SP0_Abandon_di" bpmnElement="Timer_SP0_Abandon">
+        <dc:Bounds x="462" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="498" y="220" width="38" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConciergeCancel_di" bpmnElement="Task_ConciergeCancel">
+        <dc:Bounds x="440" y="280" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SP0_Abandoned_di" bpmnElement="End_SP0_Abandoned">
+        <dc:Bounds x="592" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="581" y="345" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_MiniRFP_Merge_di" bpmnElement="GW_MiniRFP_Merge" isMarkerVisible="true">
