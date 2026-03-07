@@ -1,0 +1,60 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_ConditionVerification",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Condition Verification\nVerify that all governance conditions from prior phases have been met.",
+      "id": "Field_770"
+    },
+    {
+      "type": "separator",
+      "id": "Field_771"
+    },
+    {
+      "type": "group",
+      "label": "Conditions Review",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "conditionsToVerify",
+          "label": "Conditions to Verify",
+          "disabled": true,
+          "description": "Conditions carried forward from governance review (read-only).",
+          "id": "Field_772"
+        },
+        {
+          "type": "checkbox",
+          "key": "allConditionsMet",
+          "label": "All Conditions Met",
+          "description": "Confirm that all listed conditions have been satisfied.",
+          "id": "Field_773"
+        },
+        {
+          "type": "textarea",
+          "key": "conditionVerificationNotes",
+          "label": "Condition Verification Notes",
+          "description": "Provide details on how each condition was verified.",
+          "id": "Field_774"
+        },
+        {
+          "type": "date",
+          "key": "verificationDate",
+          "label": "Verification Date",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_775"
+        }
+      ],
+      "id": "Field_776"
+    }
+  ],
+  "type": "default"
+}

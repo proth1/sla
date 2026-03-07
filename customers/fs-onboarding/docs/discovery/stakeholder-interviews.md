@@ -1,6 +1,6 @@
 # Stakeholder Discovery Notes — Software Onboarding
 
-Source: 9 stakeholder sessions (Feb-Mar 2026)
+Source: 14 stakeholder sessions (Feb-Mar 2026)
 
 ---
 
@@ -17,6 +17,11 @@ Source: 9 stakeholder sessions (Feb-Mar 2026)
 | 2026-02-13 | Product Manager 1, Product Director | Product team deep dive | Vendor affinity model, 3-pathway categorization, DART process, feedback management, integration complexity |
 | 2026-02-17 | Vendor Risk Lead, AI Governance Lead, Privacy SME, Business Representative, Consulting Lead | Vendor risk & AI governance | REA form, legal bottlenecks, committee proliferation, pathway differentiation |
 | 2026-03-05 | Product Lead | Product interview | End-to-end process, intake, capacity |
+| 2026-03-05 | Product Manager | Product team deep dive | 3-pathway model (Buy/Build/Enable), Vendor Affinity Program, funding disconnect, capacity management, intake consolidation |
+| 2026-03-05 | Architecture Lead | Architecture deep dive | ARB/SDRB governance, HLD/PSS/SDD artifacts, simultaneous engagement, concierge model, committee overlap, security as primary bottleneck, governance facilitator role, AI tooling (Cursor, custom agent) |
+| 2026-03-06 | Vendor Management Lead | Vendor management deep dive | Process ownership, START umbrella, disconnected tools, pod model, 3 request types |
+| 2026-03-06 | Security Architect | Security architecture review | Security review process, NDA timing, DART formation, AI review capacity, SDLC documentation |
+| 2026-03-06 | Risk Management Lead | Third-party risk deep dive | RAE/DD process, contract bottleneck (2 people/30+ contracts), OneTrust, shift-left, 335 assessments/year |
 
 ---
 
@@ -30,6 +35,13 @@ Source: 9 stakeholder sessions (Feb-Mar 2026)
 - **Due diligence completion time**: reduced by 105% over five years (per Vendor Risk Lead)
 - **AI governance queue**: 60+ items (per AI Governance Lead)
 - **Legal capacity**: 2 partners handling all vendor contracts
+- **DD volume**: 335 assessments completed last year, output doubled (per Risk Management Lead)
+- **DD internal review**: 75 days avg, down from 144 days in 2019 (per Risk Management Lead)
+- **RAE completion**: target 14 days, actual 28-29 days (per Risk Management Lead)
+- **Vendor questionnaire**: target 42 days, actual 30 days (per Risk Management Lead)
+- **Contract negotiation**: up to 1.5 years for security exhibits (per Risk Management Lead)
+- **Contracts**: 2 people negotiating 30+ contracts/month — "Dumpster Fire #1" (per Risk Management Lead)
+- **Competitor benchmark**: 60-90 days end-to-end with less mature processes (per Risk Management Lead)
 
 ### Acquisition 2.0 Initiative
 
@@ -96,6 +108,10 @@ Operational for ~1 year (per TBC Manager). Created to address late discovery of 
 | ServiceNow form compliance is inconsistent | Product Lead | Medium |
 | Email channel is unstructured with no tracking | Product Lead | Medium |
 | Multiple business cases submitted on a single form | Legal Director | Medium |
+| START process is umbrella over disconnected processes — each team uses different tools (JIRA, Confluence, OneTrust, Oracle, Ariba) with no integration | Vendor Management Lead | Critical |
+| People reach out to known contacts via email instead of using centralized workflow | Security Architect | High |
+| "Nothing directly points folks to intake forms" — discovered ad hoc | Security Architect | High |
+| DART team formation has no formal notification; security suddenly appears on emails | Security Architect | High |
 
 **BPMN Implication**: SP1 must consolidate all channels into a single intake gateway with dynamic routing based on request type (standard, AI, exception).
 
@@ -117,6 +133,8 @@ Operational for ~1 year (per TBC Manager). Created to address late discovery of 
 | Users skip questions they don't understand, causing downstream delays | Legal Director | High |
 | 75% form completion would be a significant improvement over current state | Legal Director | Medium |
 | AI-related requests add complexity with evolving guidance | Legal Director | Medium |
+| Financial business case form outdated (shows 2024 in 2026), locked with unknown password (owner left org) | Vendor Management Lead | High |
+| Forms downloaded, completed offline, uploaded to shared folder — no system integration | Vendor Management Lead | High |
 
 **Stakeholder Preference**: Dynamic, adaptive intake where responses trigger follow-up questions only when needed (Product Director). Start with minimum viable fields, evolve over time (Process Manager). Plain language guidance, reference guides, and examples (Process Consultant, workshop consensus).
 
@@ -135,6 +153,9 @@ Operational for ~1 year (per TBC Manager). Created to address late discovery of 
 | Requestors unaware of their place in queue | Workshop consensus | High |
 | No clear de-prioritization guidelines for exception cases | Product Lead | Medium |
 | No centralized prioritization committee | Product Lead | Medium |
+| Business Council meets monthly, often lacks quorum (2-3 of 8-10 members); evolved to email voting | Vendor Management Lead | Critical |
+| "Whoever screams loudest" gets priority; EVP support pushes other reviews down | Security Architect | Critical |
+| No SLA enforcement possible without fundamental process fixes — "SLAs become meaningless" | Security Architect | High |
 
 **Stakeholder Position**: Prioritization can be partially driven by scoring intake form responses (Governance Specialist). Must be explicitly owned by one team (Governance Specialist). Standards must be defined upfront (Process Manager). Need high-level prioritization guidance with support to set appropriate expectations (workshop).
 
@@ -175,8 +196,16 @@ Operational for ~1 year (per TBC Manager). Created to address late discovery of 
 | SME commitment challenges slow review periods | Product Lead | High |
 | Rapid risk assessments consume capacity meant for standard onboarding | Product Lead | High |
 | PI planning allocates capacity on roadmap; unplanned work disrupts velocity | Product Lead | Medium |
+| Vendor management team of 6 with 2 people 50%+ dedicated — staffing borrowed from other responsibilities without formal allocation | Vendor Management Lead | High |
+| "I need three of me right now" — specifically for AI reviews; request volume increasing continuously | Security Architect | Critical |
+| Zero automation in process — all routing manual, no workflow integration | Security Architect | Critical |
+| Vendors contacted 3 times for AI questions (tech risk mgmt, cybersecurity, third-party risk mgmt) — creates redundancy and frustration | Security Architect | High |
+| "Buying the thing is easy, it's implementing it that's not easy" — API gateway purchased over a year ago, still not fully implemented | Security Architect | High |
+| "Security is our biggest bottleneck... They are the reason our SLA takes two weeks" — understaffed, lack of domain expertise | Architecture Lead | Critical |
+| "Enterprise architecture would be able to get our SLA way down" without security constraints | Architecture Lead | High |
+| Architects funded by domains — "if they want us to pursue all of that work, they need to fund us appropriately" | Architecture Lead | High |
 
-**Stakeholder Position**: Capacity Manager controls team priorities and can approve/deny unplanned requests. Accelerating overall onboarding would increase capacity for one-off cases (Product Lead).
+**Stakeholder Position**: Capacity Manager controls team priorities and can approve/deny unplanned requests. Accelerating overall onboarding would increase capacity for one-off cases (Product Lead). Architecture team is efficient internally ("staffed for what we're paid for") but constrained by security team capacity (Architecture Lead).
 
 ### 7. Resource Bottlenecks and Legal Constraints (Maps to: SP4-SP5, Cross-cutting)
 
@@ -189,10 +218,16 @@ Operational for ~1 year (per TBC Manager). Created to address late discovery of 
 | Solutions often underutilized after purchase — multi-million dollar tools used for 1/3 of capabilities | Vendor Risk Lead | High |
 | No clear ownership structure for managing solutions post-purchase | Vendor Risk Lead | High |
 | FP&A process cumbersome and hard to navigate | Vendor Risk Lead | Medium |
+| 2 people negotiating 30+ contracts/month — "Dumpster Fire #1", 4 years unsustainable | Risk Management Lead | Critical |
+| No reportable format for contract deviations; unknown compliance status for older contracts | Risk Management Lead | Critical |
+| Architecture diagram took 9 months due to understaffing | Risk Management Lead | High |
+| START process assigned "half a person" — inadequate for process ownership | Risk Management Lead | Critical |
+| Data breach notification triggered 4 different people contacting same vendor | Risk Management Lead | High |
+| "Sourcing department doesn't source, they manage contract lifecycle" | Risk Management Lead | High |
 
-**Stakeholder Position**: Process improvements alone may not solve resource issues (Vendor Risk Lead). Proposed: white-glove project management with dedicated resources to guide requests through gates and support infrequent users (once every 2-3 years).
+**Stakeholder Position**: Process improvements alone may not solve resource issues (Vendor Risk Lead). Proposed: white-glove project management with dedicated resources to guide requests through gates and support infrequent users (once every 2-3 years). Shift-left strategy with mini-RFP tools enthusiastically endorsed: "That's a fantastic idea that should be in the slides" (Risk Management Lead).
 
-**BPMN Implication**: Automation lane should include guided navigation / concierge service tasks. Post-onboarding utilization tracking (SP5 or post-onboarding process) needed.
+**BPMN Implication**: Automation lane should include guided navigation / concierge service tasks. Post-onboarding utilization tracking (SP5 or post-onboarding process) needed. Contract automation is the #1 automation priority.
 
 ### 8. Committee Proliferation and Sequential Reviews (Maps to: SP3 Evaluation & DD)
 
@@ -208,10 +243,15 @@ Operational for ~1 year (per TBC Manager). Created to address late discovery of 
 | Architecture teams assessing financials (outside expertise) | Technical Lead | High |
 | Financial teams assessing architecture (outside expertise) | Technical Lead | High |
 | No standardized definition of a complete business case | Technical Lead | Medium |
+| "People have to review at ARB, then go to TBC, then go to AI governance. It's painful." | Architecture Lead | Critical |
+| "Each area needs a defined scope... architecture questions should be asked by architects, not by people that are not architects in another forum" | Architecture Lead | High |
+| DART team formation entirely on requester — must independently contact each team and submit separate intake requests | Architecture Lead | Critical |
+| "I can understand 100% why requesters are frustrated. They present the same thing over and over and over again and it's because they do" | Architecture Lead | High |
+| Architecture Lead disagrees with sequential engagement — advocates **simultaneous engagement** of all voting members | Architecture Lead | Critical |
 
-**Stakeholder Position**: Need dynamic approval process — combine reviews or have cross-functional representation (Consulting Lead). Opportunity for concurrent reviews where appropriate (workshop consensus).
+**Stakeholder Position**: Need dynamic approval process — combine reviews or have cross-functional representation (Consulting Lead). Opportunity for concurrent reviews where appropriate (workshop consensus). Architecture Lead strongly advocates simultaneous engagement model with defined scope per review area.
 
-**BPMN Implication**: SP3 parallel fan-out pattern (already modeled) directly addresses this. The 5 parallel evaluation branches should replace sequential committee reviews. Cross-functional representation reduces committee count.
+**BPMN Implication**: SP3 parallel fan-out pattern (already modeled) directly addresses this — **Architecture Lead's simultaneous engagement proposal validates the SP3 architecture**. The 5 parallel evaluation branches should replace sequential committee reviews. Cross-functional representation reduces committee count. Concierge/automation lane should handle DART formation instead of burdening requester.
 
 ### 9. Ownership, Role Clarity, and Governance Resistance (Maps to: Cross-cutting)
 
@@ -241,6 +281,8 @@ Operational for ~1 year (per TBC Manager). Created to address late discovery of 
 | 60+ items in AI governance queue | AI Governance Lead | High |
 | Need to communicate non-starter models/vendors early to prevent wasted effort | Business Representative | High |
 | Business risk VP approval required for standard term deviations | Privacy SME | Medium |
+| 3 additional AI-specific questionnaires "snuck up" — Risk Management Lead "really annoyed that they're even in existence" | Risk Management Lead | High |
+| Working with AI security team to merge AI questionnaires into single dataset | Risk Management Lead | In progress |
 
 **Stakeholder Position**: Working with outside firm to redefine AI stipulations (AI Governance Lead). Chief AI and Data Officer owns overall AI strategy — need alignment (AI Governance Lead). Enterprise Risk Management developing decision matrix for red/green light determinations (Vendor Risk Lead).
 
@@ -257,10 +299,13 @@ Operational for ~1 year (per TBC Manager). Created to address late discovery of 
 | Audience/use case gaps: independent contractors, employees, home office, institutions all have distinct onboarding needs | Advisor Business Representative | High |
 | Staff changes drive vendor preference changes — creates churn | Consulting Lead | Medium |
 | Need to make existing tools visible to prevent duplicate purchases | Consulting Lead | Medium |
+| Third pathway "Enable" (Vendor Affinity Program) requires no funding, no development — advisors purchase directly; process forces funding validation anyway | Product Manager | Critical |
+| Process designed for procurement, not enablement — Enable pathway fundamentally different treatment needed | Product Manager | High |
+| AI Working Committee and Decision Committee somewhat redundant with TBC process — adds sequential delays | Product Manager | High |
 
-**Stakeholder Position**: Will be a complicated matrix — automation in intake crucial (Consulting Lead). May start simple and evolve. Need management and maintenance plan for pathway rules.
+**Stakeholder Position**: Will be a complicated matrix — automation in intake crucial (Consulting Lead). May start simple and evolve. Need management and maintenance plan for pathway rules. Three pathways confirmed as Buy/Build/Enable with distinct funding and approval models (Product Manager).
 
-**BPMN Implication**: OB-DMN-2 (Pathway Routing) needs significant expansion — inputs should include: tool category (Home Office/Regional/Contractor/Employee/Partner), use case type (POC/Production), and existing tool availability. This is the most complex DMN table change.
+**BPMN Implication**: OB-DMN-2 (Pathway Routing) needs significant expansion — inputs should include: tool category (Home Office/Regional/Contractor/Employee/Partner), use case type (POC/Production), existing tool availability, and funding model (org-funded vs. advisor-purchased). The "Enable" pathway should skip funding validation and reduce evaluation scope. This is the most complex DMN table change.
 
 ### 12. Security Baseline and "Secure by Design" Gap (Maps to: SP3 Evaluation & DD, Governance Topic #5)
 

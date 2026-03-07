@@ -156,6 +156,35 @@
       "id": "Field_516"
     },
     {
+      "type": "group",
+      "label": "Capacity & Partnerships",
+      "components": [
+        {
+          "type": "number",
+          "key": "capacityImpact",
+          "label": "Capacity Impact Score",
+          "validate": {
+            "required": true,
+            "min": 1,
+            "max": 10
+          },
+          "description": "Rate the capacity impact from 1 (minimal) to 10 (critical).",
+          "id": "Field_790"
+        },
+        {
+          "type": "checkbox",
+          "key": "isVendorPartnership",
+          "label": "Vendor Partnership / Affinity Program",
+          "id": "Field_791"
+        }
+      ],
+      "id": "Field_792"
+    },
+    {
+      "type": "separator",
+      "id": "Field_793"
+    },
+    {
       "type": "radio",
       "key": "needsFullEvaluation",
       "label": "Does this request need full evaluation and due diligence?",

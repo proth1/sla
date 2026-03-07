@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "sp3-security-assessment",
+  "id": "Form_SecurityAssessment",
   "components": [
     {
       "type": "text",
@@ -21,6 +21,60 @@
     {
       "type": "separator",
       "id": "Field_003"
+    },
+    {
+      "type": "group",
+      "label": "Security Classification",
+      "id": "Field_800",
+      "components": [
+        {
+          "type": "select",
+          "key": "securityCategory",
+          "label": "Security Category",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Tier 1: Critical Infrastructure",
+              "value": "tier1-critical-infrastructure"
+            },
+            {
+              "label": "Tier 2: Sensitive Data",
+              "value": "tier2-sensitive-data"
+            },
+            {
+              "label": "Tier 3: Internal Systems",
+              "value": "tier3-internal-systems"
+            },
+            {
+              "label": "Tier 4: Non-sensitive",
+              "value": "tier4-non-sensitive"
+            },
+            {
+              "label": "Tier 5: Read-only",
+              "value": "tier5-read-only"
+            },
+            {
+              "label": "Tier 6: Public",
+              "value": "tier6-public"
+            }
+          ],
+          "id": "Field_801"
+        },
+        {
+          "type": "textfield",
+          "key": "assessmentLevel",
+          "label": "Assessment Level",
+          "disabled": true,
+          "description": "DMN-determined assessment level (read-only).",
+          "id": "Field_802"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_803"
     },
     {
       "type": "group",

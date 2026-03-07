@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="OB-DMN5-PrioritizationScoring-definitions"
+             name="OB-DMN-5: Prioritization Scoring (Onboarding)"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="OB_DMN_PrioritizationScoring"
+            name="Prioritization Scoring (Onboarding)"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="OB_DMN_PrioritizationScoring-table" hitPolicy="FIRST">
+
+      <!--
+        OB-DMN-5: Prioritization Scoring (Onboarding Variant)
+        Phase: 2 (Planning and Risk Scoping)
+        Hit Policy: FIRST (most urgent/critical rule wins)
+        Inputs: businessImpact, strategicAlignment, urgency, riskTier, capacityAvailability
+        Outputs: priorityScore (integer), priorityTier (P1/P2/P3)
+      -->
+
+      <input id="ob5-input-businessImpact" label="Business Impact (1-10)">
+        <inputExpression id="ob5-inputExpr-businessImpact" typeRef="integer">
+          <text>businessImpact</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob5-input-strategicAlignment" label="Strategic Alignment (1-10)">
+        <inputExpression id="ob5-inputExpr-strategicAlignment" typeRef="integer">
+          <text>strategicAlignment</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob5-input-urgency" label="Urgency (1-10)">
+        <inputExpression id="ob5-inputExpr-urgency" typeRef="integer">
+          <text>urgency</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob5-input-riskTier" label="Risk Tier">
+        <inputExpression id="ob5-inputExpr-riskTier" typeRef="string">
+          <text>riskTier</text>
+        </inputExpression>
+        <inputValues id="ob5-inputVals-riskTier">
+          <text>"High","Medium","Low"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob5-input-capacityAvailability" label="Capacity Availability (1-10)">
+        <inputExpression id="ob5-inputExpr-capacityAvailability" typeRef="integer">
+          <text>capacityAvailability</text>
+        </inputExpression>
+      </input>
+
+      <output id="ob5-output-priorityScore"
+              label="Priority Score"
+              name="priorityScore"
+              typeRef="integer" />
+
+      <output id="ob5-output-priorityTier"
+              label="Priority Tier"
+              name="priorityTier"
+              typeRef="string" />
+
+      <!-- P1: Critical urgency >= 9 — immediate action required -->
+      <rule id="ob5-rule-1">
+        <description>P1: Critical urgency >= 9 — immediate action required regardless of other factors</description>
+        <inputEntry id="ob5-ie-1-1"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-1-3"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ob5-ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-1-5"><text>-</text></inputEntry>
+        <outputEntry id="ob5-oe-1-1"><text>95</text></outputEntry>
+        <outputEntry id="ob5-oe-1-2"><text>"P1"</text></outputEntry>
+      </rule>
+
+      <!-- P1: Very high business impact >= 8 AND High risk tier -->
+      <rule id="ob5-rule-2">
+        <description>P1: Very high business impact >= 8 AND High risk — critical business need with elevated risk</description>
+        <inputEntry id="ob5-ie-2-1"><text>&gt;= 8</text></inputEntry>
+        <inputEntry id="ob5-ie-2-2"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-2-3"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-2-4"><text>"High"</text></inputEntry>
+        <inputEntry id="ob5-ie-2-5"><text>-</text></inputEntry>
+        <outputEntry id="ob5-oe-2-1"><text>90</text></outputEntry>
+        <outputEntry id="ob5-oe-2-2"><text>"P1"</text></outputEntry>
+      </rule>
+
+      <!-- P1: Very high business impact >= 8 AND urgency >= 7 -->
+      <rule id="ob5-rule-3">
+        <description>P1: Very high business impact >= 8 AND high urgency >= 7 — urgent critical need</description>
+        <inputEntry id="ob5-ie-3-1"><text>&gt;= 8</text></inputEntry>
+        <inputEntry id="ob5-ie-3-2"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-3-3"><text>&gt;= 7</text></inputEntry>
+        <inputEntry id="ob5-ie-3-4"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-3-5"><text>-</text></inputEntry>
+        <outputEntry id="ob5-oe-3-1"><text>88</text></outputEntry>
+        <outputEntry id="ob5-oe-3-2"><text>"P1"</text></outputEntry>
+      </rule>
+
+      <!-- P2: Good strategic alignment >= 6 AND capacity available >= 5 AND medium+ urgency -->
+      <rule id="ob5-rule-4">
+        <description>P2: Strong alignment >= 6 AND capacity >= 5 AND urgency >= 5 — well-positioned for execution</description>
+        <inputEntry id="ob5-ie-4-1"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-4-2"><text>&gt;= 6</text></inputEntry>
+        <inputEntry id="ob5-ie-4-3"><text>&gt;= 5</text></inputEntry>
+        <inputEntry id="ob5-ie-4-4"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-4-5"><text>&gt;= 5</text></inputEntry>
+        <outputEntry id="ob5-oe-4-1"><text>70</text></outputEntry>
+        <outputEntry id="ob5-oe-4-2"><text>"P2"</text></outputEntry>
+      </rule>
+
+      <!-- P2: Good strategic alignment >= 6 AND capacity available >= 5 AND low urgency -->
+      <rule id="ob5-rule-5">
+        <description>P2: Strong alignment >= 6 AND capacity >= 5 — strategically aligned with capacity</description>
+        <inputEntry id="ob5-ie-5-1"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-5-2"><text>&gt;= 6</text></inputEntry>
+        <inputEntry id="ob5-ie-5-3"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ob5-ie-5-4"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-5-5"><text>&gt;= 5</text></inputEntry>
+        <outputEntry id="ob5-oe-5-1"><text>60</text></outputEntry>
+        <outputEntry id="ob5-oe-5-2"><text>"P2"</text></outputEntry>
+      </rule>
+
+      <!-- P2: High business impact but low capacity — needs planning -->
+      <rule id="ob5-rule-6">
+        <description>P2: High business impact >= 6 AND High risk but limited capacity — important but constrained</description>
+        <inputEntry id="ob5-ie-6-1"><text>&gt;= 6</text></inputEntry>
+        <inputEntry id="ob5-ie-6-2"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-6-3"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-6-4"><text>"High"</text></inputEntry>
+        <inputEntry id="ob5-ie-6-5"><text>[1..4]</text></inputEntry>
+        <outputEntry id="ob5-oe-6-1"><text>65</text></outputEntry>
+        <outputEntry id="ob5-oe-6-2"><text>"P2"</text></outputEntry>
+      </rule>
+
+      <!-- P3: Default — everything else -->
+      <rule id="ob5-rule-7">
+        <description>P3: Default — standard priority for all other combinations</description>
+        <inputEntry id="ob5-ie-7-1"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-7-2"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-7-3"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-7-4"><text>-</text></inputEntry>
+        <inputEntry id="ob5-ie-7-5"><text>-</text></inputEntry>
+        <outputEntry id="ob5-oe-7-1"><text>40</text></outputEntry>
+        <outputEntry id="ob5-oe-7-2"><text>"P3"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="OB-DMN5-diagram">
+      <dmndi:DMNShape id="OB-DMN5-shape" dmnElementRef="OB_DMN_PrioritizationScoring">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
