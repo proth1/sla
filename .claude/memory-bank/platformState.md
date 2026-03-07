@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.37
-**Last Release**: 2026-03-06
-**Total Releases**: 37
+**Current Version**: 2026.03.38
+**Last Release**: 2026-03-07
+**Total Releases**: 38
 
 ## Artifact Counts
 
@@ -33,6 +33,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.38 | 2026-03-07 | #49 | v8-c8 Modeler re-save: merge gateway for Forced Update path, layout normalization |
 | 2026.03.37 | 2026-03-06 | #48 | Fix v8-c8 layout regression: move notification tasks inside sub-processes |
 | 2026.03.36 | 2026-03-07 | #47 | Build summary, PRD, BDD tests, Optimize infrastructure, command injection fix |
 | 2026.03.35 | 2026-03-07 | #45 | Camunda 8 deployment compatibility: JUEL→FEEL, gateway defaults, message refs |

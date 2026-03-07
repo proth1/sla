@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026.03.38] - 2026-03-07
+
+### Fixed
+- Add merge gateway (`Gateway_0dh1j1i`) so Forced Update path routes through Buy vs Build decision instead of skipping to EvalDD (PR #49)
+- Reroute `Flow_v5_5` (Planning → merge GW) and `Flow_v7_RT_Forced` (Request Type → merge GW) for correct convergence (PR #49)
+
+### Changed
+- DI layout repositioned for cleaner visual flow after Camunda Modeler v5.42.0 re-save (PR #49)
+- Modeler canonical re-serialization: attribute order, indentation, entity encoding normalization (PR #49)
+- Codify merge gateway for alternative routing paths in `bpmn-hierarchical-subprocess.md`
+- Codify Camunda Modeler canonical serialization conventions in `bpmn-modeling-standards.md`
+
 ## [2026.03.37] - 2026-03-06
 
 ### Fixed

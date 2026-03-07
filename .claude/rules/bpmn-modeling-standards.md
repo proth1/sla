@@ -183,6 +183,21 @@ For documentation-only orchestration models, use userTask with candidateGroups:
 4. **Single-line namespace declarations** (Camunda Modeler format)
 5. **No element-level comments** in process or DI sections
 
+## Camunda Modeler Canonical Serialization
+
+When BPMN files are saved through Camunda Modeler (Desktop or Web), the Modeler re-serializes the XML with its own conventions. **Accept these normalizations** — do not fight the Modeler's formatting:
+
+| Convention | Modeler Behavior | Example |
+|-----------|-----------------|---------|
+| **Attribute order** | `name` before `default` | `name="Approved?" default="Flow_No"` |
+| **Indentation** | Consistent depth per nesting level | Extension elements at 10 spaces inside tasks |
+| **Entity encoding** | `'` instead of `&#39;` in documentation | Apostrophes in prose |
+| **Trailing whitespace** | No space before `>` in self-closing tags | `targetRef="Task_X">` not `targetRef="Task_X" >` |
+| **Element ordering** | Modeler's canonical order (may differ from hand-edited order) | Start events, flows, gateways, sub-processes reordered |
+| **Exporter version** | Updated to match Modeler version | `exporterVersion="5.42.0"` |
+
+**Rule**: After manual Modeler edits, the resulting diff will show massive reordering/reformatting. This is expected. Focus PR review on **semantic changes** (new elements, rerouted flows, removed elements) not formatting noise.
+
 ## Visual Layout Standards
 
 ### Left-to-Right Within Lane Principle (CRITICAL)

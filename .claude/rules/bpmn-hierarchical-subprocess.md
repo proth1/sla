@@ -185,6 +185,28 @@ y=190    [GW_BuyVsBuild] ──No──→ ... → [GW_EvalApproved] ──Yes�
 
 The merge gateway has **NO name** (structural purpose only) and sits at the same Y as the main flow.
 
+### Merge Gateway for Alternative Routing Paths
+
+When a decision gateway routes to multiple destinations that must converge before continuing, use a **merge gateway** at the convergence point. This ensures all alternative paths pass through the same downstream decision.
+
+Example: A 3-way Request Type gateway routes "Defined Need" through an NDA task → Planning SP, while "Forced Update" skips directly ahead. Both paths must converge before the Buy vs Build decision:
+
+```
+[GW_RequestType] ──Defined Need──→ [NDA] → [SP_Planning] ──→ [Merge GW] → [GW_BuyVsBuild]
+       │                                                          ↑
+       └──────────── Forced Update ───────────────────────────────┘
+```
+
+```xml
+<bpmn:exclusiveGateway id="Gateway_0dh1j1i">
+  <bpmn:incoming>Flow_v5_5</bpmn:incoming>        <!-- from SP_Planning -->
+  <bpmn:incoming>Flow_v7_RT_Forced</bpmn:incoming> <!-- Forced Update skip -->
+  <bpmn:outgoing>Flow_06joozj</bpmn:outgoing>      <!-- to GW_BuyVsBuild -->
+</bpmn:exclusiveGateway>
+```
+
+**Rule**: When a skip/bypass flow and a normal flow must reach the same downstream gateway, insert a merge gateway between them. Never route two flows directly into a decision gateway — the merge gateway separates structural convergence from decision logic.
+
 ---
 
 ## Vendor Pool at Top Level
