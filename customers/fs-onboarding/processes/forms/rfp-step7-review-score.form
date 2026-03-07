@@ -1,0 +1,159 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Step7",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Step 7: Review & Score Vendor Responses\nEvaluate vendor responses using the weighted scoring framework. Score each category independently before viewing the aggregate.",
+      "id": "Field_S7_01"
+    },
+    {
+      "type": "textfield",
+      "label": "Vendor Name",
+      "key": "vendorName",
+      "id": "Field_S7_02",
+      "disabled": true
+    },
+    {
+      "type": "checkbox",
+      "label": "Blind Scoring Mode",
+      "key": "blindScoringEnabled",
+      "id": "Field_S7_03",
+      "description": "Score independently before group discussion (recommended)"
+    },
+    {
+      "type": "text",
+      "text": "### Category Scores (1-5 scale, weighted)\nRate each category based on vendor responses. Weight is applied automatically.",
+      "id": "Field_S7_04"
+    },
+    {
+      "type": "number",
+      "label": "Security (Weight: 25%)",
+      "key": "scoreSecurity",
+      "id": "Field_S7_05",
+      "validate": { "required": true, "min": 1, "max": 5 },
+      "description": "Cat 3: Information security, access controls, encryption, incident response"
+    },
+    {
+      "type": "number",
+      "label": "Product / Capability (Weight: 20%)",
+      "key": "scoreProduct",
+      "id": "Field_S7_06",
+      "validate": { "required": true, "min": 1, "max": 5 },
+      "description": "Cat 2: Functional fit, scalability, roadmap alignment"
+    },
+    {
+      "type": "number",
+      "label": "Pricing (Weight: 15%)",
+      "key": "scorePricing",
+      "id": "Field_S7_07",
+      "validate": { "required": true, "min": 1, "max": 5 },
+      "description": "Cat 7: TCO, licensing model, transparency, hidden costs"
+    },
+    {
+      "type": "number",
+      "label": "TPRM / Compliance (Weight: 15%)",
+      "key": "scoreTPRM",
+      "id": "Field_S7_08",
+      "validate": { "required": true, "min": 1, "max": 5 },
+      "description": "Cat 8: Third-party risk posture, audit rights, DORA readiness"
+    },
+    {
+      "type": "number",
+      "label": "Privacy (Weight: 10%)",
+      "key": "scorePrivacy",
+      "id": "Field_S7_09",
+      "validate": { "required": true, "min": 1, "max": 5 },
+      "description": "Cat 4: GDPR/CCPA compliance, data classification, DPA readiness"
+    },
+    {
+      "type": "number",
+      "label": "Integration (Weight: 10%)",
+      "key": "scoreIntegration",
+      "id": "Field_S7_10",
+      "validate": { "required": true, "min": 1, "max": 5 },
+      "description": "Cat 5: API standards, SSO, data migration, interoperability"
+    },
+    {
+      "type": "number",
+      "label": "AI Governance (Weight: 5%)",
+      "key": "scoreAI",
+      "id": "Field_S7_11",
+      "validate": { "required": true, "min": 1, "max": 5 },
+      "description": "Cat 10: EU AI Act, SR 11-7, model inventory, explainability"
+    },
+    {
+      "type": "text",
+      "text": "### Weighted Score\nCalculated automatically: (Security×0.25 + Product×0.20 + Pricing×0.15 + TPRM×0.15 + Privacy×0.10 + Integration×0.10 + AI×0.05)",
+      "id": "Field_S7_12"
+    },
+    {
+      "type": "number",
+      "label": "Weighted Score (auto-calculated)",
+      "key": "weightedScore",
+      "id": "Field_S7_13",
+      "disabled": true,
+      "description": "Range: 1.00 - 5.00"
+    },
+    {
+      "type": "text",
+      "text": "### Evidence & Flags",
+      "id": "Field_S7_14"
+    },
+    {
+      "type": "checkbox",
+      "label": "SOC 2 Type II Report Provided",
+      "key": "evidenceSOC2",
+      "id": "Field_S7_15"
+    },
+    {
+      "type": "checkbox",
+      "label": "ISO 27001 Certificate Provided",
+      "key": "evidenceISO27001",
+      "id": "Field_S7_16"
+    },
+    {
+      "type": "checkbox",
+      "label": "Penetration Test Summary Provided",
+      "key": "evidencePenTest",
+      "id": "Field_S7_17"
+    },
+    {
+      "type": "checkbox",
+      "label": "Data Processing Agreement Draft Provided",
+      "key": "evidenceDPA",
+      "id": "Field_S7_18"
+    },
+    {
+      "type": "textarea",
+      "label": "Red Flags / Concerns",
+      "key": "reviewRedFlags",
+      "id": "Field_S7_19",
+      "description": "Note any deal-breakers, inconsistencies, or areas requiring follow-up"
+    },
+    {
+      "type": "textarea",
+      "label": "Strengths",
+      "key": "reviewStrengths",
+      "id": "Field_S7_20",
+      "description": "Key differentiators and areas where vendor excels"
+    },
+    {
+      "type": "select",
+      "label": "Recommendation",
+      "key": "reviewRecommendation",
+      "id": "Field_S7_21",
+      "valuesExpression": "=[{\"label\":\"Proceed to Intake (SP1)\",\"value\":\"proceed\"},{\"label\":\"Request Clarification\",\"value\":\"clarify\"},{\"label\":\"Reject — Does Not Meet Threshold\",\"value\":\"reject\"},{\"label\":\"Shortlist for Competitive Bid\",\"value\":\"shortlist\"}]",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default"
+}
