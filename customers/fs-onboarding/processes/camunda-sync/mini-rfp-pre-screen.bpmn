@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_MiniRFP" targetNamespace="http://sla.governance/bpmn/mini-rfp" exporter="Camunda Modeler" exporterVersion="5.42.0">
+  <bpmn:collaboration id="Collaboration_MiniRFP">
+    <bpmn:participant id="Participant_Enterprise" name="Mini RFP Pre-Screen" processRef="Process_MiniRFP" />
+    <bpmn:participant id="Participant_Vendor" name="Vendor" processRef="Process_MiniRFP_Vendor" />
+    <bpmn:messageFlow id="MsgFlow_SendQuestionnaire" name="Mini RFP&#10;Questionnaire" sourceRef="Task_Step5_SendVendor" targetRef="Start_VendorMiniRFP" />
+    <bpmn:messageFlow id="MsgFlow_VendorResponse" name="Vendor RFP&#10;Response" sourceRef="Task_VendorComplete" targetRef="Receive_VendorResponse" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_MiniRFP" name="Mini RFP Pre-Screen" isExecutable="true">
+    <bpmn:startEvent id="Start_MiniRFP" name="Mini RFP&#10;Initiated">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_Step1_UnderstandNeed" name="Step 1:&#10;Understand&#10;the Need">
+      <bpmn:documentation>Requester defines the business need, engagement type (new vendor, renewal, expansion), budget range, timeline urgency, and business criticality. This information drives downstream question selection via OB-DMN-8.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="rfp-step1-understand-need" />
+        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Mini RFP" />
+          <zeebe:property name="raci_r" value="Business" />
+          <zeebe:property name="raci_a" value="Business" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_Step2_VendorContext" name="Step 2:&#10;Vendor&#10;Context">
+      <bpmn:documentation>Requester provides vendor details: company name, headquarters jurisdiction, existing relationship status, data types to be shared, existing security assessments (SIG/SOC2/ISO), and cost center for budget tracking.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="rfp-step2-vendor-context" />
+        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Mini RFP" />
+          <zeebe:property name="raci_r" value="Business" />
+          <zeebe:property name="raci_a" value="Business" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_Step2b_ClassificationCheck" name="Step 2.5:&#10;Classification&#10;Check">
+      <bpmn:documentation>Concierge (governance-lane) reviews the data classification and regulatory scope provided by the requester BEFORE the DMN deal-killer fires. Lightweight validation to catch misclassifications early.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="rfp-step2b-classification-validation" />
+        <zeebe:assignmentDefinition candidateGroups="governance-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Mini RFP, Classification" />
+          <zeebe:property name="raci_r" value="Governance" />
+          <zeebe:property name="raci_a" value="Governance" />
+          <zeebe:property name="raci_c" value="Business" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:businessRuleTask id="BRT_DealKiller" name="Deal-Killer&#10;Pre-Screen">
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="OB-DMN-7-deal-killer-prescreen" resultVariable="dealKillerResult" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:exclusiveGateway id="GW_DealKillerClear" name="Deal Killers&#10;Clear?" default="Flow_DK_No">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_DK_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_DK_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_Step3_DealKillerResults" name="Step 3:&#10;Deal-Killer&#10;Results">
+      <bpmn:documentation>Requester reviews the deal-killer pre-screen results from OB-DMN-7. If all checks pass, the process continues to question selection. Results show: sanctions status, budget freeze, concentration risk, and OFAC screening outcomes.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="rfp-step3-deal-killer" />
+        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Mini RFP, Deal Killer" />
+          <zeebe:property name="raci_r" value="Business" />
+          <zeebe:property name="raci_a" value="Business" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_DK_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:businessRuleTask id="BRT_QuestionSelection" name="Question&#10;Selection">
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="OB-DMN-8-question-selection" resultVariable="selectedCategories" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:userTask id="Task_Step4_QuestionPreview" name="Step 4:&#10;Question&#10;Preview">
+      <bpmn:documentation>Requester previews the dynamically selected questions (based on OB-DMN-8 output) before they are sent to the vendor. Shows selected categories, question counts per category, and category weights.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="rfp-step4-preview" />
+        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Mini RFP, Questions" />
+          <zeebe:property name="raci_r" value="Business" />
+          <zeebe:property name="raci_a" value="Business" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_Step5_SendVendor" name="Step 5:&#10;Send to&#10;Vendor">
+      <bpmn:documentation>Requester configures vendor contact details, sets response deadline (minimum 14 calendar days), and triggers questionnaire dispatch to the vendor. Includes evaluation criteria summary and cover letter.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="rfp-step5-send-vendor" />
+        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Mini RFP, Vendor Communication" />
+          <zeebe:property name="raci_r" value="Business" />
+          <zeebe:property name="raci_a" value="Business" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_8</bpmn:incoming>
+      <bpmn:outgoing>Flow_9</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_VendorDueDiligence" name="Vendor Due&#10;Diligence">
+      <bpmn:documentation>Conduct formal vendor due diligence on the preferred vendor(s). This is a deep-dive investigation covering financial stability, operational resilience, legal standing, regulatory compliance history, security posture, business continuity capabilities, and fourth-party (sub-contractor) risk. Due diligence depth is calibrated to the vendor's risk tier. This task triggers the message flow to the Vendor pool for engagement initiation.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="sp3-vendor-due-diligence" />
+        <zeebe:assignmentDefinition candidateGroups="procurement-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Sourcing, TPRM, Compliance" />
+          <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Sections 35-55: Comprehensive due diligence requirements — financial condition assessment, business experience evaluation, legal and regulatory compliance verification, information security program review, operational resilience assessment, incident management capability review, and business continuity/disaster recovery evaluation. Due diligence depth must be commensurate with the risk and complexity of the relationship. (2) NIST CSF 2.0 GV.SC-06: Due diligence on supply chain partners — validate vendor risk management practices, security controls, and ability to meet contractual obligations. (3) DORA Article 28: ICT third-party risk assessment — evaluate the vendor's ability to meet digital operational resilience requirements, including incident reporting, testing, and exit planning. (4) GDPR Article 28: Verify the vendor's ability to comply with data processor obligations, including technical and organizational measures, sub-processor management, and data subject rights support. EVIDENCE COLLECTION: (a) Due diligence report covering all OCC 2023-17 assessment dimensions. (b) Financial stability analysis (credit reports, audited financials, going-concern assessment). (c) Legal standing verification (litigation history, regulatory actions, sanctions screening). (d) Business continuity and disaster recovery plan review results. (e) Fourth-party (sub-contractor) risk assessment. (f) Regulatory compliance history check. (g) On-site or virtual assessment results (if conducted). DATA POINTS: Due diligence scope (dimensions assessed), risk tier confirmed, financial stability rating, litigation/regulatory action history, BCP/DR test results and dates, sub-contractor count and risk assessment, overall due diligence rating (pass/conditional/fail), conditions for proceeding (if any), due diligence completion date." />
+          <zeebe:property name="raci_r" value="Procurement" />
+          <zeebe:property name="raci_a" value="Governance" />
+          <zeebe:property name="raci_c" value="Compliance" />
+          <zeebe:property name="raci_i" value="Oversight" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_9</bpmn:incoming>
+      <bpmn:outgoing>Flow_VDD_to_Await</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:receiveTask id="Receive_VendorResponse" name="Await&#10;Vendor&#10;Response" messageRef="Message_VendorResponse">
+      <bpmn:extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Sourcing" />
+          <zeebe:property name="raci_r" value="Procurement" />
+          <zeebe:property name="raci_a" value="Procurement" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_VDD_to_Await</bpmn:incoming>
+      <bpmn:outgoing>Flow_10</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:boundaryEvent id="Timer_Reminder_Day3" name="Day 3&#10;Reminder" cancelActivity="false" attachedToRef="Receive_VendorResponse">
+      <bpmn:outgoing>Flow_R3</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_Reminder_Day7" name="Day 7&#10;Reminder" cancelActivity="false" attachedToRef="Receive_VendorResponse">
+      <bpmn:outgoing>Flow_R7</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P7D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_Reminder_Day11" name="Day 11&#10;Reminder" cancelActivity="false" attachedToRef="Receive_VendorResponse">
+      <bpmn:outgoing>Flow_R11</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P11D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_VendorResponseSLA" name="5 Day&#10;SLA" cancelActivity="false" attachedToRef="Receive_VendorResponse">
+      <bpmn:outgoing>Flow_SLA</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="Task_SendReminder_D3" name="Send Receipt&#10;Confirmation">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="send-vendor-reminder" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_R3</bpmn:incoming>
+      <bpmn:outgoing>Flow_R3_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_SendReminder_D7" name="Send Mid-Point&#10;Reminder">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="send-vendor-reminder" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_R7</bpmn:incoming>
+      <bpmn:outgoing>Flow_R7_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_SendReminder_D11" name="Send Final&#10;Reminder">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="send-vendor-reminder" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_R11</bpmn:incoming>
+      <bpmn:outgoing>Flow_R11_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Reminder_D3">
+      <bpmn:incoming>Flow_R3_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_Reminder_D7">
+      <bpmn:incoming>Flow_R7_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_Reminder_D11">
+      <bpmn:incoming>Flow_R11_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_VendorResponseSLABreach" name="Vendor Response&#10;SLA Breach">
+      <bpmn:incoming>Flow_SLA</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_Step6_CollectResponses" name="Step 6:&#10;Collect&#10;Responses">
+      <bpmn:documentation>Requester monitors vendor response status, reviews reminder history, and decides next action: accept response, extend deadline, escalate, or close with no response.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="rfp-step6-collect-responses" />
+        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Mini RFP, Collection" />
+          <zeebe:property name="raci_r" value="Business" />
+          <zeebe:property name="raci_a" value="Business" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_10</bpmn:incoming>
+      <bpmn:outgoing>Flow_11</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_EvaluateVendorResponse" name="Evaluate Vendor&#10;Response">
+      <bpmn:documentation>Consolidate and evaluate vendor proposal responses against the parallel evaluation results (Technical Architecture, Security, Risk and Compliance, Financial). Score vendor proposals using a weighted evaluation matrix. Identify the preferred vendor or top-ranked candidates. Document evaluation rationale, strengths, weaknesses, and conditions for selection. This is the decision point for vendor shortlisting before due diligence.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="sp3-evaluate-vendor-response" />
+        <zeebe:assignmentDefinition candidateGroups="procurement-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Sourcing, TPRM" />
+          <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 40: Vendor selection must be based on documented, objective criteria applied consistently across all evaluated vendors. The evaluation must demonstrate that risk factors were weighted appropriately and that the selection was not based solely on cost. (2) NIST CSF 2.0 GV.SC-05: Supply chain risk evaluation — consolidated risk assessment across all evaluation dimensions must inform the selection decision. (3) SOX Section 404: Evaluation scoring methodology and results must be documented and retained for audit purposes. Conflicts of interest must be declared by all evaluators. EVIDENCE COLLECTION: (a) Consolidated evaluation scorecard with weighted scores across all dimensions (technical, security, compliance, financial). (b) Evaluator conflict-of-interest declarations. (c) Vendor ranking report with selection rationale. (d) Strengths/weaknesses/conditions matrix for each evaluated vendor. (e) Selection recommendation memo to governance committee. DATA POINTS: Number of vendors evaluated, weighted scores per vendor per dimension, overall ranking, preferred vendor recommendation, key differentiators identified, conditions or caveats noted, evaluator panel composition, evaluation completion date." />
+          <zeebe:property name="raci_r" value="Procurement" />
+          <zeebe:property name="raci_a" value="Governance" />
+          <zeebe:property name="raci_c" value="Technical Assessment" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_11</bpmn:incoming>
+      <bpmn:outgoing>Flow_12</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_PreScreenComplete" name="Pre-Screen&#10;Complete">
+      <bpmn:incoming>Flow_12</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_DealKillerTriggered" name="Deal Killer&#10;Triggered">
+      <bpmn:incoming>Flow_DK_No</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="Start_MiniRFP" targetRef="Task_Step1_UnderstandNeed" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_Step1_UnderstandNeed" targetRef="Task_Step2_VendorContext" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_Step2_VendorContext" targetRef="Task_Step2b_ClassificationCheck" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_Step2b_ClassificationCheck" targetRef="BRT_DealKiller" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="BRT_DealKiller" targetRef="GW_DealKillerClear" />
+    <bpmn:sequenceFlow id="Flow_DK_Yes" name="Yes" sourceRef="GW_DealKillerClear" targetRef="Task_Step3_DealKillerResults">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dealKillerResult.pass = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_DK_No" name="No" sourceRef="GW_DealKillerClear" targetRef="End_DealKillerTriggered" />
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_Step3_DealKillerResults" targetRef="BRT_QuestionSelection" />
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="BRT_QuestionSelection" targetRef="Task_Step4_QuestionPreview" />
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="Task_Step4_QuestionPreview" targetRef="Task_Step5_SendVendor" />
+    <bpmn:sequenceFlow id="Flow_9" sourceRef="Task_Step5_SendVendor" targetRef="Task_VendorDueDiligence" />
+    <bpmn:sequenceFlow id="Flow_VDD_to_Await" sourceRef="Task_VendorDueDiligence" targetRef="Receive_VendorResponse" />
+    <bpmn:sequenceFlow id="Flow_10" sourceRef="Receive_VendorResponse" targetRef="Task_Step6_CollectResponses" />
+    <bpmn:sequenceFlow id="Flow_11" sourceRef="Task_Step6_CollectResponses" targetRef="Task_EvaluateVendorResponse" />
+    <bpmn:sequenceFlow id="Flow_12" sourceRef="Task_EvaluateVendorResponse" targetRef="End_PreScreenComplete" />
+    <bpmn:sequenceFlow id="Flow_R3" sourceRef="Timer_Reminder_Day3" targetRef="Task_SendReminder_D3" />
+    <bpmn:sequenceFlow id="Flow_R7" sourceRef="Timer_Reminder_Day7" targetRef="Task_SendReminder_D7" />
+    <bpmn:sequenceFlow id="Flow_R11" sourceRef="Timer_Reminder_Day11" targetRef="Task_SendReminder_D11" />
+    <bpmn:sequenceFlow id="Flow_R3_End" sourceRef="Task_SendReminder_D3" targetRef="End_Reminder_D3" />
+    <bpmn:sequenceFlow id="Flow_R7_End" sourceRef="Task_SendReminder_D7" targetRef="End_Reminder_D7" />
+    <bpmn:sequenceFlow id="Flow_R11_End" sourceRef="Task_SendReminder_D11" targetRef="End_Reminder_D11" />
+    <bpmn:sequenceFlow id="Flow_SLA" sourceRef="Timer_VendorResponseSLA" targetRef="End_VendorResponseSLABreach" />
+  </bpmn:process>
+  <bpmn:process id="Process_MiniRFP_Vendor" name="Vendor" isExecutable="false">
+    <bpmn:startEvent id="Start_VendorMiniRFP" name="Mini RFP&#10;Received">
+      <bpmn:outgoing>Flow_V1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_MiniRFPRequest" messageRef="Message_MiniRFPRequest" />
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_VendorComplete" name="Complete&#10;Mini RFP&#10;Questionnaire">
+      <bpmn:documentation>Vendor completes the Mini RFP questionnaire consisting of category-specific questions selected by OB-DMN-8. Questions cover up to 10 categories with scaled responses (1-5), narrative answers, and evidence attachments. Save and resume supported.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="vendor-mini-rfp-questionnaire" />
+        <zeebe:assignmentDefinition candidateGroups="vendor-response" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_V1</bpmn:incoming>
+      <bpmn:outgoing>Flow_V2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_VendorSubmitted" name="Mini RFP&#10;Submitted">
+      <bpmn:incoming>Flow_V2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_V1" sourceRef="Start_VendorMiniRFP" targetRef="Task_VendorComplete" />
+    <bpmn:sequenceFlow id="Flow_V2" sourceRef="Task_VendorComplete" targetRef="End_VendorSubmitted" />
+  </bpmn:process>
+  <bpmn:message id="Message_MiniRFPRequest" name="MiniRFPRequestMessage" />
+  <bpmn:message id="Message_VendorResponse" name="VendorResponseMessage">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=vendorId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_MiniRFP">
+      <bpmndi:BPMNShape id="Participant_Enterprise_di" bpmnElement="Participant_Enterprise" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="2140" height="500" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_MiniRFP_di" bpmnElement="Start_MiniRFP">
+        <dc:Bounds x="222" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="213" y="195" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Step1_di" bpmnElement="Task_Step1_UnderstandNeed">
+        <dc:Bounds x="310" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Step2_di" bpmnElement="Task_Step2_VendorContext">
+        <dc:Bounds x="460" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Step2b_di" bpmnElement="Task_Step2b_ClassificationCheck">
+        <dc:Bounds x="610" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BRT_DealKiller_di" bpmnElement="BRT_DealKiller">
+        <dc:Bounds x="760" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_DealKillerClear_di" bpmnElement="GW_DealKillerClear" isMarkerVisible="true">
+        <dc:Bounds x="905" y="145" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="895" y="107" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Step3_di" bpmnElement="Task_Step3_DealKillerResults">
+        <dc:Bounds x="1000" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BRT_QuestionSelection_di" bpmnElement="BRT_QuestionSelection">
+        <dc:Bounds x="1150" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Step4_di" bpmnElement="Task_Step4_QuestionPreview">
+        <dc:Bounds x="1300" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Step5_di" bpmnElement="Task_Step5_SendVendor">
+        <dc:Bounds x="1450" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorDD_di" bpmnElement="Task_VendorDueDiligence">
+        <dc:Bounds x="1600" y="280" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_VendorResponse_di" bpmnElement="Receive_VendorResponse">
+        <dc:Bounds x="1750" y="280" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Step6_di" bpmnElement="Task_Step6_CollectResponses">
+        <dc:Bounds x="1900" y="280" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EvaluateVendor_di" bpmnElement="Task_EvaluateVendorResponse">
+        <dc:Bounds x="2050" y="280" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_PreScreenComplete_di" bpmnElement="End_PreScreenComplete">
+        <dc:Bounds x="2202" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2189" y="345" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_DealKillerTriggered_di" bpmnElement="End_DealKillerTriggered">
+        <dc:Bounds x="982" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="971" y="285" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_Reminder_Day3_di" bpmnElement="Timer_Reminder_Day3">
+        <dc:Bounds x="1762" y="342" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1717" y="380" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_Reminder_Day7_di" bpmnElement="Timer_Reminder_Day7">
+        <dc:Bounds x="1792" y="342" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1797" y="380" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_Reminder_Day11_di" bpmnElement="Timer_Reminder_Day11">
+        <dc:Bounds x="1822" y="342" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1863" y="380" width="36" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_VendorResponseSLA_di" bpmnElement="Timer_VendorResponseSLA">
+        <dc:Bounds x="1732" y="342" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1680" y="346" width="29" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendReminder_D3_di" bpmnElement="Task_SendReminder_D3">
+        <dc:Bounds x="1730" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendReminder_D7_di" bpmnElement="Task_SendReminder_D7">
+        <dc:Bounds x="1880" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendReminder_D11_di" bpmnElement="Task_SendReminder_D11">
+        <dc:Bounds x="2030" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Reminder_D3_di" bpmnElement="End_Reminder_D3">
+        <dc:Bounds x="1762" y="522" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Reminder_D7_di" bpmnElement="End_Reminder_D7">
+        <dc:Bounds x="1912" y="522" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Reminder_D11_di" bpmnElement="End_Reminder_D11">
+        <dc:Bounds x="2062" y="522" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_VendorResponseSLABreach_di" bpmnElement="End_VendorResponseSLABreach">
+        <dc:Bounds x="2212" y="522" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2187" y="565" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="258" y="170" />
+        <di:waypoint x="310" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="410" y="170" />
+        <di:waypoint x="460" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="560" y="170" />
+        <di:waypoint x="610" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="710" y="170" />
+        <di:waypoint x="760" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="860" y="170" />
+        <di:waypoint x="905" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DK_Yes_di" bpmnElement="Flow_DK_Yes">
+        <di:waypoint x="955" y="170" />
+        <di:waypoint x="1000" y="170" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="969" y="153" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DK_No_di" bpmnElement="Flow_DK_No">
+        <di:waypoint x="930" y="195" />
+        <di:waypoint x="930" y="260" />
+        <di:waypoint x="982" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="938" y="225" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <di:waypoint x="1100" y="170" />
+        <di:waypoint x="1150" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7">
+        <di:waypoint x="1250" y="170" />
+        <di:waypoint x="1300" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8">
+        <di:waypoint x="1400" y="170" />
+        <di:waypoint x="1450" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_9_di" bpmnElement="Flow_9">
+        <di:waypoint x="1550" y="170" />
+        <di:waypoint x="1575" y="170" />
+        <di:waypoint x="1575" y="320" />
+        <di:waypoint x="1600" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VDD_to_Await_di" bpmnElement="Flow_VDD_to_Await">
+        <di:waypoint x="1700" y="320" />
+        <di:waypoint x="1750" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10">
+        <di:waypoint x="1850" y="320" />
+        <di:waypoint x="1900" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11_di" bpmnElement="Flow_11">
+        <di:waypoint x="2000" y="320" />
+        <di:waypoint x="2050" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12_di" bpmnElement="Flow_12">
+        <di:waypoint x="2150" y="320" />
+        <di:waypoint x="2202" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R3_di" bpmnElement="Flow_R3">
+        <di:waypoint x="1780" y="378" />
+        <di:waypoint x="1780" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R7_di" bpmnElement="Flow_R7">
+        <di:waypoint x="1810" y="378" />
+        <di:waypoint x="1810" y="400" />
+        <di:waypoint x="1930" y="400" />
+        <di:waypoint x="1930" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R11_di" bpmnElement="Flow_R11">
+        <di:waypoint x="1840" y="378" />
+        <di:waypoint x="1840" y="400" />
+        <di:waypoint x="2080" y="400" />
+        <di:waypoint x="2080" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R3_End_di" bpmnElement="Flow_R3_End">
+        <di:waypoint x="1780" y="500" />
+        <di:waypoint x="1780" y="522" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R7_End_di" bpmnElement="Flow_R7_End">
+        <di:waypoint x="1930" y="500" />
+        <di:waypoint x="1930" y="522" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_R11_End_di" bpmnElement="Flow_R11_End">
+        <di:waypoint x="2080" y="500" />
+        <di:waypoint x="2080" y="522" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SLA_di" bpmnElement="Flow_SLA">
+        <di:waypoint x="1750" y="378" />
+        <di:waypoint x="1750" y="450" />
+        <di:waypoint x="2230" y="450" />
+        <di:waypoint x="2230" y="522" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Vendor_di" bpmnElement="Participant_Vendor" isHorizontal="true">
+        <dc:Bounds x="160" y="660" width="2140" height="200" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_VendorMiniRFP_di" bpmnElement="Start_VendorMiniRFP">
+        <dc:Bounds x="1482" y="742" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1471" y="785" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorComplete_di" bpmnElement="Task_VendorComplete">
+        <dc:Bounds x="1570" y="720" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_VendorSubmitted_di" bpmnElement="End_VendorSubmitted">
+        <dc:Bounds x="1722" y="742" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1711" y="785" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_V1_di" bpmnElement="Flow_V1">
+        <di:waypoint x="1518" y="760" />
+        <di:waypoint x="1570" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_V2_di" bpmnElement="Flow_V2">
+        <di:waypoint x="1670" y="760" />
+        <di:waypoint x="1722" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_SendQuestionnaire_di" bpmnElement="MsgFlow_SendQuestionnaire">
+        <di:waypoint x="1500" y="210" />
+        <di:waypoint x="1500" y="742" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1506" y="600" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_VendorResponse_di" bpmnElement="MsgFlow_VendorResponse">
+        <di:waypoint x="1650" y="720" />
+        <di:waypoint x="1650" y="600" />
+        <di:waypoint x="1800" y="600" />
+        <di:waypoint x="1800" y="360" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1700" y="583" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
