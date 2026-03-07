@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.33
+**Current Version**: 2026.03.34
 **Last Release**: 2026-03-06
-**Total Releases**: 33
+**Total Releases**: 34
 
 ## Artifact Counts
 
@@ -33,6 +33,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.34 | 2026-03-06 | #44 | v8 BPMN (6 enhancements), 24-gap analysis, 62-slide presentation, implementation roadmap |
 | 2026.03.33 | 2026-03-06 | #43 | Fix Enable pathway routing, wire 4 orphaned forms, SP4/SP5 flow fixes |
 | 2026.03.32 | 2026-03-06 | #41 | v7-c8 BPMN discovery enhancements, 5 meeting notes, 3 DMN tables, showcase |
 | 2026.03.31 | 2026-03-06 | #42 | KPMG presentation rebrand, 22 BPMN images, PPTX export, auth domain update |

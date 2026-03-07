@@ -1,5 +1,19 @@
 # Changelog
 
+## [2026.03.34] - 2026-03-06
+
+### Added
+- v8-c8 BPMN model with 6 enhancements: completeness gate, deal-killer pre-screen, OB-DMN-6 security routing, finance rework loop, 3-way approval, status notifications (PR #44)
+- OB-DMN-7 deal-killer pre-screen DMN table (FIRST hit policy, 5 rules) (PR #44)
+- 2 new Camunda 8 forms: sp1-completeness-gate, sp1-deal-killer-check (PR #44)
+- 9 new presentation slides (53→62): System Landscape, Quantified Pain, Concierge Model, Simultaneous Engagement, 3 Request Types, DMN-5/6, Staffing, Measurement Dashboard (PR #44)
+- Implementation roadmap document with 30/60/90/120-day phased plan and 7 critical challenges (PR #44)
+
+### Changed
+- Gap analysis expanded from 16 to 24 gaps with 10-perspective synthesis (PR #44)
+- GAP-12 (Security Baseline) elevated from P2 to P1 (PR #44)
+- Presentation enriched with v3 quotes and evidence across all 11 domain topics (PR #44)
+
 ## [2026.03.33] - 2026-03-06
 
 ### Fixed
