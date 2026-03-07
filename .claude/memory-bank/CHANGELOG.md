@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026.03.33] - 2026-03-06
+
+### Fixed
+- Enable pathway routing gap: GW_PathwayExec in SP4 now 3-way (Buy/Build/Enable) with ComplianceReview → EnableContractExec path (PR #43)
+- 4 orphaned forms wired to BPMN tasks: sp4-compliance-review-enable, sp4-contract-deviation, sp4-coding-correction, sp5-condition-verification (PR #43)
+- Stale flow reference: Task_ContractDeviation outgoing corrected to Flow_SP4_DeviationToCode (PR #43)
+- SP5 flow target mismatch: Flow_SP5_5 corrected to target Task_AssignOwnership (PR #43)
+
+### Added
+- SP4 Buy path: ContractDeviation and CodingCorrection tasks after FinalizeContract (PR #43)
+- SP5: ConditionVerification task between FinalApproval and OnboardSoftware (PR #43)
+
 ## [2026.03.32] - 2026-03-06
 
 ### Added

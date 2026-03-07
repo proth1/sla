@@ -4,7 +4,21 @@
 
 **Date**: 2026-03-06
 **Branch**: main
-**Release Version**: 2026.03.29
+**Release Version**: 2026.03.33
+
+### Completed — Enable Pathway Fix & Orphaned Forms (PR #43)
+- Fixed Enable pathway routing gap: `GW_PathwayExec` in SP4 now 3-way (Buy/Build/Enable)
+- Enable path: `Task_ComplianceReview` → `Task_EnableContractExec` → merge
+- Wired 4 orphaned forms: sp4-compliance-review-enable, sp4-contract-deviation, sp4-coding-correction, sp5-condition-verification
+- Added `Task_ContractDeviation` and `Task_CodingCorrection` on SP4 Buy path
+- Added `Task_ConditionVerification` in SP5 between FinalApproval and OnboardSoftware
+- Fixed stale flow reference and SP5 target mismatch
+
+### Completed — v7-c8 BPMN Discovery Enhancements (PR #41)
+- Created v7-c8 BPMN with 3 request types, NDA gate, DART formation, prioritization scoring, dual ownership
+- 2 new DMN tables (OB-DMN-5, OB-DMN-6), updated OB-DMN-2 with Enable pathway
+- 7 new + 6 updated Camunda forms, showcase app updates
+- 5 discovery meeting notes from Mar 5-6 sessions
 
 ### Completed — Monorepo Restructure & Onboarding Presentation (PR #38)
 - Separated strategic IP (`framework/`) from customer engagement (`customers/fs-onboarding/`)
