@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="OB-DMN9-TeamEngagementRouting-definitions"
+             name="OB-DMN-9: Team Engagement Routing"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="OB_DMN_TeamEngagementRouting"
+            name="Team Engagement Routing"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="OB_DMN_TeamEngagementRouting-table" hitPolicy="COLLECT">
+
+      <input id="ob9-input-soc2" label="SOC 2 Type II Available">
+        <inputExpression id="ob9-inputExpr-soc2" typeRef="string">
+          <text>vendorSoc2Type2Available</text>
+        </inputExpression>
+        <inputValues id="ob9-inputVals-soc2">
+          <text>"yes","no","in_progress"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob9-input-dataClassification" label="Data Classification">
+        <inputExpression id="ob9-inputExpr-dataClassification" typeRef="string">
+          <text>dataClassification</text>
+        </inputExpression>
+        <inputValues id="ob9-inputVals-dataClassification">
+          <text>"public","internal","confidential","restricted"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob9-input-hasAI" label="AI Involvement">
+        <inputExpression id="ob9-inputExpr-hasAI" typeRef="string">
+          <text>hasAI</text>
+        </inputExpression>
+        <inputValues id="ob9-inputVals-hasAI">
+          <text>"yes","no","unsure"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob9-input-crossBorder" label="Cross-Border Data Transfer">
+        <inputExpression id="ob9-inputExpr-crossBorder" typeRef="boolean">
+          <text>vendorCrossBorderTransfer</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob9-input-budgetRange" label="Budget Range">
+        <inputExpression id="ob9-inputExpr-budgetRange" typeRef="string">
+          <text>budgetRange</text>
+        </inputExpression>
+        <inputValues id="ob9-inputVals-budgetRange">
+          <text>"under_25k","25k_100k","100k_500k","over_500k","unknown"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob9-input-deploymentModel" label="Deployment Model">
+        <inputExpression id="ob9-inputExpr-deploymentModel" typeRef="string">
+          <text>deploymentModel</text>
+        </inputExpression>
+        <inputValues id="ob9-inputVals-deploymentModel">
+          <text>"cloud","on-premise","hybrid","unknown"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob9-input-certGaps" label="Vendor Certification Gap Count">
+        <inputExpression id="ob9-inputExpr-certGaps" typeRef="integer">
+          <text>vendorCertificationGapCount</text>
+        </inputExpression>
+      </input>
+
+      <output id="ob9-output-engagedLane"
+              label="Engaged Lane"
+              name="engagedLane"
+              typeRef="string" />
+
+      <output id="ob9-output-engagementLevel"
+              label="Engagement Level"
+              name="engagementLevel"
+              typeRef="string" />
+
+      <output id="ob9-output-estimatedDays"
+              label="Estimated Days"
+              name="estimatedDays"
+              typeRef="integer" />
+
+      <output id="ob9-output-engagementReason"
+              label="Engagement Reason"
+              name="engagementReason"
+              typeRef="string" />
+
+      <!-- R1: Governance always engaged -->
+      <rule id="ob9-rule-1">
+        <description>All requests require governance triage</description>
+        <inputEntry id="ob9-ie-1-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-1-5"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-1-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-1-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-1-1"><text>"governance-lane"</text></outputEntry>
+        <outputEntry id="ob9-oe-1-2"><text>"standard"</text></outputEntry>
+        <outputEntry id="ob9-oe-1-3"><text>2</text></outputEntry>
+        <outputEntry id="ob9-oe-1-4"><text>"All requests require governance triage"</text></outputEntry>
+      </rule>
+
+      <!-- R2: Enhanced security (no SOC2 + sensitive data) -->
+      <rule id="ob9-rule-2">
+        <description>Missing SOC 2 with sensitive data requires enhanced security review</description>
+        <inputEntry id="ob9-ie-2-1"><text>"no"</text></inputEntry>
+        <inputEntry id="ob9-ie-2-2"><text>"confidential","restricted"</text></inputEntry>
+        <inputEntry id="ob9-ie-2-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-2-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-2-5"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-2-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-2-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-2-1"><text>"technical-assessment"</text></outputEntry>
+        <outputEntry id="ob9-oe-2-2"><text>"enhanced"</text></outputEntry>
+        <outputEntry id="ob9-oe-2-3"><text>8</text></outputEntry>
+        <outputEntry id="ob9-oe-2-4"><text>"Missing SOC 2 + sensitive data requires enhanced security review"</text></outputEntry>
+      </rule>
+
+      <!-- R3: Standard security (SOC2 + internal) -->
+      <rule id="ob9-rule-3">
+        <description>Standard security review for SOC 2 compliant vendor with internal data</description>
+        <inputEntry id="ob9-ie-3-1"><text>"yes"</text></inputEntry>
+        <inputEntry id="ob9-ie-3-2"><text>"internal"</text></inputEntry>
+        <inputEntry id="ob9-ie-3-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-3-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-3-5"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-3-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-3-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-3-1"><text>"technical-assessment"</text></outputEntry>
+        <outputEntry id="ob9-oe-3-2"><text>"standard"</text></outputEntry>
+        <outputEntry id="ob9-oe-3-3"><text>3</text></outputEntry>
+        <outputEntry id="ob9-oe-3-4"><text>"Standard security review"</text></outputEntry>
+      </rule>
+
+      <!-- R4: AI review (full) -->
+      <rule id="ob9-rule-4">
+        <description>AI system requires full AI governance review</description>
+        <inputEntry id="ob9-ie-4-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-4-2"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-4-3"><text>"yes"</text></inputEntry>
+        <inputEntry id="ob9-ie-4-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-4-5"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-4-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-4-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-4-1"><text>"ai-review"</text></outputEntry>
+        <outputEntry id="ob9-oe-4-2"><text>"full"</text></outputEntry>
+        <outputEntry id="ob9-oe-4-3"><text>5</text></outputEntry>
+        <outputEntry id="ob9-oe-4-4"><text>"AI system requires AI governance review"</text></outputEntry>
+      </rule>
+
+      <!-- R5: Compliance (cross-border) -->
+      <rule id="ob9-rule-5">
+        <description>Cross-border data transfer requires compliance and privacy review</description>
+        <inputEntry id="ob9-ie-5-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-5-2"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-5-4"><text>true</text></inputEntry>
+        <inputEntry id="ob9-ie-5-5"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-5-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-5-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-5-1"><text>"compliance-lane"</text></outputEntry>
+        <outputEntry id="ob9-oe-5-2"><text>"enhanced"</text></outputEntry>
+        <outputEntry id="ob9-oe-5-3"><text>5</text></outputEntry>
+        <outputEntry id="ob9-oe-5-4"><text>"Cross-border data requires compliance + privacy review"</text></outputEntry>
+      </rule>
+
+      <!-- R6: Compliance (PII/PHI via confidential/restricted) -->
+      <rule id="ob9-rule-6">
+        <description>Sensitive data classification requires compliance review</description>
+        <inputEntry id="ob9-ie-6-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-6-2"><text>"confidential","restricted"</text></inputEntry>
+        <inputEntry id="ob9-ie-6-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-6-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-6-5"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-6-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-6-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-6-1"><text>"compliance-lane"</text></outputEntry>
+        <outputEntry id="ob9-oe-6-2"><text>"standard"</text></outputEntry>
+        <outputEntry id="ob9-oe-6-3"><text>3</text></outputEntry>
+        <outputEntry id="ob9-oe-6-4"><text>"Sensitive data requires compliance review"</text></outputEntry>
+      </rule>
+
+      <!-- R7: Full contracting (over $500K) -->
+      <rule id="ob9-rule-7">
+        <description>High-value contract requires full contracting review</description>
+        <inputEntry id="ob9-ie-7-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-7-2"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-7-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-7-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-7-5"><text>"over_500k"</text></inputEntry>
+        <inputEntry id="ob9-ie-7-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-7-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-7-1"><text>"contracting-lane"</text></outputEntry>
+        <outputEntry id="ob9-oe-7-2"><text>"full"</text></outputEntry>
+        <outputEntry id="ob9-oe-7-3"><text>7</text></outputEntry>
+        <outputEntry id="ob9-oe-7-4"><text>"High-value contract requires full contracting review"</text></outputEntry>
+      </rule>
+
+      <!-- R8: Oversight (over $500K) -->
+      <rule id="ob9-rule-8">
+        <description>High-value contract requires oversight review</description>
+        <inputEntry id="ob9-ie-8-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-8-2"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-8-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-8-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-8-5"><text>"over_500k"</text></inputEntry>
+        <inputEntry id="ob9-ie-8-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-8-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-8-1"><text>"oversight-lane"</text></outputEntry>
+        <outputEntry id="ob9-oe-8-2"><text>"standard"</text></outputEntry>
+        <outputEntry id="ob9-oe-8-3"><text>3</text></outputEntry>
+        <outputEntry id="ob9-oe-8-4"><text>"High-value contract requires oversight"</text></outputEntry>
+      </rule>
+
+      <!-- R9: Enhanced security (on-prem deployment) -->
+      <rule id="ob9-rule-9">
+        <description>On-premise deployment requires enhanced architecture review</description>
+        <inputEntry id="ob9-ie-9-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-9-2"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-9-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-9-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-9-5"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-9-6"><text>"on-premise"</text></inputEntry>
+        <inputEntry id="ob9-ie-9-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-9-1"><text>"technical-assessment"</text></outputEntry>
+        <outputEntry id="ob9-oe-9-2"><text>"enhanced"</text></outputEntry>
+        <outputEntry id="ob9-oe-9-3"><text>5</text></outputEntry>
+        <outputEntry id="ob9-oe-9-4"><text>"On-prem requires enhanced architecture review"</text></outputEntry>
+      </rule>
+
+      <!-- R10: Full security (multiple cert gaps) -->
+      <rule id="ob9-rule-10">
+        <description>Multiple certification gaps require full security assessment</description>
+        <inputEntry id="ob9-ie-10-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-10-2"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-10-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-10-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-10-5"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-10-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-10-7"><text>> 3</text></inputEntry>
+        <outputEntry id="ob9-oe-10-1"><text>"technical-assessment"</text></outputEntry>
+        <outputEntry id="ob9-oe-10-2"><text>"full"</text></outputEntry>
+        <outputEntry id="ob9-oe-10-3"><text>10</text></outputEntry>
+        <outputEntry id="ob9-oe-10-4"><text>"Multiple certification gaps require full security assessment"</text></outputEntry>
+      </rule>
+
+      <!-- R11: EU AI Act compliance review -->
+      <rule id="ob9-rule-11">
+        <description>AI system in EU-regulated scope requires EU AI Act compliance review</description>
+        <inputEntry id="ob9-ie-11-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-11-2"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-11-3"><text>"yes"</text></inputEntry>
+        <inputEntry id="ob9-ie-11-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-11-5"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-11-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-11-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-11-1"><text>"compliance-lane"</text></outputEntry>
+        <outputEntry id="ob9-oe-11-2"><text>"full"</text></outputEntry>
+        <outputEntry id="ob9-oe-11-3"><text>5</text></outputEntry>
+        <outputEntry id="ob9-oe-11-4"><text>"AI system requires EU AI Act compliance review"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="OB-DMN9-diagram">
+      <dmndi:DMNShape id="OB-DMN9-shape" dmnElementRef="OB_DMN_TeamEngagementRouting">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
