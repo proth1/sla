@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026.03.56] - 2026-03-07
+
+### Changed
+- v10 onboarding BPMN: Buy/Build descriptive labels on SP4 pathway gateway (was Yes/No), new merge gateway (`Gateway_0m1ca2l`) separating coding-loop convergence from pathway merge, Modeler re-serialization (PR #70)
+
 ## [2026.03.55] - 2026-03-07
 
 ### Changed
