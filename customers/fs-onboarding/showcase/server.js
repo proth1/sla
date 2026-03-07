@@ -239,8 +239,10 @@ app.post('/api/tasks/:id/complete', async (req, res) => {
 // Reassign a task to a specific user
 app.post('/api/tasks/:id/reassign', async (req, res) => {
   try {
+    const assignee = typeof req.body.assignee === 'string' ? req.body.assignee.trim().slice(0, 200) : '';
+    if (!assignee) return res.status(400).json({ error: 'assignee is required' });
     const result = await tasklistApi('PATCH', `/v1/tasks/${req.params.id}/assign`, {
-      assignee: req.body.assignee,
+      assignee,
       allowOverrideAssignment: true,
     });
     res.json(result);

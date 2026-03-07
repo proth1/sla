@@ -748,7 +748,7 @@ function renderTaskQueue() {
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
-          <button class="btn-reassign-inline" title="Reassign task" onclick="openReassignModal('${task.id}', '${esc(name).replace(/'/g, "\\'")}', '${assignee}', '${groups}')">&#9998;</button>
+          <button class="btn-reassign-inline" title="Reassign task" onclick="openReassignModal('${task.id}', '${esc(name).replace(/'/g, "\\&#39;")}', '${(assignee || '').replace(/'/g, "\\&#39;")}', '${(groups || '').replace(/'/g, "\\&#39;")}')">&#9998;</button>
           <div class="queue-age ${ageCls}">${age}</div>
         </div>
       </div>`;
@@ -987,7 +987,7 @@ function renderDetailTask(task, status) {
   if (groups) html += `<span style="color:var(--text3)">Group: ${esc(groups)}</span>`;
   html += `<span style="color:var(--text3)">${age}</span>`;
   if (status === 'pending') {
-    html += `<button class="btn-reassign" onclick="openReassignModal('${task.id}', '${esc(name)}', '${assignee || ''}', '${(task.candidateGroups || []).join(', ')}')">Reassign</button>`;
+    html += `<button class="btn-reassign" onclick="openReassignModal('${task.id}', '${esc(name).replace(/'/g, "\\&#39;")}', '${(assignee || '').replace(/'/g, "\\&#39;")}', '${(task.candidateGroups || []).join(', ').replace(/'/g, "\\&#39;")}')">Reassign</button>`;
   }
   if (status === 'completed') {
     html += `<span style="color:var(--success);font-size:10px">&#10003; Done</span>`;
