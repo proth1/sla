@@ -4,18 +4,28 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const fs = require('fs');
+
 const CONFIG = {
   clusterId: process.env.CAMUNDA_CLUSTER_ID || '425f10fa-c898-4b4b-b303-eac095286716',
   region: process.env.CAMUNDA_REGION || 'ric-1',
-  clientId: process.env.CAMUNDA_CLIENT_ID,
-  clientSecret: process.env.CAMUNDA_CLIENT_SECRET,
+  clientId: process.env.CAMUNDA_CLIENT_ID || process.env.ZEEBE_CLIENT_ID,
+  clientSecret: process.env.CAMUNDA_CLIENT_SECRET || process.env.ZEEBE_CLIENT_SECRET,
   authUrl: 'https://login.cloud.camunda.io/oauth/token',
-  processId: 'Process_Onboarding_v7',
+  processId: 'Process_Onboarding_v8',
+  useZbctl: false,
 };
 
+// If no client credentials, fall back to zbctl-managed token from ~/.camunda/credentials
 if (!CONFIG.clientId || !CONFIG.clientSecret) {
-  console.error('Missing CAMUNDA_CLIENT_ID or CAMUNDA_CLIENT_SECRET environment variables');
-  process.exit(1);
+  const credPath = path.join(require('os').homedir(), '.camunda', 'credentials');
+  if (fs.existsSync(credPath)) {
+    CONFIG.useZbctl = true;
+    console.log('No CAMUNDA_CLIENT_ID/SECRET — using zbctl-managed token from ~/.camunda/credentials');
+  } else {
+    console.error('Missing CAMUNDA_CLIENT_ID/SECRET and no ~/.camunda/credentials found');
+    process.exit(1);
+  }
 }
 
 CONFIG.zeebeUrl = `https://${CONFIG.region}.zeebe.camunda.io/${CONFIG.clusterId}`;
@@ -23,7 +33,42 @@ CONFIG.tasklistUrl = `https://${CONFIG.region}.tasklist.camunda.io/${CONFIG.clus
 
 let tokenCache = { zeebe: null, tasklist: null };
 
+function readZbctlToken() {
+  const credPath = path.join(require('os').homedir(), '.camunda', 'credentials');
+  const content = fs.readFileSync(credPath, 'utf8');
+  const tokenMatch = content.match(/accesstoken:\s*(\S+)/);
+  const expiryMatch = content.match(/expiry:\s*(\S+)/);
+  if (!tokenMatch) throw new Error('No access token in ~/.camunda/credentials');
+  const expiry = expiryMatch ? new Date(expiryMatch[1]).getTime() : Date.now() + 3600000;
+  return { token: tokenMatch[1], expiresAt: expiry };
+}
+
+function refreshZbctlToken() {
+  const { execSync } = require('child_process');
+  try {
+    execSync('/opt/homebrew/bin/zbctl status --address ric-1.zeebe.camunda.io:443/425f10fa-c898-4b4b-b303-eac095286716', {
+      timeout: 15000, stdio: 'pipe',
+    });
+  } catch {
+    // zbctl refreshes the token even if the status command fails
+  }
+}
+
 async function getToken(audience) {
+  if (CONFIG.useZbctl) {
+    // zbctl tokens work for both zeebe and tasklist (same OAuth audience scope)
+    const cached = tokenCache.zeebe;
+    if (cached && cached.expiresAt > Date.now() + 60000) return cached.token;
+    // Token expired or about to — refresh via zbctl
+    if (!cached || cached.expiresAt <= Date.now() + 60000) {
+      refreshZbctlToken();
+    }
+    const fresh = readZbctlToken();
+    tokenCache.zeebe = fresh;
+    tokenCache.tasklist = fresh;
+    return fresh.token;
+  }
+
   const cached = tokenCache[audience === 'zeebe.camunda.io' ? 'zeebe' : 'tasklist'];
   if (cached && cached.expiresAt > Date.now()) return cached.token;
 
@@ -232,7 +277,6 @@ app.get('/api/process/:key/variables', async (req, res) => {
 // Deploy BPMN + forms to cluster
 app.post('/api/deploy', async (req, res) => {
   try {
-    const fs = require('fs');
     const token = await getToken('zeebe.camunda.io');
     const syncDir = path.join(__dirname, '..', 'processes', 'camunda-sync');
     const files = fs.readdirSync(syncDir).filter(f => f.endsWith('.bpmn') || f.endsWith('.form'));
