@@ -17,7 +17,7 @@ WORKER_DOMAIN = "https://sla.agentic-innovations.com"
 
 # Email restrictions are hardcoded in src/index.ts:
 # - ALLOWED_EMAILS = ['proth1@gmail.com']
-# - ALLOWED_DOMAINS = ['agentic-innovations.com']
+# - ALLOWED_DOMAINS = ['agentic-innovations.com', 'kpmg.com']
 
 # REQUIRED: Configure Cloudflare Rate Limiting Rule externally:
 # Path: /auth/send-otp, Method: POST, Limit: 5 req/min/IP, Action: Block
@@ -28,6 +28,7 @@ WORKER_DOMAIN = "https://sla.agentic-innovations.com"
 #   Dashboard: Workers & Pages > KV > Create namespace > "sla-presentation-auth-RATE_LIMIT_KV"
 #   API: POST /accounts/{account_id}/storage/kv/namespaces {"title":"sla-presentation-auth-RATE_LIMIT_KV"}
 # The worker gracefully degrades if KV is unavailable (rate limiting skipped).
-[[kv_namespaces]]
-binding = "RATE_LIMIT_KV"
-id = "TODO-create-kv-namespace-and-paste-id-here"
+# KV namespace disabled until created — worker gracefully degrades (rate limiting skipped)
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "TODO-create-kv-namespace-and-paste-id-here"
