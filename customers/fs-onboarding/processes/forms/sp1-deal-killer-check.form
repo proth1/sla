@@ -1,0 +1,60 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_DealKillerCheck",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Deal Killer Pre-Screen Results\nAutomated pre-screen results for known blockers before proceeding to triage.",
+      "id": "Field_DK01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_DK02"
+    },
+    {
+      "type": "textfield",
+      "key": "vendorName",
+      "label": "Vendor Name",
+      "readonly": true,
+      "id": "Field_DK03"
+    },
+    {
+      "type": "textfield",
+      "key": "aiModelName",
+      "label": "AI Model Name",
+      "readonly": true,
+      "description": "If applicable. Empty if no AI component.",
+      "id": "Field_DK04"
+    },
+    {
+      "type": "separator",
+      "id": "Field_DK05"
+    },
+    {
+      "type": "textfield",
+      "key": "dealKillerResult",
+      "label": "Pre-Screen Result",
+      "readonly": true,
+      "description": "Proceed or Blocked",
+      "id": "Field_DK06"
+    },
+    {
+      "type": "textarea",
+      "key": "blockReason",
+      "label": "Block Reason",
+      "readonly": true,
+      "description": "Reason for blocking, if applicable.",
+      "conditional": {
+        "hide": "=dealKillerResult != \"Blocked\""
+      },
+      "id": "Field_DK07"
+    }
+  ],
+  "type": "default"
+}
