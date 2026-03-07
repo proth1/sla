@@ -4,10 +4,11 @@
 
 **Date**: 2026-03-07
 **Branch**: main
-**Release Version**: 2026.03.51
+**Release Version**: 2026.03.54
 
-### Showcase Dashboard Enhancements
-- SLA-51: Dashboard instance drill-down, task reassignment, process ID fix — MERGED (PR #65)
+### Working Tree Consolidation
+- SLA-53: Consolidated all uncommitted working tree changes — MERGED (PR #68)
+- 22 files: v8 Modeler resave, v10 model, mini-rfp, jira-sync, 6 SVGs, deploy script, rules updates
 
 ### In Progress — Mini RFP Implementation (SLA-6 through SLA-13)
 
@@ -37,8 +38,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.50 |
-| Total PRs Merged | 64 |
+| Release Version | 2026.03.54 |
+| Total PRs Merged | 68 |
 | BPMN Models | v4, v5, v6-c8, v7-c8, v8-c8 + orchestrator + 5 phase models |
 | DMN Tables | OB-DMN-1 through OB-DMN-9 |
 | Camunda 8 Forms | 64 (48 existing + 6 wizard + 10 vendor category) |

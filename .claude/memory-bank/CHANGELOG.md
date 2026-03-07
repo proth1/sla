@@ -1,5 +1,22 @@
 # Changelog
 
+## [2026.03.54] - 2026-03-07
+
+### Added
+- v10 onboarding BPMN model (`onboarding-to-be-ideal-state-v10-c8.bpmn`) — new iteration based on v8
+- Mini RFP pre-screen BPMN process (`mini-rfp-pre-screen.bpmn`)
+- Jira sync test BPMN process (`jira-sync-test.bpmn`)
+- Jira sync module for showcase: worker (`jira-sync.js`), config, status UI
+- 6 SVG renders of v8 sub-processes for presentation embedding (PDLC, SP1-SP5)
+- `deploy-and-migrate.sh` utility for Camunda 8 Cloud deployments with token refresh and instance migration
+
+### Changed
+- v8 BPMN: Camunda Modeler re-serialization (cosmetic normalization)
+- Showcase `server.js` enhancements
+- Flow direction checker validator improvements (message flow exclusion, sub-process loop detection)
+- BPMN rules updates: hierarchical subprocess and visual clarity refinements
+- Memory bank and platform state updates
+
 ## [2026.03.53] - 2026-03-07
 
 ### Changed
