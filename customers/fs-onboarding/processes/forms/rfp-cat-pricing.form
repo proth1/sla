@@ -1,0 +1,173 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Cat7",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Category 7: Pricing and Commercial\nPricing model, total cost of ownership, and commercial terms.\n\n**Governance topics**: Funding, Commercial Counsel",
+      "id": "Field_Cat7_Header"
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat7_Sep1"
+    },
+    {
+      "id": "Field_C7_1",
+      "label": "C7.1: Pricing model",
+      "type": "select",
+      "key": "c7_1",
+      "values": [
+        {
+          "label": "Per User",
+          "value": "per_user"
+        },
+        {
+          "label": "Per Transaction",
+          "value": "per_transaction"
+        },
+        {
+          "label": "Flat Fee",
+          "value": "flat_fee"
+        },
+        {
+          "label": "Consumption-based",
+          "value": "consumption-based"
+        },
+        {
+          "label": "Enterprise License",
+          "value": "enterprise_license"
+        }
+      ]
+    },
+    {
+      "id": "Field_C7_2",
+      "label": "C7.2: Base price for estimated usage",
+      "type": "textfield",
+      "key": "c7_2"
+    },
+    {
+      "id": "Field_C7_3",
+      "label": "C7.3: Implementation/onboarding fees",
+      "type": "textfield",
+      "key": "c7_3"
+    },
+    {
+      "id": "Field_C7_4",
+      "label": "C7.4: Annual maintenance/support fees",
+      "type": "textfield",
+      "key": "c7_4"
+    },
+    {
+      "id": "Field_C7_5",
+      "label": "C7.5: Volume discount tiers",
+      "type": "textarea",
+      "key": "c7_5"
+    },
+    {
+      "id": "Field_C7_6",
+      "label": "C7.6: Contract term options",
+      "type": "checklist",
+      "key": "c7_6",
+      "values": [
+        {
+          "label": "Monthly",
+          "value": "monthly"
+        },
+        {
+          "label": "Annual",
+          "value": "annual"
+        },
+        {
+          "label": "2-Year",
+          "value": "2-year"
+        },
+        {
+          "label": "3-Year",
+          "value": "3-year"
+        },
+        {
+          "label": "5-Year",
+          "value": "5-year"
+        }
+      ]
+    },
+    {
+      "id": "Field_C7_7",
+      "label": "C7.7: Auto-renewal and termination terms",
+      "type": "textarea",
+      "key": "c7_7"
+    },
+    {
+      "id": "Field_C7_8",
+      "label": "C7.8: Price escalation caps",
+      "type": "textarea",
+      "key": "c7_8"
+    },
+    {
+      "id": "Field_C7_9",
+      "label": "C7.9: Payment terms",
+      "type": "textarea",
+      "key": "c7_9"
+    },
+    {
+      "id": "Field_C7_10",
+      "label": "C7.10: Total cost of ownership estimate (3-year)",
+      "type": "textarea",
+      "key": "c7_10"
+    },
+    {
+      "id": "Field_C7_11",
+      "label": "C7.11: Hidden costs (data egress, overage charges, premium features)",
+      "type": "textarea",
+      "key": "c7_11"
+    },
+    {
+      "id": "Field_C7_12",
+      "label": "C7.12: Proof of concept/pilot pricing",
+      "type": "textarea",
+      "key": "c7_12"
+    },
+    {
+      "id": "Field_C7_13",
+      "label": "C7.13: Exit costs and data extraction fees",
+      "type": "textarea",
+      "key": "c7_13"
+    },
+    {
+      "id": "Field_C7_14",
+      "label": "C7.14: Reference pricing from comparable financial services clients",
+      "type": "textarea",
+      "key": "c7_14"
+    },
+    {
+      "id": "Field_C7_15",
+      "label": "C7.15: Contract value threshold for executive approval",
+      "type": "select",
+      "key": "c7_15",
+      "values": [
+        {
+          "label": "Under $25K",
+          "value": "under_25k"
+        },
+        {
+          "label": "$25K-$100K",
+          "value": "25k-100k"
+        },
+        {
+          "label": "$100K-$500K",
+          "value": "100k-500k"
+        },
+        {
+          "label": "Over $500K",
+          "value": "over_500k"
+        }
+      ]
+    }
+  ]
+}

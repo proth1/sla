@@ -1,0 +1,169 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Cat6",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Category 6: Implementation and Support\nImplementation approach, support model, and training options.\n\n**Governance topics**: EA, Intake",
+      "id": "Field_Cat6_Header"
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat6_Sep1"
+    },
+    {
+      "id": "Field_C6_1",
+      "label": "C6.1: Typical implementation timeline",
+      "type": "textfield",
+      "key": "c6_1"
+    },
+    {
+      "id": "Field_C6_2",
+      "label": "C6.2: Implementation methodology",
+      "type": "textarea",
+      "key": "c6_2"
+    },
+    {
+      "id": "Field_C6_3",
+      "label": "C6.3: Training options",
+      "type": "checklist",
+      "key": "c6_3",
+      "values": [
+        {
+          "label": "On-site",
+          "value": "on-site"
+        },
+        {
+          "label": "Virtual",
+          "value": "virtual"
+        },
+        {
+          "label": "Self-paced",
+          "value": "self-paced"
+        },
+        {
+          "label": "Certification",
+          "value": "certification"
+        },
+        {
+          "label": "None",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "id": "Field_C6_4",
+      "label": "C6.4: Support tiers and SLAs (response time, resolution time)",
+      "type": "textarea",
+      "key": "c6_4"
+    },
+    {
+      "id": "Field_C6_5",
+      "label": "C6.5: Support channels",
+      "type": "checklist",
+      "key": "c6_5",
+      "values": [
+        {
+          "label": "Phone",
+          "value": "phone"
+        },
+        {
+          "label": "Email",
+          "value": "email"
+        },
+        {
+          "label": "Chat",
+          "value": "chat"
+        },
+        {
+          "label": "Portal",
+          "value": "portal"
+        },
+        {
+          "label": "Dedicated Slack",
+          "value": "dedicated_slack"
+        }
+      ]
+    },
+    {
+      "id": "Field_C6_6",
+      "label": "C6.6: Dedicated account manager/CSM",
+      "type": "radio",
+      "key": "c6_6",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "label": "Partial",
+          "value": "partial"
+        }
+      ]
+    },
+    {
+      "id": "Field_C6_7",
+      "label": "C6.7: Knowledge base and documentation quality",
+      "type": "select",
+      "key": "c6_7",
+      "values": [
+        {
+          "label": "Comprehensive",
+          "value": "comprehensive"
+        },
+        {
+          "label": "Adequate",
+          "value": "adequate"
+        },
+        {
+          "label": "Basic",
+          "value": "basic"
+        },
+        {
+          "label": "Minimal",
+          "value": "minimal"
+        }
+      ]
+    },
+    {
+      "id": "Field_C6_8",
+      "label": "C6.8: Escalation process for critical issues",
+      "type": "textarea",
+      "key": "c6_8"
+    },
+    {
+      "id": "Field_C6_9",
+      "label": "C6.9: Release frequency and change management process",
+      "type": "textarea",
+      "key": "c6_9"
+    },
+    {
+      "id": "Field_C6_10",
+      "label": "C6.10: Migration/upgrade path and backward compatibility",
+      "type": "textarea",
+      "key": "c6_10"
+    },
+    {
+      "id": "Field_C6_11",
+      "label": "C6.11: Professional services availability and rates",
+      "type": "textarea",
+      "key": "c6_11"
+    },
+    {
+      "id": "Field_C6_12",
+      "label": "C6.12: User community and ecosystem",
+      "type": "textarea",
+      "key": "c6_12"
+    }
+  ]
+}

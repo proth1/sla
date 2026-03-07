@@ -1,0 +1,187 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Cat1",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Category 1: Company and Financial Stability\nCompany profile, financial stability, and organizational background.\n\n**Governance topics**: Sourcing, TPRM, Funding",
+      "id": "Field_Cat1_Header"
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat1_Sep1"
+    },
+    {
+      "id": "Field_C1_1",
+      "label": "C1.1: Legal entity name and jurisdiction of incorporation",
+      "type": "textfield",
+      "key": "c1_1"
+    },
+    {
+      "id": "Field_C1_2",
+      "label": "C1.2: Year established",
+      "type": "number",
+      "key": "c1_2"
+    },
+    {
+      "id": "Field_C1_3",
+      "label": "C1.3: Number of employees",
+      "type": "select",
+      "key": "c1_3",
+      "values": [
+        {
+          "label": "1-50",
+          "value": "1-50"
+        },
+        {
+          "label": "51-200",
+          "value": "51-200"
+        },
+        {
+          "label": "201-1000",
+          "value": "201-1000"
+        },
+        {
+          "label": "1001-5000",
+          "value": "1001-5000"
+        },
+        {
+          "label": "5000+",
+          "value": "5000plus"
+        }
+      ]
+    },
+    {
+      "id": "Field_C1_4",
+      "label": "C1.4: Annual revenue range",
+      "type": "select",
+      "key": "c1_4",
+      "values": [
+        {
+          "label": "Under $1M",
+          "value": "under_1m"
+        },
+        {
+          "label": "$1M-$10M",
+          "value": "1m-10m"
+        },
+        {
+          "label": "$10M-$100M",
+          "value": "10m-100m"
+        },
+        {
+          "label": "$100M-$1B",
+          "value": "100m-1b"
+        },
+        {
+          "label": "Over $1B",
+          "value": "over_1b"
+        }
+      ]
+    },
+    {
+      "id": "Field_C1_5",
+      "label": "C1.5: Primary business description",
+      "type": "textarea",
+      "key": "c1_5"
+    },
+    {
+      "id": "Field_C1_6",
+      "label": "C1.6: Parent company / ultimate beneficial owner",
+      "type": "textfield",
+      "key": "c1_6"
+    },
+    {
+      "id": "Field_C1_7",
+      "label": "C1.7: Key customers in financial services",
+      "type": "textarea",
+      "key": "c1_7"
+    },
+    {
+      "id": "Field_C1_8",
+      "label": "C1.8: Insurance coverage (E&O, cyber liability)",
+      "type": "textarea",
+      "key": "c1_8"
+    },
+    {
+      "id": "Field_C1_9",
+      "label": "C1.9: Most recent audited financial statements available",
+      "type": "radio",
+      "key": "c1_9",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "label": "Partial",
+          "value": "partial"
+        }
+      ]
+    },
+    {
+      "id": "Field_C1_10",
+      "label": "C1.10: Material litigation, regulatory actions, or sanctions in past 5 years",
+      "type": "textarea",
+      "key": "c1_10"
+    },
+    {
+      "id": "Field_C1_11",
+      "label": "C1.11: Ownership changes or M&A activity in past 2 years",
+      "type": "textarea",
+      "key": "c1_11"
+    },
+    {
+      "id": "Field_C1_12",
+      "label": "C1.12: Revenue concentration \u2014 % from top 3 clients",
+      "type": "select",
+      "key": "c1_12",
+      "values": [
+        {
+          "label": "Under 20%",
+          "value": "under_20%"
+        },
+        {
+          "label": "20-40%",
+          "value": "20-40%"
+        },
+        {
+          "label": "40-60%",
+          "value": "40-60%"
+        },
+        {
+          "label": "Over 60%",
+          "value": "over_60%"
+        }
+      ]
+    },
+    {
+      "id": "Field_C1_13",
+      "label": "C1.13: Subcontractors or fourth-party dependencies for service delivery",
+      "type": "textarea",
+      "key": "c1_13"
+    },
+    {
+      "id": "Field_C1_14",
+      "label": "C1.14: Business continuity plan summary",
+      "type": "textarea",
+      "key": "c1_14"
+    },
+    {
+      "id": "Field_C1_15",
+      "label": "C1.15: Geographic presence and service delivery locations",
+      "type": "textarea",
+      "key": "c1_15"
+    }
+  ]
+}
