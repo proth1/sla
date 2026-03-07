@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026.03.31] - 2026-03-06
+
+### Changed
+- Rebranded presentation from SLA Platform to KPMG visual identity (colors, typography, layout) (PR #42)
+- Added `kpmg.com` to auth worker allowed email domains (PR #42)
+- Disabled KV namespace binding in wrangler.toml until namespace created (PR #42)
+
+### Added
+- 22 BPMN process diagram PNG images for presentation slides (PR #42)
+- KPMG-branded PPTX export and Python generator script (PR #42)
+- v3 roadmap reference presentation materials (PR #42)
+
 ## [2026.03.30] - 2026-03-06
 
 ### Changed
