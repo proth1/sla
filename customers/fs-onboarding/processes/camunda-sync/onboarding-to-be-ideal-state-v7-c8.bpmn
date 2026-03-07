@@ -133,7 +133,7 @@
       <bpmn:sequenceFlow id="Flow_SP5_3" sourceRef="Task_FinalApproval" targetRef="Task_ConditionVerification" />
       <bpmn:sequenceFlow id="Flow_SP5_CV" sourceRef="Task_ConditionVerification" targetRef="Task_OnboardSoftware" />
       <bpmn:sequenceFlow id="Flow_SP5_4" sourceRef="Task_OnboardSoftware" targetRef="Activity_0zf4l0g" />
-      <bpmn:sequenceFlow id="Flow_SP5_5" sourceRef="Activity_0zf4l0g" targetRef="Task_CloseRequest" />
+      <bpmn:sequenceFlow id="Flow_SP5_5" sourceRef="Activity_0zf4l0g" targetRef="Task_AssignOwnership" />
       <bpmn:sequenceFlow id="Flow_SP5_6" sourceRef="Task_CloseRequest" targetRef="SP5_End" />
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="GW_FinalDecision" name="Approved?">
@@ -836,7 +836,7 @@
           </zeebe:properties>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_SP4_BuyMerge</bpmn:incoming>
-        <bpmn:outgoing>Flow_SP4_DeviationToMerge</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP4_DeviationToCode</bpmn:outgoing>
       </bpmn:userTask>
       <bpmn:exclusiveGateway id="GW_MergeExec">
         <bpmn:incoming>Flow_SP4_CodeToMerge</bpmn:incoming>
