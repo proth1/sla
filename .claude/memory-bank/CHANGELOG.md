@@ -1,5 +1,19 @@
 # Changelog
 
+## [2026.03.32] - 2026-03-06
+
+### Added
+- v7-c8 BPMN model with discovery enhancements: NDA gate, request classification, compliance review, condition verification (PR #41)
+- 5 discovery meeting notes: architecture, product, security/architecture, TPRM, vendor management (PR #41)
+- 3 new DMN tables: OB-DMN-2 pathway routing, OB-DMN-5 prioritization scoring, OB-DMN-6 security assessment routing (PR #41)
+- 7 new Camunda 8 forms for discovery-driven process enhancements (PR #41)
+- 15 showcase screenshots documenting Camunda 8 deployment (PR #41)
+- Showcase dashboard and instance seeding script (PR #41)
+
+### Fixed
+- FEEL expressions: proper variable references replacing bare `= true`/`= false` across all gateways (PR #41)
+- 33 form schema updates to latest version (PR #41)
+
 ## [2026.03.31] - 2026-03-06
 
 ### Changed

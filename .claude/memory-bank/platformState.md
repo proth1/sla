@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.31
+**Current Version**: 2026.03.32
 **Last Release**: 2026-03-06
-**Total Releases**: 31
+**Total Releases**: 32
 
 ## Artifact Counts
 
@@ -33,6 +33,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.32 | 2026-03-06 | #41 | v7-c8 BPMN discovery enhancements, 5 meeting notes, 3 DMN tables, showcase |
 | 2026.03.31 | 2026-03-06 | #42 | KPMG presentation rebrand, 22 BPMN images, PPTX export, auth domain update |
 | 2026.03.30 | 2026-03-06 | #39 | 32-slide presentation redesign, 7 BPMN SVGs, discovery docs, kpmg.com auth, showcase app |
 | 2026.03.29 | 2026-03-06 | #38 | Monorepo restructure, 33-slide onboarding presentation, 39 forms, onboarding auth worker |
