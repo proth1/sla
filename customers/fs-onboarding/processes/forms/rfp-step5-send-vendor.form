@@ -1,0 +1,119 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Step5",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Step 5: Send to Vendor\nProvide vendor contact details and set the response deadline. Minimum 14 calendar days.",
+      "id": "Field_S5_01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S5_02"
+    },
+    {
+      "type": "text",
+      "text": "### Primary Vendor Contact",
+      "id": "Field_S5_03"
+    },
+    {
+      "type": "textfield",
+      "key": "vendorContactName",
+      "label": "Vendor Contact Name",
+      "validate": { "required": true },
+      "id": "Field_S5_04"
+    },
+    {
+      "type": "textfield",
+      "key": "vendorContactEmail",
+      "label": "Vendor Contact Email",
+      "validate": { "required": true, "pattern": "^[^@]+@[^@]+\\.[^@]+$" },
+      "id": "Field_S5_05"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S5_06"
+    },
+    {
+      "type": "text",
+      "text": "### Response Timeline",
+      "id": "Field_S5_07"
+    },
+    {
+      "type": "number",
+      "key": "responseDeadlineDays",
+      "label": "Response Deadline (calendar days)",
+      "defaultValue": 14,
+      "validate": { "required": true, "min": 14 },
+      "description": "Minimum 14 days (~10 business days). Shorter deadlines require Concierge override.",
+      "id": "Field_S5_08"
+    },
+    {
+      "type": "select",
+      "key": "deliveryMethod",
+      "label": "Delivery Method",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Portal Link (recommended)", "value": "portal" },
+        { "label": "Email with Attachment", "value": "email" }
+      ],
+      "id": "Field_S5_09"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S5_10"
+    },
+    {
+      "type": "text",
+      "text": "### Communication Options",
+      "id": "Field_S5_11"
+    },
+    {
+      "type": "radio",
+      "key": "includeCoverLetter",
+      "label": "Include Cover Letter",
+      "description": "Auto-generated one-page letter framing the engagement as a partnership invitation.",
+      "defaultValue": "yes",
+      "values": [
+        { "label": "Yes — include cover letter", "value": "yes" },
+        { "label": "No — questionnaire only", "value": "no" }
+      ],
+      "id": "Field_S5_12"
+    },
+    {
+      "type": "radio",
+      "key": "shareEvaluationCriteria",
+      "label": "Share Evaluation Criteria with Vendor",
+      "description": "Include category weights and scoring approach so vendor understands how responses will be evaluated.",
+      "defaultValue": "yes",
+      "values": [
+        { "label": "Yes — share criteria", "value": "yes" },
+        { "label": "No — keep criteria internal", "value": "no" }
+      ],
+      "id": "Field_S5_13"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S5_14"
+    },
+    {
+      "type": "text",
+      "text": "### Additional Vendors (Competitive Bid)",
+      "id": "Field_S5_15"
+    },
+    {
+      "type": "textarea",
+      "key": "additionalVendors",
+      "label": "Additional Vendor Contacts",
+      "description": "For competitive bid: one vendor per line, format: Name, email@domain.com",
+      "conditional": { "hide": "=competitiveBid != \"yes\"" },
+      "id": "Field_S5_16"
+    }
+  ]
+}

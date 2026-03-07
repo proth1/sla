@@ -1,0 +1,98 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Step4",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Step 4: Question Preview\nReview the dynamically assembled questionnaire before sending to vendor(s). You can toggle optional categories on/off.",
+      "id": "Field_S4_01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S4_02"
+    },
+    {
+      "type": "text",
+      "text": "### Questionnaire Summary",
+      "id": "Field_S4_03"
+    },
+    {
+      "type": "textfield",
+      "key": "totalQuestionCount",
+      "label": "Total Questions",
+      "readonly": true,
+      "description": "Based on OB-DMN-8 question selection rules.",
+      "id": "Field_S4_04"
+    },
+    {
+      "type": "textfield",
+      "key": "activeCategoryCount",
+      "label": "Active Categories",
+      "readonly": true,
+      "id": "Field_S4_05"
+    },
+    {
+      "type": "textfield",
+      "key": "estimatedCompletionMinutes",
+      "label": "Estimated Vendor Completion Time",
+      "readonly": true,
+      "description": "Based on ~2 minutes per question.",
+      "id": "Field_S4_06"
+    },
+    {
+      "type": "textfield",
+      "key": "questionTier",
+      "label": "Question Tier",
+      "readonly": true,
+      "description": "minimal / basic / standard / full",
+      "id": "Field_S4_07"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S4_08"
+    },
+    {
+      "type": "text",
+      "text": "### Category Weights\nDefault weights for scoring. Adjust ±10% per category if needed (Concierge override for larger adjustments).",
+      "id": "Field_S4_09"
+    },
+    {
+      "type": "textarea",
+      "key": "categoryWeightsSummary",
+      "label": "Category Weights (JSON)",
+      "readonly": true,
+      "description": "Computed by OB-DMN-8. Format: {category: weight%}",
+      "id": "Field_S4_10"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S4_11"
+    },
+    {
+      "type": "text",
+      "text": "### Active Categories\nRequired categories cannot be removed. Optional categories can be toggled.",
+      "id": "Field_S4_12"
+    },
+    {
+      "type": "textarea",
+      "key": "selectedCategories",
+      "label": "Selected Category IDs",
+      "description": "Comma-separated list of active category IDs (e.g., 1,2,3,5,6,7). Edit to add/remove optional categories.",
+      "id": "Field_S4_13"
+    },
+    {
+      "type": "textarea",
+      "key": "questionPreview",
+      "label": "Question Preview",
+      "readonly": true,
+      "description": "Read-only summary of selected questions by category.",
+      "id": "Field_S4_14"
+    }
+  ]
+}
