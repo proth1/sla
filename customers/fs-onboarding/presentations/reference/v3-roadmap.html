@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Onboarding Transformation v3 | Discovery to Delivery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<style>
+:root {
+  --sla-navy: #0D2137;
+  --sla-deep-blue: #1A3A6B;
+  --sla-blue: #2563EB;
+  --sla-teal: #00B4D8;
+  --sla-gold: #D97706;
+  --sla-emerald: #059669;
+  --sla-rose: #DC2626;
+  --sla-light: #F8FAFC;
+  --sla-gray: #64748B;
+  --sla-border: #E2E8F0;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; overflow: hidden; height: 100%; }
+body { font-family: 'Open Sans', sans-serif; background: var(--sla-light); color: #1E293B; overflow: hidden; height: 100%; }
+h1, h2, h3, h4, h5, h6 { font-family: 'Open Sans Condensed', sans-serif; font-weight: 700; }
+.slides-container { scroll-snap-type: y proximity; overflow-y: scroll; overflow-x: hidden; height: 100vh; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+.slides-container::-webkit-scrollbar { width: 0; background: transparent; }
+.slides-container { scrollbar-width: none; -ms-overflow-style: none; }
+.slide { min-height: 100vh; height: auto; scroll-snap-align: start; padding: 80px 4rem 4rem; display: flex; flex-direction: column; position: relative; overflow-y: visible; max-width: 1280px; margin: 0 auto; }
+.slide-hero { background: linear-gradient(135deg, var(--sla-navy), var(--sla-deep-blue)); color: white; max-width: 100%; padding: 80px 60px; justify-content: center; }
+.slide-hero h1 { font-size: 3rem; margin-bottom: 0.5rem; }
+.slide-hero h2 { font-size: 1.75rem; font-weight: 700; color: white; opacity: 1; margin-bottom: 1.5rem; }
+.slide-hero .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+.slide-hero .badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 4px 10px; font-size: 0.7rem; letter-spacing: 0.5px; }
+.slide-section { background: linear-gradient(135deg, var(--sla-deep-blue), var(--sla-navy)); color: white; max-width: 100%; padding: 80px 60px; }
+.slide-section h2 { font-size: 2.5rem; border-bottom: 3px solid var(--sla-gold); padding-bottom: 10px; display: inline-block; }
+.slide h2 { font-size: 2rem; color: var(--sla-deep-blue); margin-bottom: 1rem; }
+.slide h3 { font-size: 1.3rem; color: var(--sla-navy); margin: 1rem 0 0.5rem; }
+.slide p { line-height: 1.6; margin-bottom: 0.75rem; max-width: 900px; }
+.slide ul { margin-left: 1.5rem; margin-bottom: 1rem; }
+.slide li { margin-bottom: 0.4rem; line-height: 1.5; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 1rem 0; }
+.card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--sla-blue); }
+.card h4 { color: var(--sla-deep-blue); margin-bottom: 0.5rem; font-size: 1.1rem; }
+.card p, .card ul { font-size: 0.9rem; color: var(--sla-gray); }
+.card.gold { border-left-color: var(--sla-gold); }
+.card.emerald { border-left-color: var(--sla-emerald); }
+.card.rose { border-left-color: var(--sla-rose); }
+.card.teal { border-left-color: var(--sla-teal); }
+.metric-row { display: flex; gap: 20px; flex-wrap: wrap; margin: 1rem 0; }
+.metric { text-align: center; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 1; min-width: 150px; }
+.metric .value { font-size: 2rem; font-weight: 700; color: var(--sla-blue); font-family: 'Open Sans Condensed', sans-serif; }
+.metric .label { font-size: 0.8rem; color: var(--sla-gray); margin-top: 4px; }
+.styled-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; }
+.styled-table thead { background: var(--sla-deep-blue); color: white; }
+.styled-table th { padding: 10px 12px; text-align: left; font-weight: 600; }
+.styled-table td { padding: 8px 12px; border-bottom: 1px solid var(--sla-border); }
+.styled-table tbody tr:nth-child(even) { background: #F1F5F9; }
+.styled-table tbody tr:hover { background: #E2E8F0; }
+.small-table { font-size: 0.75rem; }
+.small-table td, .small-table th { padding: 5px 8px; }
+.diagram-container { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 1rem 0; overflow-x: auto; }
+.diagram-container img { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+.chart-container { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 1rem 0; min-height: 300px; }
+.nav-bar { position: fixed; top: 0; left: 0; right: 0; background: var(--sla-navy); color: white; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; font-size: 0.8rem; }
+.nav-bar .title { font-family: 'Open Sans Condensed', sans-serif; font-weight: 700; }
+.nav-links { display: flex; gap: 16px; }
+.nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; cursor: pointer; }
+.nav-links a:hover { color: white; }
+.slide-counter { position: fixed; bottom: 20px; right: 20px; background: var(--sla-navy); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; z-index: 1000; }
+.slide-indicator { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 999; }
+.slide-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(13,33,55,0.3); cursor: pointer; transition: all 0.3s; }
+.slide-dot:hover { background: var(--sla-teal); transform: scale(1.3); }
+.slide-dot.active { background: var(--sla-gold); transform: scale(1.2); }
+.bg-fast { background: var(--sla-emerald); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8rem; }
+.bg-build { background: var(--sla-blue); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8rem; }
+.bg-buy { background: var(--sla-gold); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8rem; }
+.bg-hybrid { background: var(--sla-teal); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8rem; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.phase-pipeline { display: flex; gap: 4px; margin: 1rem 0; }
+.phase-pip { flex: 1; text-align: center; padding: 12px 4px; background: var(--sla-blue); color: white; font-size: 0.65rem; font-weight: 600; position: relative; }
+.phase-pip:first-child { border-radius: 6px 0 0 6px; }
+.phase-pip:last-child { border-radius: 0 6px 6px 0; }
+.phase-pip .num { font-size: 1.2rem; display: block; margin-bottom: 2px; font-family: 'Open Sans Condensed', sans-serif; }
+.tier-badge { display: inline-block; padding: 3px 10px; border-radius: 3px; font-size: 0.75rem; font-weight: 600; }
+.tier-unacceptable { background: #DC2626; color: white; }
+.tier-high { background: #D97706; color: white; }
+.tier-limited { background: #2563EB; color: white; }
+.tier-minimal { background: #059669; color: white; }
+.slide-footer { position: absolute; bottom: 12px; left: 40px; right: 40px; display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--sla-gray); border-top: 1px solid var(--sla-border); padding-top: 8px; }
+.slide-section .slide-footer, .slide-hero .slide-footer { border-top-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); }
+.grayed { opacity: 0.45; }
+.compare { display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: start; margin: 1rem 0; }
+.compare-arrow { font-size: 2rem; color: var(--sla-emerald); align-self: center; }
+.escalation-step { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 6px; margin-bottom: 8px; }
+.escalation-step .level { font-family: 'Open Sans Condensed', sans-serif; font-size: 1.4rem; font-weight: 700; min-width: 32px; }
+.quote-block { background: white; border-left: 4px solid var(--sla-teal); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 0.75rem 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.quote-block p { font-style: italic; font-size: 0.9rem; color: #334155; margin-bottom: 4px; }
+.quote-block .attribution { font-size: 0.75rem; color: var(--sla-gray); font-style: normal; }
+.asis-tobe { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 1rem 0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.asis { background: #FEF2F2; padding: 20px; }
+.asis h4 { color: var(--sla-rose); margin-bottom: 0.5rem; }
+.tobe { background: #F0FDF4; padding: 20px; }
+.tobe h4 { color: var(--sla-emerald); margin-bottom: 0.5rem; }
+.asis ul, .tobe ul { font-size: 0.85rem; margin-left: 1.2rem; }
+.asis li, .tobe li { margin-bottom: 0.3rem; color: #475569; }
+.dmn-visual { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 0.75rem 0; }
+.dmn-visual .dmn-header { background: var(--sla-deep-blue); color: white; padding: 8px 12px; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; }
+.dmn-visual .dmn-header .hit-policy { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 3px; font-size: 0.7rem; }
+.dmn-visual table { width: 100%; font-size: 0.75rem; border-collapse: collapse; }
+.dmn-visual th { padding: 6px 8px; background: #EFF6FF; color: var(--sla-deep-blue); text-align: left; font-weight: 600; border-bottom: 2px solid var(--sla-blue); }
+.dmn-visual td { padding: 5px 8px; border-bottom: 1px solid var(--sla-border); }
+.dmn-visual .input-col { background: #FFFBEB; }
+.dmn-visual .output-col { background: #F0FDF4; }
+.system-map { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 1rem 0; }
+.system-node { background: white; border-radius: 8px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-top: 4px solid var(--sla-blue); }
+.system-node.disconnected { border-top-color: var(--sla-rose); }
+.system-node.target { border-top-color: var(--sla-emerald); }
+.system-node h4 { font-size: 0.9rem; margin-bottom: 4px; }
+.system-node p { font-size: 0.75rem; color: var(--sla-gray); margin: 0; }
+</style>
+</head>
+<body>
+
+<nav class="nav-bar">
+  <span class="title">Software Onboarding Transformation v3</span>
+  <div class="nav-links">
+    <a onclick="goToSlide(0)">Home</a>
+    <a onclick="goToSlide(1)">Problem</a>
+    <a onclick="goToSlide(7)">Vision</a>
+    <a onclick="goToSlide(14)">Deep Dive</a>
+    <a onclick="goToSlide(26)">DMN</a>
+    <a onclick="goToSlide(29)">Governance</a>
+    <a onclick="goToSlide(34)">Roadmap</a>
+  </div>
+</nav>
+
+<div class="slides-container" id="slidesContainer">
+
+<!-- ============================================================ -->
+<!-- SECTION A: THE PROBLEM (Slides 0-6) -->
+<!-- ============================================================ -->
+
+<!-- Slide 0: Title -->
+<div class="slide slide-hero" data-slide="0">
+  <h1>Software Onboarding Transformation</h1>
+  <h2>From 6-9 Months to 19 Days</h2>
+  <p style="color:rgba(255,255,255,0.8);font-size:1.05rem;max-width:800px;">A structured 5-phase lifecycle replacing fragmented intake channels, 18 sequential committees, and months of delays with parallel evaluation, DMN-driven routing, and real-time visibility. Now informed by 14 discovery sessions with 35+ stakeholders.</p>
+  <div style="margin-top:1.5rem;">
+    <div class="metric-row">
+      <div class="metric" style="background:rgba(255,255,255,0.1);"><div class="value" style="color:#FCA5A5;">6-9 mo</div><div class="label" style="color:rgba(255,255,255,0.7);">Current Cycle</div></div>
+      <div class="metric" style="background:rgba(255,255,255,0.1);"><div class="value" style="color:#6EE7B7;">19 days</div><div class="label" style="color:rgba(255,255,255,0.7);">Target Cycle</div></div>
+      <div class="metric" style="background:rgba(255,255,255,0.1);"><div class="value" style="color:white;">14</div><div class="label" style="color:rgba(255,255,255,0.7);">Discovery Sessions</div></div>
+      <div class="metric" style="background:rgba(255,255,255,0.1);"><div class="value" style="color:white;">35+</div><div class="label" style="color:rgba(255,255,255,0.7);">Stakeholders</div></div>
+    </div>
+  </div>
+  <div class="badges">
+    <span class="badge">OCC 2023-17</span>
+    <span class="badge">GDPR/CCPA</span>
+    <span class="badge">EU AI Act</span>
+    <span class="badge">DORA</span>
+    <span class="badge">SR 11-7</span>
+    <span class="badge">SOX</span>
+    <span class="badge">BPMN 2.0</span>
+    <span class="badge">DMN 1.3</span>
+    <span class="badge">Camunda 8</span>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 1: Executive Summary -->
+<div class="slide" data-slide="1">
+  <h2>Executive Summary</h2>
+  <p>Fourteen discovery sessions with 35+ stakeholders across 8 functional areas revealed a software onboarding process that takes <strong>6-9 months</strong>, routes through <strong>18 sequential committees</strong>, and accepts requests from <strong>5+ disconnected channels</strong>. Five deep-dive sessions (Mar 5-6) exposed quantified bottlenecks: <strong>28-day intake</strong> (2x target), <strong>75-day due diligence</strong>, and a <strong>2-person contract team</strong> handling 30+ negotiations monthly.</p>
+  <div class="metric-row">
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">6-9 mo</div><div class="label">End-to-End Duration</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">18</div><div class="label">Sequential Committees</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">335/yr</div><div class="label">Assessments (8 staff)</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">2 ppl</div><div class="label">Contract Team (30+/mo)</div></div>
+  </div>
+  <div class="quote-block">
+    <p>"Whoever screams loudest gets priority."</p>
+    <span class="attribution">-- Security Architect, on current prioritization</span>
+  </div>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+    <div class="card rose">
+      <h4>Fragmented Intake</h4>
+      <p>ServiceNow, AI forms, Power Apps, email, feedback platform -- same information submitted to multiple teams. Tool decay: forms show 2024 dates in 2026, owners left org.</p>
+    </div>
+    <div class="card rose">
+      <h4>Sequential Bottleneck</h4>
+      <p>Requesters independently contact each team, submit separate intakes. "It's completely on the onus of the requester." No visibility into sequence or timing.</p>
+    </div>
+    <div class="card rose">
+      <h4>Resource Crisis</h4>
+      <p>Security: "I need three of me." Legal: 2 partners for all contracts. Architecture recently reduced. TPRM doubled output while cutting timeline -- at capacity.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 2: Discovery Findings -->
+<div class="slide" data-slide="2">
+  <h2>Discovery Findings -- 14 Stakeholder Sessions</h2>
+  <p>Feb-Mar 2026: 35+ stakeholders across 8 functional areas including 5 deep-dive sessions with Product, Architecture, TPRM, Security Architecture, and Vendor Management. 24 process gaps documented.</p>
+  <div class="two-col">
+    <div>
+      <h3>Top Pain Points by Severity</h3>
+      <table class="styled-table small-table">
+        <thead><tr><th>#</th><th>Theme</th><th>Severity</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Fragmented Intake (5+ channels)</td><td><span class="tier-badge tier-unacceptable">Critical</span></td></tr>
+          <tr><td>2</td><td>Sequential DART Formation</td><td><span class="tier-badge tier-unacceptable">Critical</span></td></tr>
+          <tr><td>3</td><td>No Prioritization Standard</td><td><span class="tier-badge tier-unacceptable">Critical</span></td></tr>
+          <tr><td>4</td><td>Contract Team Crisis (2 ppl/30+)</td><td><span class="tier-badge tier-unacceptable">Critical</span></td></tr>
+          <tr><td>5</td><td>Security Capacity Bottleneck</td><td><span class="tier-badge tier-unacceptable">Critical</span></td></tr>
+          <tr><td>6</td><td>AI Governance Complexity (60+ queue)</td><td><span class="tier-badge tier-unacceptable">Critical</span></td></tr>
+          <tr><td>7</td><td>RAE 28d Actual vs 14d Target</td><td><span class="tier-badge tier-high">High</span></td></tr>
+          <tr><td>8</td><td>DD 75 Days Internal Review</td><td><span class="tier-badge tier-high">High</span></td></tr>
+          <tr><td>9</td><td>AI Questionnaire Proliferation (3 extra)</td><td><span class="tier-badge tier-high">High</span></td></tr>
+          <tr><td>10</td><td>Tool Decay (locked forms, unknown owners)</td><td><span class="tier-badge tier-high">High</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>What Stakeholders Told Us</h3>
+      <div class="quote-block">
+        <p>"I can understand 100% why requesters are frustrated."</p>
+        <span class="attribution">-- Architecture Lead</span>
+      </div>
+      <div class="quote-block">
+        <p>"That team desperately needs automation."</p>
+        <span class="attribution">-- TPRM Lead, on contracting</span>
+      </div>
+      <div class="quote-block">
+        <p>"The process never solved the step of a requester who's never been through onboarding."</p>
+        <span class="attribution">-- Vendor Management Lead</span>
+      </div>
+      <div class="quote-block">
+        <p>"Security is our biggest bottleneck... I need three of me right now."</p>
+        <span class="attribution">-- Security Architect</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 3: System Landscape (NEW) -->
+<div class="slide" data-slide="3">
+  <h2>System Landscape &amp; Integration Gaps</h2>
+  <p>Seven systems support the onboarding process today. Most operate as data silos with manual PDF transfers between them. Only Ariba-Oracle has an API connection.</p>
+  <div class="system-map">
+    <div class="system-node disconnected"><h4>ServiceNow</h4><p>START process intake</p><p style="color:var(--sla-rose);font-weight:600;">No downstream integration</p></div>
+    <div class="system-node"><h4>Ariba</h4><p>Registration, NDAs, contracts</p><p style="color:var(--sla-emerald);">API to Oracle</p></div>
+    <div class="system-node disconnected"><h4>OneTrust</h4><p>Risk assessments, tracking</p><p style="color:var(--sla-rose);">Manual PDF exports</p></div>
+    <div class="system-node"><h4>Oracle</h4><p>Accounts payable</p><p style="color:var(--sla-emerald);">API from Ariba</p></div>
+    <div class="system-node disconnected"><h4>Confluence + Catfox</h4><p>Architecture approvals</p><p style="color:var(--sla-rose);">Plugin only, no workflow</p></div>
+    <div class="system-node disconnected"><h4>JIRA</h4><p>Architecture ticket tracking</p><p style="color:var(--sla-rose);">Per-team, no cross-view</p></div>
+    <div class="system-node disconnected"><h4>Power Apps / Forms</h4><p>Rapid risk, AI intake</p><p style="color:var(--sla-rose);">Siloed, form decay</p></div>
+    <div class="system-node target"><h4>Camunda 8 (Target)</h4><p>E2E process orchestration</p><p style="color:var(--sla-emerald);font-weight:600;">Unified integration hub</p></div>
+  </div>
+  <div class="card gold" style="margin-top:0.5rem;">
+    <h4>The Integration Gap</h4>
+    <p>Data moves between systems via email, PDF attachments, and manual re-entry. A single onboarding request touches 4-5 systems with zero automated handoff. Camunda 8 + OneTrust API integration creates the missing orchestration layer.</p>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 4: Quantified Pain (NEW) -->
+<div class="slide" data-slide="4">
+  <h2>Quantified Pain -- By the Numbers</h2>
+  <p>Deep-dive sessions with TPRM, Architecture, and Security surfaced hard metrics that replace anecdotal evidence with measurable baselines.</p>
+  <div class="metric-row">
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">335</div><div class="label">Assessments / Year</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">28-29d</div><div class="label">RAE Actual (14d target)</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">75d</div><div class="label">DD Internal Review</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">30+</div><div class="label">Contracts / Month</div></div>
+  </div>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card rose">
+      <h4>TPRM Bottlenecks</h4>
+      <ul>
+        <li>RAE: 80-question internal questionnaire, 28-29 days (2x the 14-day target)</li>
+        <li>DD: 830-question vendor questionnaire with skip logic. Vendor: 30 days. Internal: 75 days (down from 144 in 2019)</li>
+        <li>Team of 8 handling 335 assessments/year -- at capacity</li>
+        <li>Competitor benchmark: 60-90 days E2E with less mature processes</li>
+      </ul>
+    </div>
+    <div class="card rose">
+      <h4>Resource Constraints</h4>
+      <ul>
+        <li>Legal/Contracts: <strong>2 people</strong> handling 30+ contracts/month. "Dumpster fire" for 4 years</li>
+        <li>Security negotiation: Up to <strong>1.5 years</strong> for security exhibits</li>
+        <li>Architecture: Recently reduced from 4-5 to 2-3 people</li>
+        <li>Security for AI: "I need three of me" -- 3x vendor contact for AI reviews</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h4>Governance Overhead</h4>
+      <ul>
+        <li>Business Council: Monthly meetings, 2-3 of 8-10 attend. Evolved to email voting</li>
+        <li>AI committees: Working Committee + Decision Committee "somewhat redundant with TBC"</li>
+        <li>3 additional AI questionnaires "snuck up" -- TPRM Lead unaware of origin</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>External Benchmark</h4>
+      <ul>
+        <li>Competitor E2E: <strong>60-90 days</strong> (less mature processes)</li>
+        <li>Current E2E: <strong>6-9 months</strong></li>
+        <li>Target E2E: <strong>19-30 days</strong> (pathway dependent)</li>
+        <li>Acceleration hypothesis: "Fix the standard path, free capacity for exceptions"</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 5: Current State Pain Points -->
+<div class="slide" data-slide="5">
+  <h2>Current State -- Where Time Goes</h2>
+  <p>The current process is not one process -- it's multiple disconnected workflows stitched together with email, meetings, and institutional memory.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card rose">
+      <h4>5+ Intake Channels</h4>
+      <ul>
+        <li>ServiceNow TBC Intake (formal)</li>
+        <li>REA Form (~80 questions, frequently incorrect)</li>
+        <li>AI Use Case + AI Governance Intake (3 committees)</li>
+        <li>Power Apps Rapid Risk Assessment</li>
+        <li>Email, feedback platform, advisor tool approvals</li>
+        <li>Financial business case form (shows 2024, locked, owner gone)</li>
+      </ul>
+    </div>
+    <div class="card rose">
+      <h4>Sequential DART Formation</h4>
+      <ul>
+        <li>Requester independently contacts each review team</li>
+        <li>Submits separate intake requests to each</li>
+        <li>No visibility into who else is reviewing or timing</li>
+        <li>"It's completely on the onus of the requester"</li>
+        <li>Same use case presented to multiple committees</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h4>Contracting Crisis</h4>
+      <ul>
+        <li>2 people negotiating <strong>30+ contracts/month</strong></li>
+        <li>4 years unsustainable -- no relief in sight</li>
+        <li>No reportable format for contract deviations</li>
+        <li>Unknown compliance status for older contracts</li>
+        <li>Security exhibit negotiation: up to 1.5 years</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h4>Zero Automation</h4>
+      <ul>
+        <li>All routing manual, no workflow integration</li>
+        <li>Dependency on individual knowledge</li>
+        <li>"Can't improve due to lack of resources, buy tools to help, need resources to support new tools" -- technical debt cycle</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 6: Cost of Inaction -->
+<div class="slide" data-slide="6">
+  <h2>Cost of Inaction</h2>
+  <p>Every month the current process continues, the organization absorbs compounding risk. These are not hypothetical -- they are documented by stakeholders across 14 sessions.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card rose">
+      <h4>Compliance Exposure</h4>
+      <ul>
+        <li>No defined "secure by design" standard</li>
+        <li>Unknown compliance status for older contracts</li>
+        <li>AI tools onboarded without consistent governance</li>
+        <li>3 extra AI questionnaires with unknown origin</li>
+        <li>OCC 2023-17 requires documented third-party risk processes</li>
+      </ul>
+    </div>
+    <div class="card rose">
+      <h4>Competitive Disadvantage</h4>
+      <ul>
+        <li>6-9 month cycles while competitors achieve 60-90 days</li>
+        <li>Teams bypass processes, seeking "fastest path"</li>
+        <li>Solutions underutilized -- "multi-million dollar tools used for 1/3 of capabilities"</li>
+        <li>Speculative requests clog the pipeline meant for defined needs</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h4>Resource Waste</h4>
+      <ul>
+        <li>Same information entered 3-5x across forms</li>
+        <li>Reviewers report 40%+ rework from incomplete submissions</li>
+        <li>Vendors contacted 3x independently for AI reviews</li>
+        <li>Architecture pre-screens that should happen once, happen per-committee</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h4>Organizational Friction</h4>
+      <ul>
+        <li>"Whoever screams loudest" replaces formal prioritization</li>
+        <li>EVP support pushes reviews down the queue</li>
+        <li>No portfolio view for data-driven capacity decisions</li>
+        <li>Distributed pods operate without cross-functional visibility</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION B: THE VISION (Slides 7-13) -->
+<!-- ============================================================ -->
+
+<!-- Slide 7: Section Divider -->
+<div class="slide slide-section" data-slide="7" style="justify-content:center;">
+  <h2>The Proposed Solution</h2>
+  <p style="color:rgba(255,255,255,0.85);font-size:1.1rem;max-width:800px;">A 5-phase structured lifecycle with 3-pathway routing, a concierge/quarterback model replacing sequential DART formation, simultaneous engagement of all review streams, and DMN-driven decision intelligence.</p>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 8: Solution Overview -->
+<div class="slide" data-slide="8">
+  <h2>5-Phase Onboarding Lifecycle</h2>
+  <p>Replace 6-9 month ad-hoc cycles with a structured, DMN-driven 5-phase journey. Now with 3 request types, NDA gate, and simultaneous engagement. Phases 6-8 handed off to the full governance lifecycle.</p>
+  <div class="phase-pipeline">
+    <div class="phase-pip" style="background:var(--sla-blue);"><span class="num">1</span>Intake<br><small style="opacity:0.85;">1 day</small></div>
+    <div class="phase-pip" style="background:#1d4ed8;"><span class="num">2</span>Planning<br><small style="opacity:0.85;">3 days</small></div>
+    <div class="phase-pip" style="background:var(--sla-deep-blue);"><span class="num">3</span>Due Diligence<br><small style="opacity:0.85;">5 days</small></div>
+    <div class="phase-pip" style="background:#1e3a8a;"><span class="num">4</span>Governance<br><small style="opacity:0.85;">5 days</small></div>
+    <div class="phase-pip" style="background:var(--sla-navy);"><span class="num">5</span>Contracting<br><small style="opacity:0.85;">5 days</small></div>
+    <div class="phase-pip grayed" style="background:#64748B;border-radius:0 6px 6px 0;"><span class="num">6-8</span>Post-Onboarding<br><small style="opacity:0.85;">Full lifecycle</small></div>
+  </div>
+  <div class="asis-tobe">
+    <div class="asis">
+      <h4>Current State</h4>
+      <ul>
+        <li>6-9 month end-to-end cycle</li>
+        <li>5+ disconnected intake channels</li>
+        <li>18 sequential committee reviews</li>
+        <li>Requester forms own DART team</li>
+        <li>Binary Buy/Build model only</li>
+        <li>28-day RAE (2x target), 75-day DD</li>
+      </ul>
+    </div>
+    <div class="tobe">
+      <h4>Proposed State</h4>
+      <ul>
+        <li>19-day standard path (90%+ reduction)</li>
+        <li>Single unified intake with 3 request types</li>
+        <li>5 parallel streams via simultaneous engagement</li>
+        <li>Concierge/quarterback orchestrates all teams</li>
+        <li>3-pathway: Buy / Build / Enable (Vendor Affinity)</li>
+        <li>DMN-driven scoring, routing, and escalation</li>
+      </ul>
+    </div>
+  </div>
+  <div class="metric-row">
+    <div class="metric"><div class="value" style="color:var(--sla-emerald);">19d</div><div class="label">Standard Path</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-emerald);">~30d</div><div class="label">Enable Path</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-emerald);">14d</div><div class="label">AI Fast-Track</div></div>
+    <div class="metric"><div class="value">4</div><div class="label">DMN Tables</div></div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 9: 3-Pathway Model -->
+<div class="slide" data-slide="9">
+  <h2>3-Pathway Routing Model</h2>
+  <p>Discovery revealed a fundamental third pathway -- <strong>Enable (Vendor Affinity)</strong> -- where the organization evaluates and approves but advisors purchase directly. v3 adds full detail on the Enable pathway and its financial bypass.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+    <div class="card" style="border-left-color:var(--sla-gold);">
+      <h4><span class="bg-buy">Buy</span></h4>
+      <p>Organization purchases licenses, provisions software, bears full cost.</p>
+      <ul style="font-size:0.8rem;color:var(--sla-gray);">
+        <li>Org investment: <strong>High</strong></li>
+        <li>Full SP3 evaluation + SP4 contracting</li>
+        <li>Timeline: 19 days (standard)</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left-color:var(--sla-blue);">
+      <h4><span class="bg-build">Build</span></h4>
+      <p>Internal development with PDLC sub-process. May include third-party components.</p>
+      <ul style="font-size:0.8rem;color:var(--sla-gray);">
+        <li>Org investment: <strong>High</strong></li>
+        <li>PDLC lifecycle + integration governance</li>
+        <li>Skips vendor evaluation, enters SP4 directly</li>
+      </ul>
+    </div>
+    <div class="card emerald">
+      <h4><span class="bg-fast">Enable (Vendor Affinity)</span></h4>
+      <p>Evaluate and approve only -- advisors purchase directly from vendors. No org funding required.</p>
+      <ul style="font-size:0.8rem;color:var(--sla-gray);">
+        <li>Org investment: <strong>None/Low</strong></li>
+        <li>Skip financial analysis, compliance review only</li>
+        <li>Timeline: <strong>~30 days</strong> (target)</li>
+        <li>Vendor partnership programs, advisor tools</li>
+      </ul>
+    </div>
+  </div>
+  <div class="quote-block">
+    <p>"There's a model where we evaluate it, we approve it, and the advisors go ahead and buy it themselves."</p>
+    <span class="attribution">-- Product Manager, describing the Enable/Vendor Affinity pathway</span>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 10: Concierge Model (NEW) -->
+<div class="slide" data-slide="10">
+  <h2>Process Quarterback / Concierge Model</h2>
+  <p>Architecture's Governance Facilitator already demonstrates what good looks like: pre-screening, quality gates, follow-up management. This model extends E2E across all review streams.</p>
+  <div class="asis-tobe">
+    <div class="asis">
+      <h4>Current: Requester Self-Navigation</h4>
+      <ul>
+        <li>Requester independently contacts 5-6 teams</li>
+        <li>Submits separate intake requests to each</li>
+        <li>No visibility into who else is reviewing</li>
+        <li>Incomplete artifacts waste SME time</li>
+        <li>"It's completely on the onus of the requester"</li>
+      </ul>
+    </div>
+    <div class="tobe">
+      <h4>Proposed: Concierge Orchestration</h4>
+      <ul>
+        <li>Single point of contact for all requesters</li>
+        <li>Automated DART formation (no requester burden)</li>
+        <li>Quality gates reject incomplete before SME review</li>
+        <li>Proactive status updates and notifications</li>
+        <li>Cross-functional escalation authority</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card teal">
+      <h4>Architecture's Proven Model</h4>
+      <ul style="font-size:0.85rem;">
+        <li>Pre-screens all design artifacts before ARB/SDRB</li>
+        <li>"If any artifact is not in good order, remove it from the agenda"</li>
+        <li>Captures action items, manages follow-ups via JIRA</li>
+        <li>Runs both ARB and SDRB -- single facilitator</li>
+      </ul>
+    </div>
+    <div class="card emerald">
+      <h4>E2E Extension</h4>
+      <ul style="font-size:0.85rem;">
+        <li>Extends Governance Facilitator pattern across all streams</li>
+        <li>Camunda 8 automates routing, timers, escalation</li>
+        <li>Concierge handles exceptions, human judgment points</li>
+        <li>"Somebody needs to be empowered to say I own this"</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 11: Simultaneous Engagement (NEW) -->
+<div class="slide" data-slide="11">
+  <h2>Simultaneous Engagement Model</h2>
+  <p>Replace sequential DART formation with parallel engagement of all review streams. Architecture Lead's explicit recommendation -- directly addresses the "present the same thing over and over" problem.</p>
+  <div class="asis-tobe">
+    <div class="asis">
+      <h4>Current: Sequential</h4>
+      <ul>
+        <li>TBC approval</li>
+        <li>Requester contacts Architecture... wait</li>
+        <li>Requester contacts Security... wait</li>
+        <li>Requester contacts Compliance... wait</li>
+        <li>Timeline: Weeks to months</li>
+        <li>Dependent on requester initiative</li>
+      </ul>
+    </div>
+    <div class="tobe">
+      <h4>Proposed: Simultaneous</h4>
+      <ul>
+        <li>Concierge triggers parallel engagement:</li>
+        <li>Architecture + Security + Compliance + AI Gov + Legal</li>
+        <li>All streams receive request data simultaneously</li>
+        <li>First stream done doesn't block others</li>
+        <li>Timeline: Bounded by slowest stream SLA</li>
+        <li>Zero requester burden</li>
+      </ul>
+    </div>
+  </div>
+  <div class="quote-block">
+    <p>"I disagree with that because that makes us a bottleneck... there should be simultaneous engagement of all the major players that have a vote."</p>
+    <span class="attribution">-- Architecture Lead, rejecting sequential DART</span>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 12: Top-Level Process -->
+<div class="slide" data-slide="12">
+  <h2>Top-Level Process -- Orchestrator View</h2>
+  <p>The BPMN model shows two pools: Enterprise Governance (collapsed sub-processes) and Vendor/Third Party (expanded tasks). Each collapsed box expands into a detailed sub-process. Now targeting Camunda 8 (Zeebe) with 39 JSON forms.</p>
+  <div class="diagram-container">
+    <img src="assets/top-level.svg" alt="Top-level BPMN orchestrator showing 5 phases with Buy/Build gateway and vendor interaction pool">
+  </div>
+  <div class="card-grid" style="grid-template-columns:1fr 1fr 1fr;">
+    <div class="card">
+      <h4>2 Pools</h4>
+      <p>Enterprise Governance orchestrates internally. Vendor pool handles external communication via message flows.</p>
+    </div>
+    <div class="card teal">
+      <h4>4 Message Flows</h4>
+      <p>DD Request, Vendor Response, Contract Draft, Signed Contract -- cross-pool communication at SP3 and SP4.</p>
+    </div>
+    <div class="card gold">
+      <h4>Camunda 8 / Zeebe</h4>
+      <p>39 JSON forms (schema v16), zeebe:assignmentDefinition for role routing, zeebe:formDefinition for Tasklist integration.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 13: 3 Request Types (NEW) -->
+<div class="slide" data-slide="13">
+  <h2>3 Request Types -- Intake Routing</h2>
+  <p>v2 treated all requests identically. Discovery revealed three fundamentally different request types that require different process paths.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+    <div class="card" style="border-left-color:var(--sla-blue);border-left-width:6px;">
+      <h4>Defined Need</h4>
+      <p>Business owner knows requirements, has vendor selected. Most common type.</p>
+      <ul style="font-size:0.8rem;color:var(--sla-gray);">
+        <li>Standard 5-phase path</li>
+        <li>Full evaluation and contracting</li>
+        <li>Timeline: 19 days</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left-color:var(--sla-gold);border-left-width:6px;">
+      <h4>Forced Update</h4>
+      <p>Existing vendor, product changes: on-prem to SaaS, EOL, new AI capabilities. Growing volume.</p>
+      <ul style="font-size:0.8rem;color:var(--sla-gray);">
+        <li>Re-evaluation path (skip intake)</li>
+        <li>Start at SP3 with existing vendor data</li>
+        <li>Leverage prior assessment history</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left-color:var(--sla-teal);border-left-width:6px;">
+      <h4>Speculative / Exploratory</h4>
+      <p>Advisory support, no sponsorship, generating interest. Currently clogs the standard pipeline.</p>
+      <ul style="font-size:0.8rem;color:var(--sla-gray);">
+        <li>Idea funnel (pre-SP1)</li>
+        <li>NOT standard process</li>
+        <li>Self-service mini-RFP tools</li>
+      </ul>
+    </div>
+  </div>
+  <div class="quote-block">
+    <p>"That's a fantastic idea that should be in the slides."</p>
+    <span class="attribution">-- TPRM Lead, on shift-left / mini-RFP for business users</span>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION C: DEEP DIVE (Slides 14-25) -->
+<!-- ============================================================ -->
+
+<!-- Slide 14: SP1 -->
+<div class="slide" data-slide="14">
+  <h2>Phase 1: Request &amp; Triage</h2>
+  <div class="asis-tobe" style="margin-bottom:1rem;">
+    <div class="asis">
+      <h4>Current Pain</h4>
+      <ul>
+        <li>5+ intake channels, no unified routing</li>
+        <li>REA form: ~80 questions, frequently incomplete</li>
+        <li>No deal-killer pre-screen</li>
+        <li>Tool decay: form locked, owner left org</li>
+        <li>Informal channels (email, feedback platform) untracked</li>
+      </ul>
+    </div>
+    <div class="tobe">
+      <h4>Proposed Solution</h4>
+      <ul>
+        <li>Single unified intake absorbing all channels</li>
+        <li>3 request type routing (Defined/Forced/Speculative)</li>
+        <li>Automated completeness screening</li>
+        <li>Deal-killer pre-screen: known no-gos rejected at intake</li>
+        <li>NDA gate before detailed evaluation</li>
+      </ul>
+    </div>
+  </div>
+  <div class="diagram-container">
+    <img src="assets/sp1-request-triage.svg" alt="SP1 Request and Triage sub-process">
+  </div>
+  <div class="metric-row">
+    <div class="metric"><div class="value" style="color:var(--sla-emerald);">1 day</div><div class="label">Target SLA</div></div>
+    <div class="metric"><div class="value">75%</div><div class="label">Automation</div></div>
+    <div class="metric"><div class="value">3</div><div class="label">Request Types</div></div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 15: SP1 Key Improvements -->
+<div class="slide" data-slide="15">
+  <h2>Phase 1: Key Improvements</h2>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card emerald">
+      <h4>Unified Intake Gateway (GAP-1)</h4>
+      <p>Single entry point absorbs all 5+ channels including informal submissions. Dynamic routing based on request type. Eliminates duplicate submissions.</p>
+      <div class="quote-block" style="margin-top:8px;">
+        <p>"The process never solved the step of a requester who's never been through onboarding."</p>
+        <span class="attribution">-- Vendor Management Lead</span>
+      </div>
+    </div>
+    <div class="card emerald">
+      <h4>NDA Gate (GAP-17)</h4>
+      <p>Mandatory NDA execution after initial triage, before detailed evaluation. Security and Legal align on early NDA. Prevents proprietary information exchange without legal protection.</p>
+    </div>
+    <div class="card gold">
+      <h4>Deal-Killer Pre-Screen (GAP-16)</h4>
+      <p>DMN-driven check against managed no-go list. Certain AI models are "complete no-gos" -- reject immediately with explanation rather than consuming weeks of review capacity.</p>
+    </div>
+    <div class="card">
+      <h4>Completeness Quality Gate (GAP-9)</h4>
+      <p>Automated screening before reaching SME review. AI-assisted pre-screening validates minimum viable fields. Addresses the 40%+ rework from incomplete submissions.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 16: SP2 -->
+<div class="slide" data-slide="16">
+  <h2>Phase 2: Planning &amp; Routing</h2>
+  <div class="asis-tobe" style="margin-bottom:1rem;">
+    <div class="asis">
+      <h4>Current Pain</h4>
+      <ul>
+        <li>No formal prioritization -- "whoever screams loudest"</li>
+        <li>Exception requests displace roadmap work</li>
+        <li>Business Council: 2-3 of 8-10 attend monthly</li>
+        <li>Binary Buy/Build model -- no Enable pathway</li>
+      </ul>
+    </div>
+    <div class="tobe">
+      <h4>Proposed Solution</h4>
+      <ul>
+        <li>DMN-driven prioritization with capacity impact</li>
+        <li>3-pathway routing: Buy, Build, Enable</li>
+        <li>Async governance decisions with SLA timers</li>
+        <li>Capacity-aware routing around constrained teams</li>
+      </ul>
+    </div>
+  </div>
+  <div class="diagram-container">
+    <img src="assets/sp2-planning-routing.svg" alt="SP2 Planning and Routing sub-process">
+  </div>
+  <div class="metric-row">
+    <div class="metric"><div class="value" style="color:var(--sla-emerald);">3 days</div><div class="label">Target SLA</div></div>
+    <div class="metric"><div class="value">60%</div><div class="label">Automation</div></div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 17: SP3 -->
+<div class="slide" data-slide="17">
+  <h2>Phase 3: Evaluation &amp; Due Diligence</h2>
+  <div class="asis-tobe" style="margin-bottom:1rem;">
+    <div class="asis">
+      <h4>Current Pain</h4>
+      <ul>
+        <li>18 sequential committees -- meetings 5+ weeks apart</li>
+        <li>830-question DD questionnaire, 75-day internal review</li>
+        <li>Vendors contacted 3x independently for AI reviews</li>
+        <li>No defined security baseline -- enforcement "fairly loose"</li>
+      </ul>
+    </div>
+    <div class="tobe">
+      <h4>Proposed Solution</h4>
+      <ul>
+        <li><strong>5 parallel streams</strong> via simultaneous engagement</li>
+        <li>OneTrust integration for automated assessments</li>
+        <li>6-tier risk-based security assessment routing</li>
+        <li>Single vendor contact point (consolidate 3x)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="diagram-container">
+    <img src="assets/sp3-evaluation-dd.svg" alt="SP3 Evaluation and Due Diligence with 5 parallel branches">
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 18: SP3 Key Improvements -->
+<div class="slide" data-slide="18">
+  <h2>Phase 3: Key Improvements</h2>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card emerald">
+      <h4>Simultaneous Engagement (GAP-19)</h4>
+      <p>All 5 evaluation streams triggered simultaneously by concierge. No requester burden. Bounded by slowest stream SLA, not sequential queue.</p>
+      <ul style="font-size:0.8rem;">
+        <li>Technical Architecture Review</li>
+        <li>Security Assessment (6 risk-based categories)</li>
+        <li>Risk, Compliance &amp; Legal Review</li>
+        <li>Financial &amp; TCO Analysis</li>
+        <li>Vendor Landscape Assessment</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h4>6-Tier Security Assessment (GAP-12)</h4>
+      <p>Risk-based categories from Security Architect replace one-size-fits-all review:</p>
+      <ul style="font-size:0.8rem;">
+        <li>Local software install (lower scrutiny)</li>
+        <li>Platform-based (full documentation)</li>
+        <li>Previously approved domains (fast-track)</li>
+        <li>Updates to existing platforms (streamlined)</li>
+        <li>Module additions (streamlined)</li>
+        <li>New/novel capabilities (full assessment)</li>
+      </ul>
+    </div>
+    <div class="card teal">
+      <h4>OneTrust Integration (GAP-21)</h4>
+      <p>Zeebe service tasks create OneTrust assessments, retrieve results. Risk scores feed DMN routing. Replaces manual PDF transfers between systems.</p>
+    </div>
+    <div class="card">
+      <h4>AI Consolidation (GAP-23)</h4>
+      <p>Merge 3 extra AI questionnaires into single dataset. Single vendor contact point for AI reviews (currently 3x). TPRM Lead already in progress on merger.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 19: SP4 -->
+<div class="slide" data-slide="19">
+  <h2>Phase 4: Contracting &amp; Build</h2>
+  <div class="asis-tobe" style="margin-bottom:1rem;">
+    <div class="asis">
+      <h4>Current Pain</h4>
+      <ul>
+        <li>2 people negotiating 30+ contracts/month</li>
+        <li>Security exhibit negotiation: up to 1.5 years</li>
+        <li>No reportable contract deviation tracking</li>
+        <li>Minor corrections require formal denial/restart</li>
+      </ul>
+    </div>
+    <div class="tobe">
+      <h4>Proposed Solution</h4>
+      <ul>
+        <li>Contract template standardization + automation</li>
+        <li>OneTrust deviation tracking and control gap documentation</li>
+        <li>Finance rework loop for minor corrections</li>
+        <li>Enable pathway skips financial validation</li>
+      </ul>
+    </div>
+  </div>
+  <div class="diagram-container">
+    <img src="assets/sp4-contracting-build.svg" alt="SP4 Contracting and Build with Buy/Build pathway split">
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 20: SP4 Key Improvements -->
+<div class="slide" data-slide="20">
+  <h2>Phase 4: Key Improvements</h2>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card emerald">
+      <h4>Contract Automation (GAP-20)</h4>
+      <p>Automated standard-terms review. OneTrust deviation tracking. Compliance status for legacy contracts. Target: reduce 30+/month manual burden by 50%+.</p>
+      <div class="quote-block" style="margin-top:8px;">
+        <p>"That team desperately needs automation."</p>
+        <span class="attribution">-- TPRM Lead</span>
+      </div>
+    </div>
+    <div class="card teal">
+      <h4>PDLC Integration (Build Path)</h4>
+      <p>Build pathway enters nested PDLC sub-process: Architecture Review, Development, Testing &amp; QA, Integration Testing -- with retry loop on test failures.</p>
+    </div>
+    <div class="card gold">
+      <h4>Finance Rework Loop (GAP-4)</h4>
+      <p>Minor corrections (dates, coding matrix) loop back without formal denial. Only substantive issues require process restart.</p>
+    </div>
+    <div class="card">
+      <h4>Enable Pathway Bypass</h4>
+      <p>Vendor Affinity tools require no org funding but process still requires funding validation. Enable path explicitly bypasses financial analysis.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 21: PDLC -->
+<div class="slide" data-slide="21">
+  <h2>PDLC: Product Development Life Cycle</h2>
+  <p>When the Build pathway is selected, SP4 contains a nested PDLC sub-process that governs internal development with quality gates.</p>
+  <div class="diagram-container">
+    <img src="assets/pdlc.svg" alt="PDLC nested sub-process showing Architecture Review, Development, Testing, Integration">
+  </div>
+  <div class="card-grid" style="grid-template-columns:1fr 1fr 1fr;">
+    <div class="card">
+      <h4>Architecture Review</h4>
+      <p>HLD required for ALL acquisitions. Then SD/SYDD (single domain) or PSS (cross-enterprise, most AI products). ARB 2-week SLA, SDRB same-day for well-prepared teams.</p>
+    </div>
+    <div class="card teal">
+      <h4>Test Failure Retry</h4>
+      <p>If QA tests fail, loop back to development via merge gateway. No manual restart required -- automatic retry pattern.</p>
+    </div>
+    <div class="card emerald">
+      <h4>AI-Assisted Pre-Screening</h4>
+      <p>Architecture already uses Cursor AI for diagram generation and custom AI agent for pattern conformance. Integrate into quality gates.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 22: SP5 -->
+<div class="slide" data-slide="22">
+  <h2>Phase 5: UAT &amp; Go-Live</h2>
+  <div class="asis-tobe" style="margin-bottom:1rem;">
+    <div class="asis">
+      <h4>Current Pain</h4>
+      <ul>
+        <li>Binary approve/reject -- no conditional approval</li>
+        <li>No formal ownership assignment</li>
+        <li>Dual ownership confusion: Business Owner vs Vendor Owner</li>
+        <li>Incomplete CMDB -- nobody knows who owns what</li>
+      </ul>
+    </div>
+    <div class="tobe">
+      <h4>Proposed Solution</h4>
+      <ul>
+        <li>Time-bound conditional approval with monitoring</li>
+        <li>Mandatory ownership assignment (Business + Vendor Owner)</li>
+        <li>Requestor notification before close</li>
+        <li>Annual ownership validation process</li>
+      </ul>
+    </div>
+  </div>
+  <div class="diagram-container">
+    <img src="assets/sp5-uat-golive.svg" alt="SP5 UAT and Go-Live">
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 23: SP5 Key Improvements -->
+<div class="slide" data-slide="23">
+  <h2>Phase 5: Key Improvements</h2>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card emerald">
+      <h4>Time-Bound Conditional Approval (GAP-13)</h4>
+      <p>Three outcomes: Approved, Approved with Conditions (monitoring timer), Rejected. Enables "we want it by Q2 but controls not ready until Q3" scenario.</p>
+    </div>
+    <div class="card gold">
+      <h4>Mandatory Ownership (GAP-14)</h4>
+      <p>Before close: Business Owner (executes agreement) + Vendor Owner (manages relationship). Dual ownership model with clear accountability. Feeds CMDB.</p>
+    </div>
+    <div class="card teal">
+      <h4>Requestor Notification</h4>
+      <p>Cross-lane notification pattern: notify the initiating lane before process end. End event in same lane as start event for visual symmetry.</p>
+    </div>
+    <div class="card">
+      <h4>Handoff Artifact</h4>
+      <p>Governance record: executed contract, controls baseline, regulatory attestations, risk tier, DMN routing history, compliance package, OneTrust assessment results.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 24: Vendor Interaction -->
+<div class="slide" data-slide="24">
+  <h2>Vendor Interaction Model</h2>
+  <p>The Vendor/Third Party pool runs in parallel with Enterprise Governance. Cross-pool communication via 4 message flows at SP3 and SP4.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card">
+      <h4>Enterprise &rarr; Vendor</h4>
+      <table class="styled-table small-table" style="margin-top:8px;">
+        <thead><tr><th>Message Flow</th><th>Phase</th><th>Content</th></tr></thead>
+        <tbody>
+          <tr><td>DD Request</td><td>SP3</td><td>Due diligence questionnaire (830 Qs with skip logic)</td></tr>
+          <tr><td>Contract Draft</td><td>SP4</td><td>MSA/SLA terms, security controls baseline</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card teal">
+      <h4>Vendor &rarr; Enterprise</h4>
+      <table class="styled-table small-table" style="margin-top:8px;">
+        <thead><tr><th>Message Flow</th><th>Phase</th><th>Content</th></tr></thead>
+        <tbody>
+          <tr><td>Vendor Response</td><td>SP3</td><td>Completed questionnaire, SOC2/ISO certs, evidence</td></tr>
+          <tr><td>Signed Contract</td><td>SP4</td><td>Executed MSA, countersigned terms</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card gold" style="margin-top:1rem;">
+    <h4>Vendor Lifecycle Tasks</h4>
+    <p style="font-size:0.85rem;">Vendor pool: Intake &amp; NDA, Proposal Preparation, Technical Demo, Security Review, Compliance Review, Contract Review, Contract Execution, System Onboarding, Deployment Support, Close &amp; Confirm. Each with SLA timers and boundary escalation events.</p>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 25: OneTrust Integration (NEW) -->
+<div class="slide" data-slide="25">
+  <h2>OneTrust Integration Architecture</h2>
+  <p>OneTrust Assessment Automation and TPRM module integrate with Camunda 8 at two critical touchpoints in SP3, replacing manual PDF transfers with automated service task patterns.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+    <div class="card" style="border-left-color:var(--sla-blue);border-left-width:6px;">
+      <h4>1. Risk Assessment (SP3)</h4>
+      <ul style="font-size:0.8rem;color:var(--sla-gray);">
+        <li>Zeebe service task creates OneTrust assessment</li>
+        <li>Assessor completes RAE in OneTrust</li>
+        <li>Zeebe service task retrieves results</li>
+        <li>Process variables: riskScore, riskTier</li>
+        <li>DMN routing continues based on output</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left-color:var(--sla-gold);border-left-width:6px;">
+      <h4>2. Vendor Due Diligence (SP3)</h4>
+      <ul style="font-size:0.8rem;color:var(--sla-gray);">
+        <li>OneTrust TPRM module for vendor questionnaire</li>
+        <li>830-question DD with skip logic in OneTrust</li>
+        <li>Vendor completes via OneTrust portal</li>
+        <li>Results auto-fed back to Camunda process</li>
+        <li>Replaces current 30-day manual cycle</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left-color:var(--sla-emerald);border-left-width:6px;">
+      <h4>3. Deviation Tracking (SP4)</h4>
+      <ul style="font-size:0.8rem;color:var(--sla-gray);">
+        <li>Contract deviations recorded in OneTrust</li>
+        <li>Control gaps documented with risk acceptance</li>
+        <li>Replaces "no reportable format" status quo</li>
+        <li>Regulatory alignment: OCC 2023-17, SOX</li>
+        <li>Auth: OAuth2, tenant-specific hostname</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION D: DECISION INTELLIGENCE (Slides 26-28) -->
+<!-- ============================================================ -->
+
+<!-- Slide 26: DMN-First -->
+<div class="slide" data-slide="26">
+  <h2>DMN-First Decision Intelligence</h2>
+  <p>Every routing decision is driven by a DMN 1.3 decision table -- not hardcoded logic. Business rules updated without changing the process model.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card">
+      <h4>Why Decision Tables?</h4>
+      <ul>
+        <li><strong>Auditable</strong>: Every decision produces a traceable record</li>
+        <li><strong>Maintainable</strong>: Business users update rules without developers</li>
+        <li><strong>Testable</strong>: Each rule validated independently</li>
+        <li><strong>Consistent</strong>: Same inputs always produce same outputs</li>
+      </ul>
+    </div>
+    <div class="card teal">
+      <h4>How It Works</h4>
+      <p>BPMN Business Rule Tasks invoke DMN tables at decision points. Gateway reads DMN output (e.g., <code>riskTier</code>, <code>selectedPathway</code>) to route flow. OB-DMN-2 now accepts <code>requestType</code> as input for 3-type routing.</p>
+    </div>
+  </div>
+  <table class="styled-table" style="margin-top:1rem;">
+    <thead><tr><th>ID</th><th>Name</th><th>Hit Policy</th><th>Inputs</th><th>Outputs</th><th>Used In</th></tr></thead>
+    <tbody>
+      <tr><td><strong>OB-DMN-1</strong></td><td>Risk Tier Classification</td><td>UNIQUE</td><td>5 risk dimension scores (1-10)</td><td>riskTier, onboardingEligible</td><td>Phase 1-2</td></tr>
+      <tr><td><strong>OB-DMN-2</strong></td><td>Pathway Routing</td><td>UNIQUE</td><td>capabilityReuse, buildVsBuy, capacity, requestType, isExistingVendor</td><td>pathway</td><td>Phase 1</td></tr>
+      <tr><td><strong>OB-DMN-3</strong></td><td>Governance Review Routing</td><td>UNIQUE</td><td>riskTier, selectedPathway</td><td>reviewBody, reviewSLA</td><td>Phase 4</td></tr>
+      <tr><td><strong>OB-DMN-4</strong></td><td>SLA Breach Escalation</td><td>FIRST</td><td>breachedPhase, daysBeyondSLA, riskTier</td><td>escalationAction, maxExtension</td><td>All phases</td></tr>
+    </tbody>
+  </table>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 27: Decision Tables Visual -->
+<div class="slide" data-slide="27">
+  <h2>Decision Tables -- Key Rules</h2>
+  <div class="two-col">
+    <div>
+      <div class="dmn-visual">
+        <div class="dmn-header"><span>OB-DMN-1: Risk Tier Classification</span><span class="hit-policy">U (Unique)</span></div>
+        <table>
+          <thead><tr><th class="input-col">Data Sensitivity</th><th class="input-col">Regulatory</th><th class="input-col">Operational</th><th class="input-col">AI Complexity</th><th class="input-col">3rd Party</th><th class="output-col">Risk Tier</th><th class="output-col">Eligible?</th></tr></thead>
+          <tbody>
+            <tr><td class="input-col">&ge; 9</td><td class="input-col">-</td><td class="input-col">-</td><td class="input-col">-</td><td class="input-col">-</td><td class="output-col"><span class="tier-badge tier-unacceptable">Unacceptable</span></td><td class="output-col">false</td></tr>
+            <tr><td class="input-col">[7..8]</td><td class="input-col">[7..8]</td><td class="input-col">[7..8]</td><td class="input-col">-</td><td class="input-col">-</td><td class="output-col"><span class="tier-badge tier-high">High</span></td><td class="output-col">false</td></tr>
+            <tr><td class="input-col">[4..7]</td><td class="input-col">[4..8]</td><td class="input-col">[4..8]</td><td class="input-col">[1..8]</td><td class="input-col">[1..8]</td><td class="output-col"><span class="tier-badge tier-limited">Limited</span></td><td class="output-col">true</td></tr>
+            <tr><td class="input-col">[1..3]</td><td class="input-col">[1..5]</td><td class="input-col">[1..5]</td><td class="input-col">[1..5]</td><td class="input-col">[1..5]</td><td class="output-col"><span class="tier-badge tier-minimal">Minimal</span></td><td class="output-col">true</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div class="dmn-visual">
+        <div class="dmn-header"><span>OB-DMN-2: Pathway Routing (v3)</span><span class="hit-policy">U (Unique)</span></div>
+        <table>
+          <thead><tr><th class="input-col">Request Type</th><th class="input-col">Analysis</th><th class="input-col">Existing?</th><th class="output-col">Pathway</th></tr></thead>
+          <tbody>
+            <tr><td class="input-col">Forced Update</td><td class="input-col">-</td><td class="input-col">true</td><td class="output-col"><span class="bg-fast">Re-Eval</span></td></tr>
+            <tr><td class="input-col">Speculative</td><td class="input-col">-</td><td class="input-col">-</td><td class="output-col"><span class="bg-hybrid">Idea Funnel</span></td></tr>
+            <tr><td class="input-col">Defined</td><td class="input-col">Build</td><td class="input-col">-</td><td class="output-col"><span class="bg-build">Build</span></td></tr>
+            <tr><td class="input-col">Defined</td><td class="input-col">Buy</td><td class="input-col">-</td><td class="output-col"><span class="bg-buy">Buy</span></td></tr>
+            <tr><td class="input-col">Defined</td><td class="input-col">Enable</td><td class="input-col">-</td><td class="output-col"><span class="bg-fast">Enable</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 28: SLA Escalation -->
+<div class="slide" data-slide="28">
+  <h2>SLA Breach Escalation (OB-DMN-4)</h2>
+  <p>Four-level escalation ladder with auto-reject. FIRST hit policy. Every phase has boundary timer events linked to this table.</p>
+  <div class="two-col">
+    <div>
+      <div class="dmn-visual">
+        <div class="dmn-header"><span>OB-DMN-4: SLA Breach Escalation</span><span class="hit-policy">F (First)</span></div>
+        <table>
+          <thead><tr><th class="input-col">Phase</th><th class="input-col">Days Beyond</th><th class="input-col">Risk Tier</th><th class="output-col">Action</th><th class="output-col">Extension</th></tr></thead>
+          <tbody>
+            <tr><td class="input-col">Any</td><td class="input-col">&ge; 10</td><td class="input-col">High</td><td class="output-col" style="color:var(--sla-rose);font-weight:600;">Auto-Reject</td><td class="output-col">0 days</td></tr>
+            <tr><td class="input-col">Any</td><td class="input-col">&ge; 15</td><td class="input-col">Limited/Min</td><td class="output-col" style="color:var(--sla-rose);font-weight:600;">Auto-Reject</td><td class="output-col">0 days</td></tr>
+            <tr><td class="input-col">3-5</td><td class="input-col">[5..9]</td><td class="input-col">High</td><td class="output-col" style="color:#D97706;font-weight:600;">Board-Alert</td><td class="output-col">3 days</td></tr>
+            <tr><td class="input-col">Any</td><td class="input-col">[2..4]</td><td class="input-col">High</td><td class="output-col">Escalate-Gov</td><td class="output-col">2-3 days</td></tr>
+            <tr><td class="input-col">Any</td><td class="input-col">1</td><td class="input-col">High</td><td class="output-col">Notify-Sponsor</td><td class="output-col">2 days</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h3>4-Level Escalation Ladder</h3>
+      <div class="escalation-step" style="background:#FEF3C7;">
+        <span class="level" style="color:var(--sla-gold);">L1</span>
+        <div><strong>Notify-Sponsor</strong><br><small style="color:var(--sla-gray);">Business Owner notified. Extension granted.</small></div>
+      </div>
+      <div class="escalation-step" style="background:#FEE2E2;">
+        <span class="level" style="color:#D97706;">L2</span>
+        <div><strong>Escalate-Governance</strong><br><small style="color:var(--sla-gray);">Governance team engaged. Extension with conditions.</small></div>
+      </div>
+      <div class="escalation-step" style="background:#FCA5A5;border-radius:6px;">
+        <span class="level" style="color:var(--sla-rose);">L3</span>
+        <div><strong>Board-Alert</strong><br><small>Advisory board notified. Short extension, final warning.</small></div>
+      </div>
+      <div class="escalation-step" style="background:#DC2626;color:white;border-radius:6px;">
+        <span class="level" style="color:white;">L4</span>
+        <div><strong>Auto-Reject</strong><br><small style="opacity:0.85;">Onboarding terminated. All stakeholders notified.</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION E: GOVERNANCE (Slides 29-33) -->
+<!-- ============================================================ -->
+
+<!-- Slide 29: RACI -->
+<div class="slide" data-slide="29">
+  <h2>RACI Matrix -- 11 Governance Topics</h2>
+  <p>Each governance topic maps to specific tasks, roles, and regulatory hooks. R=Responsible, A=Accountable, C=Consulted, I=Informed.</p>
+  <table class="styled-table small-table">
+    <thead><tr><th>Topic</th><th>Business</th><th>Governance</th><th>Finance</th><th>Procurement</th><th>Contracting</th><th>Tech Assessment</th><th>AI Review</th><th>Compliance</th><th>Oversight</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Intake</strong></td><td>R/A</td><td>C</td><td>C</td><td></td><td></td><td></td><td></td><td>C</td><td></td></tr>
+      <tr><td><strong>Prioritization</strong></td><td>C</td><td>R/A</td><td>C</td><td></td><td></td><td>C</td><td></td><td></td><td></td></tr>
+      <tr><td><strong>Funding</strong></td><td></td><td>C</td><td>R/A</td><td>C</td><td></td><td></td><td></td><td></td><td>I</td></tr>
+      <tr><td><strong>Sourcing</strong></td><td></td><td>A</td><td></td><td>R</td><td></td><td>C</td><td></td><td>C</td><td>I</td></tr>
+      <tr><td><strong>Cyber</strong></td><td></td><td>C</td><td></td><td></td><td></td><td>R/A</td><td></td><td>C</td><td></td></tr>
+      <tr><td><strong>EA</strong></td><td></td><td>C</td><td></td><td></td><td></td><td>R/A</td><td></td><td></td><td></td></tr>
+      <tr><td><strong>Compliance</strong></td><td></td><td>C</td><td></td><td></td><td></td><td></td><td></td><td>R/A</td><td>C</td></tr>
+      <tr><td><strong>AI Governance</strong></td><td></td><td>I</td><td></td><td></td><td></td><td>C</td><td>R/A</td><td>C</td><td></td></tr>
+      <tr><td><strong>Privacy</strong></td><td>C</td><td>C</td><td></td><td></td><td></td><td></td><td></td><td>R/A</td><td></td></tr>
+      <tr><td><strong>Comm. Counsel</strong></td><td></td><td>C</td><td>C</td><td></td><td>R/A</td><td></td><td></td><td>C</td><td>I</td></tr>
+      <tr><td><strong>TPRM</strong></td><td></td><td>R/A</td><td></td><td>C</td><td>C</td><td>C</td><td></td><td>C</td><td>C</td></tr>
+    </tbody>
+  </table>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 30: Committee Rationalization -->
+<div class="slide" data-slide="30">
+  <h2>Committee Rationalization &amp; Pod Model</h2>
+  <div class="asis-tobe">
+    <div class="asis">
+      <h4>Current: 18 Committees</h4>
+      <ul>
+        <li>Sequential reviews -- meetings weeks apart</li>
+        <li>Same use case presented multiple times</li>
+        <li>AI: Working Committee + Decision Committee (redundant with TBC)</li>
+        <li>Business Council: 2-3 of 8-10 attend</li>
+        <li>No risk-based routing</li>
+      </ul>
+    </div>
+    <div class="tobe">
+      <h4>Proposed: Distributed Pod Model</h4>
+      <ul>
+        <li>5 domain-specific pods controlling own cadence</li>
+        <li>Central team ensures consistent SLA framework</li>
+        <li>DMN-3 routes based on riskTier + pathway</li>
+        <li>Async decisions with 48-hour SLA (GAP-24)</li>
+        <li>Timer events enforce every SLA</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card-grid" style="grid-template-columns: repeat(5,1fr);margin-top:1rem;">
+    <div class="card" style="padding:12px;"><h4 style="font-size:0.85rem;">Cybersecurity Pod</h4><p style="font-size:0.75rem;">6-tier risk assessment, own meeting cadence</p></div>
+    <div class="card" style="padding:12px;"><h4 style="font-size:0.85rem;">Architecture Pod</h4><p style="font-size:0.75rem;">ARB/SDRB, domain assignment, AI pre-screen</p></div>
+    <div class="card" style="padding:12px;"><h4 style="font-size:0.85rem;">Legal Pod</h4><p style="font-size:0.75rem;">Contract templates, deviation tracking</p></div>
+    <div class="card" style="padding:12px;"><h4 style="font-size:0.85rem;">AI Governance Pod</h4><p style="font-size:0.75rem;">Consolidated review, risk posture</p></div>
+    <div class="card" style="padding:12px;"><h4 style="font-size:0.85rem;">TPRM Pod</h4><p style="font-size:0.75rem;">OneTrust integration, vendor scoring</p></div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 31: Gap Analysis -->
+<div class="slide" data-slide="31">
+  <h2>Gap Analysis -- 24 Identified Gaps</h2>
+  <p>v3 adds 8 new gaps (GAP-17 through GAP-24) from the 5 deep-dive sessions. Prioritized by business impact and stakeholder urgency.</p>
+  <table class="styled-table small-table">
+    <thead><tr><th>Gap</th><th>Description</th><th>Priority</th><th>Sub-Process</th></tr></thead>
+    <tbody>
+      <tr><td><strong>GAP-1</strong></td><td>Unified Intake Gateway</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>SP1</td></tr>
+      <tr><td><strong>GAP-2</strong></td><td>Formal Prioritization Scoring</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>SP2</td></tr>
+      <tr><td><strong>GAP-17</strong></td><td>NDA Gate (before detailed eval)</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>SP1-SP3</td></tr>
+      <tr><td><strong>GAP-18</strong></td><td>Concierge / Quarterback Role</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>Cross-cutting</td></tr>
+      <tr><td><strong>GAP-19</strong></td><td>Simultaneous Engagement</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>SP3</td></tr>
+      <tr><td><strong>GAP-20</strong></td><td>Contract Automation (2 ppl / 30+/mo)</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>SP4</td></tr>
+      <tr><td><strong>GAP-23</strong></td><td>AI Questionnaire Consolidation</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>SP3</td></tr>
+      <tr><td><strong>GAP-7</strong></td><td>Status Visibility / Notifications</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>Cross-cutting</td></tr>
+      <tr><td><strong>GAP-9</strong></td><td>Completeness Quality Gate</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>SP1</td></tr>
+      <tr><td><strong>GAP-11</strong></td><td>3-Pathway Routing (Buy/Build/Enable)</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>Top-level</td></tr>
+      <tr><td><strong>GAP-16</strong></td><td>Deal-Killer Pre-Screen</td><td><span class="tier-badge tier-unacceptable">P1</span></td><td>SP1</td></tr>
+      <tr><td><strong>GAP-12</strong></td><td>Security Baseline Controls (6-tier)</td><td><span class="tier-badge tier-high">P1-P2</span></td><td>SP3</td></tr>
+      <tr><td><strong>GAP-6</strong></td><td>AI Fast-Track Pathway</td><td><span class="tier-badge tier-high">P1-P2</span></td><td>SP3</td></tr>
+      <tr><td><strong>GAP-21</strong></td><td>OneTrust Integration</td><td><span class="tier-badge tier-high">P2</span></td><td>SP3-SP4</td></tr>
+      <tr><td><strong>GAP-22</strong></td><td>Distributed Pod Model</td><td><span class="tier-badge tier-high">P2</span></td><td>Org design</td></tr>
+      <tr><td><strong>GAP-24</strong></td><td>Async Governance Decisions</td><td><span class="tier-badge tier-high">P2</span></td><td>Cross-cutting</td></tr>
+      <tr><td><strong>GAP-3</strong></td><td>Progressive Form Strategy</td><td><span class="tier-badge tier-high">P2</span></td><td>SP1-SP3</td></tr>
+      <tr><td><strong>GAP-4</strong></td><td>Finance Rework Loop</td><td><span class="tier-badge tier-high">P2</span></td><td>SP4</td></tr>
+      <tr><td><strong>GAP-10</strong></td><td>Workload Visibility Dashboard</td><td><span class="tier-badge tier-high">P2</span></td><td>Platform</td></tr>
+      <tr><td><strong>GAP-13</strong></td><td>Time-Bound Conditional Approval</td><td><span class="tier-badge tier-high">P2</span></td><td>SP5</td></tr>
+      <tr><td><strong>GAP-14</strong></td><td>Mandatory Ownership Assignment</td><td><span class="tier-badge tier-high">P2</span></td><td>SP5</td></tr>
+      <tr><td><strong>GAP-8</strong></td><td>Exception Routing</td><td><span class="tier-badge tier-limited">P3</span></td><td>SP1</td></tr>
+      <tr><td><strong>GAP-15</strong></td><td>Pre-Onboarding Idea Funnel</td><td><span class="tier-badge tier-limited">P3</span></td><td>Pre-SP1</td></tr>
+    </tbody>
+  </table>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 32: Contract Automation (NEW) -->
+<div class="slide" data-slide="32">
+  <h2>Contract Automation Priority</h2>
+  <p>The contracting function is in crisis. 2 people handling 30+ contracts monthly for 4 years. No automation, no reportable deviation tracking, unknown compliance status for legacy contracts.</p>
+  <div class="metric-row">
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">2</div><div class="label">Contract Staff</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">30+</div><div class="label">Contracts / Month</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">1.5yr</div><div class="label">Max Security Exhibit</div></div>
+    <div class="metric"><div class="value" style="color:var(--sla-rose);">4yr</div><div class="label">Duration Unsustainable</div></div>
+  </div>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card rose">
+      <h4>Current Crisis</h4>
+      <ul>
+        <li>"Our sourcing department doesn't source -- they manage contract lifecycle"</li>
+        <li>No reportable format for contract deviations</li>
+        <li>Unknown compliance status for older contracts</li>
+        <li>Minor corrections require formal denial and restart</li>
+        <li>CLM system requested for 5-6 years, unfunded</li>
+      </ul>
+    </div>
+    <div class="card emerald">
+      <h4>Solution Path</h4>
+      <ul>
+        <li><strong>Day 30</strong>: Contract template standardization, deviation criteria</li>
+        <li><strong>Day 60</strong>: OneTrust deviation tracking pilot, standard-terms automation</li>
+        <li><strong>Day 90</strong>: Automated contract review for routine agreements</li>
+        <li><strong>Day 120</strong>: Full deviation reporting, legacy contract compliance audit</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 33: Staffing (NEW) -->
+<div class="slide" data-slide="33">
+  <h2>Staffing &amp; Resource Model</h2>
+  <p>Automation investment is justified by documented resource constraints. Every function is at or beyond capacity.</p>
+  <table class="styled-table">
+    <thead><tr><th>Function</th><th>Current Staff</th><th>Workload</th><th>Gap Assessment</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Risk / DD</strong></td><td>8 people</td><td>335 assessments/year</td><td>At capacity -- doubled output while cutting timeline 50%</td></tr>
+      <tr><td><strong>Legal / Contracts</strong></td><td>2 people</td><td>30+ contracts/month</td><td style="color:var(--sla-rose);font-weight:600;">Critical -- "dumpster fire" for 4 years</td></tr>
+      <tr><td><strong>Architecture</strong></td><td>2-3 people</td><td>All acquisitions need HLD</td><td>Recently reduced. Funding-constrained by domains</td></tr>
+      <tr><td><strong>Security (AI)</strong></td><td>~1 person</td><td>Growing AI review volume</td><td style="color:var(--sla-rose);font-weight:600;">"I need three of me right now"</td></tr>
+      <tr><td><strong>Vendor Mgmt</strong></td><td>6 total (2 at 50%)</td><td>Full process facilitation</td><td>No formal onboarding allocation</td></tr>
+      <tr><td><strong>Tech Vendor Mgmt</strong></td><td>1 part-time</td><td>Full START process</td><td>Inadequate for scope</td></tr>
+    </tbody>
+  </table>
+  <div class="quote-block" style="margin-top:1rem;">
+    <p>"If we want this to really click... I can't have the architect review group being a critical portion with only two people."</p>
+    <span class="attribution">-- TPRM Lead</span>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION F: ROADMAP (Slides 34-40) -->
+<!-- ============================================================ -->
+
+<!-- Slide 34: Roadmap Overview -->
+<div class="slide" data-slide="34">
+  <h2>Implementation Roadmap -- 30/60/90/120 Days</h2>
+  <p>Phased approach: planning first (no automation in Day 30), then progressive automation. v3 adds concierge model, simultaneous engagement, OneTrust integration, and contract automation to the timeline.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card" style="border-left-color:var(--sla-blue);border-left-width:6px;">
+      <h4 style="color:var(--sla-blue);">Days 1-30: Foundation</h4>
+      <p style="font-size:0.75rem;color:var(--sla-gray);font-weight:600;">Planning + executive alignment</p>
+      <ul style="font-size:0.8rem;">
+        <li>Map 3 request types and routing rules</li>
+        <li>Draft concierge/quarterback role description</li>
+        <li>Define simultaneous engagement rules</li>
+        <li>6 risk-based security assessment categories</li>
+        <li>Resolve NDA timing with executive decision</li>
+        <li>Baseline RAE (28d) and DD (75d) metrics</li>
+        <li>Map OneTrust API integration points</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left-color:var(--sla-teal);border-left-width:6px;">
+      <h4 style="color:var(--sla-teal);">Days 31-60: Quick Wins</h4>
+      <p style="font-size:0.75rem;color:var(--sla-gray);font-weight:600;">First deployments + AI consolidation</p>
+      <ul style="font-size:0.8rem;">
+        <li>Unified intake with request type routing</li>
+        <li>Completeness gate + deal-killer pre-screen</li>
+        <li>NDA gate active between SP1 and SP3</li>
+        <li>Single AI questionnaire (merged from 3+)</li>
+        <li>Async voting for Business Council</li>
+        <li>Pilot simultaneous engagement</li>
+        <li>Contract template standardization</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left-color:var(--sla-gold);border-left-width:6px;">
+      <h4 style="color:var(--sla-gold);">Days 61-90: Parallel Ops</h4>
+      <p style="font-size:0.75rem;color:var(--sla-gray);font-weight:600;">Full parallel evaluation + automation</p>
+      <ul style="font-size:0.8rem;">
+        <li>3-pathway routing live (Buy/Build/Enable)</li>
+        <li>5 parallel streams with concierge orchestration</li>
+        <li>OneTrust assessment automation in SP3</li>
+        <li>Tiered security assessment (6 categories)</li>
+        <li>Contract review automation for standard terms</li>
+        <li>AI fast-track pathway piloted</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left-color:var(--sla-emerald);border-left-width:6px;">
+      <h4 style="color:var(--sla-emerald);">Days 91-120: Full Operation</h4>
+      <p style="font-size:0.75rem;color:var(--sla-gray);font-weight:600;">Measurement + optimization</p>
+      <ul style="font-size:0.8rem;">
+        <li>Workload visibility dashboard</li>
+        <li>Distributed pod model operational</li>
+        <li>Exception routing + idea funnel</li>
+        <li>Full deviation reporting</li>
+        <li>Before/after metrics documented</li>
+        <li>Executive reporting on cycle time reduction</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 35: Day 30 -->
+<div class="slide" data-slide="35">
+  <h2>Day 30 -- Foundation &amp; Alignment</h2>
+  <p>Zero automation. Planning artifacts that define standards and rules. v3 adds concierge role, NDA resolution, OneTrust mapping, and capacity baselines.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+    <div class="card">
+      <h4>Process Design</h4>
+      <ul style="font-size:0.8rem;">
+        <li>Map 3 request types + routing rules</li>
+        <li>Document NDA timing decision</li>
+        <li>Map 18 committees to 5 streams</li>
+        <li>Draft concierge role description</li>
+        <li>Define simultaneous engagement rules</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Standards &amp; Scoring</h4>
+      <ul style="font-size:0.8rem;">
+        <li>Prioritization formula + capacity impact</li>
+        <li>6 risk-based assessment categories</li>
+        <li>Enable pathway criteria</li>
+        <li>Business Council async rules</li>
+        <li>Deal-killer no-go list</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Data &amp; Integration</h4>
+      <ul style="font-size:0.8rem;">
+        <li>Baseline: RAE 28d, DD 75d</li>
+        <li>Quantify contract backlog</li>
+        <li>Map OneTrust API integration</li>
+        <li>Assess Catfox integration potential</li>
+        <li>Request ServiceNow volume data</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h4>Organizational</h4>
+      <ul style="font-size:0.8rem;">
+        <li>Executive readout with data-backed recommendations</li>
+        <li>Resolve NDA timing with executive decision</li>
+        <li>Confirm committee consolidation</li>
+        <li>Named owners for all Day 60 deliverables</li>
+        <li>Begin AI questionnaire merger</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 36: Day 60 -->
+<div class="slide" data-slide="36">
+  <h2>Day 60 -- Quick Wins &amp; First Deployments</h2>
+  <p>First measurable cycle time reduction. Unified intake live, AI questionnaires merged, simultaneous engagement piloted.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card emerald">
+      <h4>Process Deployments</h4>
+      <ul style="font-size:0.85rem;">
+        <li>Unified intake with 3 request type routing</li>
+        <li>Completeness quality gate at intake (GAP-9)</li>
+        <li>Deal-killer pre-screen active (GAP-16)</li>
+        <li>NDA gate between SP1 and SP3 (GAP-17)</li>
+        <li>Status notifications at phase boundaries (GAP-7)</li>
+        <li>Prioritization scoring in SP2 (OB-DMN-5)</li>
+        <li>Async voting for routine Business Council decisions</li>
+      </ul>
+    </div>
+    <div class="card teal">
+      <h4>AI &amp; Integration</h4>
+      <ul style="font-size:0.85rem;">
+        <li>Single AI questionnaire deployed (merged from 3+)</li>
+        <li>AI committee consolidation communicated</li>
+        <li>Single vendor contact point for AI reviews</li>
+        <li>OneTrust-Camunda integration design complete</li>
+        <li>Contract template standardization</li>
+        <li>OneTrust deviation tracking pilot</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h4>Organizational</h4>
+      <ul style="font-size:0.85rem;">
+        <li>Pilot simultaneous engagement on new requests</li>
+        <li>Concierge role staffed or assigned</li>
+        <li>Domain-based auto-assignment rules drafted</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 37: Day 90 -->
+<div class="slide" data-slide="37">
+  <h2>Day 90 -- Parallel Operations &amp; Automation</h2>
+  <p>Structural BPMN changes live: 3-pathway routing, 5 parallel streams with concierge orchestration, OneTrust automation, tiered security assessment.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+    <div class="card emerald">
+      <h4>Process Deployments</h4>
+      <ul style="font-size:0.8rem;">
+        <li>3-pathway routing live (GAP-11)</li>
+        <li>5 parallel streams operational</li>
+        <li>Concierge orchestration active</li>
+        <li>Enable pathway financial bypass</li>
+        <li>Tiered security in SP3 (GAP-12)</li>
+        <li>AI fast-track pathway piloted</li>
+        <li>Finance rework loop in SP4</li>
+      </ul>
+    </div>
+    <div class="card teal">
+      <h4>Integration</h4>
+      <ul style="font-size:0.8rem;">
+        <li>OneTrust assessment automation live in SP3</li>
+        <li>DD skip logic optimized (830-question)</li>
+        <li>Automated baseline security checks</li>
+        <li>AI-assisted pre-screening pilot</li>
+        <li>Contract review automation for standard terms</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h4>Organizational</h4>
+      <ul style="font-size:0.8rem;">
+        <li>Distributed pod model structure defined</li>
+        <li>Capacity-aware routing active</li>
+        <li>Informal channels fully redirected</li>
+        <li>Security: only Elevated/Major manual</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 38: Day 120 -->
+<div class="slide" data-slide="38">
+  <h2>Day 120 -- Full Operation &amp; Measurement</h2>
+  <p>Advanced automation, dashboards, and specialized pathways. Before/after metrics documented for executive review.</p>
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card emerald">
+      <h4>Full Deployments</h4>
+      <ul style="font-size:0.85rem;">
+        <li>Exception routing to rapid risk assessment (GAP-8)</li>
+        <li>Pre-onboarding idea funnel for speculative requests (GAP-15)</li>
+        <li>Workload visibility dashboard (Camunda Optimize)</li>
+        <li>Progressive forms with stage awareness (GAP-3)</li>
+        <li>Full contract deviation reporting</li>
+        <li>Annual ownership validation process</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h4>Organizational</h4>
+      <ul style="font-size:0.85rem;">
+        <li>Distributed pod model fully operational</li>
+        <li>Executive reporting: backlog health, capacity, throughput</li>
+        <li>Before/after metrics documented</li>
+        <li>Resource model justified by throughput data</li>
+        <li>Competitor-benchmarked cycle times</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 39: Measurement Dashboard (NEW) -->
+<div class="slide" data-slide="39">
+  <h2>Measurement Dashboard</h2>
+  <p>Data-driven proof of improvement. Baselines documented from discovery; targets calibrated against competitor benchmarks and stakeholder capacity.</p>
+  <table class="styled-table">
+    <thead><tr><th>Metric</th><th>Baseline (Current)</th><th>Day 120 Target</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td><strong>E2E cycle time (standard)</strong></td><td style="color:var(--sla-rose);">6-9 months</td><td style="color:var(--sla-emerald);font-weight:600;">60-90 days</td><td>All sessions</td></tr>
+      <tr><td><strong>E2E cycle time (Enable)</strong></td><td style="color:var(--sla-rose);">Same as standard</td><td style="color:var(--sla-emerald);font-weight:600;">30 days</td><td>Product Manager</td></tr>
+      <tr><td><strong>E2E cycle time (AI fast-track)</strong></td><td style="color:var(--sla-rose);">Same as standard</td><td style="color:var(--sla-emerald);font-weight:600;">14 days</td><td>Security Architect</td></tr>
+      <tr><td><strong>RAE completion</strong></td><td style="color:var(--sla-rose);">28-29 days</td><td style="color:var(--sla-emerald);font-weight:600;">14 days</td><td>TPRM Lead</td></tr>
+      <tr><td><strong>DD internal review</strong></td><td style="color:var(--sla-rose);">75 days</td><td style="color:var(--sla-emerald);font-weight:600;">30 days</td><td>TPRM Lead</td></tr>
+      <tr><td><strong>Security review (Baseline)</strong></td><td>2 weeks</td><td style="color:var(--sla-emerald);font-weight:600;">Same-day (automated)</td><td>Architecture Lead</td></tr>
+      <tr><td><strong>Form completion rate</strong></td><td>Unknown</td><td>90%+ first-pass</td><td>Legal Director</td></tr>
+      <tr><td><strong>Contract cycle time</strong></td><td style="color:var(--sla-rose);">Varies (up to 1.5yr)</td><td style="color:var(--sla-emerald);font-weight:600;">90 days standard</td><td>TPRM Lead</td></tr>
+      <tr><td><strong>Business Council decision</strong></td><td>Monthly + email</td><td style="color:var(--sla-emerald);font-weight:600;">48-hour async SLA</td><td>Vendor Mgmt</td></tr>
+      <tr><td><strong>Queue transparency</strong></td><td>None</td><td>Real-time dashboard</td><td>Operations Director</td></tr>
+    </tbody>
+  </table>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+<!-- Slide 40: Next Steps -->
+<div class="slide slide-section" data-slide="40" style="justify-content:center;">
+  <h2>Next Steps</h2>
+  <p style="color:rgba(255,255,255,0.85);font-size:1.05rem;margin:1rem 0 1.5rem;max-width:800px;">Discovery complete. 14 sessions, 35+ stakeholders, 24 gaps identified, 8 new from deep-dive sessions. The 30/60/90/120-day roadmap begins with foundation and alignment.</p>
+  <div class="card-grid" style="margin:1rem 0;">
+    <div class="card" style="background:rgba(255,255,255,0.1);border-left-color:var(--sla-blue);">
+      <h4 style="color:white;">1. Executive Readout (Week 1)</h4>
+      <p style="color:rgba(255,255,255,0.75);">Present data-backed discovery findings. Resolve NDA timing. Confirm committee consolidation. Assign owners to Day 30 deliverables.</p>
+    </div>
+    <div class="card" style="background:rgba(255,255,255,0.1);border-left-color:var(--sla-teal);">
+      <h4 style="color:white;">2. Concierge Model Design (Week 2)</h4>
+      <p style="color:rgba(255,255,255,0.75);">Draft concierge/quarterback role. Define simultaneous engagement rules. Map Architecture Facilitator pattern for E2E extension.</p>
+    </div>
+    <div class="card" style="background:rgba(255,255,255,0.1);border-left-color:var(--sla-gold);">
+      <h4 style="color:white;">3. Standards &amp; Baselines (Weeks 3-4)</h4>
+      <p style="color:rgba(255,255,255,0.75);">Prioritization formula, 6-tier security assessment, 3 request types, OneTrust API mapping. Baseline all metrics from discovery data.</p>
+    </div>
+    <div class="card" style="background:rgba(255,255,255,0.1);border-left-color:var(--sla-emerald);">
+      <h4 style="color:white;">4. Day 60 Deployment Target</h4>
+      <p style="color:rgba(255,255,255,0.75);">Unified intake live, NDA gate active, AI questionnaires merged, simultaneous engagement piloted. First measurable cycle time reduction.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Software Onboarding Transformation v3</span><span>Confidential</span></div>
+</div>
+
+</div>
+
+<!-- Side dots indicator -->
+<div class="slide-indicator" id="slideIndicator"></div>
+
+<!-- Slide counter -->
+<div class="slide-counter" id="slideCounter">1 / 41</div>
+
+<script>
+const TOTAL_SLIDES = 41;
+const container = document.getElementById('slidesContainer');
+const counterEl = document.getElementById('slideCounter');
+const indicatorEl = document.getElementById('slideIndicator');
+
+for (let i = 0; i < TOTAL_SLIDES; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  indicatorEl.appendChild(dot);
+}
+
+function goToSlide(n) {
+  const slides = document.querySelectorAll('.slide');
+  if (n >= 0 && n < slides.length) {
+    slides[n].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+let currentSlide = 0;
+const slideEls = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.slide-dot');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+      const idx = parseInt(entry.target.dataset.slide);
+      if (!isNaN(idx)) {
+        currentSlide = idx;
+        counterEl.textContent = (idx + 1) + ' / ' + TOTAL_SLIDES;
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+    }
+  });
+}, { threshold: 0.5 });
+
+slideEls.forEach(s => observer.observe(s));
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+    goToSlide(Math.min(currentSlide + 1, TOTAL_SLIDES - 1));
+  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+    goToSlide(Math.max(currentSlide - 1, 0));
+  }
+});
+</script>
+</body>
+</html>
