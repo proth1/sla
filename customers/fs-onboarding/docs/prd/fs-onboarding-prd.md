@@ -257,7 +257,10 @@ A vendor-facing web application for external task completion.
 |----|------|-----------|---------|--------|
 | OB-DMN-5 | Request Prioritization Scoring | FIRST | GAP-2 | Referenced in v7-c8 BPMN, table not yet created |
 | OB-DMN-6 | Security Assessment Level | UNIQUE | GAP-12 | Exists in v7-c8 BPMN, not wired into SP3 routing |
-| OB-DMN-7 | Contract Complexity Routing | UNIQUE | GAP-20 | Not yet created |
+| OB-DMN-7 | Deal Killer Pre-Screen | FIRST | GAP-16 | Created — SP1 deal-killer check + SP0 Step 3 |
+| OB-DMN-8 | Mini RFP Question Selection | COLLECT | Mini RFP PRD | Planned — SP0 dynamic questionnaire assembly |
+| OB-DMN-9 | Team Engagement Routing | COLLECT | Mini RFP PRD | Planned — SP0 Step 9 engagement prediction |
+| OB-DMN-10 | Contract Complexity Routing | UNIQUE | GAP-20 | Not yet created (renumbered from OB-DMN-7) |
 
 ### DMN Design Principles
 
