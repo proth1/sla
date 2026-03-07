@@ -1,0 +1,91 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Step2b",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Step 2.5: Classification Check\nConcierge review of data classification and regulatory scope before question selection fires.",
+      "id": "Field_S2b_01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S2b_02"
+    },
+    {
+      "type": "text",
+      "text": "### Requester Selections",
+      "id": "Field_S2b_03"
+    },
+    {
+      "type": "textfield",
+      "key": "dataClassification",
+      "label": "Data Classification (requester-selected)",
+      "readonly": true,
+      "id": "Field_S2b_04"
+    },
+    {
+      "type": "textfield",
+      "key": "regulatoryScope",
+      "label": "Regulatory Scope (requester-selected)",
+      "readonly": true,
+      "id": "Field_S2b_05"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S2b_06"
+    },
+    {
+      "type": "text",
+      "text": "### Concierge Validation",
+      "id": "Field_S2b_07"
+    },
+    {
+      "type": "radio",
+      "key": "classificationValidated",
+      "label": "Data classification is correct?",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Confirmed — classification is correct", "value": "confirmed" },
+        { "label": "Corrected — see below", "value": "corrected" }
+      ],
+      "id": "Field_S2b_08"
+    },
+    {
+      "type": "select",
+      "key": "correctedClassification",
+      "label": "Corrected Data Classification",
+      "conditional": { "hide": "=classificationValidated != \"corrected\"" },
+      "values": [
+        { "label": "Public", "value": "public" },
+        { "label": "Internal", "value": "internal" },
+        { "label": "Confidential", "value": "confidential" },
+        { "label": "Restricted", "value": "restricted" }
+      ],
+      "id": "Field_S2b_09"
+    },
+    {
+      "type": "radio",
+      "key": "regulatoryScopeValidated",
+      "label": "Regulatory scope is correct?",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Confirmed — scope is correct", "value": "confirmed" },
+        { "label": "Corrected — will update below", "value": "corrected" }
+      ],
+      "id": "Field_S2b_10"
+    },
+    {
+      "type": "textarea",
+      "key": "classificationNotes",
+      "label": "Validation Notes",
+      "description": "Rationale for any corrections or additional context.",
+      "id": "Field_S2b_11"
+    }
+  ]
+}
