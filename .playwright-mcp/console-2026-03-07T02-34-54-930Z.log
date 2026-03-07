@@ -1,0 +1,17 @@
+[   90625ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events:0
+[   90627ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[  118291ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events:0
+[  118292ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[  178416ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events?lastEventId=1:0
+[  178417ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[  240608ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events?lastEventId=1:0
+[  240609ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[  270612ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events?lastEventId=1:0
+[  270613ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[  655443ms] [ERROR] Failed to load resource: the server responded with a status of 409 () @ https://modeler.camunda.io/api/internal/process-applications/437fbdad-7700-4bd2-94da-63f346e3acbc/pull:0
+[  707615ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://modeler.camunda.io/api/internal/process-applications/437fbdad-7700-4bd2-94da-63f346e3acbc/push:0
+[  707622ms] [ERROR] Error: There a more than 50 files to sync which is not allowed.
+    at #Mt (https://modeler.camunda.io/app.js:8784:7184)
+    at async e (https://modeler.camunda.io/app.js:8784:3796)
+    at async Object.resolveConflict (https://modeler.camunda.io/app.js:8784:4178) @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[  833346ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://modeler.camunda.io/api/internal/process-applications/437fbdad-7700-4bd2-94da-63f346e3acbc/pull:0

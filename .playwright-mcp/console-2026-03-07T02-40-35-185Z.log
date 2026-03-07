@@ -1,0 +1,6 @@
+[     103ms] [ERROR] TypeError: network error @ https://ric-1.operate.camunda.io/425f10fa-c898-4b4b-b303-eac095286716/operate/assets/index-1xp9bybi.js:9
+[     104ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'ambient-light-sensor'. @ :0
+[     104ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'speaker-selection'. @ :0
+[     202ms] [ERROR] Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516' violates the following Content Security Policy directive: "script-src-elem 'self' cdn.jsdelivr.net *.mixpanel.com osano.com *.osano.com *.appcues.com appcues.com cloudflareinsights.com". The action has been blocked. @ https://ric-1.operate.camunda.io/425f10fa-c898-4b4b-b303-eac095286716/operate/processes?active=true&incidents=true:0
+[     308ms] [WARNING] No app elements and user config provided. Please provide at least one of them. @ https://ric-1.operate.camunda.io/425f10fa-c898-4b4b-b303-eac095286716/operate/assets/index-1xp9bybi.js:9
+[     425ms] [WARNING] No app elements and user config provided. Please provide at least one of them. @ https://ric-1.operate.camunda.io/425f10fa-c898-4b4b-b303-eac095286716/operate/assets/index-1xp9bybi.js:9

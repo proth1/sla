@@ -1,0 +1,14 @@
+[     381ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[     381ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[  142364ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events:0
+[  142365ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[ 1487812ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[ 1487812ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[ 1589044ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events:0
+[ 1589045ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[ 4627601ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[ 4627601ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[ 4739144ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events:0
+[ 4739145ms] [ERROR] TypeError: network error @ https://modeler.camunda.io/app.js:2481
+[ 4852449ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events?lastEventId=2:0
+[ 4852449ms] [ERROR] TypeError: network error @ https://modeler.camunda.io/app.js:2481

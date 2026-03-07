@@ -1,0 +1,9 @@
+[     359ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[     359ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[   37855ms] [ERROR] Failed to load resource: the server responded with a status of 409 () @ https://modeler.camunda.io/api/internal/process-applications/437fbdad-7700-4bd2-94da-63f346e3acbc/pull:0
+[   54326ms] [ERROR] Failed to load resource: the server responded with a status of 409 () @ https://modeler.camunda.io/api/internal/process-applications/437fbdad-7700-4bd2-94da-63f346e3acbc/pull?force=true:0
+[   56776ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://modeler.camunda.io/api/internal/process-applications/437fbdad-7700-4bd2-94da-63f346e3acbc/push:0
+[   56784ms] [ERROR] Error: The GitHub App does not have the necessary permissions. Please check the app's permissions.
+    at #Mt (https://modeler.camunda.io/app.js:8784:7184)
+    at async e (https://modeler.camunda.io/app.js:8784:3796)
+    at async Object.resolveConflict (https://modeler.camunda.io/app.js:8784:4178) @ https://widget.kapa.ai/kapa-widget.bundle.js:1

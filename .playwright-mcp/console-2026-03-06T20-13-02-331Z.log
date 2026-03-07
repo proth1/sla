@@ -1,0 +1,2 @@
+[17538307ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events?lastEventId=2:0
+[17538308ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1

@@ -1,0 +1,8 @@
+[   29838ms] [WARNING]   WARN  [Statsig] SDK initialization has not completed. Reason: Loading:Unrecognized @ https://modeler.camunda.io/app.js:2481
+[   29855ms] [WARNING]   WARN  [Statsig] SDK initialization has not completed. Reason: Loading:Unrecognized @ https://modeler.camunda.io/app.js:2481
+[  110908ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://console.cloud.camunda.io/external/events:0
+[  110909ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
+[  296617ms] [ERROR] Connecting to 'http://localhost:8765/onboarding-to-be-ideal-state-v8-c8.bpmn' violates the following Content Security Policy directive: "connect-src 'self' wss://*.pusher.com *.pusher.com *.pusherapp.com *.mixpanel.com *.mxpnl.com *.osano.com camunda.com *.camunda.io https://weblogin.cloud.camunda.io *.cloud.camunda.io *.ingest.sentry.io https://statsigapi.net https://kapa-widget-proxy-la7dkmplpq-uc.a.run.app *.statuspage.io". The action has been blocked. @ https://modeler.camunda.io/app.js:2481
+[  296617ms] [ERROR] Fetch API cannot load http://localhost:8765/onboarding-to-be-ideal-state-v8-c8.bpmn. Refused to connect because it violates the document's Content Security Policy. @ https://modeler.camunda.io/app.js:2481
+[ 3361453ms] [ERROR] Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR @ https://notifications.cloud.camunda.io/notifications/events:0
+[ 3361455ms] [ERROR] TypeError: network error @ https://widget.kapa.ai/kapa-widget.bundle.js:1
