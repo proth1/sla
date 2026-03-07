@@ -1,0 +1,2 @@
+# Report data exports are ephemeral — do not commit
+*.json
