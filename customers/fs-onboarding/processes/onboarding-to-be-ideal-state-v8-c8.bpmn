@@ -7,6 +7,8 @@
     <bpmn:messageFlow id="MsgFlow_VendorResponse" name="Vendor Response" sourceRef="Task_VendorProposal" targetRef="SP_EvalDD" />
     <bpmn:messageFlow id="MsgFlow_ContractDraft" name="Contract Draft" sourceRef="SP_ContractBuild" targetRef="Task_VendorContractReview" />
     <bpmn:messageFlow id="MsgFlow_SignedContract" name="Signed Contract" sourceRef="Task_VendorContractSign" targetRef="SP_ContractBuild" />
+    <bpmn:messageFlow id="MsgFlow_MiniRFPRequest" name="Mini RFP&#10;Questionnaire" sourceRef="SP0_MiniRFP" targetRef="Start_MiniRFPVendor" />
+    <bpmn:messageFlow id="MsgFlow_MiniRFPResponse" name="Vendor RFP&#10;Response" sourceRef="Task_VendorMiniRFP" targetRef="SP0_MiniRFP" />
   </bpmn:collaboration>
   <bpmn:process id="Process_Onboarding_v8" name="Product Management — Software Onboarding v8 (Camunda 8)" isExecutable="true">
     <bpmn:startEvent id="Start_SoftwareNeed" name="Software need&#10;defined">
@@ -1280,6 +1282,32 @@
       <bpmn:sequenceFlow id="Flow_SP0_8" sourceRef="SP0_Step4_QuestionPreview" targetRef="SP0_Step5_SendVendor" />
       <bpmn:sequenceFlow id="Flow_SP0_9" sourceRef="SP0_Step5_SendVendor" targetRef="SP0_End" />
     </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Timer_SP0_Abandon" name="20 Day&#10;Abandon" cancelActivity="true" attachedToRef="SP0_MiniRFP">
+      <bpmn:outgoing>Flow_SP0_Abandon</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P20D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:userTask id="Task_ConciergeCancel" name="Concierge&#10;Cancel&#10;Review">
+      <bpmn:documentation>Concierge reviews the abandoned Mini RFP. The SP0 sub-process timed out after 20 days without completion. Concierge decides whether to: (1) close the request permanently, (2) reach out to the requester to re-engage, or (3) escalate to governance. All partial data collected during SP0 is preserved for audit trail purposes.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="rfp-concierge-cancel" />
+        <zeebe:assignmentDefinition candidateGroups="governance-lane" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Mini RFP" />
+          <zeebe:property name="raci_r" value="Governance" />
+          <zeebe:property name="raci_a" value="Governance" />
+          <zeebe:property name="raci_c" value="Business" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_SP0_Abandon</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP0_AbandonEnd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_SP0_Abandoned" name="Mini RFP&#10;Abandoned">
+      <bpmn:incoming>Flow_SP0_AbandonEnd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_SP0_Abandon" sourceRef="Timer_SP0_Abandon" targetRef="Task_ConciergeCancel" />
+    <bpmn:sequenceFlow id="Flow_SP0_AbandonEnd" sourceRef="Task_ConciergeCancel" targetRef="End_SP0_Abandoned" />
     <bpmn:exclusiveGateway id="GW_MiniRFP_Merge">
       <bpmn:incoming>Flow_SP0_Out</bpmn:incoming>
       <bpmn:incoming>Flow_MiniRFP_No</bpmn:incoming>
@@ -1480,6 +1508,30 @@
       <bpmn:incoming>Flow_V_VP2</bpmn:incoming>
       <bpmn:outgoing>Flow_V_VP2J</bpmn:outgoing>
     </bpmn:userTask>
+    <bpmn:startEvent id="Start_MiniRFPVendor" name="Mini RFP&#10;Received">
+      <bpmn:outgoing>Flow_MRFP_V1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_MiniRFPRequest" messageRef="Message_MiniRFPRequest" />
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_VendorMiniRFP" name="Complete&#10;Mini RFP&#10;Questionnaire">
+      <bpmn:documentation>Vendor completes the Mini RFP questionnaire consisting of category-specific questions selected by OB-DMN-8. Questions cover: Company Profile, Product/Capability, Security, Privacy, Integration, Implementation, Pricing, TPRM/Compliance, Resilience, and AI Governance. Vendor provides scaled responses (1-5), narrative answers, and evidence attachments (SOC 2, ISO 27001, pen test summaries) as required. Save and resume is supported. Vendor should delegate sections to appropriate SMEs (e.g., Security → CISO, Pricing → Sales).</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="vendor-mini-rfp-questionnaire" />
+        <zeebe:assignmentDefinition candidateGroups="vendor-response" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Sourcing, TPRM" />
+          <zeebe:property name="raci_r" value="Vendor" />
+          <zeebe:property name="raci_a" value="Vendor" />
+          <zeebe:property name="raci_c" value="Business" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_MRFP_V1</bpmn:incoming>
+      <bpmn:outgoing>Flow_MRFP_V2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_MiniRFPVendorComplete" name="Mini RFP&#10;Submitted">
+      <bpmn:incoming>Flow_MRFP_V2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_MRFP_V1" sourceRef="Start_MiniRFPVendor" targetRef="Task_VendorMiniRFP" />
+    <bpmn:sequenceFlow id="Flow_MRFP_V2" sourceRef="Task_VendorMiniRFP" targetRef="End_MiniRFPVendorComplete" />
     <bpmn:sequenceFlow id="Flow_V1" sourceRef="Start_VendorEngagement" targetRef="Task_VendorIntake" />
     <bpmn:sequenceFlow id="Flow_V2" sourceRef="Task_VendorIntake" targetRef="GW_VendorQualified" />
     <bpmn:sequenceFlow id="Flow_V_QualYes" name="Yes" sourceRef="GW_VendorQualified" targetRef="Task_VendorProposal">
@@ -1513,6 +1565,16 @@
   <bpmn:message id="Message_SignedContract" name="SignedContractMessage">
     <bpmn:extensionElements>
       <zeebe:subscription correlationKey="=contractId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="Message_MiniRFPRequest" name="MiniRFPRequestMessage">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=vendorToken" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="Message_MiniRFPResponse" name="MiniRFPResponseMessage">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=vendorToken" />
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Main">
@@ -1777,6 +1839,21 @@
       <bpmndi:BPMNShape id="Participant_Vendor_di" bpmnElement="Participant_Vendor" isHorizontal="true">
         <dc:Bounds x="160" y="540" width="2440" height="430" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_MiniRFPVendor_di" bpmnElement="Start_MiniRFPVendor">
+        <dc:Bounds x="400" y="572" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="389" y="615" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VendorMiniRFP_di" bpmnElement="Task_VendorMiniRFP">
+        <dc:Bounds x="490" y="550" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_MiniRFPVendorComplete_di" bpmnElement="End_MiniRFPVendorComplete">
+        <dc:Bounds x="652" y="572" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="641" y="615" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Start_VendorEngagement_di" bpmnElement="Start_VendorEngagement">
         <dc:Bounds x="222" y="662" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -1837,6 +1914,14 @@
       <bpmndi:BPMNShape id="Task_VendorComplianceReview_di" bpmnElement="Task_VendorComplianceReview">
         <dc:Bounds x="830" y="750" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_MRFP_V1_di" bpmnElement="Flow_MRFP_V1">
+        <di:waypoint x="436" y="590" />
+        <di:waypoint x="490" y="590" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MRFP_V2_di" bpmnElement="Flow_MRFP_V2">
+        <di:waypoint x="590" y="590" />
+        <di:waypoint x="652" y="590" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V1_di" bpmnElement="Flow_V1">
         <di:waypoint x="258" y="680" />
         <di:waypoint x="310" y="680" />
@@ -1952,6 +2037,32 @@
           <dc:Bounds x="1310" y="503" width="79" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP0_Abandon_di" bpmnElement="Flow_SP0_Abandon">
+        <di:waypoint x="480" y="248" />
+        <di:waypoint x="480" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP0_AbandonEnd_di" bpmnElement="Flow_SP0_AbandonEnd">
+        <di:waypoint x="540" y="320" />
+        <di:waypoint x="592" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_MiniRFPRequest_di" bpmnElement="MsgFlow_MiniRFPRequest">
+        <di:waypoint x="430" y="230" />
+        <di:waypoint x="430" y="400" />
+        <di:waypoint x="418" y="400" />
+        <di:waypoint x="418" y="572" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="434" y="376" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MsgFlow_MiniRFPResponse_di" bpmnElement="MsgFlow_MiniRFPResponse">
+        <di:waypoint x="540" y="550" />
+        <di:waypoint x="540" y="460" />
+        <di:waypoint x="470" y="460" />
+        <di:waypoint x="470" y="230" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="476" y="436" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="GW_MiniRFP_di" bpmnElement="GW_MiniRFP" isMarkerVisible="true">
         <dc:Bounds x="295" y="165" width="50" height="50" />
         <bpmndi:BPMNLabel>
@@ -1962,6 +2073,21 @@
         <dc:Bounds x="400" y="150" width="100" height="80" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="406" y="174" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_SP0_Abandon_di" bpmnElement="Timer_SP0_Abandon">
+        <dc:Bounds x="462" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="498" y="220" width="38" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConciergeCancel_di" bpmnElement="Task_ConciergeCancel">
+        <dc:Bounds x="440" y="280" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SP0_Abandoned_di" bpmnElement="End_SP0_Abandoned">
+        <dc:Bounds x="592" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="581" y="345" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_MiniRFP_Merge_di" bpmnElement="GW_MiniRFP_Merge" isMarkerVisible="true">
