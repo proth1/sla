@@ -1,0 +1,90 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Step6",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Step 6: Collect Vendor Responses\nMonitor vendor response status. Automated reminders are sent at Day 3 (confirm receipt), Day 7 (mid-point), and Day 11 (final reminder).",
+      "id": "Field_S6_01"
+    },
+    {
+      "type": "textfield",
+      "label": "Vendor Name",
+      "key": "vendorName",
+      "id": "Field_S6_02",
+      "disabled": true
+    },
+    {
+      "type": "select",
+      "label": "Response Status",
+      "key": "vendorResponseStatus",
+      "id": "Field_S6_03",
+      "valuesExpression": "=[{\"label\":\"Awaiting Response\",\"value\":\"awaiting\"},{\"label\":\"In Progress\",\"value\":\"in_progress\"},{\"label\":\"Submitted\",\"value\":\"submitted\"},{\"label\":\"Declined\",\"value\":\"declined\"},{\"label\":\"Overdue\",\"value\":\"overdue\"}]"
+    },
+    {
+      "type": "textfield",
+      "label": "Response Deadline",
+      "key": "responseDeadline",
+      "id": "Field_S6_04",
+      "disabled": true,
+      "description": "Set in Step 5 (minimum 14 calendar days)"
+    },
+    {
+      "type": "number",
+      "label": "Days Remaining",
+      "key": "daysRemaining",
+      "id": "Field_S6_05",
+      "disabled": true
+    },
+    {
+      "type": "text",
+      "text": "### Reminder History",
+      "id": "Field_S6_06"
+    },
+    {
+      "type": "checkbox",
+      "label": "Day 3 — Receipt Confirmation Sent",
+      "key": "reminderDay3Sent",
+      "id": "Field_S6_07",
+      "disabled": true
+    },
+    {
+      "type": "checkbox",
+      "label": "Day 7 — Mid-Point Reminder Sent",
+      "key": "reminderDay7Sent",
+      "id": "Field_S6_08",
+      "disabled": true
+    },
+    {
+      "type": "checkbox",
+      "label": "Day 11 — Final Reminder Sent",
+      "key": "reminderDay11Sent",
+      "id": "Field_S6_09",
+      "disabled": true
+    },
+    {
+      "type": "textarea",
+      "label": "Vendor Communication Notes",
+      "key": "vendorCommNotes",
+      "id": "Field_S6_10",
+      "description": "Record any follow-up conversations or issues"
+    },
+    {
+      "type": "select",
+      "label": "Action Required",
+      "key": "collectionAction",
+      "id": "Field_S6_11",
+      "valuesExpression": "=[{\"label\":\"Continue Waiting\",\"value\":\"wait\"},{\"label\":\"Accept Response\",\"value\":\"accept\"},{\"label\":\"Extend Deadline\",\"value\":\"extend\"},{\"label\":\"Escalate to Governance\",\"value\":\"escalate\"},{\"label\":\"Close — No Response\",\"value\":\"close_no_response\"}]",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default"
+}
