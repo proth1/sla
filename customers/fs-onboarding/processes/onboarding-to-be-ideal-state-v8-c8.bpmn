@@ -1552,11 +1552,7 @@
     <bpmn:sequenceFlow id="Flow_V8" sourceRef="Task_VendorDeploySupport" targetRef="Task_VendorCloseRequest" />
     <bpmn:sequenceFlow id="Flow_V_End" sourceRef="Task_VendorCloseRequest" targetRef="End_VendorComplete" />
   </bpmn:process>
-  <bpmn:message id="Message_VendorEngagement" name="VendorEngagementMessage">
-    <bpmn:extensionElements>
-      <zeebe:subscription correlationKey="=vendorId" />
-    </bpmn:extensionElements>
-  </bpmn:message>
+  <bpmn:message id="Message_VendorEngagement" name="VendorEngagementMessage" />
   <bpmn:message id="Message_VendorResponse" name="VendorResponseMessage">
     <bpmn:extensionElements>
       <zeebe:subscription correlationKey="=vendorId" />
@@ -1567,11 +1563,7 @@
       <zeebe:subscription correlationKey="=contractId" />
     </bpmn:extensionElements>
   </bpmn:message>
-  <bpmn:message id="Message_MiniRFPRequest" name="MiniRFPRequestMessage">
-    <bpmn:extensionElements>
-      <zeebe:subscription correlationKey="=vendorToken" />
-    </bpmn:extensionElements>
-  </bpmn:message>
+  <bpmn:message id="Message_MiniRFPRequest" name="MiniRFPRequestMessage" />
   <bpmn:message id="Message_MiniRFPResponse" name="MiniRFPResponseMessage">
     <bpmn:extensionElements>
       <zeebe:subscription correlationKey="=vendorToken" />
@@ -1580,7 +1572,7 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_Main">
     <bpmndi:BPMNPlane id="BPMNPlane_Main" bpmnElement="Collaboration_IdealState_v8">
       <bpmndi:BPMNShape id="Participant_Enterprise_di" bpmnElement="Participant_Enterprise" isHorizontal="true">
-        <dc:Bounds x="160" y="80" width="2440" height="290" />
+        <dc:Bounds x="160" y="80" width="2440" height="390" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Start_SoftwareNeed_di" bpmnElement="Start_SoftwareNeed">
@@ -1837,230 +1829,230 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Participant_Vendor_di" bpmnElement="Participant_Vendor" isHorizontal="true">
-        <dc:Bounds x="160" y="540" width="2440" height="430" />
+        <dc:Bounds x="160" y="640" width="2440" height="430" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Start_MiniRFPVendor_di" bpmnElement="Start_MiniRFPVendor">
-        <dc:Bounds x="400" y="572" width="36" height="36" />
+        <dc:Bounds x="400" y="672" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="389" y="615" width="58" height="27" />
+          <dc:Bounds x="389" y="715" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorMiniRFP_di" bpmnElement="Task_VendorMiniRFP">
-        <dc:Bounds x="490" y="550" width="100" height="80" />
+        <dc:Bounds x="490" y="650" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_MiniRFPVendorComplete_di" bpmnElement="End_MiniRFPVendorComplete">
-        <dc:Bounds x="652" y="572" width="36" height="36" />
+        <dc:Bounds x="652" y="672" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="641" y="615" width="58" height="27" />
+          <dc:Bounds x="641" y="715" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Start_VendorEngagement_di" bpmnElement="Start_VendorEngagement">
-        <dc:Bounds x="222" y="662" width="36" height="36" />
+        <dc:Bounds x="222" y="762" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="209" y="705" width="63" height="40" />
+          <dc:Bounds x="209" y="805" width="63" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorIntake_di" bpmnElement="Task_VendorIntake">
-        <dc:Bounds x="310" y="640" width="100" height="80" />
+        <dc:Bounds x="310" y="740" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_VendorQualified_di" bpmnElement="GW_VendorQualified" isMarkerVisible="true">
-        <dc:Bounds x="465" y="655" width="50" height="50" />
+        <dc:Bounds x="465" y="755" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="466" y="633" width="50" height="27" />
+          <dc:Bounds x="466" y="733" width="50" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorProposal_di" bpmnElement="Task_VendorProposal">
-        <dc:Bounds x="570" y="640" width="100" height="80" />
+        <dc:Bounds x="570" y="740" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_VendorParSplit_di" bpmnElement="GW_VendorParSplit">
-        <dc:Bounds x="725" y="655" width="50" height="50" />
+        <dc:Bounds x="725" y="755" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_VendorParJoin_di" bpmnElement="GW_VendorParJoin">
-        <dc:Bounds x="985" y="655" width="50" height="50" />
+        <dc:Bounds x="985" y="755" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorContractReview_di" bpmnElement="Task_VendorContractReview">
-        <dc:Bounds x="1090" y="640" width="100" height="80" />
+        <dc:Bounds x="1090" y="740" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorContractSign_di" bpmnElement="Task_VendorContractSign">
-        <dc:Bounds x="1250" y="640" width="100" height="80" />
+        <dc:Bounds x="1250" y="740" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorOnboarding_di" bpmnElement="Task_VendorOnboarding">
-        <dc:Bounds x="1410" y="640" width="100" height="80" />
+        <dc:Bounds x="1410" y="740" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorDeploySupport_di" bpmnElement="Task_VendorDeploySupport">
-        <dc:Bounds x="1570" y="640" width="100" height="80" />
+        <dc:Bounds x="1570" y="740" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorCloseRequest_di" bpmnElement="Task_VendorCloseRequest">
-        <dc:Bounds x="1730" y="640" width="100" height="80" />
+        <dc:Bounds x="1730" y="740" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_VendorComplete_di" bpmnElement="End_VendorComplete">
-        <dc:Bounds x="1882" y="662" width="36" height="36" />
+        <dc:Bounds x="1882" y="762" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1877" y="705" width="47" height="40" />
+          <dc:Bounds x="1877" y="805" width="47" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorTechDemo_di" bpmnElement="Task_VendorTechDemo">
-        <dc:Bounds x="830" y="860" width="100" height="80" />
+        <dc:Bounds x="830" y="960" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorSecurityReview_di" bpmnElement="Task_VendorSecurityReview">
-        <dc:Bounds x="830" y="640" width="100" height="80" />
+        <dc:Bounds x="830" y="740" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_VendorDisqualified_di" bpmnElement="End_VendorDisqualified">
-        <dc:Bounds x="552" y="752" width="36" height="36" />
+        <dc:Bounds x="552" y="852" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="542" y="795" width="57" height="27" />
+          <dc:Bounds x="542" y="895" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_VendorComplianceReview_di" bpmnElement="Task_VendorComplianceReview">
-        <dc:Bounds x="830" y="750" width="100" height="80" />
+        <dc:Bounds x="830" y="850" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_MRFP_V1_di" bpmnElement="Flow_MRFP_V1">
-        <di:waypoint x="436" y="590" />
-        <di:waypoint x="490" y="590" />
+        <di:waypoint x="436" y="690" />
+        <di:waypoint x="490" y="690" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_MRFP_V2_di" bpmnElement="Flow_MRFP_V2">
-        <di:waypoint x="590" y="590" />
-        <di:waypoint x="652" y="590" />
+        <di:waypoint x="590" y="690" />
+        <di:waypoint x="652" y="690" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V1_di" bpmnElement="Flow_V1">
-        <di:waypoint x="258" y="680" />
-        <di:waypoint x="310" y="680" />
+        <di:waypoint x="258" y="780" />
+        <di:waypoint x="310" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V2_di" bpmnElement="Flow_V2">
-        <di:waypoint x="410" y="680" />
-        <di:waypoint x="465" y="680" />
+        <di:waypoint x="410" y="780" />
+        <di:waypoint x="465" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V_QualYes_di" bpmnElement="Flow_V_QualYes">
-        <di:waypoint x="515" y="680" />
-        <di:waypoint x="570" y="680" />
+        <di:waypoint x="515" y="780" />
+        <di:waypoint x="570" y="780" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="534" y="663" width="18" height="14" />
+          <dc:Bounds x="534" y="763" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V_QualNo_di" bpmnElement="Flow_V_QualNo">
-        <di:waypoint x="490" y="705" />
-        <di:waypoint x="490" y="770" />
-        <di:waypoint x="552" y="770" />
+        <di:waypoint x="490" y="805" />
+        <di:waypoint x="490" y="870" />
+        <di:waypoint x="552" y="870" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="498" y="735" width="15" height="14" />
+          <dc:Bounds x="498" y="835" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V3_di" bpmnElement="Flow_V3">
-        <di:waypoint x="670" y="680" />
-        <di:waypoint x="725" y="680" />
+        <di:waypoint x="670" y="780" />
+        <di:waypoint x="725" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V_VP1_di" bpmnElement="Flow_V_VP1">
-        <di:waypoint x="775" y="680" />
-        <di:waypoint x="830" y="680" />
+        <di:waypoint x="775" y="780" />
+        <di:waypoint x="830" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V_VP2_di" bpmnElement="Flow_V_VP2">
-        <di:waypoint x="750" y="705" />
-        <di:waypoint x="750" y="790" />
-        <di:waypoint x="830" y="790" />
+        <di:waypoint x="750" y="805" />
+        <di:waypoint x="750" y="890" />
+        <di:waypoint x="830" y="890" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V_VP3_di" bpmnElement="Flow_V_VP3">
-        <di:waypoint x="750" y="705" />
-        <di:waypoint x="750" y="900" />
-        <di:waypoint x="830" y="900" />
+        <di:waypoint x="750" y="805" />
+        <di:waypoint x="750" y="1000" />
+        <di:waypoint x="830" y="1000" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V_VP1J_di" bpmnElement="Flow_V_VP1J">
-        <di:waypoint x="930" y="680" />
-        <di:waypoint x="985" y="680" />
+        <di:waypoint x="930" y="780" />
+        <di:waypoint x="985" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V_VP2J_di" bpmnElement="Flow_V_VP2J">
-        <di:waypoint x="930" y="790" />
-        <di:waypoint x="1010" y="790" />
-        <di:waypoint x="1010" y="705" />
+        <di:waypoint x="930" y="890" />
+        <di:waypoint x="1010" y="890" />
+        <di:waypoint x="1010" y="805" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V_VP3J_di" bpmnElement="Flow_V_VP3J">
-        <di:waypoint x="930" y="900" />
-        <di:waypoint x="1010" y="900" />
-        <di:waypoint x="1010" y="705" />
+        <di:waypoint x="930" y="1000" />
+        <di:waypoint x="1010" y="1000" />
+        <di:waypoint x="1010" y="805" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V4_di" bpmnElement="Flow_V4">
-        <di:waypoint x="1035" y="680" />
-        <di:waypoint x="1090" y="680" />
+        <di:waypoint x="1035" y="780" />
+        <di:waypoint x="1090" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V5_di" bpmnElement="Flow_V5">
-        <di:waypoint x="1190" y="680" />
-        <di:waypoint x="1250" y="680" />
+        <di:waypoint x="1190" y="780" />
+        <di:waypoint x="1250" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V6_di" bpmnElement="Flow_V6">
-        <di:waypoint x="1350" y="680" />
-        <di:waypoint x="1410" y="680" />
+        <di:waypoint x="1350" y="780" />
+        <di:waypoint x="1410" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V7_di" bpmnElement="Flow_V7">
-        <di:waypoint x="1510" y="680" />
-        <di:waypoint x="1570" y="680" />
+        <di:waypoint x="1510" y="780" />
+        <di:waypoint x="1570" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V8_di" bpmnElement="Flow_V8">
-        <di:waypoint x="1670" y="680" />
-        <di:waypoint x="1730" y="680" />
+        <di:waypoint x="1670" y="780" />
+        <di:waypoint x="1730" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_V_End_di" bpmnElement="Flow_V_End">
-        <di:waypoint x="1830" y="680" />
-        <di:waypoint x="1882" y="680" />
+        <di:waypoint x="1830" y="780" />
+        <di:waypoint x="1882" y="780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MsgFlow_DDRequest_di" bpmnElement="MsgFlow_DDRequest">
         <di:waypoint x="1670" y="230" />
-        <di:waypoint x="1670" y="410" />
-        <di:waypoint x="240" y="410" />
-        <di:waypoint x="240" y="662" />
+        <di:waypoint x="1670" y="510" />
+        <di:waypoint x="240" y="510" />
+        <di:waypoint x="240" y="762" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="262" y="376" width="69" height="27" />
+          <dc:Bounds x="262" y="476" width="69" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MsgFlow_VendorResponse_di" bpmnElement="MsgFlow_VendorResponse">
-        <di:waypoint x="620" y="640" />
-        <di:waypoint x="620" y="450" />
-        <di:waypoint x="1710" y="450" />
+        <di:waypoint x="620" y="740" />
+        <di:waypoint x="620" y="550" />
+        <di:waypoint x="1710" y="550" />
         <di:waypoint x="1710" y="230" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="628" y="433" width="88" height="14" />
+          <dc:Bounds x="628" y="533" width="88" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MsgFlow_ContractDraft_di" bpmnElement="MsgFlow_ContractDraft">
         <di:waypoint x="2165" y="230" />
-        <di:waypoint x="2165" y="480" />
-        <di:waypoint x="1140" y="480" />
-        <di:waypoint x="1140" y="640" />
+        <di:waypoint x="2165" y="580" />
+        <di:waypoint x="1140" y="580" />
+        <di:waypoint x="1140" y="740" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1145" y="462" width="69" height="14" />
+          <dc:Bounds x="1145" y="562" width="69" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MsgFlow_SignedContract_di" bpmnElement="MsgFlow_SignedContract">
-        <di:waypoint x="1300" y="640" />
-        <di:waypoint x="1300" y="520" />
-        <di:waypoint x="2220" y="520" />
+        <di:waypoint x="1300" y="740" />
+        <di:waypoint x="1300" y="620" />
+        <di:waypoint x="2220" y="620" />
         <di:waypoint x="2220" y="230" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1310" y="503" width="79" height="14" />
+          <dc:Bounds x="1310" y="603" width="79" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP0_Abandon_di" bpmnElement="Flow_SP0_Abandon">
         <di:waypoint x="480" y="248" />
-        <di:waypoint x="480" y="280" />
+        <di:waypoint x="480" y="380" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP0_AbandonEnd_di" bpmnElement="Flow_SP0_AbandonEnd">
-        <di:waypoint x="540" y="320" />
-        <di:waypoint x="592" y="320" />
+        <di:waypoint x="540" y="420" />
+        <di:waypoint x="592" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MsgFlow_MiniRFPRequest_di" bpmnElement="MsgFlow_MiniRFPRequest">
         <di:waypoint x="430" y="230" />
-        <di:waypoint x="430" y="400" />
-        <di:waypoint x="418" y="400" />
-        <di:waypoint x="418" y="572" />
+        <di:waypoint x="430" y="500" />
+        <di:waypoint x="418" y="500" />
+        <di:waypoint x="418" y="672" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="434" y="376" width="48" height="27" />
+          <dc:Bounds x="434" y="476" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MsgFlow_MiniRFPResponse_di" bpmnElement="MsgFlow_MiniRFPResponse">
-        <di:waypoint x="540" y="550" />
-        <di:waypoint x="540" y="460" />
-        <di:waypoint x="470" y="460" />
+        <di:waypoint x="540" y="650" />
+        <di:waypoint x="540" y="560" />
+        <di:waypoint x="470" y="560" />
         <di:waypoint x="470" y="230" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="476" y="436" width="57" height="27" />
+          <dc:Bounds x="476" y="536" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="GW_MiniRFP_di" bpmnElement="GW_MiniRFP" isMarkerVisible="true">
@@ -2078,16 +2070,16 @@
       <bpmndi:BPMNShape id="Timer_SP0_Abandon_di" bpmnElement="Timer_SP0_Abandon">
         <dc:Bounds x="462" y="212" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="498" y="220" width="38" height="27" />
+          <dc:Bounds x="498" y="240" width="38" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_ConciergeCancel_di" bpmnElement="Task_ConciergeCancel">
-        <dc:Bounds x="440" y="280" width="100" height="80" />
+        <dc:Bounds x="440" y="380" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_SP0_Abandoned_di" bpmnElement="End_SP0_Abandoned">
-        <dc:Bounds x="592" y="302" width="36" height="36" />
+        <dc:Bounds x="592" y="402" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="581" y="345" width="58" height="27" />
+          <dc:Bounds x="581" y="445" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_MiniRFP_Merge_di" bpmnElement="GW_MiniRFP_Merge" isMarkerVisible="true">
