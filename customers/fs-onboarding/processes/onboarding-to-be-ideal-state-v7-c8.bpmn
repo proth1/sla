@@ -64,7 +64,7 @@
             <zeebe:property name="raci_i" value="Governance" />
           </zeebe:properties>
         </bpmn:extensionElements>
-        <bpmn:incoming>Flow_SP5_3</bpmn:incoming>
+        <bpmn:incoming>Flow_SP5_CV</bpmn:incoming>
         <bpmn:outgoing>Flow_SP5_4</bpmn:outgoing>
       </bpmn:userTask>
       <bpmn:serviceTask id="Activity_0zf4l0g" name="Notify Requester">
@@ -117,9 +117,23 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP5_1" sourceRef="SP5_Start" targetRef="Task_PerformUAT" />
       <bpmn:sequenceFlow id="Flow_SP5_2" sourceRef="Task_PerformUAT" targetRef="Task_FinalApproval" />
-      <bpmn:sequenceFlow id="Flow_SP5_3" sourceRef="Task_FinalApproval" targetRef="Task_OnboardSoftware" />
+      <bpmn:userTask id="Task_ConditionVerification" name="Verify&#10;Conditions">
+        <bpmn:documentation>For conditional approvals, verify that all conditions attached to the approval have been met before proceeding with software onboarding. Track condition status, evidence of completion, and verification sign-off.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:formDefinition formId="sp5-condition-verification" />
+          <zeebe:assignmentDefinition candidateGroups="governance-lane" />
+          <zeebe:properties>
+            <zeebe:property name="raci_r" value="Governance" />
+            <zeebe:property name="raci_a" value="Governance" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SP5_3</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP5_CV</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="Flow_SP5_3" sourceRef="Task_FinalApproval" targetRef="Task_ConditionVerification" />
+      <bpmn:sequenceFlow id="Flow_SP5_CV" sourceRef="Task_ConditionVerification" targetRef="Task_OnboardSoftware" />
       <bpmn:sequenceFlow id="Flow_SP5_4" sourceRef="Task_OnboardSoftware" targetRef="Activity_0zf4l0g" />
-      <bpmn:sequenceFlow id="Flow_SP5_5" sourceRef="Activity_0zf4l0g" targetRef="Task_CloseRequest" />
+      <bpmn:sequenceFlow id="Flow_SP5_5" sourceRef="Activity_0zf4l0g" targetRef="Task_AssignOwnership" />
       <bpmn:sequenceFlow id="Flow_SP5_6" sourceRef="Task_CloseRequest" targetRef="SP5_End" />
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="GW_FinalDecision" name="Approved?">
@@ -594,6 +608,7 @@
         <bpmn:incoming>Flow_SP4_1</bpmn:incoming>
         <bpmn:outgoing>Flow_SP4_Buy</bpmn:outgoing>
         <bpmn:outgoing>Flow_SP4_Build</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP4_Enable</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:userTask id="Task_RefineRequirements" name="Refine&#10;Requirements">
         <bpmn:documentation>Refine and finalize requirements based on insights from the parallel evaluations and vendor due diligence. Incorporate feedback from Technical Architecture, Security, Risk and Compliance, and Financial analysis streams. Update requirements to address identified gaps, risks, and conditions. Produce the final requirements specification that will guide the Proof of Concept and subsequent contracting or build activities.</bpmn:documentation>
@@ -784,9 +799,49 @@
         </bpmn:exclusiveGateway>
         <bpmn:sequenceFlow id="Flow_17ytyma" sourceRef="Gateway_0q35ha8" targetRef="PDLC_Development" />
       </bpmn:subProcess>
-      <bpmn:exclusiveGateway id="GW_MergeExec">
+      <bpmn:userTask id="Task_ComplianceReview" name="Compliance&#10;Review">
+        <bpmn:documentation>Enable pathway compliance-only review. For vendor affinity / strategic partnership requests, conduct a focused compliance review covering regulatory requirements, data protection, and contractual standards without full competitive evaluation.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:formDefinition formId="sp4-compliance-review-enable" />
+          <zeebe:assignmentDefinition candidateGroups="compliance-lane" />
+          <zeebe:properties>
+            <zeebe:property name="raci_r" value="Compliance" />
+            <zeebe:property name="raci_a" value="Governance" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SP4_Enable</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_Enable2</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_EnableContractExec" name="Execute&#10;Contract">
+        <bpmn:documentation>Enable pathway contract execution. For vendor affinity requests, execute the contract using pre-negotiated master agreement terms. No competitive negotiation required — focus on compliance verification and contract activation.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:formDefinition formId="sp4-contract-deviation" />
+          <zeebe:assignmentDefinition candidateGroups="contracting-lane" />
+          <zeebe:properties>
+            <zeebe:property name="raci_r" value="Contracting" />
+            <zeebe:property name="raci_a" value="Contracting" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SP4_Enable2</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_EnableMerge</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_ContractDeviation" name="Contract&#10;Deviation Check">
+        <bpmn:documentation>Review and document any deviations from standard contract terms. Track deviation type, risk acceptance, and approval authority for audit trail.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:formDefinition formId="sp4-contract-deviation" />
+          <zeebe:assignmentDefinition candidateGroups="contracting-lane" />
+          <zeebe:properties>
+            <zeebe:property name="raci_r" value="Contracting" />
+            <zeebe:property name="raci_a" value="Governance" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_SP4_BuyMerge</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_DeviationToCode</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:exclusiveGateway id="GW_MergeExec">
+        <bpmn:incoming>Flow_SP4_CodeToMerge</bpmn:incoming>
         <bpmn:incoming>Flow_SP4_BuildMerge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP4_EnableMerge</bpmn:incoming>
         <bpmn:outgoing>Flow_1fshpro</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:endEvent id="SP4_End">
@@ -800,7 +855,27 @@
       <bpmn:sequenceFlow id="Flow_SP4_4" sourceRef="Task_TechRiskEval" targetRef="Task_NegotiateContract" />
       <bpmn:sequenceFlow id="Flow_SP4_5" sourceRef="Task_NegotiateContract" targetRef="Receive_SignedContract" />
       <bpmn:sequenceFlow id="Flow_SP4_6" sourceRef="Receive_SignedContract" targetRef="Task_FinalizeContract" />
-      <bpmn:sequenceFlow id="Flow_SP4_BuyMerge" sourceRef="Task_FinalizeContract" targetRef="GW_MergeExec" />
+      <bpmn:sequenceFlow id="Flow_SP4_BuyMerge" sourceRef="Task_FinalizeContract" targetRef="Task_ContractDeviation" />
+      <bpmn:userTask id="Task_CodingCorrection" name="Coding Matrix&#10;Correction">
+        <bpmn:documentation>Finance coding matrix correction for proper GL account assignment, cost center allocation, and budget line mapping.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:formDefinition formId="sp4-coding-correction" />
+          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:properties>
+            <zeebe:property name="raci_r" value="Business" />
+            <zeebe:property name="raci_a" value="Governance" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SP4_DeviationToCode</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP4_CodeToMerge</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="Flow_SP4_DeviationToCode" sourceRef="Task_ContractDeviation" targetRef="Task_CodingCorrection" />
+      <bpmn:sequenceFlow id="Flow_SP4_CodeToMerge" sourceRef="Task_CodingCorrection" targetRef="GW_MergeExec" />
+      <bpmn:sequenceFlow id="Flow_SP4_Enable" name="Enable" sourceRef="GW_PathwayExec" targetRef="Task_ComplianceReview">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'Enable'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP4_Enable2" sourceRef="Task_ComplianceReview" targetRef="Task_EnableContractExec" />
+      <bpmn:sequenceFlow id="Flow_SP4_EnableMerge" sourceRef="Task_EnableContractExec" targetRef="GW_MergeExec" />
       <bpmn:sequenceFlow id="Flow_SP4_7" sourceRef="Task_DefineBuildReqs" targetRef="SP_PDLC" />
       <bpmn:sequenceFlow id="Flow_SP4_BuildMerge" sourceRef="SP_PDLC" targetRef="GW_MergeExec" />
       <bpmn:sequenceFlow id="Flow_SP4_SLA" sourceRef="Timer_ContractSLA" targetRef="End_ContractSLABreach" />
@@ -1858,12 +1933,6 @@
       <bpmndi:BPMNShape id="SP4_Start_di" bpmnElement="SP4_Start">
         <dc:Bounds x="180" y="264" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GW_MergeExec_di" bpmnElement="GW_MergeExec" isMarkerVisible="true">
-        <dc:Bounds x="1330" y="257" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP4_End_di" bpmnElement="SP4_End">
-        <dc:Bounds x="1432" y="264" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_DefineBuildReqs_di" bpmnElement="Task_DefineBuildReqs">
         <dc:Bounds x="370" y="430" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -1929,18 +1998,61 @@
         <di:waypoint x="1110" y="382" />
         <di:waypoint x="1152" y="382" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_ComplianceReview_di" bpmnElement="Task_ComplianceReview">
+        <dc:Bounds x="370" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EnableContractExec_di" bpmnElement="Task_EnableContractExec">
+        <dc:Bounds x="530" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ContractDeviation_di" bpmnElement="Task_ContractDeviation">
+        <dc:Bounds x="1330" y="242" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CodingCorrection_di" bpmnElement="Task_CodingCorrection">
+        <dc:Bounds x="1490" y="242" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_MergeExec_shifted_di" bpmnElement="GW_MergeExec" isMarkerVisible="true">
+        <dc:Bounds x="1650" y="257" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP4_End_shifted_di" bpmnElement="SP4_End">
+        <dc:Bounds x="1752" y="264" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP4_BuyMerge_di" bpmnElement="Flow_SP4_BuyMerge">
         <di:waypoint x="1270" y="282" />
         <di:waypoint x="1330" y="282" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP4_DeviationToCode_di" bpmnElement="Flow_SP4_DeviationToCode">
+        <di:waypoint x="1430" y="282" />
+        <di:waypoint x="1490" y="282" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP4_CodeToMerge_di" bpmnElement="Flow_SP4_CodeToMerge">
+        <di:waypoint x="1590" y="282" />
+        <di:waypoint x="1650" y="282" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP4_Enable_di" bpmnElement="Flow_SP4_Enable">
+        <di:waypoint x="295" y="257" />
+        <di:waypoint x="295" y="160" />
+        <di:waypoint x="370" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="301" y="206" width="35" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP4_Enable2_di" bpmnElement="Flow_SP4_Enable2">
+        <di:waypoint x="470" y="160" />
+        <di:waypoint x="530" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP4_EnableMerge_di" bpmnElement="Flow_SP4_EnableMerge">
+        <di:waypoint x="630" y="160" />
+        <di:waypoint x="1675" y="160" />
+        <di:waypoint x="1675" y="257" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP4_BuildMerge_di" bpmnElement="Flow_SP4_BuildMerge">
         <di:waypoint x="630" y="470" />
-        <di:waypoint x="1355" y="470" />
-        <di:waypoint x="1355" y="307" />
+        <di:waypoint x="1675" y="470" />
+        <di:waypoint x="1675" y="307" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1fshpro_di" bpmnElement="Flow_1fshpro">
-        <di:waypoint x="1380" y="282" />
-        <di:waypoint x="1432" y="282" />
+        <di:waypoint x="1700" y="282" />
+        <di:waypoint x="1752" y="282" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP4_7_di" bpmnElement="Flow_SP4_7">
         <di:waypoint x="470" y="470" />
@@ -1959,20 +2071,23 @@
       <bpmndi:BPMNShape id="Task_FinalApproval_di" bpmnElement="Task_FinalApproval">
         <dc:Bounds x="430" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_OnboardSoftware_di" bpmnElement="Task_OnboardSoftware">
+      <bpmndi:BPMNShape id="Task_ConditionVerification_di" bpmnElement="Task_ConditionVerification">
         <dc:Bounds x="590" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0zf4l0g_di" bpmnElement="Activity_0zf4l0g">
+      <bpmndi:BPMNShape id="Task_OnboardSoftware_di" bpmnElement="Task_OnboardSoftware">
         <dc:Bounds x="750" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zf4l0g_di" bpmnElement="Activity_0zf4l0g">
+        <dc:Bounds x="910" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_AssignOwnership_di" bpmnElement="Task_AssignOwnership">
-        <dc:Bounds x="912" y="160" width="100" height="80" />
+        <dc:Bounds x="1072" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_CloseRequest_di" bpmnElement="Task_CloseRequest">
-        <dc:Bounds x="1070" y="160" width="100" height="80" />
+        <dc:Bounds x="1230" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP5_End_di" bpmnElement="SP5_End">
-        <dc:Bounds x="1232" y="182" width="36" height="36" />
+        <dc:Bounds x="1392" y="182" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP5_1_di" bpmnElement="Flow_SP5_1">
         <di:waypoint x="216" y="200" />
@@ -1986,21 +2101,25 @@
         <di:waypoint x="530" y="200" />
         <di:waypoint x="590" y="200" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP5_4_di" bpmnElement="Flow_SP5_4">
+      <bpmndi:BPMNEdge id="Flow_SP5_CV_di" bpmnElement="Flow_SP5_CV">
         <di:waypoint x="690" y="200" />
         <di:waypoint x="750" y="200" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP5_5_di" bpmnElement="Flow_SP5_5">
+      <bpmndi:BPMNEdge id="Flow_SP5_4_di" bpmnElement="Flow_SP5_4">
         <di:waypoint x="850" y="200" />
         <di:waypoint x="910" y="200" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP5_OWN_di" bpmnElement="Flow_SP5_OWN">
-        <di:waypoint x="1012" y="200" />
+      <bpmndi:BPMNEdge id="Flow_SP5_5_di" bpmnElement="Flow_SP5_5">
+        <di:waypoint x="1010" y="200" />
         <di:waypoint x="1072" y="200" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP5_OWN_di" bpmnElement="Flow_SP5_OWN">
+        <di:waypoint x="1172" y="200" />
+        <di:waypoint x="1230" y="200" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP5_6_di" bpmnElement="Flow_SP5_6">
-        <di:waypoint x="1170" y="200" />
-        <di:waypoint x="1232" y="200" />
+        <di:waypoint x="1330" y="200" />
+        <di:waypoint x="1392" y="200" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
