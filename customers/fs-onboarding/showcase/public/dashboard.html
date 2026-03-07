@@ -156,10 +156,65 @@ tbody td{padding:10px 16px;vertical-align:middle}
 .spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
 .loading-row td{text-align:center;padding:32px}
 
+/* --- INSTANCE DETAIL PANEL --- */
+.detail-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,0.4);z-index:200;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+.detail-overlay.open{opacity:1;visibility:visible}
+.detail-panel{position:fixed;top:0;right:-500px;bottom:0;width:500px;background:var(--surface);border-left:1px solid var(--border);z-index:201;transition:right .3s ease;display:flex;flex-direction:column;box-shadow:-8px 0 32px rgba(0,0,0,0.3)}
+.detail-panel.open{right:0}
+.detail-panel-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
+.detail-panel-header h3{font-size:14px;font-weight:600;color:var(--text)}
+.detail-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:20px;padding:4px 8px;border-radius:4px;transition:all .2s;line-height:1}
+.detail-close:hover{color:var(--text);background:var(--surface3)}
+.detail-body{flex:1;overflow-y:auto;padding:0}
+.detail-meta{padding:16px 20px;border-bottom:1px solid var(--border)}
+.detail-meta-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12px}
+.detail-meta-label{color:var(--text3);font-weight:500}
+.detail-meta-value{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px}
+.detail-section-title{padding:12px 20px 8px;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.detail-task-row{padding:12px 20px;border-bottom:1px solid rgba(51,65,85,0.3);transition:background .15s}
+.detail-task-row:hover{background:rgba(59,130,246,0.04)}
+.detail-task-row:last-child{border-bottom:none}
+.detail-task-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.detail-task-info{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--text3)}
+.assignee-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500}
+.assignee-badge.assigned{background:rgba(59,130,246,0.12);color:#60a5fa}
+.assignee-badge.unassigned{background:rgba(148,163,184,0.1);color:var(--text3)}
+.btn-reassign{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text3);cursor:pointer;padding:3px 8px;font-size:10px;font-family:inherit;font-weight:500;transition:all .2s;margin-left:auto}
+.btn-reassign:hover{color:var(--accent);border-color:var(--accent)}
+.detail-operate-link{display:block;padding:12px 20px;text-align:center;color:var(--accent);text-decoration:none;font-size:12px;font-weight:500;border-top:1px solid var(--border);transition:background .2s}
+.detail-operate-link:hover{background:rgba(59,130,246,0.06)}
+
+/* --- REASSIGN MODAL --- */
+.modal-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.modal-backdrop.open{opacity:1;visibility:visible}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:380px;max-width:90vw;box-shadow:0 16px 48px rgba(0,0,0,0.4)}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-header h4{font-size:14px;font-weight:600;color:var(--text)}
+.modal-body{padding:20px}
+.modal-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:500;margin-bottom:6px;display:block}
+.modal-current{font-size:12px;color:var(--text2);margin-bottom:16px;padding:8px 12px;background:var(--surface2);border-radius:6px}
+.modal-input{width:100%;padding:8px 12px;font-size:13px;font-family:inherit;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none;transition:border-color .2s}
+.modal-input:focus{border-color:var(--accent)}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.modal-btn{flex:1;padding:8px 14px;font-size:12px;font-family:inherit;font-weight:500;border-radius:6px;cursor:pointer;transition:all .2s;border:1px solid var(--border)}
+.modal-btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.modal-btn-primary:hover{background:#2563eb}
+.modal-btn-secondary{background:var(--surface2);color:var(--text2)}
+.modal-btn-secondary:hover{background:var(--surface3);color:var(--text)}
+.modal-btn-danger{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:#f87171}
+.modal-btn-danger:hover{background:rgba(239,68,68,0.2)}
+.toast{position:fixed;bottom:24px;right:24px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:400;transform:translateY(60px);opacity:0;transition:all .3s ease}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:#166534;color:#4ade80;border:1px solid rgba(34,197,94,0.3)}
+.toast.error{background:#7f1d1d;color:#fca5a5;border:1px solid rgba(239,68,68,0.3)}
+.queue-item .btn-reassign-inline{background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 6px;font-size:14px;transition:color .2s;line-height:1}
+.queue-item .btn-reassign-inline:hover{color:var(--accent)}
+
 /* --- RESPONSIVE --- */
 @media(max-width:1200px){
   .kpi-row{grid-template-columns:repeat(3,1fr)}
   .bottom-grid{grid-template-columns:1fr}
+  .detail-panel{width:100%}
 }
 @media(max-width:768px){
   .kpi-row{grid-template-columns:repeat(2,1fr)}
@@ -292,6 +347,41 @@ tbody td{padding:10px 16px;vertical-align:middle}
   </div>
 </div>
 
+<!-- Instance Detail Panel (slide-out) -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetailPanel()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-panel-header">
+    <h3 id="detailTitle">Instance Details</h3>
+    <button class="detail-close" onclick="closeDetailPanel()">&times;</button>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- Reassignment Modal -->
+<div class="modal-backdrop" id="reassignModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h4>Reassign Task</h4>
+      <button class="detail-close" onclick="closeReassignModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="reassignTaskName" style="font-size:13px;font-weight:500;margin-bottom:12px"></div>
+      <label class="modal-label">Current Assignment</label>
+      <div class="modal-current" id="reassignCurrent">--</div>
+      <label class="modal-label" for="reassignInput">Assign to User</label>
+      <input class="modal-input" id="reassignInput" type="text" placeholder="Enter username or email">
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-danger" onclick="unassignTask()">Return to Pool</button>
+        <button class="modal-btn modal-btn-secondary" onclick="closeReassignModal()">Cancel</button>
+        <button class="modal-btn modal-btn-primary" onclick="confirmReassign()">Assign</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <script>
 // --- CONFIGURATION ---
 const REFRESH_INTERVAL = 10000;
@@ -346,11 +436,11 @@ async function fetchDashboardData() {
   const [activeData, completedData, pendingTasks] = await Promise.all([
     fetchJSON('/api/instances/search', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v7' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 50 } }),
+      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v8' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 50 } }),
     }),
     fetchJSON('/api/instances/search', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v7', state: 'COMPLETED' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 20 } }),
+      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v8', state: 'COMPLETED' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 20 } }),
     }),
     fetchJSON('/api/tasks/search', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -591,7 +681,7 @@ function renderInstanceTable() {
     const timeMs = inst.startDate ? Date.now() - new Date(inst.startDate).getTime() : 0;
     const timeCls = timeMs > 7 * 86400000 ? 'time-danger' : timeMs > 3 * 86400000 ? 'time-warn' : '';
 
-    return `<tr class="${rowCls}">
+    return `<tr class="${rowCls}" onclick="openDetailPanel('${inst.key}')">
       <td><span class="instance-key">${inst.key}</span></td>
       <td>${inst.softwareName || '<span style="color:var(--text3)">--</span>'}</td>
       <td>${inst.selectedPathway ? esc(capitalize(inst.selectedPathway)) : '<span style="color:var(--text3)">--</span>'}</td>
@@ -601,7 +691,7 @@ function renderInstanceTable() {
       <td><span class="status-indicator status-${statusCls}"><span class="status-dot"></span>${capitalize(inst.state)}</span></td>
       <td style="white-space:nowrap;font-size:12px;color:var(--text2)">${started}</td>
       <td><span class="time-value ${timeCls}">${timeInPhase}</span></td>
-      <td><a class="btn-view" href="/?instance=${inst.key}" target="_blank">View</a></td>
+      <td><a class="btn-view" href="/?instance=${inst.key}" target="_blank" onclick="event.stopPropagation()">View</a></td>
     </tr>`;
   }).join('');
 
@@ -646,15 +736,21 @@ function renderTaskQueue() {
       const age = task.creationDate ? timeSince(new Date(task.creationDate)) : '--';
       const ageMs = task.creationDate ? Date.now() - new Date(task.creationDate).getTime() : 0;
       const ageCls = ageMs > 86400000 ? 'critical' : ageMs > 3600000 ? 'stale' : '';
+      const assignee = task.assignee || '';
+      const groups = (task.candidateGroups || []).join(', ');
       html += `<div class="queue-item">
         <div>
           <div class="queue-task-name">${esc(name)}</div>
           <div class="queue-task-meta">
             <span class="key">${task.processInstanceKey}</span>
             <span>${task.taskDefinitionId || ''}</span>
+            ${assignee ? `<span class="assignee-badge assigned" style="font-size:10px;padding:1px 6px">&#9679; ${esc(assignee)}</span>` : ''}
           </div>
         </div>
-        <div class="queue-age ${ageCls}">${age}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="btn-reassign-inline" title="Reassign task" onclick="openReassignModal('${task.id}', '${esc(name).replace(/'/g, "\\&#39;")}', '${(assignee || '').replace(/'/g, "\\&#39;")}', '${(groups || '').replace(/'/g, "\\&#39;")}')">&#9998;</button>
+          <div class="queue-age ${ageCls}">${age}</div>
+        </div>
       </div>`;
     }
   }
@@ -807,6 +903,167 @@ function esc(s) {
   const d = document.createElement('div');
   d.textContent = s;
   return d.innerHTML;
+}
+
+// --- INSTANCE DETAIL PANEL ---
+let detailInstance = null;
+let reassignTaskId = null;
+
+function openDetailPanel(instanceKey) {
+  const inst = state.enriched.find(e => e.key === instanceKey);
+  if (!inst) return;
+  detailInstance = inst;
+
+  document.getElementById('detailTitle').textContent = `Instance ${inst.key}`;
+  const body = document.getElementById('detailBody');
+
+  // Fetch all tasks (pending + completed) for this instance
+  Promise.all([
+    fetchJSON('/api/tasks/search', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: 'CREATED', processInstanceKey: instanceKey }),
+    }),
+    fetchJSON('/api/tasks/search', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: 'COMPLETED', processInstanceKey: instanceKey }),
+    }),
+  ]).then(([pending, completed]) => {
+    const pendingTasks = Array.isArray(pending) ? pending : [];
+    const completedTasks = Array.isArray(completed) ? completed : [];
+
+    let html = `<div class="detail-meta">`;
+    html += metaRow('Instance Key', inst.key);
+    html += metaRow('Status', `<span class="status-indicator status-${inst.state === 'COMPLETED' ? 'completed' : inst.state === 'INCIDENT' ? 'incident' : 'active'}"><span class="status-dot"></span>${capitalize(inst.state)}</span>`);
+    html += metaRow('Started', inst.startDate ? formatDate(inst.startDate) : '--');
+    if (inst.softwareName) html += metaRow('Software', esc(inst.softwareName));
+    if (inst.selectedPathway) html += metaRow('Pathway', esc(capitalize(inst.selectedPathway)));
+    if (inst.requestType) html += metaRow('Request Type', esc(inst.requestType.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())));
+    if (inst.phase) html += metaRow('Current Phase', `<span class="phase-badge ${PHASE_CSS[inst.phase]}">${inst.phase}: ${PHASE_NAMES[inst.phase]}</span>`);
+    html += `</div>`;
+
+    // Pending tasks
+    html += `<div class="detail-section-title">Pending Tasks (${pendingTasks.length})</div>`;
+    if (pendingTasks.length === 0) {
+      html += `<div style="padding:16px 20px;font-size:12px;color:var(--text3)">No pending tasks</div>`;
+    } else {
+      for (const task of pendingTasks) {
+        html += renderDetailTask(task, 'pending');
+      }
+    }
+
+    // Completed tasks
+    html += `<div class="detail-section-title">Completed Tasks (${completedTasks.length})</div>`;
+    if (completedTasks.length === 0) {
+      html += `<div style="padding:16px 20px;font-size:12px;color:var(--text3)">No completed tasks</div>`;
+    } else {
+      for (const task of completedTasks) {
+        html += renderDetailTask(task, 'completed');
+      }
+    }
+
+    // Operate link
+    const operateUrl = `https://ric-1.operate.camunda.io/425f10fa-c898-4b4b-b303-eac095286716/#/instances/${inst.key}`;
+    html += `<a class="detail-operate-link" href="${operateUrl}" target="_blank" rel="noopener">View in Operate &#8599;</a>`;
+
+    body.innerHTML = html;
+  });
+
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function renderDetailTask(task, status) {
+  const name = (task.name || 'Unnamed').replace(/\n/g, ' ');
+  const assignee = task.assignee;
+  const groups = (task.candidateGroups || []).map(g => LANE_LABELS[g] || g).join(', ');
+  const age = task.creationDate ? timeSince(new Date(task.creationDate)) : '--';
+  const badgeCls = assignee ? 'assigned' : 'unassigned';
+  const badgeText = assignee || 'Unassigned (group pool)';
+
+  let html = `<div class="detail-task-row">
+    <div class="detail-task-name">${esc(name)}</div>
+    <div class="detail-task-info">
+      <span class="assignee-badge ${badgeCls}">${assignee ? '&#9679; ' : '&#9675; '}${esc(badgeText)}</span>`;
+  if (groups) html += `<span style="color:var(--text3)">Group: ${esc(groups)}</span>`;
+  html += `<span style="color:var(--text3)">${age}</span>`;
+  if (status === 'pending') {
+    html += `<button class="btn-reassign" onclick="openReassignModal('${task.id}', '${esc(name).replace(/'/g, "\\&#39;")}', '${(assignee || '').replace(/'/g, "\\&#39;")}', '${(task.candidateGroups || []).join(', ').replace(/'/g, "\\&#39;")}')">Reassign</button>`;
+  }
+  if (status === 'completed') {
+    html += `<span style="color:var(--success);font-size:10px">&#10003; Done</span>`;
+  }
+  html += `</div></div>`;
+  return html;
+}
+
+function metaRow(label, value) {
+  return `<div class="detail-meta-row"><span class="detail-meta-label">${label}</span><span class="detail-meta-value">${value}</span></div>`;
+}
+
+function closeDetailPanel() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.getElementById('detailPanel').classList.remove('open');
+  detailInstance = null;
+}
+
+// --- REASSIGNMENT ---
+function openReassignModal(taskId, taskName, currentAssignee, candidateGroups) {
+  reassignTaskId = taskId;
+  document.getElementById('reassignTaskName').textContent = taskName;
+  document.getElementById('reassignCurrent').textContent = currentAssignee
+    ? `Assigned to: ${currentAssignee}`
+    : `Unassigned — Group pool: ${candidateGroups || 'none'}`;
+  document.getElementById('reassignInput').value = '';
+  document.getElementById('reassignModal').classList.add('open');
+  setTimeout(() => document.getElementById('reassignInput').focus(), 100);
+}
+
+function closeReassignModal() {
+  document.getElementById('reassignModal').classList.remove('open');
+  reassignTaskId = null;
+}
+
+async function confirmReassign() {
+  const assignee = document.getElementById('reassignInput').value.trim();
+  if (!assignee) { showToast('Enter a username', 'error'); return; }
+  if (!reassignTaskId) return;
+
+  try {
+    const res = await fetch(`/api/tasks/${reassignTaskId}/reassign`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ assignee }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    showToast(`Assigned to ${assignee}`, 'success');
+    closeReassignModal();
+    // Refresh detail panel if open
+    if (detailInstance) openDetailPanel(detailInstance.key);
+    fetchDashboardData();
+  } catch (e) {
+    showToast('Failed: ' + e.message, 'error');
+  }
+}
+
+async function unassignTask() {
+  if (!reassignTaskId) return;
+
+  try {
+    const res = await fetch(`/api/tasks/${reassignTaskId}/unassign`, { method: 'POST' });
+    if (!res.ok) throw new Error(await res.text());
+    showToast('Returned to group pool', 'success');
+    closeReassignModal();
+    if (detailInstance) openDetailPanel(detailInstance.key);
+    fetchDashboardData();
+  } catch (e) {
+    showToast('Failed: ' + e.message, 'error');
+  }
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = `toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 // --- INIT ---
