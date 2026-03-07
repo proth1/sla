@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_CVReconcileConditions",
+  "id": "cv-reconcile-conditions",
   "components": [
     {
       "type": "group",
@@ -29,21 +29,27 @@
           "type": "textarea",
           "key": "consolidatedConditions",
           "label": "Consolidated conditions",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RC_004"
         },
         {
           "type": "textarea",
           "key": "reconciliationRationale",
           "label": "Reconciliation rationale",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RC_005"
         },
         {
           "type": "checkbox",
           "key": "allConditionsAddressed",
           "label": "All conditions have been addressed in consolidation",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RC_006"
         }
       ]

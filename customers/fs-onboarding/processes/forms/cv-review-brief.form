@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_CVReviewBrief",
+  "id": "cv-review-brief",
   "components": [
     {
       "type": "group",
@@ -22,21 +22,27 @@
           "type": "textarea",
           "key": "executiveSummary",
           "label": "Executive summary",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RB_003"
         },
         {
           "type": "textarea",
           "key": "recommendation",
           "label": "Recommendation",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RB_004"
         },
         {
           "type": "textarea",
           "key": "keyRisks",
           "label": "Key risks",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RB_005"
         },
         {
@@ -49,7 +55,9 @@
           "type": "checkbox",
           "key": "briefComplete",
           "label": "Brief is complete and ready for distribution",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RB_007"
         }
       ]

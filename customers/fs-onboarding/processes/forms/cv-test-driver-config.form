@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_CVTestDriverConfig",
+  "id": "cv-test-driver-config",
   "components": [
     {
       "type": "group",
@@ -18,10 +18,18 @@
           "key": "configMode",
           "label": "Configuration mode",
           "values": [
-            { "label": "DMN Mode", "value": "DMN Mode" },
-            { "label": "Manual Mode", "value": "Manual Mode" }
+            {
+              "label": "DMN Mode",
+              "value": "DMN Mode"
+            },
+            {
+              "label": "Manual Mode",
+              "value": "Manual Mode"
+            }
           ],
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_TD_002"
         }
       ]
@@ -36,9 +44,18 @@
           "key": "riskTier",
           "label": "Risk tier",
           "values": [
-            { "label": "High", "value": "High" },
-            { "label": "Limited", "value": "Limited" },
-            { "label": "Minimal", "value": "Minimal" }
+            {
+              "label": "High",
+              "value": "High"
+            },
+            {
+              "label": "Limited",
+              "value": "Limited"
+            },
+            {
+              "label": "Minimal",
+              "value": "Minimal"
+            }
           ],
           "id": "Field_CV_TD_004"
         },
@@ -47,8 +64,14 @@
           "key": "governancePhase",
           "label": "Governance phase",
           "values": [
-            { "label": "SP3 Evaluation", "value": "SP3_Evaluation" },
-            { "label": "SP5 Final Approval", "value": "SP5_FinalApproval" }
+            {
+              "label": "SP3 Evaluation",
+              "value": "SP3_Evaluation"
+            },
+            {
+              "label": "SP5 Final Approval",
+              "value": "SP5_FinalApproval"
+            }
           ],
           "id": "Field_CV_TD_005"
         },
@@ -57,10 +80,22 @@
           "key": "contractValueBand",
           "label": "Contract value band",
           "values": [
-            { "label": "Under $100K", "value": "Under100K" },
-            { "label": "$100K - $500K", "value": "100K_500K" },
-            { "label": "$500K - $1M", "value": "500K_1M" },
-            { "label": "Over $1M", "value": "Over1M" }
+            {
+              "label": "Under $100K",
+              "value": "Under100K"
+            },
+            {
+              "label": "$100K - $500K",
+              "value": "100K_500K"
+            },
+            {
+              "label": "$500K - $1M",
+              "value": "500K_1M"
+            },
+            {
+              "label": "Over $1M",
+              "value": "Over1M"
+            }
           ],
           "id": "Field_CV_TD_006"
         }
@@ -76,12 +111,30 @@
           "key": "votingMethod",
           "label": "Voting method",
           "values": [
-            { "label": "Unanimous", "value": "unanimous" },
-            { "label": "Majority", "value": "majority" },
-            { "label": "Super Majority", "value": "super_majority" },
-            { "label": "Veto", "value": "veto" },
-            { "label": "Weighted", "value": "weighted" },
-            { "label": "Single Reviewer", "value": "single_reviewer" }
+            {
+              "label": "Unanimous",
+              "value": "unanimous"
+            },
+            {
+              "label": "Majority",
+              "value": "majority"
+            },
+            {
+              "label": "Super Majority",
+              "value": "super_majority"
+            },
+            {
+              "label": "Veto",
+              "value": "veto"
+            },
+            {
+              "label": "Weighted",
+              "value": "weighted"
+            },
+            {
+              "label": "Single Reviewer",
+              "value": "single_reviewer"
+            }
           ],
           "id": "Field_CV_TD_008"
         },
@@ -159,8 +212,14 @@
           "key": "authorityMode",
           "label": "Authority mode",
           "values": [
-            { "label": "Simple", "value": "Simple" },
-            { "label": "Authority Service", "value": "Authority Service" }
+            {
+              "label": "Simple",
+              "value": "Simple"
+            },
+            {
+              "label": "Authority Service",
+              "value": "Authority Service"
+            }
           ],
           "id": "Field_CV_TD_020"
         },
@@ -200,10 +259,22 @@
           "key": "pathway",
           "label": "Pathway",
           "values": [
-            { "label": "Buy", "value": "Buy" },
-            { "label": "Build", "value": "Build" },
-            { "label": "Hybrid", "value": "Hybrid" },
-            { "label": "Fast-Track", "value": "Fast-Track" }
+            {
+              "label": "Buy",
+              "value": "Buy"
+            },
+            {
+              "label": "Build",
+              "value": "Build"
+            },
+            {
+              "label": "Hybrid",
+              "value": "Hybrid"
+            },
+            {
+              "label": "Fast-Track",
+              "value": "Fast-Track"
+            }
           ],
           "id": "Field_CV_TD_026"
         }

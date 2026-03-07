@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_CVSubmitQuestion",
+  "id": "cv-submit-question",
   "components": [
     {
       "type": "group",
@@ -23,11 +23,26 @@
           "key": "questionCategory",
           "label": "Question category",
           "values": [
-            { "label": "Technical", "value": "Technical" },
-            { "label": "Compliance", "value": "Compliance" },
-            { "label": "Financial", "value": "Financial" },
-            { "label": "Risk", "value": "Risk" },
-            { "label": "Other", "value": "Other" }
+            {
+              "label": "Technical",
+              "value": "Technical"
+            },
+            {
+              "label": "Compliance",
+              "value": "Compliance"
+            },
+            {
+              "label": "Financial",
+              "value": "Financial"
+            },
+            {
+              "label": "Risk",
+              "value": "Risk"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
           ],
           "id": "Field_CV_SQ_003"
         },
@@ -35,7 +50,9 @@
           "type": "textarea",
           "key": "questionText",
           "label": "Question",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_SQ_004"
         },
         {
@@ -43,9 +60,18 @@
           "key": "questionPriority",
           "label": "Priority",
           "values": [
-            { "label": "High", "value": "High" },
-            { "label": "Medium", "value": "Medium" },
-            { "label": "Low", "value": "Low" }
+            {
+              "label": "High",
+              "value": "High"
+            },
+            {
+              "label": "Medium",
+              "value": "Medium"
+            },
+            {
+              "label": "Low",
+              "value": "Low"
+            }
           ],
           "id": "Field_CV_SQ_005"
         }

@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_CVRemediationRevise",
+  "id": "cv-remediation-revise",
   "components": [
     {
       "type": "group",
@@ -36,21 +36,27 @@
           "type": "textarea",
           "key": "revisedExecutiveSummary",
           "label": "Revised executive summary",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RR_005"
         },
         {
           "type": "textarea",
           "key": "changesDescription",
           "label": "Description of changes made",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RR_006"
         },
         {
           "type": "textarea",
           "key": "addressedConcerns",
           "label": "How concerns were addressed",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RR_007"
         },
         {
@@ -64,7 +70,9 @@
           "type": "checkbox",
           "key": "readyForReVote",
           "label": "Brief is ready for re-vote",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_RR_009"
         }
       ]

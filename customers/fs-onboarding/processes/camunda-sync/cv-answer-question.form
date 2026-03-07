@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_CVAnswerQuestion",
+  "id": "cv-answer-question",
   "components": [
     {
       "type": "group",
@@ -36,7 +36,9 @@
           "type": "textarea",
           "key": "answerText",
           "label": "Answer",
-          "validate": { "required": true },
+          "validate": {
+            "required": true
+          },
           "id": "Field_CV_AQ_005"
         },
         {
