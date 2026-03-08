@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the Onboarding Sherpa Toolkit PowerPoint presentation."""
+"""Generate the Onboarding Quarterback Toolkit PowerPoint presentation."""
 
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
@@ -250,7 +250,7 @@ add_text_box(slide, 4.9, 1.8, 3.6, 2.5,
              'but nobody tracks the overall request from intake to go-live.\n\n'
              'When a request stalls, no one notices for weeks. The requester calls around '
              'asking "where is my request?" and gets transferred between teams.\n\n'
-             'The Sherpa role solves this \u2014 one person owns the clock.',
+             'The Quarterback role solves this \u2014 one person owns the clock.',
              font_size=10, color=TEXT2)
 
 # Root cause 3
@@ -269,7 +269,7 @@ add_shape_box(slide, 0.5, 4.7, 12.3, 0.06, BORDER)
 add_text_box(slide, 0.5, 4.9, 12.3, 0.3, 'The 30-Day Plan: Three Phases of Change', font_size=16, color=WHITE, bold=True)
 
 phases_30 = [
-    ('Week 1-2', 'Stop the Bleeding', 'Assign Sherpas, run parallel reviews, pre-screen intake', DANGER, '#1-3'),
+    ('Week 1-2', 'Stop the Bleeding', 'Assign Quarterbacks, run parallel reviews, pre-screen intake', DANGER, '#1-3'),
     ('Week 2-3', 'Create Rhythm', 'Tier routing, weekly governance stand-up', WARN, '#4-5'),
     ('Week 3-4', 'Measure & Adjust', 'Visible tracking board, enforced SLA deadlines', GREEN, '#6-7'),
 ]
@@ -292,17 +292,17 @@ add_text_box(slide, 0.5, 1.25, 10, 0.3,
              'Three changes in the first two weeks that immediately impact cycle time.',
              font_size=13, color=TEXT3)
 
-# Item 1: Appoint Sherpas
-add_numbered_item(slide, 1, 0.5, 1.8, 'Appoint Onboarding Sherpas (Day 1)', (
+# Item 1: Appoint Quarterbacks
+add_numbered_item(slide, 1, 0.5, 1.8, 'Appoint Onboarding Quarterbacks (Day 1)', (
     'Assign 2-3 people as dedicated facilitators who own each request end-to-end. '
-    'The Sherpa tracks where every active request sits, chases reviewers who haven\'t responded, '
+    'The Quarterback tracks where every active request sits, chases reviewers who haven\'t responded, '
     'escalates stalls after 48 hours, and reports weekly to leadership on cycle time.\n\n'
     'Impact: Immediately surfaces where requests are stuck. Visibility alone cuts delays.'
 ), num_color=DANGER, card_width=6.0, card_height=2.2)
 
 # Item 2: Kill Sequential Reviews
 add_numbered_item(slide, 2, 6.8, 1.8, 'Kill Sequential Reviews \u2014 Run Parallel (Day 3)', (
-    'When a request enters Due Diligence, the Sherpa sends the package to ALL reviewers simultaneously '
+    'When a request enters Due Diligence, the Quarterback sends the package to ALL reviewers simultaneously '
     'with a shared deadline (e.g., 5 business days). No reviewer waits for another to finish first.\n\n'
     'Impact: Compresses the longest phase from 8-12 weeks to 2-3 weeks. '
     'This single change is worth 2-3 months of cycle time.'
@@ -342,7 +342,7 @@ add_numbered_item(slide, 4, 0.5, 1.8, 'Tiered Review \u2014 Not Everything Gets 
 tier_tbl = add_table(slide, 0.5, 2.85, 12.3, 4, 5, [1.2, 2.0, 4.5, 2.0, 2.6])
 tier_hdrs = ['Score', 'Tier', 'Reviewers Required', 'Target SLA', 'Escalation Path']
 tier_rows = [
-    ['6-8 pts', 'FAST-TRACK', 'Sherpa + 1 reviewer (Security or Compliance)', '5 business days', "Sherpa's manager after Day 3"],
+    ['6-8 pts', 'FAST-TRACK', 'Quarterback + 1 reviewer (Security or Compliance)', '5 business days', "Quarterback's manager after Day 3"],
     ['9-13 pts', 'STANDARD', '4 key reviewers in parallel (Security, Compliance, Legal, Tech Architecture)', '15 business days', 'Governance lead after Day 10'],
     ['14-18 pts', 'ENHANCED', 'All 9 reviewers in parallel + executive briefing', '25 business days', 'CISO/CRO after Day 15'],
 ]
@@ -372,10 +372,10 @@ add_numbered_item(slide, 5, 0.5, 4.8, 'Weekly Governance Stand-Up (30 minutes ma
 su_tbl = add_table(slide, 0.5, 5.85, 12.3, 6, 4, [1.2, 2.5, 6.6, 2.0])
 su_hdrs = ['Time Box', 'Agenda Item', 'Description', 'Owner']
 su_rows = [
-    ('2 min', 'Pipeline Summary', 'How many requests total? How many in each phase? How many breached SLA?', 'Sherpa'),
-    ('10 min', 'SLA Breaches', 'Walk through EACH breached request. What is blocking? Who needs to act? Decision: escalate, extend, or kill?', 'Sherpa + Blockers'),
-    ('8 min', 'At-Risk Requests', 'Requests approaching SLA deadline (within 2 business days). What\'s needed to close on time?', 'Sherpa + Reviewers'),
-    ('5 min', 'New Intake', 'New requests this week. Quick tier assignment and reviewer identification.', 'Sherpa'),
+    ('2 min', 'Pipeline Summary', 'How many requests total? How many in each phase? How many breached SLA?', 'Quarterback'),
+    ('10 min', 'SLA Breaches', 'Walk through EACH breached request. What is blocking? Who needs to act? Decision: escalate, extend, or kill?', 'Quarterback + Blockers'),
+    ('8 min', 'At-Risk Requests', 'Requests approaching SLA deadline (within 2 business days). What\'s needed to close on time?', 'Quarterback + Reviewers'),
+    ('5 min', 'New Intake', 'New requests this week. Quick tier assignment and reviewer identification.', 'Quarterback'),
     ('5 min', 'Decisions Needed', 'Any go/no-go decisions the committee needs to make right now?', 'Governance Lead'),
 ]
 for j, h in enumerate(su_hdrs):
@@ -449,13 +449,13 @@ add_section_badge(slide, 'WEEK 3-4')
 
 add_numbered_item(slide, 7, 0.5, 0.6, 'Set and Enforce SLA Deadlines (with Escalation)', (
     'Publish target timelines per phase. The escalation path is the enforcement mechanism \u2014 '
-    'no technology needed, just the Sherpa sending an email: "This review is 3 days past SLA. Escalating per policy."'
+    'no technology needed, just the Quarterback sending an email: "This review is 3 days past SLA. Escalating per policy."'
 ), num_color=GREEN, card_width=12.3, card_height=1.0)
 
 sla_tbl = add_table(slide, 0.5, 1.8, 12.3, 8, 5, [2.0, 1.5, 2.0, 3.4, 3.4])
 sla_hdrs = ['Phase', 'SLA Target', 'Warning At', 'Level 1 Escalation', 'Level 2 Escalation']
 sla_rows = [
-    ('Intake / Triage', '2 business days', 'Day 1 (50%)', "Sherpa's manager (Day 2)", 'Governance Lead (Day 3)'),
+    ('Intake / Triage', '2 business days', 'Day 1 (50%)', "Quarterback's manager (Day 2)", 'Governance Lead (Day 3)'),
     ('Planning', '5 business days', 'Day 3 (60%)', 'Governance Lead (Day 5)', 'CRO (Day 7)'),
     ('Due Diligence', '10 business days', 'Day 7 (70%)', 'CISO / CLO (Day 10)', 'CRO + CFO (Day 14)'),
     ('Individual Review', '5 business days', 'Day 3 (60%)', "Reviewer's manager (Day 5)", 'Domain head (Day 7)'),
@@ -524,7 +524,7 @@ wins = [
      'Moves 40-50% of requests to Fast-Track (5-day SLA vs 25-day). '
      'Frees reviewer capacity so Enhanced-tier requests get faster attention too. '
      'Net effect: everyone moves faster.'),
-    ('#1', 'Sherpa Role', GREEN,
+    ('#1', 'Quarterback Role', GREEN,
      'One person owns elapsed time per request. '
      'Chases reviewers, escalates stalls, reports weekly. '
      'Turns "nobody\'s watching" into "someone is always watching."'),
@@ -541,10 +541,10 @@ slide = prs.slides.add_slide(prs.slide_layouts[6])
 set_slide_bg(slide, NAVY)
 add_shape_box(slide, 0, 0, 13.333, 0.06, GREEN)
 
-add_text_box(slide, 1.5, 2.0, 10.3, 0.6, 'The Sherpa Toolkit',
+add_text_box(slide, 1.5, 2.0, 10.3, 0.6, 'The Quarterback Toolkit',
              font_size=36, color=WHITE, bold=True, alignment=PP_ALIGN.CENTER)
 add_text_box(slide, 2.0, 2.7, 9.3, 0.8,
-             '8 ready-to-use forms, templates, and checklists that give the Sherpa\n'
+             '8 ready-to-use forms, templates, and checklists that give the Quarterback\n'
              'a mechanistic, repeatable process from intake to close-out.',
              font_size=16, color=TEXT2, alignment=PP_ALIGN.CENTER)
 
@@ -585,7 +585,7 @@ add_shape_box(slide, 0, 0, 13.333, 0.06, GREEN)
 # Logo circle
 add_icon_circle(slide, 5.9, 1.5, 1.0, GREEN, 'S')
 
-add_text_box(slide, 1.5, 2.8, 10.3, 0.8, 'Onboarding Sherpa Toolkit',
+add_text_box(slide, 1.5, 2.8, 10.3, 0.8, 'Onboarding Quarterback Toolkit',
              font_size=40, color=WHITE, bold=True, alignment=PP_ALIGN.CENTER)
 add_text_box(slide, 2.5, 3.6, 8.3, 0.5, 'Manual Process Forms, Templates & Checklists',
              font_size=20, color=LIGHT_GREEN, alignment=PP_ALIGN.CENTER)
@@ -603,7 +603,7 @@ set_slide_bg(slide, NAVY)
 add_shape_box(slide, 0, 0, 13.333, 0.06, GREEN)
 
 add_text_box(slide, 0.5, 0.3, 6, 0.5, 'Toolkit Contents', font_size=28, color=WHITE, bold=True)
-add_text_box(slide, 0.5, 0.85, 8, 0.3, '8 forms and templates that give the Sherpa a mechanistic, repeatable process',
+add_text_box(slide, 0.5, 0.85, 8, 0.3, '8 forms and templates that give the Quarterback a mechanistic, repeatable process',
              font_size=12, color=TEXT3)
 
 toc_items = [
@@ -705,9 +705,9 @@ data_items = [
 ]
 add_bullet_list(slide, 0.7, 4.8, 5.5, 2.0, data_items, font_size=10, color=TEXT2)
 
-# Sherpa decision
+# Quarterback decision
 box = add_shape_box(slide, 6.8, 4.2, 6.0, 2.5, SURFACE, BORDER)
-add_text_box(slide, 7.0, 4.25, 5, 0.3, 'Sherpa Decision', font_size=14, color=WHITE, bold=True)
+add_text_box(slide, 7.0, 4.25, 5, 0.3, 'Quarterback Decision', font_size=14, color=WHITE, bold=True)
 decisions = [
     'PROCEED \u2014 Enter into pipeline',
     'RETURN \u2014 Missing information (specify)',
@@ -717,7 +717,7 @@ decisions = [
 add_text_box(slide, 7.0, 4.55, 5.5, 0.2, 'Decision options:', font_size=10, color=TEXT3)
 add_bullet_list(slide, 7.0, 4.8, 5.5, 1.0, decisions, font_size=11, color=TEXT)
 
-add_text_box(slide, 7.0, 5.6, 5.5, 0.2, 'Sherpa Name: ________________________', font_size=11, color=TEXT2)
+add_text_box(slide, 7.0, 5.6, 5.5, 0.2, 'Quarterback Name: ________________________', font_size=11, color=TEXT2)
 add_text_box(slide, 7.0, 5.9, 5.5, 0.2, 'Notes / Conditions:', font_size=10, color=TEXT3)
 add_shape_box(slide, 7.0, 6.15, 5.5, 0.5, DARK_BG, BORDER)
 
@@ -755,7 +755,7 @@ Please provide the missing items and resubmit.
 If this is an emergency or regulatory-mandated change,
 let me know and we'll route it through our expedited path.
 
-[Sherpa Name], Onboarding Facilitator"""
+[Quarterback Name], Onboarding Facilitator"""
 add_text_box(slide, 0.7, 2.1, 5.5, 4.5, rejection, font_size=8, color=TEXT2, font_name='Consolas')
 
 # Right: Acceptance email
@@ -771,7 +771,7 @@ pre-screening and is now in our onboarding pipeline.
   Tracking ID:    [ONB-2026-XXX]
   Risk Tier:      [Fast-Track / Standard / Enhanced]
   Target SLA:     [5 / 15 / 25] business days
-  Your Sherpa:    [Sherpa Name]
+  Your Quarterback:    [Quarterback Name]
 
 Next Steps:
 1. I will coordinate with the required review teams
@@ -781,7 +781,7 @@ Next Steps:
 You can reach me directly with any questions. I'm your
 single point of contact throughout this process.
 
-[Sherpa Name], Onboarding Facilitator"""
+[Quarterback Name], Onboarding Facilitator"""
 add_text_box(slide, 7.0, 2.1, 5.5, 4.5, accepted, font_size=8, color=TEXT2, font_name='Consolas')
 
 # ---- SLIDE 5: Risk Tier Classification ----
@@ -825,7 +825,7 @@ add_text_box(slide, 0.7, 5.35, 5, 0.3, 'Tier Routing Guide', font_size=14, color
 tier_table = add_table(slide, 0.7, 5.7, 11.9, 4, 5, [1.0, 1.5, 3.5, 1.5, 4.4])
 tier_headers = ['Score', 'Tier', 'Reviewers Required', 'Target SLA', 'Escalation Path']
 tier_data = [
-    ['6-8', 'FAST-TRACK', 'Sherpa + 1 reviewer (Security or Compliance)', '5 days', "Sherpa's manager after Day 3"],
+    ['6-8', 'FAST-TRACK', 'Quarterback + 1 reviewer (Security or Compliance)', '5 days', "Quarterback's manager after Day 3"],
     ['9-13', 'STANDARD', '4 reviewers parallel (Security, Compliance, Legal, Tech Arch)', '15 days', 'Governance lead after Day 10'],
     ['14-18', 'ENHANCED', 'All 9 reviewers parallel + executive briefing', '25 days', 'CISO/CRO after Day 15'],
 ]
@@ -973,7 +973,7 @@ other reviews. You do NOT need to wait.
 If you cannot meet the deadline, let me know
 by [Date + 1] so I can arrange coverage.
 
-[Sherpa Name]"""
+[Quarterback Name]"""
 add_text_box(slide, 0.7, 1.7, 5.5, 5.0, kickoff_email, font_size=8, color=TEXT2, font_name='Consolas')
 
 # Right: Findings summary
@@ -999,7 +999,7 @@ add_shape_box(slide, 0, 0, 13.333, 0.06, WARN)
 add_section_badge(slide, 'TEMPLATE 5 OF 8')
 
 add_text_box(slide, 0.5, 0.75, 10, 0.5, 'Weekly Governance Stand-Up', font_size=28, color=WHITE, bold=True)
-add_text_box(slide, 0.5, 1.25, 10, 0.3, '30-minute maximum. Same time every week. Sherpa facilitates. Status and decisions only \u2014 no deep dives.',
+add_text_box(slide, 0.5, 1.25, 10, 0.3, '30-minute maximum. Same time every week. Quarterback facilitates. Status and decisions only \u2014 no deep dives.',
              font_size=12, color=TEXT3)
 
 # Agenda table
@@ -1010,10 +1010,10 @@ agenda_table.cell(0, 2).text = 'Description'
 agenda_table.cell(0, 3).text = 'Owner'
 
 agenda = [
-    ('2 min', 'Pipeline Summary', 'How many requests total? How many in each phase? How many breached SLA?', 'Sherpa'),
-    ('10 min', 'SLA Breaches', 'Walk through EACH breached request. What is blocking? Who needs to act? Decision: escalate, extend, or kill?', 'Sherpa + Blockers'),
-    ('8 min', 'At-Risk Requests', 'Requests approaching SLA deadline (within 2 days). What\'s needed to close on time?', 'Sherpa + Reviewers'),
-    ('5 min', 'New Intake', 'Any new requests entering the pipeline this week? Quick tier assignment and reviewer identification.', 'Sherpa'),
+    ('2 min', 'Pipeline Summary', 'How many requests total? How many in each phase? How many breached SLA?', 'Quarterback'),
+    ('10 min', 'SLA Breaches', 'Walk through EACH breached request. What is blocking? Who needs to act? Decision: escalate, extend, or kill?', 'Quarterback + Blockers'),
+    ('8 min', 'At-Risk Requests', 'Requests approaching SLA deadline (within 2 days). What\'s needed to close on time?', 'Quarterback + Reviewers'),
+    ('5 min', 'New Intake', 'Any new requests entering the pipeline this week? Quick tier assignment and reviewer identification.', 'Quarterback'),
     ('5 min', 'Decisions Needed', 'Any go/no-go decisions the committee needs to make right now? Governance approvals waiting?', 'Governance Lead'),
 ]
 for i, (time, item, desc, owner) in enumerate(agenda):
@@ -1033,7 +1033,7 @@ for i, c in enumerate(time_colors):
 box = add_shape_box(slide, 0.5, 4.5, 12.3, 0.6, FAINT_BLUE, RGBColor(0x20, 0x40, 0x80))
 add_text_box(slide, 0.7, 4.55, 11.8, 0.5,
              'Ground Rules: No deep-dive discussions. If a topic needs > 2 minutes, schedule separately. '
-             'Sherpa publishes action items within 1 hour.',
+             'Quarterback publishes action items within 1 hour.',
              font_size=11, color=RGBColor(0x60, 0xA5, 0xFA))
 
 # Notes template
@@ -1069,14 +1069,14 @@ add_shape_box(slide, 0, 0, 13.333, 0.06, DANGER)
 add_section_badge(slide, 'TEMPLATE 6 OF 8')
 
 add_text_box(slide, 0.5, 0.75, 10, 0.5, 'SLA Escalation Playbook', font_size=28, color=WHITE, bold=True)
-add_text_box(slide, 0.5, 1.25, 10, 0.3, 'The Sherpa owns escalation. Do not wait for someone else to notice a breach.',
+add_text_box(slide, 0.5, 1.25, 10, 0.3, 'The Quarterback owns escalation. Do not wait for someone else to notice a breach.',
              font_size=12, color=TEXT3)
 
 # Escalation ladder
 esc_table = add_table(slide, 0.5, 1.7, 12.3, 8, 5, [2.0, 1.5, 2.0, 3.0, 3.8])
 esc_headers = ['Phase', 'SLA Target', 'Warning Sent', 'Level 1 Escalation', 'Level 2 Escalation']
 esc_data = [
-    ['Intake / Triage', '2 business days', 'Day 1 (50%)', "Sherpa's manager (Day 2)", 'Governance Lead (Day 3)'],
+    ['Intake / Triage', '2 business days', 'Day 1 (50%)', "Quarterback's manager (Day 2)", 'Governance Lead (Day 3)'],
     ['Planning', '5 business days', 'Day 3 (60%)', 'Governance Lead (Day 5)', 'CRO (Day 7)'],
     ['Due Diligence', '10 business days', 'Day 7 (70%)', 'CISO / CLO (Day 10)', 'CRO + CFO (Day 14)'],
     ['Individual Review', '5 business days', 'Day 3 (60%)', "Reviewer's manager (Day 5)", 'Domain head (Day 7)'],
@@ -1112,34 +1112,34 @@ add_shape_box(slide, 0, 0, 13.333, 0.06, GREEN)
 add_section_badge(slide, 'CHECKLISTS 7 OF 8')
 
 add_text_box(slide, 0.5, 0.75, 10, 0.5, 'Phase Transition Checklists', font_size=28, color=WHITE, bold=True)
-add_text_box(slide, 0.5, 1.25, 10, 0.3, 'A request cannot advance until ALL items checked. Sherpa verifies and obtains sign-off.',
+add_text_box(slide, 0.5, 1.25, 10, 0.3, 'A request cannot advance until ALL items checked. Quarterback verifies and obtains sign-off.',
              font_size=12, color=TEXT3)
 
 checklists = [
     ('Phase 1: Intake \u2192 Planning', [
-        ('\u2610 Pre-screen form completed (all deal-killers pass)', 'Sherpa'),
-        ('\u2610 Existing portfolio checked (no duplicate)', 'Sherpa'),
-        ('\u2610 Data classification completed', 'Sherpa'),
-        ('\u2610 Risk tier assigned (Fast-Track / Standard / Enhanced)', 'Sherpa'),
+        ('\u2610 Pre-screen form completed (all deal-killers pass)', 'Quarterback'),
+        ('\u2610 Existing portfolio checked (no duplicate)', 'Quarterback'),
+        ('\u2610 Data classification completed', 'Quarterback'),
+        ('\u2610 Risk tier assigned (Fast-Track / Standard / Enhanced)', 'Quarterback'),
         ('\u2610 Executive sponsor confirmed', 'Requester'),
-        ('\u2610 Request entered in tracking register', 'Sherpa'),
-        ('\u2610 Requester notified with tracking ID and SLA', 'Sherpa'),
+        ('\u2610 Request entered in tracking register', 'Quarterback'),
+        ('\u2610 Requester notified with tracking ID and SLA', 'Quarterback'),
     ]),
     ('Phase 2: Planning \u2192 Due Diligence', [
         ('\u2610 Buy vs Build pathway determined', 'Governance'),
         ('\u2610 NDA executed (if new vendor)', 'Legal'),
         ('\u2610 Preliminary business analysis documented', 'Business'),
-        ('\u2610 Review team identified based on tier', 'Sherpa'),
-        ('\u2610 Vendor documentation package assembled', 'Sherpa'),
-        ('\u2610 Review kickoff package prepared', 'Sherpa'),
+        ('\u2610 Review team identified based on tier', 'Quarterback'),
+        ('\u2610 Vendor documentation package assembled', 'Quarterback'),
+        ('\u2610 Review kickoff package prepared', 'Quarterback'),
     ]),
     ('Phase 3: Due Diligence \u2192 Gov. Review', [
-        ('\u2610 ALL required reviews completed (per tier)', 'Sherpa'),
-        ('\u2610 Findings consolidated (pass/cond/fail per domain)', 'Sherpa'),
-        ('\u2610 No unresolved "Fail" findings', 'Sherpa'),
+        ('\u2610 ALL required reviews completed (per tier)', 'Quarterback'),
+        ('\u2610 Findings consolidated (pass/cond/fail per domain)', 'Quarterback'),
+        ('\u2610 No unresolved "Fail" findings', 'Quarterback'),
         ('\u2610 Conditional findings have remediation plans', 'Reviewers'),
         ('\u2610 Vendor DD response received and evaluated', 'Procurement'),
-        ('\u2610 Governance committee briefing prepared', 'Sherpa'),
+        ('\u2610 Governance committee briefing prepared', 'Quarterback'),
     ]),
 ]
 
@@ -1155,7 +1155,7 @@ checklists2 = [
     ('Phase 4: Gov. Review \u2192 Contracting', [
         ('\u2610 Committee vote recorded', 'Governance'),
         ('\u2610 Conditions documented (if conditional)', 'Governance'),
-        ('\u2610 Rejection communicated (if rejected)', 'Sherpa'),
+        ('\u2610 Rejection communicated (if rejected)', 'Quarterback'),
         ('\u2610 Approval memo signed', 'Gov. Lead'),
         ('\u2610 Budget authorization confirmed', 'Finance'),
         ('\u2610 Contract requirements identified', 'Legal'),
@@ -1165,17 +1165,17 @@ checklists2 = [
         ('\u2610 SLA terms documented in contract', 'Legal'),
         ('\u2610 Security controls contractually required', 'Security'),
         ('\u2610 UAT plan with acceptance criteria', 'Business'),
-        ('\u2610 Implementation timeline agreed', 'Sherpa'),
-        ('\u2610 Conditional items remediated/tracked', 'Sherpa'),
+        ('\u2610 Implementation timeline agreed', 'Quarterback'),
+        ('\u2610 Conditional items remediated/tracked', 'Quarterback'),
     ]),
     ('Close-Out: Go-Live \u2192 Operations', [
         ('\u2610 UAT completed and signed off', 'Business'),
         ('\u2610 Production deployment completed', 'IT'),
         ('\u2610 Monitoring and alerting configured', 'IT/Security'),
-        ('\u2610 Onboarding record archived', 'Sherpa'),
-        ('\u2610 Requester notified of completion', 'Sherpa'),
+        ('\u2610 Onboarding record archived', 'Quarterback'),
+        ('\u2610 Requester notified of completion', 'Quarterback'),
         ('\u2610 Monitoring cadence assigned (per tier)', 'Governance'),
-        ('\u2610 Contract renewal date flagged', 'Sherpa'),
+        ('\u2610 Contract renewal date flagged', 'Quarterback'),
     ]),
 ]
 
@@ -1262,7 +1262,7 @@ If rejected:
   Rationale: [Summary]
   Alternatives: [If applicable]
 
-[Sherpa Name], Onboarding Facilitator"""
+[Quarterback Name], Onboarding Facilitator"""
 add_text_box(slide, 7.0, 4.3, 5.5, 2.7, close_email, font_size=8, color=TEXT2, font_name='Consolas')
 
 # ---- SLIDE 13: Quick Reference Card ----
@@ -1270,7 +1270,7 @@ slide = prs.slides.add_slide(prs.slide_layouts[6])
 set_slide_bg(slide, NAVY)
 add_shape_box(slide, 0, 0, 13.333, 0.06, GREEN)
 
-add_text_box(slide, 0.5, 0.3, 10, 0.5, 'Sherpa Quick Reference Card', font_size=28, color=WHITE, bold=True)
+add_text_box(slide, 0.5, 0.3, 10, 0.5, 'Quarterback Quick Reference Card', font_size=28, color=WHITE, bold=True)
 add_text_box(slide, 0.5, 0.8, 10, 0.3, 'Print this page and keep at your desk. One card for the entire lifecycle.',
              font_size=12, color=TEXT3)
 
@@ -1294,7 +1294,7 @@ for i, (phase, sla, desc) in enumerate(lifecycle):
 
 # Center: Key rules
 box = add_shape_box(slide, 4.7, 1.3, 4.2, 5.8, SURFACE, BORDER)
-add_text_box(slide, 4.9, 1.35, 3.8, 0.3, 'Sherpa Rules', font_size=14, color=LIGHT_GREEN, bold=True)
+add_text_box(slide, 4.9, 1.35, 3.8, 0.3, 'Quarterback Rules', font_size=14, color=LIGHT_GREEN, bold=True)
 
 rules = [
     'YOU own elapsed time. Nobody else is watching.',
@@ -1346,7 +1346,7 @@ for i in range(0, len(esc_cheat), 3):
         add_text_box(slide, 9.3, y + 0.34, 3.3, 0.15, esc_cheat[i + 2], font_size=8, color=TEXT3)
 
 # ---- Save ----
-output_path = os.path.join(os.path.dirname(__file__), 'sherpa-toolkit.pptx')
+output_path = os.path.join(os.path.dirname(__file__), 'quarterback-toolkit.pptx')
 prs.save(output_path)
 print(f'Saved: {output_path}')
 print(f'Slides: {len(prs.slides)}')
