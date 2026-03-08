@@ -319,6 +319,11 @@ app.get('/api/process/:key/variables', async (req, res) => {
 
 const MINI_RFP_PROCESS_ID = 'Process_MiniRFP';
 
+// Basic input validation for path parameters
+function isValidKey(key) {
+  return /^\d{1,19}$/.test(key);
+}
+
 // Start a new Mini RFP process instance
 app.post('/api/mini-rfp/start', async (req, res) => {
   try {
@@ -335,6 +340,7 @@ app.post('/api/mini-rfp/start', async (req, res) => {
 
 // Get Mini RFP instance status with current step info
 app.get('/api/mini-rfp/:key/status', async (req, res) => {
+  if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
   try {
     const [instance, tasks] = await Promise.all([
       zeebeApi('GET', `/v2/process-instances/${req.params.key}`),
@@ -372,8 +378,10 @@ app.get('/api/mini-rfp/active', async (req, res) => {
 
 // Generate a vendor portal token for a Mini RFP instance
 app.post('/api/mini-rfp/:key/vendor-token', async (req, res) => {
+  if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
   try {
-    const vendorToken = `vrfp-${req.params.key}-${Date.now().toString(36)}`;
+    const { randomBytes } = require('crypto');
+    const vendorToken = `vrfp-${req.params.key}-${randomBytes(12).toString('hex')}`;
     // Set the token as a process variable via a task update or direct variable set
     // For the showcase, we store the token and return it
     res.json({ vendorToken, portalUrl: `/vendor-portal.html?token=${vendorToken}&instance=${req.params.key}` });
@@ -384,6 +392,7 @@ app.post('/api/mini-rfp/:key/vendor-token', async (req, res) => {
 
 // Correlate a vendor response message to resume the receive task
 app.post('/api/mini-rfp/:key/vendor-response', async (req, res) => {
+  if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
   try {
     const { vendorToken, responseData } = req.body;
     const correlationKey = vendorToken || req.params.key;
@@ -400,6 +409,7 @@ app.post('/api/mini-rfp/:key/vendor-response', async (req, res) => {
 
 // Transfer SP0 data to SP1 — reads Mini RFP variables and optionally starts onboarding
 app.post('/api/mini-rfp/:key/transfer', async (req, res) => {
+  if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
   try {
     // Get variables from Mini RFP instance via any available task
     let vars = [];

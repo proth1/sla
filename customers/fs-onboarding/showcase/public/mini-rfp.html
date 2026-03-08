@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mini RFP Pre-Screen | SLA Governance Showcase</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#0a0e1a;--surface:#111827;--surface2:#1e293b;--surface3:#283548;
@@ -14,7 +15,6 @@
   --glow:rgba(99,102,241,0.15);
 }
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 .header{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
 .header-left{display:flex;align-items:center;gap:16px}
@@ -238,6 +238,11 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 
 <script src="defaults-mini-rfp.js"></script>
 <script>
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 const STEPS = [
   { id: 'Task_Step1_UnderstandNeed', name: 'Understand\nthe Need', short: '1', formId: 'rfp-step1-understand-need', phase: 'prep' },
   { id: 'Task_Step2_VendorContext', name: 'Vendor\nContext', short: '2', formId: 'rfp-step2-vendor-context', phase: 'prep' },
@@ -295,7 +300,7 @@ function toast(message, type = 'info') {
   const el = document.createElement('div');
   el.className = `toast toast-${type}`;
   const icons = { success: '\u2713', error: '\u2717', info: '\u2139' };
-  el.innerHTML = `<span>${icons[type] || ''}</span> ${message}`;
+  el.innerHTML = `<span>${icons[type] || ''}</span> ${escapeHtml(message)}`;
   container.appendChild(el);
   setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 4000);
 }
@@ -405,7 +410,7 @@ async function loadTaskForm(task) {
 
     renderWizardStep(task, formSchema, varsData);
   } catch (e) {
-    wiz.innerHTML = `<div style="text-align:center;padding:40px"><h3>Error loading task</h3><p style="color:var(--text3)">${e.message}</p></div>`;
+    wiz.innerHTML = `<div style="text-align:center;padding:40px"><h3>Error loading task</h3><p style="color:var(--text3)">${escapeHtml(e.message)}</p></div>`;
   }
 }
 
@@ -426,7 +431,7 @@ function renderWizardStep(task, formSchema, variables) {
     const items = variables.map(v => {
       let val = v.value;
       try { val = JSON.parse(val); val = typeof val === 'string' ? `"${val}"` : String(val); } catch(e) { val = String(v.value); }
-      return `<div class="var-item"><span class="var-name">${v.name}</span><span class="var-value">${val}</span></div>`;
+      return `<div class="var-item"><span class="var-name">${escapeHtml(v.name)}</span><span class="var-value">${escapeHtml(val)}</span></div>`;
     }).join('');
     varsHtml = `<div class="vars-panel"><h3 onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'grid':'none'">Process Variables (${variables.length})</h3><div class="vars-grid" style="display:none">${items}</div></div>`;
   }
@@ -617,36 +622,38 @@ async function simulateVendorResponse() {
 
 function renderFormComponents(components) {
   return components.map(comp => {
+    const label = escapeHtml(comp.label || comp.key);
+    const key = escapeHtml(comp.key);
     switch (comp.type) {
       case 'text':
-        const md = (comp.text || '').replace(/## (.*)/g, '<h3>$1</h3>').replace(/\\n/g, '<br>');
+        const md = escapeHtml(comp.text || '').replace(/## (.*)/g, '<h3>$1</h3>').replace(/\\n/g, '<br>');
         return `<div class="form-group"><div class="form-text">${md}</div></div>`;
       case 'textfield':
-        return `<div class="form-group"><label class="form-label">${comp.label || comp.key}</label><input class="form-input" data-key="${comp.key}" placeholder="Enter ${comp.label || ''}..." ${comp.validate?.required ? 'required' : ''}></div>`;
+        return `<div class="form-group"><label class="form-label">${label}</label><input class="form-input" data-key="${key}" placeholder="Enter ${label}..." ${comp.validate?.required ? 'required' : ''}></div>`;
       case 'textarea':
-        return `<div class="form-group"><label class="form-label">${comp.label || comp.key}</label><textarea class="form-textarea" data-key="${comp.key}" placeholder="Enter ${comp.label || ''}..." ${comp.validate?.required ? 'required' : ''}></textarea></div>`;
+        return `<div class="form-group"><label class="form-label">${label}</label><textarea class="form-textarea" data-key="${key}" placeholder="Enter ${label}..." ${comp.validate?.required ? 'required' : ''}></textarea></div>`;
       case 'number':
-        return `<div class="form-group"><label class="form-label">${comp.label || comp.key}</label><input class="form-input" type="number" data-key="${comp.key}" ${comp.validate?.required ? 'required' : ''}></div>`;
+        return `<div class="form-group"><label class="form-label">${label}</label><input class="form-input" type="number" data-key="${key}" ${comp.validate?.required ? 'required' : ''}></div>`;
       case 'select':
-        const opts = (comp.values || []).map(v => `<option value="${v.value}">${v.label}</option>`).join('');
-        return `<div class="form-group"><label class="form-label">${comp.label || comp.key}</label><select class="form-select" data-key="${comp.key}" ${comp.validate?.required ? 'required' : ''}><option value="">Select...</option>${opts}</select></div>`;
+        const opts = (comp.values || []).map(v => `<option value="${escapeHtml(v.value)}">${escapeHtml(v.label)}</option>`).join('');
+        return `<div class="form-group"><label class="form-label">${label}</label><select class="form-select" data-key="${key}" ${comp.validate?.required ? 'required' : ''}><option value="">Select...</option>${opts}</select></div>`;
       case 'radio':
         const radios = (comp.values || []).map(v =>
-          `<label class="form-radio" onclick="this.parentElement.querySelectorAll('.form-radio').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')"><input type="radio" name="${comp.key}" data-key="${comp.key}" value="${v.value}"> ${v.label}</label>`
+          `<label class="form-radio" onclick="this.parentElement.querySelectorAll('.form-radio').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')"><input type="radio" name="${key}" data-key="${key}" value="${escapeHtml(v.value)}"> ${escapeHtml(v.label)}</label>`
         ).join('');
-        return `<div class="form-group"><label class="form-label">${comp.label || comp.key}</label><div class="form-radio-group">${radios}</div></div>`;
+        return `<div class="form-group"><label class="form-label">${label}</label><div class="form-radio-group">${radios}</div></div>`;
       case 'checkbox':
-        return `<div class="form-group"><label class="form-radio" onclick="this.classList.toggle('selected')"><input type="checkbox" data-key="${comp.key}"> ${comp.label || comp.key}</label></div>`;
+        return `<div class="form-group"><label class="form-radio" onclick="this.classList.toggle('selected')"><input type="checkbox" data-key="${key}"> ${label}</label></div>`;
       case 'checklist':
         const checks = (comp.values || []).map(v =>
-          `<label class="form-check-item" onclick="this.classList.toggle('selected')"><input type="checkbox" data-key="${comp.key}" value="${v.value}"> ${v.label}</label>`
+          `<label class="form-check-item" onclick="this.classList.toggle('selected')"><input type="checkbox" data-key="${key}" value="${escapeHtml(v.value)}"> ${escapeHtml(v.label)}</label>`
         ).join('');
-        return `<div class="form-group"><label class="form-label">${comp.label || comp.key}</label><div class="form-checklist">${checks}</div></div>`;
+        return `<div class="form-group"><label class="form-label">${label}</label><div class="form-checklist">${checks}</div></div>`;
       case 'separator':
         return '<hr class="form-separator">';
       case 'group':
         const inner = comp.components ? renderFormComponents(comp.components) : '';
-        return `<div class="form-group" style="border:1px solid var(--border);border-radius:12px;padding:20px;background:rgba(30,41,59,0.3)"><label class="form-label" style="font-size:14px;margin-bottom:16px;color:var(--text)">${comp.label || ''}</label>${inner}</div>`;
+        return `<div class="form-group" style="border:1px solid var(--border);border-radius:12px;padding:20px;background:rgba(30,41,59,0.3)"><label class="form-label" style="font-size:14px;margin-bottom:16px;color:var(--text)">${escapeHtml(comp.label || '')}</label>${inner}</div>`;
       default:
         return '';
     }
