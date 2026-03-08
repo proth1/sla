@@ -1,5 +1,62 @@
 # Changelog
 
+## [2026.03.69] - 2026-03-08
+
+### Added
+- Deploy SLA Showcase to Cloudflare behind OTP auth at showcase.agentic-innovations.com (PR #79)
+- Three-component architecture: Pages (static), API Worker (Camunda 8 proxy), Auth Worker (Descope OTP)
+- All 23 Express API routes ported to Cloudflare Worker with OAuth2 client credentials
+- Demo personas (7 roles) with role-based task filtering across all showcase UIs
+- Shared Camunda auth module (camunda-auth.js) for OAuth2 token management
+- Jira webhook integration for syncing process lifecycle events
+
+## [2026.03.68] - 2026-03-08
+
+### Changed
+- Refactored 10 BPMN governance models: task widening to 140px, removed dead code, standards updates (PR #3)
+
+## [2026.03.67] - 2026-03-08
+
+### Added
+- Mini RFP standalone BPMN with v9 vendor DD elements merged (PR #61)
+
+## [2026.03.66] - 2026-03-08
+
+### Fixed
+- Auth worker session persistence: SLA_SESSION HMAC cookie (8h TTL), Set-Cookie header fix (PR #5)
+
+### Added
+- Executive savings slide added to main presentation (PR #5)
+
+## [2026.03.65] - 2026-03-08
+
+### Added
+- Hierarchical onboarding v5 BPMN model — reference model for collapsed sub-process patterns (PR #36)
+
+## [2026.03.64] - 2026-03-08
+
+### Changed
+- Foundation reconciliation: README, AGENT-GUIDE, stale 7-phase agent refs updated to 8-phase (PR #18)
+
+## [2026.03.63] - 2026-03-08
+
+### Fixed
+- SVG XML parse error in 30-day mindmap: wrapped `<script>` in CDATA section (PR #78)
+
+### Changed
+- Renamed sherpa-30day.html to quarterback-30day.html (URL: /quarterback-30day)
+- Comprehensive responsive design for 30-day plan presentation: 3 breakpoints (1100px, 767px, 480px)
+
+## [2026.03.62] - 2026-03-08
+
+### Changed
+- Renamed all "Sherpa" references to "Quarterback" across UI, toolkit, generator script, PPTX (PR #77)
+
+## [2026.03.61] - 2026-03-08
+
+### Added
+- 30-day process improvement presentations: dark-themed HTML, KPMG readout HTML, PowerPoint versions, mind maps (PR #76)
+
 ## [2026.03.60] - 2026-03-08
 
 ### Added
