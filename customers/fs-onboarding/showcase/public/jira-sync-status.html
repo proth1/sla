@@ -69,6 +69,12 @@
 <script>
 const JIRA_BASE = 'https://agentic-sdlc.atlassian.net';
 
+function esc(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 function slaClass(pct) {
   if (pct >= 100) return 'sla-breach';
   if (pct >= 80) return 'sla-warn';
@@ -104,8 +110,8 @@ async function refresh() {
           ? `${Math.floor(s.remainingMin / 60)}h ${s.remainingMin % 60}m`
           : `${s.remainingMin}m`;
         return `<tr>
-          <td><a href="${JIRA_BASE}/browse/${s.jiraIssueKey}" target="_blank">${s.jiraIssueKey}</a></td>
-          <td>${s.candidateGroup}</td>
+          <td><a href="${JIRA_BASE}/browse/${esc(s.jiraIssueKey)}" target="_blank">${esc(s.jiraIssueKey)}</a></td>
+          <td>${esc(s.candidateGroup)}</td>
           <td class="${cls}">
             <div class="sla-bar"><div class="sla-bar-fill" style="width:${barWidth}%"></div></div>
             <div class="sla-pct">${s.pct}%</div>
@@ -123,11 +129,11 @@ async function refresh() {
       return;
     }
     tbody.innerHTML = data.events.map(e => `<tr>
-      <td>${new Date(e.timestamp).toLocaleTimeString()}</td>
-      <td><span class="badge ${e.direction}">${e.direction.toUpperCase()}</span></td>
-      <td>${e.camundaTaskKey || '-'}</td>
-      <td>${e.jiraIssueKey ? `<a href="${JIRA_BASE}/browse/${e.jiraIssueKey}" target="_blank">${e.jiraIssueKey}</a>` : '-'}</td>
-      <td>${e.status}</td>
+      <td>${esc(new Date(e.timestamp).toLocaleTimeString())}</td>
+      <td><span class="badge ${esc(e.direction)}">${esc(e.direction.toUpperCase())}</span></td>
+      <td>${esc(e.camundaTaskKey || '-')}</td>
+      <td>${e.jiraIssueKey ? `<a href="${JIRA_BASE}/browse/${esc(e.jiraIssueKey)}" target="_blank">${esc(e.jiraIssueKey)}</a>` : '-'}</td>
+      <td>${esc(e.status)}</td>
     </tr>`).join('');
   } catch { /* retry next cycle */ }
 }

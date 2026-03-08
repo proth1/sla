@@ -137,12 +137,20 @@ async function jiraApi(method, apiPath, body) {
 
 // --- ISO 8601 Duration Parser ---
 function parseDuration(iso) {
+  if (typeof iso !== 'string' || !iso) {
+    throw new Error(`Invalid SLA duration: expected ISO 8601 string, got ${typeof iso}`);
+  }
   const m = iso.match(/^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/);
-  if (!m) return 4 * 3600 * 1000; // default 4h
+  if (!m) {
+    throw new Error(`Invalid SLA duration: "${iso}" does not match ISO 8601 pattern (e.g. PT4H, P1D, P2DT6H)`);
+  }
   const days = parseInt(m[1] || 0);
   const hours = parseInt(m[2] || 0);
   const mins = parseInt(m[3] || 0);
   const secs = parseInt(m[4] || 0);
+  if (days === 0 && hours === 0 && mins === 0 && secs === 0) {
+    throw new Error(`Invalid SLA duration: "${iso}" resolves to zero`);
+  }
   return ((days * 24 + hours) * 3600 + mins * 60 + secs) * 1000;
 }
 
@@ -277,7 +285,7 @@ async function outboundSync() {
 // --- Inbound: Jira -> Camunda (with I-role notification) ---
 async function inboundSync() {
   try {
-    const jql = `project = ${config.jira.projectKey} AND labels = camunda-synced AND status = Done AND updated >= -2m`;
+    const jql = `project = ${config.jira.projectKey} AND labels = camunda-synced AND labels != sla-escalation AND status = Done AND updated >= -2m`;
     const result = await jiraApi('POST', '/rest/api/3/search/jql', {
       jql,
       fields: ['description', 'summary', 'status'],
@@ -393,7 +401,7 @@ async function slaMonitor() {
         : raci.escalationChain[0] || raci.accountable;
       const targetLabel = getLabelForGroup(escalationTarget);
 
-      const taskName = entry.jiraIssueKey; // use Jira key as reference
+      const originIssueKey = entry.jiraIssueKey;
 
       try {
         const summaryPrefix = isChronic ? 'CHRONIC SLA BREACH' : 'ESCALATION: SLA Breach';
@@ -401,7 +409,7 @@ async function slaMonitor() {
           fields: {
             project: { key: config.jira.projectKey },
             issuetype: { name: config.jira.issueType },
-            summary: `[${summaryPrefix}] ${taskName} — overdue task`,
+            summary: `[${summaryPrefix}] ${originIssueKey} — overdue task`,
             priority: { name: 'High' },
             description: {
               type: 'doc',
@@ -507,8 +515,35 @@ async function recoverSyncMap() {
       logEvent('outbound', taskKeyMatch[1], issue.key, `Recovered (pending, SLA deadline: ${new Date(createdAt + slaDurationMs).toISOString()})`);
     }
     console.log(`Crash recovery: rebuilt ${syncMap.size} entries from Jira`);
+
+    // Recover instanceBreachCount from escalation issues
+    await recoverBreachCounts();
   } catch (err) {
     console.error(`Crash recovery failed: ${err.message}`);
+  }
+}
+
+async function recoverBreachCounts() {
+  try {
+    const jql = `project = ${config.jira.projectKey} AND labels = sla-escalation`;
+    const result = await jiraApi('POST', '/rest/api/3/search/jql', {
+      jql,
+      fields: ['description'],
+    });
+    if (!result.issues) return;
+
+    for (const issue of result.issues) {
+      const descText = extractDescriptionText(issue.fields.description);
+      const piMatch = descText.match(/\[camunda:processInstanceKey:([^\]]+)\]/);
+      if (!piMatch) continue;
+      const piKey = piMatch[1];
+      instanceBreachCount.set(piKey, (instanceBreachCount.get(piKey) || 0) + 1);
+    }
+    if (instanceBreachCount.size > 0) {
+      console.log(`Crash recovery: rebuilt breach counts for ${instanceBreachCount.size} process instances`);
+    }
+  } catch (err) {
+    console.error(`Breach count recovery failed: ${err.message}`);
   }
 }
 
