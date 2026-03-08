@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini RFP Concierge | SLA Governance</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1e293b;--surface3:#283548;
+  --border:#334155;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#3b82f6;--accent2:#6366f1;--accent3:#8b5cf6;
+  --success:#22c55e;--warn:#f59e0b;--danger:#ef4444;
+  --glow:rgba(99,102,241,0.15);
+  --amber:#f59e0b;--amber-glow:rgba(245,158,11,0.15);
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* --- HEADER --- */
+.header{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+.header-left{display:flex;align-items:center;gap:14px}
+.logo{width:40px;height:40px;background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;box-shadow:0 0 24px rgba(245,158,11,0.3)}
+.header h1{font-size:18px;font-weight:600;background:linear-gradient(135deg,#e2e8f0,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-sub{font-size:12px;color:var(--text3);font-weight:400}
+.header-right{display:flex;gap:10px;align-items:center}
+.header-nav{text-decoration:none;color:var(--text2);font-size:13px;padding:6px 14px;border:1px solid var(--border);border-radius:8px;transition:all .2s;display:flex;align-items:center;gap:6px}
+.header-nav:hover{color:var(--text);border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.cluster-badge{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.cluster-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px rgba(34,197,94,0.5);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.refresh-indicator{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)}
+.refresh-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);transition:all .3s}
+.refresh-dot.active{background:var(--success);box-shadow:0 0 8px rgba(34,197,94,0.5)}
+.btn-refresh{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 8px;cursor:pointer;color:var(--text2);transition:all .2s}
+.btn-refresh:hover{border-color:var(--accent);color:var(--text)}
+.btn-refresh.spinning svg{animation:spin .6s linear}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* --- DASHBOARD --- */
+.dashboard{padding:24px 32px;max-width:1600px;margin:0 auto}
+
+/* --- KPI CARDS --- */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all .3s;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);opacity:0;transition:opacity .3s}
+.kpi-card:hover{border-color:rgba(59,130,246,0.3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+.kpi-card:hover::before{opacity:1}
+.kpi-card.warn::before{background:var(--warn);opacity:1}
+.kpi-card.danger::before{background:var(--danger);opacity:1}
+.kpi-card.success::before{background:var(--success);opacity:1}
+.kpi-label{font-size:12px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.kpi-value{font-size:32px;font-weight:700;color:var(--text);margin-bottom:4px;font-family:'JetBrains Mono',monospace}
+.kpi-sub{font-size:12px;color:var(--text3)}
+
+/* --- STEP DISTRIBUTION --- */
+.step-section{margin-bottom:24px}
+.section-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.section-title .line{flex:1;height:1px;background:var(--border)}
+.step-bar-container{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.step-bar{display:flex;height:28px;border-radius:6px;overflow:hidden;background:var(--surface2);margin-bottom:12px}
+.step-segment{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;transition:width .6s ease;min-width:0;overflow:hidden}
+.step-segment span{white-space:nowrap;padding:0 6px}
+.step-legend{display:flex;flex-wrap:wrap;gap:14px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+
+/* --- TABLE --- */
+.table-section{margin-bottom:24px}
+.table-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.table-filters{display:flex;gap:6px}
+.filter-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s}
+.filter-btn:hover{border-color:var(--accent);color:var(--text)}
+.filter-btn.active{background:rgba(59,130,246,0.12);border-color:var(--accent);color:var(--accent)}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--surface2)}
+th{padding:10px 14px;text-align:left;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;user-select:none;white-space:nowrap;transition:color .2s}
+th:hover{color:var(--text)}
+th .sort-icon{font-size:8px;margin-left:4px;color:var(--text3)}
+th.sorted{color:var(--accent)}
+th.sorted .sort-icon{color:var(--accent)}
+td{padding:10px 14px;font-size:13px;border-top:1px solid rgba(51,65,85,0.4)}
+tr{transition:background .15s}
+tr:hover{background:rgba(59,130,246,0.04);cursor:pointer}
+.instance-key{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)}
+
+/* Status indicators */
+.status-indicator{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-active .status-dot{background:var(--accent);box-shadow:0 0 6px rgba(59,130,246,0.5)}
+.status-active{color:var(--accent)}
+.status-awaiting .status-dot{background:var(--warn);box-shadow:0 0 6px rgba(245,158,11,0.5)}
+.status-awaiting{color:var(--warn)}
+.status-completed .status-dot{background:var(--success)}
+.status-completed{color:var(--success)}
+.status-dealkiller .status-dot{background:var(--danger);box-shadow:0 0 6px rgba(239,68,68,0.5)}
+.status-dealkiller{color:var(--danger)}
+
+/* Step badges */
+.step-badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.step-understand{background:rgba(59,130,246,0.12);color:#60a5fa}
+.step-vendor{background:rgba(139,92,246,0.12);color:#a78bfa}
+.step-classify{background:rgba(245,158,11,0.12);color:#fbbf24}
+.step-dealkiller{background:rgba(239,68,68,0.12);color:#f87171}
+.step-preview{background:rgba(34,197,94,0.12);color:#4ade80}
+.step-send{background:rgba(6,182,212,0.12);color:#22d3ee}
+.step-await{background:rgba(245,158,11,0.12);color:#fbbf24}
+.step-collect{background:rgba(168,85,247,0.12);color:#c084fc}
+.step-review{background:rgba(34,197,94,0.12);color:#4ade80}
+.step-done{background:rgba(34,197,94,0.08);color:var(--success)}
+
+/* SLA indicators */
+.sla-ok{color:var(--success);font-weight:500}
+.sla-warn{color:var(--warn);font-weight:600}
+.sla-breach{color:var(--danger);font-weight:700}
+.time-value{font-family:'JetBrains Mono',monospace;font-size:12px}
+
+/* --- BOTTOM GRID --- */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* --- CLASSIFICATION QUEUE --- */
+.class-queue{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.queue-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.queue-header h3{font-size:14px;font-weight:600}
+.queue-count{background:var(--warn);color:#000;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px}
+.queue-list{max-height:340px;overflow-y:auto}
+.queue-item{padding:12px 20px;border-bottom:1px solid rgba(51,65,85,0.3);display:flex;align-items:center;justify-content:space-between;transition:background .15s}
+.queue-item:hover{background:rgba(59,130,246,0.04)}
+.queue-task-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.queue-task-meta{font-size:11px;color:var(--text3);display:flex;gap:10px;align-items:center}
+.queue-task-meta .key{font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.btn-claim{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);color:var(--accent);font-size:11px;font-weight:600;padding:4px 12px;border-radius:6px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-claim:hover{background:rgba(59,130,246,0.2);border-color:var(--accent)}
+.btn-complete{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:var(--success);font-size:11px;font-weight:600;padding:4px 12px;border-radius:6px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-complete:hover{background:rgba(34,197,94,0.2);border-color:var(--success)}
+
+/* --- SLA TIMELINE --- */
+.sla-timeline{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.timeline-list{max-height:340px;overflow-y:auto;padding:6px 0}
+.timeline-item{padding:10px 20px;display:flex;align-items:center;gap:14px}
+.timeline-bar{flex:1;position:relative;height:22px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.timeline-fill{height:100%;border-radius:4px;transition:width .4s ease;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:600;color:#fff}
+.timeline-fill.green{background:linear-gradient(90deg,#166534,#22c55e)}
+.timeline-fill.yellow{background:linear-gradient(90deg,#92400e,#f59e0b)}
+.timeline-fill.red{background:linear-gradient(90deg,#991b1b,#ef4444)}
+.timeline-markers{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;pointer-events:none}
+.timeline-marker{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.15)}
+.timeline-marker-label{position:absolute;top:-14px;font-size:9px;color:var(--text3);transform:translateX(-50%)}
+.timeline-key{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.timeline-days{font-size:11px;font-weight:600;min-width:40px;text-align:right}
+
+/* --- EMPTY STATE --- */
+.empty-state{text-align:center;padding:40px;color:var(--text3)}
+.empty-state h3{font-size:15px;font-weight:500;color:var(--text2);margin-bottom:6px}
+.empty-state p{font-size:12px}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+
+/* --- TOAST --- */
+.toast{position:fixed;bottom:24px;right:24px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:400;transform:translateY(60px);opacity:0;transition:all .3s ease}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:#166534;color:#4ade80;border:1px solid rgba(34,197,94,0.3)}
+.toast.error{background:#7f1d1d;color:#fca5a5;border:1px solid rgba(239,68,68,0.3)}
+
+/* --- RESPONSIVE --- */
+@media(max-width:1200px){
+  .kpi-row{grid-template-columns:repeat(3,1fr)}
+  .bottom-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .dashboard{padding:16px}
+  .header{padding:12px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">C</div>
+    <div>
+      <h1>Mini RFP Concierge</h1>
+      <div class="header-sub">Process Owner Monitoring | SP0 Pre-Screen Pipeline</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <a href="index.html" class="header-nav">&#8592; Task Worker</a>
+    <a href="mini-rfp.html" class="header-nav">Mini RFP</a>
+    <a href="dashboard.html" class="header-nav">Dashboard</a>
+    <div class="cluster-badge">
+      <span class="dot"></span>
+      sla-onboarding-dev
+    </div>
+    <div class="refresh-indicator">
+      <span class="refresh-dot" id="refreshDot"></span>
+      <span id="lastRefreshed">--</span>
+    </div>
+    <button class="btn-refresh" onclick="manualRefresh()" id="refreshBtn" title="Refresh now">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="dashboard">
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi-card" id="kpiActive">
+      <div class="kpi-label">Active Mini RFPs</div>
+      <div class="kpi-value" id="kpiActiveVal">--</div>
+      <div class="kpi-sub" id="kpiActiveSub">Loading...</div>
+    </div>
+    <div class="kpi-card" id="kpiAwaiting">
+      <div class="kpi-label">Awaiting Vendor</div>
+      <div class="kpi-value" id="kpiAwaitingVal">--</div>
+      <div class="kpi-sub" id="kpiAwaitingSub">Waiting for response</div>
+    </div>
+    <div class="kpi-card" id="kpiDealKillers">
+      <div class="kpi-label">Deal Killers Triggered</div>
+      <div class="kpi-value" id="kpiDealKillersVal">--</div>
+      <div class="kpi-sub" id="kpiDealKillersSub">Failed pre-screen</div>
+    </div>
+    <div class="kpi-card" id="kpiAvgDays">
+      <div class="kpi-label">Avg Days in SP0</div>
+      <div class="kpi-value" id="kpiAvgDaysVal">--</div>
+      <div class="kpi-sub" id="kpiAvgDaysSub">Active instances</div>
+    </div>
+    <div class="kpi-card" id="kpiClassReview">
+      <div class="kpi-label">Classification Reviews</div>
+      <div class="kpi-value" id="kpiClassReviewVal">--</div>
+      <div class="kpi-sub" id="kpiClassReviewSub">Pending review</div>
+    </div>
+  </div>
+
+  <!-- STEP DISTRIBUTION -->
+  <div class="step-section">
+    <div class="section-title">Step Distribution <span class="line"></span></div>
+    <div class="step-bar-container">
+      <div class="step-bar" id="stepBar"></div>
+      <div class="step-legend" id="stepLegend"></div>
+    </div>
+  </div>
+
+  <!-- ACTIVE RFP TABLE -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="section-title" style="margin-bottom:0">Active Mini RFPs <span class="line"></span></div>
+      <div class="table-filters">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn" data-filter="awaiting" onclick="setFilter('awaiting',this)">Awaiting Vendor</button>
+        <button class="filter-btn" data-filter="review" onclick="setFilter('review',this)">In Review</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="key" onclick="sortTable('key')">Instance Key <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="vendor" onclick="sortTable('vendor')">Vendor Name <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="requester" onclick="sortTable('requester')">Requester <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="step" onclick="sortTable('step')">Current Step <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="days" onclick="sortTable('days')">Days Active <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="sla" onclick="sortTable('sla')">SLA Status <span class="sort-icon">&#9650;</span></th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="rfpTableBody">
+          <tr><td colspan="7"><div class="empty-state"><span class="spinner"></span></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- BOTTOM: CLASSIFICATION QUEUE + SLA TIMELINE -->
+  <div class="bottom-grid">
+    <div class="class-queue">
+      <div class="queue-header">
+        <h3>Classification Validation Queue</h3>
+        <span class="queue-count" id="classQueueCount">0</span>
+      </div>
+      <div class="queue-list" id="classQueueList">
+        <div class="empty-state" style="padding:32px"><p>No pending classifications</p></div>
+      </div>
+    </div>
+    <div class="sla-timeline">
+      <div class="queue-header">
+        <h3>SLA Timeline</h3>
+        <span style="font-size:11px;color:var(--text3)">Day 3 / 7 / 11 / 14 cadence</span>
+      </div>
+      <div class="timeline-list" id="timelineList">
+        <div class="empty-state" style="padding:32px"><p>No instances awaiting vendor response</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// --- CONFIGURATION ---
+const REFRESH_INTERVAL = 10000;
+const MINI_RFP_PROCESS_ID = 'Process_MiniRFP';
+
+// Step mapping: taskDefinitionId -> step info
+const STEP_MAP = {
+  Task_Step1_UnderstandNeed:     { num: 1, name: 'Understand Need',     css: 'step-understand', color: '#3b82f6' },
+  Task_Step2_VendorContext:      { num: 2, name: 'Vendor Context',      css: 'step-vendor',     color: '#8b5cf6' },
+  Task_Step2b_ClassificationCheck:{ num: '2b', name: 'Classification',  css: 'step-classify',   color: '#f59e0b' },
+  BRT_DealKiller:                { num: 3, name: 'Deal-Killer Check',   css: 'step-dealkiller', color: '#ef4444' },
+  Task_Step3_DealKillerResults:  { num: 3, name: 'Deal-Killer Results', css: 'step-dealkiller', color: '#ef4444' },
+  BRT_QuestionSelection:         { num: 4, name: 'Question Selection',  css: 'step-preview',    color: '#22c55e' },
+  Task_Step4_QuestionPreview:    { num: 4, name: 'Question Preview',    css: 'step-preview',    color: '#22c55e' },
+  Task_Step5_SendVendor:         { num: 5, name: 'Send to Vendor',      css: 'step-send',       color: '#06b6d4' },
+  Receive_VendorResponse:        { num: 6, name: 'Awaiting Vendor',     css: 'step-await',      color: '#f59e0b' },
+  Task_Step6_CollectResponses:   { num: 7, name: 'Collect Responses',   css: 'step-collect',    color: '#a855f7' },
+  Task_Step7_ReviewScore:        { num: 8, name: 'Review & Score',      css: 'step-review',     color: '#22c55e' },
+};
+
+let state = {
+  instances: [],
+  tasks: [],
+  enriched: [],
+  sortCol: 'days',
+  sortDir: 'desc',
+  filter: 'all',
+  lastRefresh: null,
+  refreshTimer: null,
+  tickTimer: null,
+};
+
+// --- API HELPERS ---
+async function fetchJSON(url, opts) {
+  try {
+    const res = await fetch(url, opts);
+    if (!res.ok) throw new Error('' + res.status);
+    return await res.json();
+  } catch (e) {
+    console.error('API error ' + url + ':', e);
+    return null;
+  }
+}
+
+// --- DATA FETCHING ---
+async function fetchData() {
+  const dot = document.getElementById('refreshDot');
+  dot.classList.add('active');
+
+  const [activeData, allTasks] = await Promise.all([
+    fetchJSON('/api/mini-rfp/active'),
+    fetchJSON('/api/tasks/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: 'CREATED' }),
+    }),
+  ]);
+
+  const activeInstances = activeData?.items || [];
+  const allTaskList = Array.isArray(allTasks) ? allTasks : [];
+
+  // Filter tasks to only Mini RFP process tasks
+  state.tasks = allTaskList.filter(t => {
+    const defId = t.taskDefinitionId || '';
+    return STEP_MAP[defId] !== undefined;
+  });
+
+  state.instances = activeInstances;
+
+  await enrichInstances();
+
+  renderKPIs();
+  renderStepBar();
+  renderTable();
+  renderClassQueue();
+  renderTimeline();
+
+  state.lastRefresh = Date.now();
+  dot.classList.remove('active');
+  updateRefreshTimer();
+}
+
+async function enrichInstances() {
+  const tasksByInstance = new Map();
+  for (const task of state.tasks) {
+    const key = task.processInstanceKey;
+    if (!tasksByInstance.has(key)) tasksByInstance.set(key, []);
+    tasksByInstance.get(key).push(task);
+  }
+
+  state.enriched = state.instances.map(inst => {
+    const key = inst.processInstanceKey;
+    const tasks = tasksByInstance.get(key) || [];
+    const currentTask = tasks[0] || null;
+    const taskDefId = currentTask?.taskDefinitionId || null;
+    const stepInfo = taskDefId ? STEP_MAP[taskDefId] : null;
+    const isAwaiting = taskDefId === 'Receive_VendorResponse';
+    const isDealKiller = taskDefId === 'Task_Step3_DealKillerResults' || taskDefId === 'BRT_DealKiller';
+    const isClassReview = taskDefId === 'Task_Step2b_ClassificationCheck';
+
+    const startMs = inst.startDate ? new Date(inst.startDate).getTime() : Date.now();
+    const daysActive = (Date.now() - startMs) / 86400000;
+
+    return {
+      key,
+      startDate: inst.startDate,
+      stepInfo,
+      stepName: stepInfo ? stepInfo.name : 'Processing...',
+      stepCss: stepInfo ? stepInfo.css : '',
+      isAwaiting,
+      isDealKiller,
+      isClassReview,
+      daysActive,
+      currentTask,
+      tasks,
+      vendorName: null,
+      requesterName: null,
+    };
+  });
+
+  // Enrich with variables (limit to 10 to avoid API overload)
+  const varPromises = state.enriched
+    .filter(e => e.tasks.length > 0)
+    .slice(0, 10)
+    .map(async (e) => {
+      try {
+        const vars = await fetchJSON('/api/tasks/' + e.tasks[0].id + '/variables');
+        if (Array.isArray(vars)) {
+          for (const v of vars) {
+            let val;
+            try { val = JSON.parse(v.value); } catch { val = v.value; }
+            if (v.name === 'vendorName') e.vendorName = val;
+            if (v.name === 'requesterName') e.requesterName = val;
+          }
+        }
+      } catch { /* ignore */ }
+    });
+  await Promise.all(varPromises);
+}
+
+// --- RENDER: KPIs ---
+function renderKPIs() {
+  const active = state.enriched.length;
+  const awaiting = state.enriched.filter(e => e.isAwaiting).length;
+  const dealKillers = state.enriched.filter(e => e.isDealKiller).length;
+  const classReviews = state.enriched.filter(e => e.isClassReview).length;
+
+  let avgDays = '--';
+  if (active > 0) {
+    const totalDays = state.enriched.reduce((sum, e) => sum + e.daysActive, 0);
+    const avg = totalDays / active;
+    avgDays = avg < 1 ? '<1' : avg.toFixed(1);
+  }
+
+  document.getElementById('kpiActiveVal').textContent = active;
+  document.getElementById('kpiActiveSub').textContent = active === 1 ? '1 in pipeline' : active + ' in pipeline';
+
+  document.getElementById('kpiAwaitingVal').textContent = awaiting;
+  const awaitCard = document.getElementById('kpiAwaiting');
+  awaitCard.className = awaiting > 0 ? 'kpi-card warn' : 'kpi-card';
+  document.getElementById('kpiAwaitingSub').textContent = awaiting > 0 ? 'Waiting for vendor response' : 'No pending responses';
+
+  document.getElementById('kpiDealKillersVal').textContent = dealKillers;
+  const dkCard = document.getElementById('kpiDealKillers');
+  dkCard.className = dealKillers > 0 ? 'kpi-card danger' : 'kpi-card';
+  document.getElementById('kpiDealKillersSub').textContent = dealKillers > 0 ? 'Requires attention' : 'No deal killers';
+
+  document.getElementById('kpiAvgDaysVal').textContent = avgDays;
+  const avgCard = document.getElementById('kpiAvgDays');
+  const avgNum = parseFloat(avgDays);
+  avgCard.className = avgNum > 14 ? 'kpi-card danger' : avgNum > 7 ? 'kpi-card warn' : 'kpi-card';
+  document.getElementById('kpiAvgDaysSub').textContent = active + ' active instance' + (active !== 1 ? 's' : '');
+
+  document.getElementById('kpiClassReviewVal').textContent = classReviews;
+  const crCard = document.getElementById('kpiClassReview');
+  crCard.className = classReviews > 0 ? 'kpi-card warn' : 'kpi-card';
+  document.getElementById('kpiClassReviewSub').textContent = classReviews > 0 ? 'Pending validation' : 'Queue clear';
+}
+
+// --- RENDER: STEP BAR ---
+function renderStepBar() {
+  const bar = document.getElementById('stepBar');
+  const legend = document.getElementById('stepLegend');
+  const counts = {};
+  const displaySteps = [
+    { key: 'understand', label: 'Understand', color: '#3b82f6', tasks: ['Task_Step1_UnderstandNeed'] },
+    { key: 'vendor', label: 'Vendor Context', color: '#8b5cf6', tasks: ['Task_Step2_VendorContext'] },
+    { key: 'classify', label: 'Classify', color: '#f59e0b', tasks: ['Task_Step2b_ClassificationCheck'] },
+    { key: 'dealkiller', label: 'Deal-Killer', color: '#ef4444', tasks: ['BRT_DealKiller', 'Task_Step3_DealKillerResults'] },
+    { key: 'preview', label: 'Preview/Send', color: '#06b6d4', tasks: ['BRT_QuestionSelection', 'Task_Step4_QuestionPreview', 'Task_Step5_SendVendor'] },
+    { key: 'await', label: 'Awaiting', color: '#f59e0b', tasks: ['Receive_VendorResponse'] },
+    { key: 'review', label: 'Review', color: '#22c55e', tasks: ['Task_Step6_CollectResponses', 'Task_Step7_ReviewScore'] },
+  ];
+
+  for (const ds of displaySteps) {
+    ds.count = 0;
+    for (const e of state.enriched) {
+      const defId = e.currentTask?.taskDefinitionId;
+      if (defId && ds.tasks.includes(defId)) ds.count++;
+    }
+  }
+
+  const total = state.enriched.length || 1;
+  const unknown = state.enriched.length - displaySteps.reduce((s, d) => s + d.count, 0);
+
+  bar.innerHTML = '';
+  legend.innerHTML = '';
+
+  for (const ds of displaySteps) {
+    if (ds.count === 0) continue;
+    const pct = (ds.count / total * 100);
+    const seg = document.createElement('div');
+    seg.className = 'step-segment';
+    seg.style.width = pct + '%';
+    seg.style.background = ds.color;
+    seg.title = ds.label + ': ' + ds.count;
+    seg.innerHTML = '<span>' + ds.label + ' (' + ds.count + ')</span>';
+    bar.appendChild(seg);
+  }
+  if (unknown > 0) {
+    const seg = document.createElement('div');
+    seg.className = 'step-segment';
+    seg.style.width = (unknown / total * 100) + '%';
+    seg.style.background = '#475569';
+    seg.innerHTML = '<span>Other (' + unknown + ')</span>';
+    bar.appendChild(seg);
+  }
+  if (state.enriched.length === 0) {
+    bar.innerHTML = '<div class="step-segment" style="width:100%;background:var(--surface2);color:var(--text3);font-size:12px">No active Mini RFPs</div>';
+  }
+
+  for (const ds of displaySteps) {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = '<span class="legend-dot" style="background:' + ds.color + '"></span>' + ds.label + ' (' + ds.count + ')';
+    legend.appendChild(item);
+  }
+}
+
+// --- RENDER: TABLE ---
+function renderTable() {
+  const tbody = document.getElementById('rfpTableBody');
+  let data = [...state.enriched];
+
+  if (state.filter === 'awaiting') data = data.filter(e => e.isAwaiting);
+  else if (state.filter === 'review') data = data.filter(e => !e.isAwaiting);
+
+  data.sort((a, b) => {
+    let va, vb;
+    switch (state.sortCol) {
+      case 'key': va = a.key; vb = b.key; break;
+      case 'vendor': va = (a.vendorName || '').toLowerCase(); vb = (b.vendorName || '').toLowerCase(); break;
+      case 'requester': va = (a.requesterName || '').toLowerCase(); vb = (b.requesterName || '').toLowerCase(); break;
+      case 'step': va = a.stepInfo ? a.stepInfo.num : 99; vb = b.stepInfo ? b.stepInfo.num : 99; break;
+      case 'days': va = a.daysActive; vb = b.daysActive; break;
+      case 'sla': va = a.daysActive; vb = b.daysActive; break;
+      default: va = a.key; vb = b.key;
+    }
+    if (va < vb) return state.sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return state.sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><h3>No Mini RFPs found</h3><p>No instances match the current filter.</p></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.map(inst => {
+    const days = inst.daysActive;
+    const slaClass = days >= 14 ? 'sla-breach' : days >= 7 ? 'sla-warn' : 'sla-ok';
+    const slaText = days >= 14 ? 'BREACH' : days >= 7 ? 'At Risk' : 'On Track';
+    const daysText = days < 1 ? '<1d' : Math.floor(days) + 'd';
+
+    return '<tr onclick="openInMiniRFP(\'' + esc(inst.key) + '\')">' +
+      '<td><span class="instance-key">' + esc(inst.key) + '</span></td>' +
+      '<td>' + (inst.vendorName ? esc(inst.vendorName) : '<span style="color:var(--text3)">--</span>') + '</td>' +
+      '<td>' + (inst.requesterName ? esc(inst.requesterName) : '<span style="color:var(--text3)">--</span>') + '</td>' +
+      '<td><span class="step-badge ' + inst.stepCss + '">' + esc(inst.stepName) + '</span></td>' +
+      '<td><span class="time-value">' + daysText + '</span></td>' +
+      '<td><span class="status-indicator status-' + (days >= 14 ? 'dealkiller' : days >= 7 ? 'awaiting' : 'active') + '"><span class="status-dot"></span>' + slaText + '</span></td>' +
+      '<td><a class="btn-claim" href="mini-rfp.html?instance=' + esc(inst.key) + '" target="_blank" onclick="event.stopPropagation()">Open</a></td>' +
+      '</tr>';
+  }).join('');
+
+  document.querySelectorAll('thead th').forEach(th => {
+    const col = th.dataset.sort;
+    if (col === state.sortCol) {
+      th.classList.add('sorted');
+      th.querySelector('.sort-icon').innerHTML = state.sortDir === 'asc' ? '&#9650;' : '&#9660;';
+    } else {
+      th.classList.remove('sorted');
+      if (th.querySelector('.sort-icon')) th.querySelector('.sort-icon').innerHTML = '&#9650;';
+    }
+  });
+}
+
+// --- RENDER: CLASSIFICATION QUEUE ---
+function renderClassQueue() {
+  const list = document.getElementById('classQueueList');
+  const count = document.getElementById('classQueueCount');
+
+  const classTasks = state.tasks.filter(t => t.taskDefinitionId === 'Task_Step2b_ClassificationCheck');
+  count.textContent = classTasks.length;
+
+  if (classTasks.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:32px"><p>No pending classifications</p></div>';
+    return;
+  }
+
+  list.innerHTML = classTasks.map(task => {
+    const name = (task.name || 'Classification Check').replace(/\n/g, ' ');
+    const age = task.creationDate ? timeSince(new Date(task.creationDate)) : '--';
+    const assignee = task.assignee;
+
+    return '<div class="queue-item">' +
+      '<div>' +
+        '<div class="queue-task-name">' + esc(name) + '</div>' +
+        '<div class="queue-task-meta">' +
+          '<span class="key">' + esc(task.processInstanceKey) + '</span>' +
+          '<span>' + esc(age) + ' ago</span>' +
+          (assignee ? '<span style="color:var(--success)">' + esc(assignee) + '</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px">' +
+        (assignee
+          ? '<button class="btn-complete" onclick="completeClassTask(\'' + esc(task.id) + '\',event)">Complete</button>'
+          : '<button class="btn-claim" onclick="claimClassTask(\'' + esc(task.id) + '\',event)">Claim</button>') +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// --- RENDER: SLA TIMELINE ---
+function renderTimeline() {
+  const list = document.getElementById('timelineList');
+
+  const awaitingInstances = state.enriched.filter(e => e.isAwaiting);
+
+  if (awaitingInstances.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:32px"><p>No instances awaiting vendor response</p></div>';
+    return;
+  }
+
+  // Sort by days active descending (most urgent first)
+  awaitingInstances.sort((a, b) => b.daysActive - a.daysActive);
+
+  const SLA_LIMIT = 14; // max days before breach
+
+  list.innerHTML = awaitingInstances.map(inst => {
+    const days = inst.daysActive;
+    const pct = Math.min((days / SLA_LIMIT) * 100, 100);
+    const fillClass = days >= 11 ? 'red' : days >= 7 ? 'yellow' : 'green';
+    const daysText = days < 1 ? '<1d' : Math.floor(days) + 'd';
+    const daysClass = days >= 14 ? 'sla-breach' : days >= 7 ? 'sla-warn' : 'sla-ok';
+    const label = inst.vendorName ? esc(inst.vendorName) : esc(inst.key);
+
+    // Marker positions: Day 3, 7, 11, 14
+    const markers = [3, 7, 11, 14].map(d => {
+      const mPct = (d / SLA_LIMIT) * 100;
+      return '<div class="timeline-marker" style="left:' + mPct + '%"><span class="timeline-marker-label" style="left:' + mPct + '%">D' + d + '</span></div>';
+    }).join('');
+
+    return '<div class="timeline-item">' +
+      '<div class="timeline-key" title="' + esc(inst.key) + '">' + label + '</div>' +
+      '<div class="timeline-bar">' +
+        '<div class="timeline-fill ' + fillClass + '" style="width:' + pct + '%">' + daysText + '</div>' +
+        '<div class="timeline-markers">' + markers + '</div>' +
+      '</div>' +
+      '<div class="timeline-days ' + daysClass + '">' + daysText + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// --- TABLE SORTING ---
+function sortTable(col) {
+  if (state.sortCol === col) {
+    state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    state.sortCol = col;
+    state.sortDir = col === 'days' || col === 'sla' ? 'desc' : 'asc';
+  }
+  renderTable();
+}
+
+// --- TABLE FILTERING ---
+function setFilter(filter, btn) {
+  state.filter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+// --- ACTIONS ---
+function openInMiniRFP(key) {
+  window.open('mini-rfp.html?instance=' + encodeURIComponent(key), '_blank');
+}
+
+async function claimClassTask(taskId, event) {
+  event.stopPropagation();
+  try {
+    const res = await fetch('/api/tasks/' + taskId + '/claim', { method: 'POST' });
+    if (!res.ok) throw new Error(await res.text());
+    showToast('Task claimed', 'success');
+    fetchData();
+  } catch (e) {
+    showToast('Claim failed: ' + e.message, 'error');
+  }
+}
+
+async function completeClassTask(taskId, event) {
+  event.stopPropagation();
+  try {
+    const res = await fetch('/api/tasks/' + taskId + '/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variables: {} }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    showToast('Task completed', 'success');
+    fetchData();
+  } catch (e) {
+    showToast('Complete failed: ' + e.message, 'error');
+  }
+}
+
+// --- REFRESH ---
+async function manualRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  await fetchData();
+  btn.classList.remove('spinning');
+}
+
+function updateRefreshTimer() {
+  if (state.tickTimer) clearInterval(state.tickTimer);
+  state.tickTimer = setInterval(() => {
+    if (!state.lastRefresh) return;
+    const sec = Math.floor((Date.now() - state.lastRefresh) / 1000);
+    document.getElementById('lastRefreshed').textContent = sec < 5 ? 'just now' : sec + 's ago';
+  }, 1000);
+}
+
+function startAutoRefresh() {
+  if (state.refreshTimer) clearInterval(state.refreshTimer);
+  state.refreshTimer = setInterval(fetchData, REFRESH_INTERVAL);
+}
+
+// --- UTILITY ---
+function timeSince(date) {
+  const sec = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (sec < 60) return sec + 's';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return min + 'm';
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return hr + 'h';
+  return Math.floor(hr / 24) + 'd';
+}
+
+function esc(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + type + ' show';
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// --- INIT ---
+fetchData();
+startAutoRefresh();
+</script>
+</body>
+</html>
