@@ -481,7 +481,6 @@ function renderStepBar() {
   const bar = document.getElementById('stepBar');
   const legend = document.getElementById('stepLegend');
   const counts = {};
-  const stepOrder = ['Task_Step1_UnderstandNeed', 'Task_Step2_VendorContext', 'Task_Step2b_ClassificationCheck', 'BRT_DealKiller', 'Task_Step4_QuestionPreview', 'Task_Step5_SendVendor', 'Receive_VendorResponse', 'Task_Step6_CollectResponses', 'Task_Step7_ReviewScore'];
   const displaySteps = [
     { key: 'understand', label: 'Understand', color: '#3b82f6', tasks: ['Task_Step1_UnderstandNeed'] },
     { key: 'vendor', label: 'Vendor Context', color: '#8b5cf6', tasks: ['Task_Step2_VendorContext'] },
