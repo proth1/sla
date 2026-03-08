@@ -182,6 +182,7 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     // GET /api/process/:key
     if (method === 'GET' && segments[0] === 'api' && segments[1] === 'process' && segments.length === 3 && segments[2] !== 'undefined') {
       const key = segments[2];
+      if (!isValidKey(key)) return errorResponse('Invalid process key', 400);
       const result = await zeebeApi('GET', `/v2/process-instances/${key}`, env);
       return jsonResponse(result);
     }
@@ -189,6 +190,7 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     // GET /api/process/:key/variables
     if (method === 'GET' && segments[0] === 'api' && segments[1] === 'process' && segments.length === 4 && segments[3] === 'variables') {
       const key = segments[2];
+      if (!isValidKey(key)) return errorResponse('Invalid process key', 400);
       const tasks = await tasklistApi('POST', '/v1/tasks/search', env, {
         processInstanceKey: key,
       }) as Task[];
@@ -202,6 +204,7 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     // DELETE /api/process/:key
     if (method === 'DELETE' && segments[0] === 'api' && segments[1] === 'process' && segments.length === 3) {
       const key = segments[2];
+      if (!isValidKey(key)) return errorResponse('Invalid process key', 400);
       await zeebeApi('POST', `/v2/process-instances/${key}/cancellation`, env);
       return jsonResponse({ cancelled: true, key });
     }
