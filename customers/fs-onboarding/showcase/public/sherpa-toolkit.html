@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onboarding Sherpa Toolkit | Software Onboarding</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1e293b;--surface3:#283548;
+  --border:#334155;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#3b82f6;--accent2:#6366f1;--accent3:#8b5cf6;
+  --success:#22c55e;--warn:#f59e0b;--danger:#ef4444;
+  --glow:rgba(99,102,241,0.15);
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* Header */
+.header{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+.header-left{display:flex;align-items:center;gap:16px}
+.logo{width:44px;height:44px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;box-shadow:0 0 30px rgba(34,197,94,0.3)}
+.header h1{font-size:22px;font-weight:600;background:linear-gradient(135deg,#e2e8f0,#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-sub{font-size:13px;color:var(--text3);font-weight:400}
+.header-right{display:flex;gap:12px;align-items:center}
+.header-nav{text-decoration:none;color:var(--text2);font-size:13px;padding:6px 14px;border:1px solid var(--border);border-radius:8px;transition:all .2s;display:flex;align-items:center;gap:6px}
+.header-nav:hover{color:var(--text);border-color:var(--accent);background:rgba(59,130,246,0.08)}
+
+/* Toolkit Nav */
+.toolkit-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 40px;display:flex;gap:8px;overflow-x:auto}
+.nav-pill{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s;border:1px solid transparent;white-space:nowrap}
+.nav-pill:hover{color:var(--text2);background:var(--surface2)}
+.nav-pill.active{color:var(--accent);background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.3)}
+
+/* Main Content */
+.main{max-width:900px;margin:0 auto;padding:32px 40px}
+
+/* Section */
+.section{margin-bottom:48px;display:none}
+.section.active{display:block}
+.section-badge{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.section h2{font-size:24px;font-weight:700;margin-bottom:8px}
+.section-desc{color:var(--text3);font-size:14px;line-height:1.6;margin-bottom:28px}
+
+/* Form Card */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;position:relative}
+.form-card h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.form-card .subtitle{font-size:12px;color:var(--text3);margin-bottom:20px}
+.form-card.highlight{border-color:rgba(245,158,11,0.4);background:linear-gradient(135deg,var(--surface),rgba(245,158,11,0.03))}
+.form-card.danger-highlight{border-color:rgba(239,68,68,0.4);background:linear-gradient(135deg,var(--surface),rgba(239,68,68,0.03))}
+
+/* Form Elements */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-row.full{grid-template-columns:1fr}
+.form-row.triple{grid-template-columns:1fr 1fr 1fr}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.form-label .req{color:var(--danger);margin-left:2px}
+.form-input,.form-textarea,.form-select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:all .2s}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+.form-textarea{min-height:80px;resize:vertical}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+
+/* Checkbox/Radio Lists */
+.check-list{display:flex;flex-direction:column;gap:10px;margin:8px 0}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s}
+.check-item:hover{border-color:var(--accent);background:rgba(59,130,246,0.05)}
+.check-item input[type="checkbox"],.check-item input[type="radio"]{margin-top:2px;accent-color:var(--accent);width:16px;height:16px;flex-shrink:0}
+.check-item label{font-size:13px;cursor:pointer;line-height:1.4}
+.check-item .detail{font-size:11px;color:var(--text3);margin-top:2px}
+.check-item.deal-killer{border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.05)}
+.check-item.deal-killer:hover{border-color:var(--danger)}
+
+/* Status Badges */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.badge.green{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3)}
+.badge.yellow{background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)}
+.badge.red{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)}
+.badge.blue{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3)}
+.badge.gray{background:rgba(148,163,184,0.15);color:var(--text2);border:1px solid rgba(148,163,184,0.3)}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}
+.data-table th{text-align:left;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.data-table td{padding:10px 14px;border:1px solid var(--border);vertical-align:top}
+.data-table tr:hover td{background:rgba(59,130,246,0.03)}
+
+/* SLA Bar */
+.sla-bar{display:flex;align-items:center;gap:8px;margin:4px 0}
+.sla-track{flex:1;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.sla-fill{height:100%;border-radius:3px;transition:width .3s}
+.sla-fill.green{background:var(--success)}
+.sla-fill.yellow{background:var(--warn)}
+.sla-fill.red{background:var(--danger)}
+.sla-label{font-size:11px;color:var(--text3);white-space:nowrap;min-width:60px}
+
+/* Escalation Banner */
+.escalation-box{padding:16px 20px;border-radius:10px;margin:16px 0;display:flex;align-items:flex-start;gap:12px;font-size:13px;line-height:1.5}
+.escalation-box.warn{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);color:#fbbf24}
+.escalation-box.danger{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);color:#f87171}
+.escalation-box.info{background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.3);color:#60a5fa}
+.escalation-box .icon{font-size:18px;flex-shrink:0;margin-top:-1px}
+
+/* Email Template */
+.email-template{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:20px;margin:16px 0;font-size:13px;line-height:1.7;white-space:pre-wrap;font-family:'JetBrains Mono','Fira Code',monospace;color:var(--text2);position:relative}
+.email-template .placeholder{color:var(--warn);font-weight:600}
+.copy-btn{position:absolute;top:12px;right:12px;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:11px;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s}
+.copy-btn:hover{border-color:var(--accent);color:var(--text)}
+
+/* Divider */
+.divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+
+/* Print */
+.print-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 20px;font-size:13px;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:8px}
+.print-btn:hover{border-color:var(--accent);color:var(--text);background:rgba(59,130,246,0.08)}
+
+/* Tips */
+.tip-box{padding:14px 18px;border-radius:8px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);font-size:12px;color:var(--text2);line-height:1.6;margin:12px 0}
+.tip-box strong{color:#4ade80}
+
+/* Checklist with progress */
+.phase-checklist{display:flex;flex-direction:column;gap:6px}
+.phase-check{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;transition:background .2s}
+.phase-check:hover{background:var(--surface2)}
+.phase-check input{accent-color:var(--success);width:16px;height:16px}
+.phase-check label{font-size:13px;flex:1}
+.phase-check .owner{font-size:11px;color:var(--text3);min-width:100px;text-align:right}
+
+/* Kanban Columns */
+.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:20px 0;overflow-x:auto}
+.kanban-col{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;min-width:150px}
+.kanban-col h4{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.kanban-card{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:8px;font-size:12px}
+.kanban-card .req-name{font-weight:600;margin-bottom:4px}
+.kanban-card .req-meta{color:var(--text3);font-size:10px}
+.kanban-card.overdue{border-color:rgba(239,68,68,0.5);background:rgba(239,68,68,0.05)}
+
+/* Responsive */
+@media(max-width:768px){
+  .form-row{grid-template-columns:1fr}
+  .form-row.triple{grid-template-columns:1fr}
+  .kanban{grid-template-columns:1fr 1fr}
+  .main{padding:20px}
+}
+
+@media print{
+  .header,.toolkit-nav,.print-btn,.copy-btn,.header-nav{display:none!important}
+  body{background:#fff;color:#111}
+  .section{display:block!important;page-break-inside:avoid;margin-bottom:24px}
+  .form-card,.email-template,.escalation-box,.data-table,.check-item{border-color:#ccc;background:#f9f9f9;color:#111}
+  .form-input,.form-textarea,.form-select{border-color:#ccc;background:#fff;color:#111}
+  .badge{border-color:#aaa}
+  .form-label,.section-badge{color:#555}
+  .section h2{color:#111}
+  .section-desc,.subtitle{color:#555}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">S</div>
+    <div>
+      <h1>Onboarding Sherpa Toolkit</h1>
+      <div class="header-sub">Manual process forms, templates, and checklists</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <a href="index.html" class="header-nav">Task Worker</a>
+    <a href="dashboard.html" class="header-nav">Dashboard</a>
+    <a href="mini-rfp.html" class="header-nav">Mini RFP</a>
+    <button class="print-btn" onclick="window.print()">Print All</button>
+  </div>
+</div>
+
+<!-- Toolkit Navigation -->
+<div class="toolkit-nav">
+  <div class="nav-pill active" onclick="showSection('intake')">1. Intake Pre-Screen</div>
+  <div class="nav-pill" onclick="showSection('tier')">2. Risk Tier Worksheet</div>
+  <div class="nav-pill" onclick="showSection('tracker')">3. Request Tracker</div>
+  <div class="nav-pill" onclick="showSection('kickoff')">4. Parallel Review Kickoff</div>
+  <div class="nav-pill" onclick="showSection('standup')">5. Weekly Stand-Up</div>
+  <div class="nav-pill" onclick="showSection('escalation')">6. SLA Escalation</div>
+  <div class="nav-pill" onclick="showSection('phase')">7. Phase Checklists</div>
+  <div class="nav-pill" onclick="showSection('handoff')">8. Handoff / Close-Out</div>
+</div>
+
+<div class="main">
+
+<!-- ==================== SECTION 1: INTAKE PRE-SCREEN ==================== -->
+<div class="section active" id="sec-intake">
+  <div class="section-badge">Form 1 of 8</div>
+  <h2>Intake Pre-Screen Form</h2>
+  <p class="section-desc">Complete this form BEFORE entering a request into the formal pipeline. If any deal-killer is triggered, the request does not proceed. Takes ~10 minutes.</p>
+
+  <div class="form-card">
+    <h3>Requester Information</h3>
+    <div class="subtitle">Who is submitting this request?</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Requester Name <span class="req">*</span></label>
+        <input type="text" class="form-input" placeholder="Full name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Department / BU</label>
+        <input type="text" class="form-input" placeholder="e.g., Treasury Operations">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" placeholder="requester@company.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date Submitted</label>
+        <input type="date" class="form-input">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Software Request Summary</h3>
+    <div class="subtitle">Describe what is being requested and why.</div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">Software / Vendor Name <span class="req">*</span></label>
+        <input type="text" class="form-input" placeholder="e.g., Snowflake, ServiceNow, custom build">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Request Type <span class="req">*</span></label>
+        <select class="form-select">
+          <option value="">Select...</option>
+          <option>New Vendor / New Software</option>
+          <option>Existing Vendor / New Product</option>
+          <option>Contract Renewal</option>
+          <option>Upgrade / Migration</option>
+          <option>Build (Internal Development)</option>
+          <option>Forced Update (Regulatory / Security)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Go-Live</label>
+        <input type="date" class="form-input">
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">Business Problem / Need <span class="req">*</span></label>
+        <textarea class="form-textarea" placeholder="What business problem does this solve? Why now?"></textarea>
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">Existing Solutions Considered</label>
+        <textarea class="form-textarea" placeholder="Have you checked if an existing internal tool or licensed product can meet this need? If so, why were they insufficient?"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card danger-highlight">
+    <h3>Deal-Killer Screen</h3>
+    <div class="subtitle">If ANY of these are "No", the request cannot proceed to the pipeline. Discuss with the requester first.</div>
+
+    <div class="check-list">
+      <div class="check-item deal-killer">
+        <input type="checkbox" id="dk1">
+        <div>
+          <label for="dk1"><strong>Budget Approval:</strong> Has a budget been identified or pre-approved for this request?</label>
+          <div class="detail">No budget = no path forward. Requester must secure at minimum a preliminary funding indication from their cost center owner.</div>
+        </div>
+      </div>
+      <div class="check-item deal-killer">
+        <input type="checkbox" id="dk2">
+        <div>
+          <label for="dk2"><strong>Business Sponsor:</strong> Is there an identified executive sponsor (VP+ level)?</label>
+          <div class="detail">Every request must have a named individual accountable for business outcomes. "The team wants it" is not sponsorship.</div>
+        </div>
+      </div>
+      <div class="check-item deal-killer">
+        <input type="checkbox" id="dk3">
+        <div>
+          <label for="dk3"><strong>Not a Duplicate:</strong> Confirmed this is not already in-flight or available in the existing portfolio?</label>
+          <div class="detail">Check the software portfolio register. If a similar capability exists, route to portfolio management instead.</div>
+        </div>
+      </div>
+      <div class="check-item deal-killer">
+        <input type="checkbox" id="dk4">
+        <div>
+          <label for="dk4"><strong>Organizational Alignment:</strong> Does this align with a current strategic initiative or regulatory mandate?</label>
+          <div class="detail">"Nice to have" requests without strategic alignment get deprioritized indefinitely. Confirm alignment before consuming reviewer bandwidth.</div>
+        </div>
+      </div>
+      <div class="check-item deal-killer">
+        <input type="checkbox" id="dk5">
+        <div>
+          <label for="dk5"><strong>Realistic Timeline:</strong> Is the requested go-live at least 30 days out (or 60 days for new vendors)?</label>
+          <div class="detail">Requests with impossible timelines create false urgency and undermine governance. If truly urgent, route to the emergency/forced-update path.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="escalation-box danger" style="margin-top:16px">
+      <span class="icon">!!</span>
+      <div><strong>If any item above is unchecked:</strong> Do NOT enter this into the pipeline. Return to the requester with specific guidance on what they need to provide. Use the "Pre-Screen Rejection" email template below.</div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Data Classification (Quick Screen)</h3>
+    <div class="subtitle">Check all that apply. This determines the risk tier in the next step.</div>
+    <div class="check-list">
+      <div class="check-item"><input type="checkbox" id="dc1"><label for="dc1">Processes or stores <strong>Personally Identifiable Information (PII)</strong></label></div>
+      <div class="check-item"><input type="checkbox" id="dc2"><label for="dc2">Processes or stores <strong>Protected Health Information (PHI)</strong></label></div>
+      <div class="check-item"><input type="checkbox" id="dc3"><label for="dc3">Involves <strong>financial transaction data</strong> (SOX-relevant)</label></div>
+      <div class="check-item"><input type="checkbox" id="dc4"><label for="dc4">Uses or integrates <strong>AI / machine learning</strong> models</label></div>
+      <div class="check-item"><input type="checkbox" id="dc5"><label for="dc5">Connects to <strong>critical infrastructure</strong> (core banking, payment systems)</label></div>
+      <div class="check-item"><input type="checkbox" id="dc6"><label for="dc6">Cloud-hosted by <strong>third-party provider</strong> (not on-premises)</label></div>
+      <div class="check-item"><input type="checkbox" id="dc7"><label for="dc7">Requires <strong>cross-border data transfer</strong></label></div>
+      <div class="check-item"><input type="checkbox" id="dc8"><label for="dc8"><strong>None of the above</strong></label></div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Sherpa Decision</h3>
+    <div class="subtitle">Based on the above, what is your recommendation?</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Decision <span class="req">*</span></label>
+        <select class="form-select">
+          <option value="">Select...</option>
+          <option>PROCEED - Enter into pipeline</option>
+          <option>RETURN - Missing information (specify below)</option>
+          <option>REJECT - Deal-killer not met</option>
+          <option>REDIRECT - Existing solution available</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sherpa Name</label>
+        <input type="text" class="form-input" placeholder="Your name">
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">Notes / Conditions</label>
+        <textarea class="form-textarea" placeholder="Any conditions for proceeding, missing items, or redirection guidance..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Templates -->
+  <div class="form-card highlight">
+    <h3>Email Templates</h3>
+    <div class="subtitle">Copy and customize these for common intake communications.</div>
+
+    <p style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text2)">Pre-Screen Rejection</p>
+    <div class="email-template">
+<button class="copy-btn" onclick="copyTemplate(this)">Copy</button>Subject: Software Request Pre-Screen - Action Required
+
+Hi <span class="placeholder">[Requester Name]</span>,
+
+Thank you for submitting your request for <span class="placeholder">[Software/Vendor Name]</span>.
+
+After our pre-screen review, we've identified the following items
+that need to be addressed before we can enter this into the
+formal onboarding pipeline:
+
+  <span class="placeholder">[  ] Budget approval from cost center owner
+  [  ] Executive sponsor identified (VP+ level)
+  [  ] Confirmation no existing solution covers this need
+  [  ] Strategic alignment documentation
+  [  ] Realistic timeline (minimum 30 days)</span>
+
+Please provide the missing items and resubmit. I'm happy to
+discuss any questions -- you can reach me directly.
+
+If this is an emergency or regulatory-mandated change, please
+let me know and we'll route it through our expedited path.
+
+Best regards,
+<span class="placeholder">[Sherpa Name]</span>
+Onboarding Facilitator</div>
+
+    <p style="font-size:13px;font-weight:600;margin:20px 0 8px;color:var(--text2)">Request Accepted - Next Steps</p>
+    <div class="email-template">
+<button class="copy-btn" onclick="copyTemplate(this)">Copy</button>Subject: Software Onboarding Request Accepted - <span class="placeholder">[Tracking ID]</span>
+
+Hi <span class="placeholder">[Requester Name]</span>,
+
+Your request for <span class="placeholder">[Software/Vendor Name]</span> has passed
+pre-screening and is now in our onboarding pipeline.
+
+  Tracking ID:    <span class="placeholder">[ONB-2026-XXX]</span>
+  Risk Tier:      <span class="placeholder">[Fast-Track / Standard / Enhanced]</span>
+  Target SLA:     <span class="placeholder">[5 / 15 / 25]</span> business days
+  Your Sherpa:    <span class="placeholder">[Sherpa Name]</span>
+
+Next Steps:
+1. I will coordinate with the required review teams
+2. You may be contacted for additional details
+3. I'll send you weekly status updates every <span class="placeholder">[Day]</span>
+
+You can reach me directly with any questions. I'm your single
+point of contact throughout this process.
+
+Best regards,
+<span class="placeholder">[Sherpa Name]</span>
+Onboarding Facilitator</div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 2: RISK TIER WORKSHEET ==================== -->
+<div class="section" id="sec-tier">
+  <div class="section-badge">Form 2 of 8</div>
+  <h2>Risk Tier Classification Worksheet</h2>
+  <p class="section-desc">Score the request to determine Fast-Track, Standard, or Enhanced review. This replaces the DMN_RiskTierClassification decision table for manual use.</p>
+
+  <div class="form-card">
+    <h3>Scoring Matrix</h3>
+    <div class="subtitle">Score each dimension 1-3. Total determines the tier.</div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:25%">Dimension</th>
+          <th style="width:25%">1 - Low</th>
+          <th style="width:25%">2 - Medium</th>
+          <th style="width:25%">3 - High</th>
+          <th style="width:10%">Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Data Sensitivity</strong></td>
+          <td>No PII/PHI, public data only</td>
+          <td>Internal data, limited PII</td>
+          <td>Regulated data (PII/PHI/SOX/financial)</td>
+          <td><input type="number" class="form-input" min="1" max="3" style="width:50px;padding:6px 8px" oninput="calcTier()"></td>
+        </tr>
+        <tr>
+          <td><strong>Vendor Criticality</strong></td>
+          <td>Existing vendor, proven track record</td>
+          <td>Known vendor, new product/module</td>
+          <td>New vendor, no prior relationship</td>
+          <td><input type="number" class="form-input" min="1" max="3" style="width:50px;padding:6px 8px" oninput="calcTier()"></td>
+        </tr>
+        <tr>
+          <td><strong>Financial Exposure</strong></td>
+          <td>Under $50K annual</td>
+          <td>$50K - $500K annual</td>
+          <td>Over $500K annual</td>
+          <td><input type="number" class="form-input" min="1" max="3" style="width:50px;padding:6px 8px" oninput="calcTier()"></td>
+        </tr>
+        <tr>
+          <td><strong>Integration Complexity</strong></td>
+          <td>Standalone SaaS, no integrations</td>
+          <td>API integration with non-critical systems</td>
+          <td>Integrates with core banking / payment systems</td>
+          <td><input type="number" class="form-input" min="1" max="3" style="width:50px;padding:6px 8px" oninput="calcTier()"></td>
+        </tr>
+        <tr>
+          <td><strong>AI / ML Usage</strong></td>
+          <td>No AI components</td>
+          <td>AI features (recommendations, analytics)</td>
+          <td>AI in decision-making (credit, fraud, compliance)</td>
+          <td><input type="number" class="form-input" min="1" max="3" style="width:50px;padding:6px 8px" oninput="calcTier()"></td>
+        </tr>
+        <tr>
+          <td><strong>Regulatory Exposure</strong></td>
+          <td>No regulatory requirements</td>
+          <td>Standard regulatory (GDPR, SOX)</td>
+          <td>Multi-regulation (OCC, DORA, EU AI Act, SR 11-7)</td>
+          <td><input type="number" class="form-input" min="1" max="3" style="width:50px;padding:6px 8px" oninput="calcTier()"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:20px;display:flex;align-items:center;gap:20px">
+      <div style="font-size:14px;color:var(--text2)">Total Score: <strong id="tierTotal" style="font-size:20px;color:var(--text)">--</strong></div>
+      <div id="tierResult" style="font-size:14px"></div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Tier Routing Guide</h3>
+    <div class="subtitle">Based on total score, assign the appropriate review level.</div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Score</th>
+          <th>Tier</th>
+          <th>Reviewers Required</th>
+          <th>Target SLA</th>
+          <th>Escalation Path</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge green">6-8</span></td>
+          <td><strong>Fast-Track</strong></td>
+          <td>Sherpa + 1 reviewer (Security or Compliance)</td>
+          <td>5 business days</td>
+          <td>Sherpa's manager after Day 3</td>
+        </tr>
+        <tr>
+          <td><span class="badge yellow">9-13</span></td>
+          <td><strong>Standard</strong></td>
+          <td>4 reviewers in parallel (Security, Compliance, Legal, Tech Architecture)</td>
+          <td>15 business days</td>
+          <td>Governance lead after Day 10</td>
+        </tr>
+        <tr>
+          <td><span class="badge red">14-18</span></td>
+          <td><strong>Enhanced</strong></td>
+          <td>All 9 reviewers in parallel + executive briefing</td>
+          <td>25 business days</td>
+          <td>CISO/CRO after Day 15</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="tip-box">
+      <strong>Override Rule:</strong> If ANY single dimension scores a 3, the minimum tier is Standard regardless of total. A 3 in AI/ML + regulatory automatically escalates to Enhanced.
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 3: REQUEST TRACKER ==================== -->
+<div class="section" id="sec-tracker">
+  <div class="section-badge">Tool 3 of 8</div>
+  <h2>Request Tracking Board</h2>
+  <p class="section-desc">Visual tracker for all active requests. Update this at minimum weekly. Color-code by SLA status: green (on track), yellow (approaching), red (breached).</p>
+
+  <div class="kanban">
+    <div class="kanban-col">
+      <h4>Intake <span class="badge gray">0</span></h4>
+      <div class="kanban-card" style="border:1px dashed var(--border);background:transparent;color:var(--text3);text-align:center;padding:20px 10px;font-size:11px">
+        Drop new requests here after pre-screen passes
+      </div>
+    </div>
+    <div class="kanban-col">
+      <h4>Due Diligence <span class="badge gray">0</span></h4>
+      <div class="kanban-card" style="border:1px dashed var(--border);background:transparent;color:var(--text3);text-align:center;padding:20px 10px;font-size:11px">
+        Parallel reviews in progress
+      </div>
+    </div>
+    <div class="kanban-col">
+      <h4>Gov. Review <span class="badge gray">0</span></h4>
+      <div class="kanban-card" style="border:1px dashed var(--border);background:transparent;color:var(--text3);text-align:center;padding:20px 10px;font-size:11px">
+        Awaiting committee decision
+      </div>
+    </div>
+    <div class="kanban-col">
+      <h4>Contracting <span class="badge gray">0</span></h4>
+      <div class="kanban-card" style="border:1px dashed var(--border);background:transparent;color:var(--text3);text-align:center;padding:20px 10px;font-size:11px">
+        Legal/procurement active
+      </div>
+    </div>
+    <div class="kanban-col">
+      <h4>Go-Live <span class="badge gray">0</span></h4>
+      <div class="kanban-card" style="border:1px dashed var(--border);background:transparent;color:var(--text3);text-align:center;padding:20px 10px;font-size:11px">
+        UAT / deployment
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Active Request Register</h3>
+    <div class="subtitle">Master list of all in-flight requests. Print this weekly for the stand-up.</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Software / Vendor</th>
+          <th>Requester</th>
+          <th>Tier</th>
+          <th>Current Phase</th>
+          <th>Days in Phase</th>
+          <th>SLA Target</th>
+          <th>Status</th>
+          <th>Blocker</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input class="form-input" style="width:90px;padding:4px 8px;font-size:12px" placeholder="ONB-XXX"></td>
+          <td><input class="form-input" style="width:120px;padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" style="width:100px;padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><select class="form-select" style="width:80px;padding:4px 8px;font-size:11px"><option>Fast</option><option>Std</option><option>Enh</option></select></td>
+          <td><select class="form-select" style="width:100px;padding:4px 8px;font-size:11px"><option>Intake</option><option>Planning</option><option>Due Diligence</option><option>Gov. Review</option><option>Contracting</option><option>Go-Live</option></select></td>
+          <td><input class="form-input" type="number" style="width:50px;padding:4px 8px;font-size:12px" placeholder="0"></td>
+          <td><input class="form-input" style="width:60px;padding:4px 8px;font-size:12px" placeholder="Day X"></td>
+          <td><select class="form-select" style="width:80px;padding:4px 8px;font-size:11px"><option>On Track</option><option>At Risk</option><option>Breached</option><option>Blocked</option></select></td>
+          <td><input class="form-input" style="width:140px;padding:4px 8px;font-size:12px" placeholder="What's blocking?"></td>
+        </tr>
+        <tr>
+          <td><input class="form-input" style="width:90px;padding:4px 8px;font-size:12px" placeholder="ONB-XXX"></td>
+          <td><input class="form-input" style="width:120px;padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" style="width:100px;padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><select class="form-select" style="width:80px;padding:4px 8px;font-size:11px"><option>Fast</option><option>Std</option><option>Enh</option></select></td>
+          <td><select class="form-select" style="width:100px;padding:4px 8px;font-size:11px"><option>Intake</option><option>Planning</option><option>Due Diligence</option><option>Gov. Review</option><option>Contracting</option><option>Go-Live</option></select></td>
+          <td><input class="form-input" type="number" style="width:50px;padding:4px 8px;font-size:12px" placeholder="0"></td>
+          <td><input class="form-input" style="width:60px;padding:4px 8px;font-size:12px" placeholder="Day X"></td>
+          <td><select class="form-select" style="width:80px;padding:4px 8px;font-size:11px"><option>On Track</option><option>At Risk</option><option>Breached</option><option>Blocked</option></select></td>
+          <td><input class="form-input" style="width:140px;padding:4px 8px;font-size:12px" placeholder="What's blocking?"></td>
+        </tr>
+        <tr>
+          <td><input class="form-input" style="width:90px;padding:4px 8px;font-size:12px" placeholder="ONB-XXX"></td>
+          <td><input class="form-input" style="width:120px;padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" style="width:100px;padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><select class="form-select" style="width:80px;padding:4px 8px;font-size:11px"><option>Fast</option><option>Std</option><option>Enh</option></select></td>
+          <td><select class="form-select" style="width:100px;padding:4px 8px;font-size:11px"><option>Intake</option><option>Planning</option><option>Due Diligence</option><option>Gov. Review</option><option>Contracting</option><option>Go-Live</option></select></td>
+          <td><input class="form-input" type="number" style="width:50px;padding:4px 8px;font-size:12px" placeholder="0"></td>
+          <td><input class="form-input" style="width:60px;padding:4px 8px;font-size:12px" placeholder="Day X"></td>
+          <td><select class="form-select" style="width:80px;padding:4px 8px;font-size:11px"><option>On Track</option><option>At Risk</option><option>Breached</option><option>Blocked</option></select></td>
+          <td><input class="form-input" style="width:140px;padding:4px 8px;font-size:12px" placeholder="What's blocking?"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== SECTION 4: PARALLEL REVIEW KICKOFF ==================== -->
+<div class="section" id="sec-kickoff">
+  <div class="section-badge">Form 4 of 8</div>
+  <h2>Parallel Review Kickoff Package</h2>
+  <p class="section-desc">When a request enters Due Diligence, send this package to ALL required reviewers simultaneously. Do NOT wait for sequential reviews.</p>
+
+  <div class="form-card">
+    <h3>Review Assignment Matrix</h3>
+    <div class="subtitle">Check the reviewers required for this request's tier, then fill in names and send date.</div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:5%">Req'd</th>
+          <th>Review Domain</th>
+          <th>Reviewer Name</th>
+          <th>Sent Date</th>
+          <th>Due Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox" checked disabled></td>
+          <td><strong>Security Assessment</strong><br><span style="font-size:11px;color:var(--text3)">Pen testing, vulnerability scan, architecture review</span></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Not Sent</option><option>Sent</option><option>In Review</option><option>Complete</option><option>Overdue</option></select></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><strong>Tech Architecture</strong><br><span style="font-size:11px;color:var(--text3)">Integration design, scalability, infrastructure</span></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Not Sent</option><option>Sent</option><option>In Review</option><option>Complete</option><option>Overdue</option></select></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><strong>Risk Assessment</strong><br><span style="font-size:11px;color:var(--text3)">Operational, financial, reputational risk scoring</span></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Not Sent</option><option>Sent</option><option>In Review</option><option>Complete</option><option>Overdue</option></select></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><strong>Compliance Review</strong><br><span style="font-size:11px;color:var(--text3)">Regulatory mapping, control requirements</span></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Not Sent</option><option>Sent</option><option>In Review</option><option>Complete</option><option>Overdue</option></select></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><strong>Privacy Assessment</strong><br><span style="font-size:11px;color:var(--text3)">GDPR/CCPA, data classification, cross-border</span></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Not Sent</option><option>Sent</option><option>In Review</option><option>Complete</option><option>Overdue</option></select></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><strong>Legal Review</strong><br><span style="font-size:11px;color:var(--text3)">Contract terms, IP, liability, indemnification</span></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Not Sent</option><option>Sent</option><option>In Review</option><option>Complete</option><option>Overdue</option></select></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><strong>Financial Analysis</strong><br><span style="font-size:11px;color:var(--text3)">TCO, ROI, budget impact, NPV</span></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Not Sent</option><option>Sent</option><option>In Review</option><option>Complete</option><option>Overdue</option></select></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><strong>Vendor Landscape</strong><br><span style="font-size:11px;color:var(--text3)">Alternative vendors, market analysis</span></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Not Sent</option><option>Sent</option><option>In Review</option><option>Complete</option><option>Overdue</option></select></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><strong>AI Governance</strong><br><span style="font-size:11px;color:var(--text3)">Model risk, EU AI Act classification, SR 11-7</span></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Name"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><input class="form-input" type="date" style="padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Not Sent</option><option>Sent</option><option>In Review</option><option>Complete</option><option>Overdue</option></select></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="form-card highlight">
+    <h3>Review Kickoff Email</h3>
+    <div class="subtitle">Send this to all required reviewers simultaneously on the same day.</div>
+    <div class="email-template">
+<button class="copy-btn" onclick="copyTemplate(this)">Copy</button>Subject: REVIEW REQUESTED - <span class="placeholder">[Software Name]</span> - Due <span class="placeholder">[Date]</span>
+
+Hi <span class="placeholder">[Reviewer Name]</span>,
+
+A software onboarding request requires your <span class="placeholder">[Domain]</span> review.
+
+  Request ID:     <span class="placeholder">[ONB-2026-XXX]</span>
+  Software:       <span class="placeholder">[Name and brief description]</span>
+  Vendor:         <span class="placeholder">[Vendor name, existing/new]</span>
+  Risk Tier:      <span class="placeholder">[Fast-Track / Standard / Enhanced]</span>
+  Requester:      <span class="placeholder">[Name, Department]</span>
+  Your Deadline:  <span class="placeholder">[Date - X business days from today]</span>
+
+Attached: Request summary, vendor documentation, data flow diagram
+
+YOUR REVIEW SCOPE:
+<span class="placeholder">[Specific questions for this reviewer's domain, e.g.:
+  - Does the vendor meet our security baseline requirements?
+  - Are there any unresolved vulnerabilities in their SOC2 report?
+  - What compensating controls would be required?]</span>
+
+DELIVERABLE:
+Please complete the attached review template and return to me
+by <span class="placeholder">[Date]</span>. A simple Pass / Conditional Pass / Fail with
+findings is sufficient.
+
+NOTE: This review is running IN PARALLEL with <span class="placeholder">[N]</span> other
+domain reviews. You do NOT need to wait for other reviews
+to complete before starting yours.
+
+If you cannot meet the deadline, please let me know by
+<span class="placeholder">[Date + 1 day]</span> so I can arrange coverage.
+
+Thanks,
+<span class="placeholder">[Sherpa Name]</span></div>
+  </div>
+
+  <div class="form-card">
+    <h3>Reviewer Findings Summary</h3>
+    <div class="subtitle">Consolidate all review findings here before presenting to governance committee.</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Domain</th>
+          <th>Result</th>
+          <th>Key Findings</th>
+          <th>Conditions / Remediation Required</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Security</td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Pending</option><option>Pass</option><option>Conditional</option><option>Fail</option></select></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Key findings..."></textarea></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Required actions..."></textarea></td>
+        </tr>
+        <tr>
+          <td>Tech Arch</td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Pending</option><option>Pass</option><option>Conditional</option><option>Fail</option></select></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Key findings..."></textarea></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Required actions..."></textarea></td>
+        </tr>
+        <tr>
+          <td>Risk</td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Pending</option><option>Pass</option><option>Conditional</option><option>Fail</option></select></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Key findings..."></textarea></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Required actions..."></textarea></td>
+        </tr>
+        <tr>
+          <td>Compliance</td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Pending</option><option>Pass</option><option>Conditional</option><option>Fail</option></select></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Key findings..."></textarea></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Required actions..."></textarea></td>
+        </tr>
+        <tr>
+          <td>Privacy</td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Pending</option><option>Pass</option><option>Conditional</option><option>Fail</option></select></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Key findings..."></textarea></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Required actions..."></textarea></td>
+        </tr>
+        <tr>
+          <td>Legal</td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Pending</option><option>Pass</option><option>Conditional</option><option>Fail</option></select></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Key findings..."></textarea></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Required actions..."></textarea></td>
+        </tr>
+        <tr>
+          <td>Financial</td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Pending</option><option>Pass</option><option>Conditional</option><option>Fail</option></select></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Key findings..."></textarea></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Required actions..."></textarea></td>
+        </tr>
+        <tr>
+          <td>Vendor Landscape</td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Pending</option><option>Pass</option><option>Conditional</option><option>Fail</option></select></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Key findings..."></textarea></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Required actions..."></textarea></td>
+        </tr>
+        <tr>
+          <td>AI Governance</td>
+          <td><select class="form-select" style="padding:4px 8px;font-size:11px"><option>Pending</option><option>Pass</option><option>Conditional</option><option>Fail</option></select></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Key findings..."></textarea></td>
+          <td><textarea class="form-textarea" style="min-height:50px;padding:6px 8px;font-size:12px" placeholder="Required actions..."></textarea></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== SECTION 5: WEEKLY STAND-UP ==================== -->
+<div class="section" id="sec-standup">
+  <div class="section-badge">Template 5 of 8</div>
+  <h2>Weekly Governance Stand-Up</h2>
+  <p class="section-desc">30-minute maximum. Run every week at the same time. The Sherpa facilitates. No deep dives — status and decisions only.</p>
+
+  <div class="form-card">
+    <h3>Stand-Up Agenda</h3>
+    <div class="subtitle">Time-boxed: 30 minutes total. Print this with the tracker filled in.</div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:15%">Time Box</th>
+          <th style="width:25%">Agenda Item</th>
+          <th>Description</th>
+          <th style="width:15%">Owner</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge blue">2 min</span></td>
+          <td><strong>Pipeline Summary</strong></td>
+          <td>How many requests total? How many in each phase? How many breached SLA?</td>
+          <td>Sherpa</td>
+        </tr>
+        <tr>
+          <td><span class="badge red">10 min</span></td>
+          <td><strong>SLA Breaches</strong></td>
+          <td>Walk through EACH breached request. What is blocking? Who needs to act? Decision: escalate, extend, or kill?</td>
+          <td>Sherpa + Blockers</td>
+        </tr>
+        <tr>
+          <td><span class="badge yellow">8 min</span></td>
+          <td><strong>At-Risk Requests</strong></td>
+          <td>Requests approaching SLA deadline (within 2 business days). What's needed to close on time?</td>
+          <td>Sherpa + Reviewers</td>
+        </tr>
+        <tr>
+          <td><span class="badge green">5 min</span></td>
+          <td><strong>New Intake</strong></td>
+          <td>Any new requests entering the pipeline this week? Quick tier assignment and reviewer identification.</td>
+          <td>Sherpa</td>
+        </tr>
+        <tr>
+          <td><span class="badge gray">5 min</span></td>
+          <td><strong>Decisions Needed</strong></td>
+          <td>Any go/no-go decisions the committee needs to make right now? Governance approvals waiting?</td>
+          <td>Governance Lead</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="escalation-box info" style="margin-top:16px">
+      <span class="icon">i</span>
+      <div><strong>Ground Rules:</strong> No deep-dive discussions. If a topic needs more than 2 minutes, schedule a separate meeting. The Sherpa takes notes and publishes action items within 1 hour of the meeting.</div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Stand-Up Notes Template</h3>
+    <div class="subtitle">Fill in during the meeting, distribute within 1 hour after.</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Meeting Date</label>
+        <input type="date" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Attendees</label>
+        <input class="form-input" placeholder="Names...">
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">SLA Breaches Discussed</label>
+        <textarea class="form-textarea" placeholder="Request ID | What's blocking | Decision made | Action owner | Deadline"></textarea>
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">At-Risk Items</label>
+        <textarea class="form-textarea" placeholder="Request ID | Risk | Mitigation | Owner"></textarea>
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">Decisions Made</label>
+        <textarea class="form-textarea" placeholder="Decision | Rationale | Effective immediately? | Who needs to know"></textarea>
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">Action Items</label>
+        <textarea class="form-textarea" placeholder="Action | Owner | Due Date"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card highlight">
+    <h3>Stand-Up Summary Email</h3>
+    <div class="subtitle">Send within 1 hour of the meeting.</div>
+    <div class="email-template">
+<button class="copy-btn" onclick="copyTemplate(this)">Copy</button>Subject: Governance Stand-Up Summary - <span class="placeholder">[Date]</span>
+
+Pipeline Status: <span class="placeholder">[N]</span> active requests
+  Intake:        <span class="placeholder">[N]</span>
+  Due Diligence: <span class="placeholder">[N]</span>
+  Gov. Review:   <span class="placeholder">[N]</span>
+  Contracting:   <span class="placeholder">[N]</span>
+  Go-Live:       <span class="placeholder">[N]</span>
+
+SLA BREACHES (<span class="placeholder">[N]</span>):
+<span class="placeholder">[ONB-XXX] [Software] - stuck in [Phase] for [N] days
+  Blocker: [description]
+  Decision: [escalate/extend/kill]
+  Action: [who] to [do what] by [when]</span>
+
+AT-RISK (<span class="placeholder">[N]</span>):
+<span class="placeholder">[ONB-XXX] [Software] - [N] days remaining
+  Needed: [what's needed to close on time]</span>
+
+DECISIONS MADE:
+<span class="placeholder">[Decision description - effective immediately]</span>
+
+ACTION ITEMS:
+<span class="placeholder">[  ] [Action] - [Owner] - Due [Date]
+[  ] [Action] - [Owner] - Due [Date]</span>
+
+Next stand-up: <span class="placeholder">[Date/Time]</span>
+
+<span class="placeholder">[Sherpa Name]</span></div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 6: SLA ESCALATION ==================== -->
+<div class="section" id="sec-escalation">
+  <div class="section-badge">Template 6 of 8</div>
+  <h2>SLA Escalation Playbook</h2>
+  <p class="section-desc">When a review or phase exceeds its SLA target, follow this escalation ladder. The Sherpa owns escalation — do not wait for someone else to notice.</p>
+
+  <div class="form-card">
+    <h3>Escalation Ladder by Phase</h3>
+    <div class="subtitle">Each phase has its own SLA target and escalation path. Times are cumulative from phase start.</div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>SLA Target</th>
+          <th>Day Warning Sent</th>
+          <th>Escalate To (Level 1)</th>
+          <th>Escalate To (Level 2)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Intake / Triage</strong></td>
+          <td>2 business days</td>
+          <td>Day 1 (50%)</td>
+          <td>Sherpa's manager (Day 2)</td>
+          <td>Governance Lead (Day 3)</td>
+        </tr>
+        <tr>
+          <td><strong>Planning</strong></td>
+          <td>5 business days</td>
+          <td>Day 3 (60%)</td>
+          <td>Governance Lead (Day 5)</td>
+          <td>CRO (Day 7)</td>
+        </tr>
+        <tr>
+          <td><strong>Due Diligence</strong></td>
+          <td>10 business days</td>
+          <td>Day 7 (70%)</td>
+          <td>CISO / CLO (Day 10)</td>
+          <td>CRO + CFO (Day 14)</td>
+        </tr>
+        <tr>
+          <td><strong>Individual Review</strong></td>
+          <td>5 business days</td>
+          <td>Day 3 (60%)</td>
+          <td>Reviewer's manager (Day 5)</td>
+          <td>Domain head (Day 7)</td>
+        </tr>
+        <tr>
+          <td><strong>Governance Review</strong></td>
+          <td>5 business days</td>
+          <td>Day 3 (60%)</td>
+          <td>CRO (Day 5)</td>
+          <td>COO (Day 7)</td>
+        </tr>
+        <tr>
+          <td><strong>Contracting</strong></td>
+          <td>7 business days</td>
+          <td>Day 5 (70%)</td>
+          <td>CLO / CPO (Day 7)</td>
+          <td>CFO (Day 10)</td>
+        </tr>
+        <tr>
+          <td><strong>UAT / Go-Live</strong></td>
+          <td>5 business days</td>
+          <td>Day 3 (60%)</td>
+          <td>Project Sponsor (Day 5)</td>
+          <td>CTO (Day 7)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="form-card highlight">
+    <h3>Escalation Email Templates</h3>
+    <div class="subtitle">Use these at each escalation level. Be factual, not emotional.</div>
+
+    <p style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text2)">Level 0: Friendly Reminder (at warning threshold)</p>
+    <div class="email-template">
+<button class="copy-btn" onclick="copyTemplate(this)">Copy</button>Subject: Reminder: Review Due <span class="placeholder">[Date]</span> - <span class="placeholder">[Software Name]</span>
+
+Hi <span class="placeholder">[Reviewer]</span>,
+
+Quick reminder that your <span class="placeholder">[domain]</span> review for
+<span class="placeholder">[Software Name]</span> (ONB-<span class="placeholder">[XXX]</span>) is due
+in <span class="placeholder">[N]</span> business days (<span class="placeholder">[Date]</span>).
+
+If you need additional information or are experiencing any
+blockers, please let me know so I can help unblock you.
+
+Thanks,
+<span class="placeholder">[Sherpa Name]</span></div>
+
+    <p style="font-size:13px;font-weight:600;margin:20px 0 8px;color:var(--warn)">Level 1: Formal Escalation (at SLA breach)</p>
+    <div class="email-template">
+<button class="copy-btn" onclick="copyTemplate(this)">Copy</button>Subject: SLA BREACH: <span class="placeholder">[Software Name]</span> - <span class="placeholder">[Phase]</span> overdue by <span class="placeholder">[N]</span> days
+
+Hi <span class="placeholder">[Escalation Manager]</span>,
+
+CC: <span class="placeholder">[Reviewer]</span>, <span class="placeholder">[Governance Lead]</span>
+
+I'm escalating request ONB-<span class="placeholder">[XXX]</span> (<span class="placeholder">[Software Name]</span>)
+which has exceeded its SLA in <span class="placeholder">[Phase]</span>.
+
+  SLA Target:      <span class="placeholder">[N]</span> business days
+  Actual Duration: <span class="placeholder">[N]</span> business days (overdue by <span class="placeholder">[N]</span>)
+  Blocker:         <span class="placeholder">[Specific reason for delay]</span>
+  Impact:          <span class="placeholder">[Business impact of delay]</span>
+  Requester:       <span class="placeholder">[Name]</span> (<span class="placeholder">[Department]</span>)
+
+Requested action:
+Please help resolve the blocker or provide an expected
+completion date by end of business <span class="placeholder">[Date]</span>.
+
+Governance Stand-Up: This item will be discussed at the
+next stand-up on <span class="placeholder">[Date/Time]</span>.
+
+<span class="placeholder">[Sherpa Name]</span>
+Onboarding Facilitator</div>
+
+    <p style="font-size:13px;font-weight:600;margin:20px 0 8px;color:var(--danger)">Level 2: Executive Escalation</p>
+    <div class="email-template">
+<button class="copy-btn" onclick="copyTemplate(this)">Copy</button>Subject: EXECUTIVE ESCALATION: <span class="placeholder">[Software Name]</span> onboarding stalled
+
+<span class="placeholder">[Executive Name]</span>,
+
+Request ONB-<span class="placeholder">[XXX]</span> has been stalled for <span class="placeholder">[N]</span> business
+days beyond its SLA target. Level 1 escalation on <span class="placeholder">[Date]</span>
+has not resolved the blocker.
+
+SUMMARY:
+  Software:   <span class="placeholder">[Name]</span>
+  Sponsor:    <span class="placeholder">[Executive Sponsor Name]</span>
+  Risk Tier:  <span class="placeholder">[Enhanced/Standard]</span>
+  Phase:      <span class="placeholder">[Current Phase]</span>
+  SLA Target: <span class="placeholder">[N]</span> days | Actual: <span class="placeholder">[N]</span> days
+  Blocker:    <span class="placeholder">[Root cause]</span>
+
+BUSINESS IMPACT:
+  <span class="placeholder">[What the delay means for the business - lost revenue,
+  compliance exposure, missed regulatory deadline, etc.]</span>
+
+OPTIONS:
+  1. <span class="placeholder">[Recommended path forward]</span>
+  2. <span class="placeholder">[Alternative approach]</span>
+  3. Kill the request (if no longer viable)
+
+Your decision is needed by <span class="placeholder">[Date]</span>.
+
+<span class="placeholder">[Sherpa Name]</span>
+Onboarding Facilitator</div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 7: PHASE CHECKLISTS ==================== -->
+<div class="section" id="sec-phase">
+  <div class="section-badge">Checklists 7 of 8</div>
+  <h2>Phase Transition Checklists</h2>
+  <p class="section-desc">A request cannot move to the next phase until ALL items are checked. The Sherpa verifies completion and obtains sign-off before advancing.</p>
+
+  <div class="form-card">
+    <h3>Phase 1: Intake to Planning</h3>
+    <div class="subtitle">Transition gate: Request is validated and ready for resource allocation.</div>
+    <div class="phase-checklist">
+      <div class="phase-check"><input type="checkbox"><label>Pre-screen form completed (all deal-killers pass)</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Existing portfolio checked (no duplicate)</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Data classification completed</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Risk tier assigned (Fast-Track / Standard / Enhanced)</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Executive sponsor confirmed</label><span class="owner">Requester</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Request entered in tracking register</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Requester notified with tracking ID and SLA timeline</label><span class="owner">Sherpa</span></div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Phase 2: Planning to Due Diligence</h3>
+    <div class="subtitle">Transition gate: Pathway determined, reviewers identified.</div>
+    <div class="phase-checklist">
+      <div class="phase-check"><input type="checkbox"><label>Buy vs Build pathway determined</label><span class="owner">Governance</span></div>
+      <div class="phase-check"><input type="checkbox"><label>NDA executed (if new vendor)</label><span class="owner">Legal</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Preliminary business analysis documented</label><span class="owner">Business Owner</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Review team identified based on tier</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Vendor documentation package assembled</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Review kickoff package prepared</label><span class="owner">Sherpa</span></div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Phase 3: Due Diligence to Governance Review</h3>
+    <div class="subtitle">Transition gate: All parallel reviews complete, findings consolidated.</div>
+    <div class="phase-checklist">
+      <div class="phase-check"><input type="checkbox"><label>ALL required reviews completed (per tier matrix)</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Findings summary consolidated (pass/conditional/fail per domain)</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>No unresolved "Fail" findings (or escalation decision documented)</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Conditional findings have remediation plans with deadlines</label><span class="owner">Reviewers</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Vendor due diligence response received and evaluated</label><span class="owner">Procurement</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Governance committee briefing package prepared</label><span class="owner">Sherpa</span></div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Phase 4: Governance Review to Contracting</h3>
+    <div class="subtitle">Transition gate: Governance committee has made a formal decision.</div>
+    <div class="phase-checklist">
+      <div class="phase-check"><input type="checkbox"><label>Committee vote recorded (Approved / Conditional / Rejected)</label><span class="owner">Governance</span></div>
+      <div class="phase-check"><input type="checkbox"><label>If conditional: conditions documented with acceptance criteria</label><span class="owner">Governance</span></div>
+      <div class="phase-check"><input type="checkbox"><label>If rejected: rejection rationale documented and requester notified</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Approval memo signed by appropriate authority</label><span class="owner">Governance Lead</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Budget authorization confirmed</label><span class="owner">Finance</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Contract requirements identified (new contract vs amendment vs renewal)</label><span class="owner">Legal</span></div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Phase 5: Contracting to Go-Live</h3>
+    <div class="subtitle">Transition gate: Contract executed, ready for implementation.</div>
+    <div class="phase-checklist">
+      <div class="phase-check"><input type="checkbox"><label>Contract fully executed (both parties signed)</label><span class="owner">Legal</span></div>
+      <div class="phase-check"><input type="checkbox"><label>SLA terms documented in contract</label><span class="owner">Legal</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Security controls / conditions from DD are contractually required</label><span class="owner">Security</span></div>
+      <div class="phase-check"><input type="checkbox"><label>UAT plan created with acceptance criteria</label><span class="owner">Business Owner</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Implementation timeline agreed with vendor</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>All conditional governance items remediated or tracked</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Requester notified of go-live timeline</label><span class="owner">Sherpa</span></div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Close-Out: Go-Live to Operations</h3>
+    <div class="subtitle">Transition gate: Software is live and in steady-state monitoring.</div>
+    <div class="phase-checklist">
+      <div class="phase-check"><input type="checkbox"><label>UAT completed and signed off by business owner</label><span class="owner">Business Owner</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Production deployment completed</label><span class="owner">IT</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Monitoring and alerting configured</label><span class="owner">IT / Security</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Onboarding record archived with all artifacts</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Requester notified of successful onboarding</label><span class="owner">Sherpa</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Ongoing monitoring cadence assigned (per risk tier)</label><span class="owner">Governance</span></div>
+      <div class="phase-check"><input type="checkbox"><label>Contract renewal date flagged in calendar</label><span class="owner">Sherpa</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 8: HANDOFF / CLOSE-OUT ==================== -->
+<div class="section" id="sec-handoff">
+  <div class="section-badge">Form 8 of 8</div>
+  <h2>Request Close-Out Form</h2>
+  <p class="section-desc">Complete this when a request reaches a terminal state (onboarded, rejected, or withdrawn). This is the permanent record.</p>
+
+  <div class="form-card">
+    <h3>Close-Out Summary</h3>
+    <div class="subtitle">One form per request. Archive with all supporting documents.</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Request ID <span class="req">*</span></label>
+        <input class="form-input" placeholder="ONB-2026-XXX">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Software / Vendor <span class="req">*</span></label>
+        <input class="form-input" placeholder="Name">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Outcome <span class="req">*</span></label>
+        <select class="form-select">
+          <option value="">Select...</option>
+          <option>Onboarded Successfully</option>
+          <option>Rejected at Governance Review</option>
+          <option>Rejected at Pre-Screen</option>
+          <option>Withdrawn by Requester</option>
+          <option>Redirected to Existing Solution</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Risk Tier</label>
+        <select class="form-select">
+          <option>Fast-Track</option>
+          <option>Standard</option>
+          <option>Enhanced</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row triple">
+      <div class="form-group">
+        <label class="form-label">Date Submitted</label>
+        <input type="date" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date Closed</label>
+        <input type="date" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Total Elapsed Days</label>
+        <input type="number" class="form-input" placeholder="0">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>SLA Performance</h3>
+    <div class="subtitle">Record actual vs target for each phase this request touched.</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Target (days)</th>
+          <th>Actual (days)</th>
+          <th>Met SLA?</th>
+          <th>Delay Reason (if breached)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Intake</td>
+          <td>2</td>
+          <td><input class="form-input" type="number" style="width:50px;padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="width:60px;padding:4px 8px;font-size:11px"><option>Yes</option><option>No</option><option>N/A</option></select></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Why?"></td>
+        </tr>
+        <tr>
+          <td>Planning</td>
+          <td>5</td>
+          <td><input class="form-input" type="number" style="width:50px;padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="width:60px;padding:4px 8px;font-size:11px"><option>Yes</option><option>No</option><option>N/A</option></select></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Why?"></td>
+        </tr>
+        <tr>
+          <td>Due Diligence</td>
+          <td>10</td>
+          <td><input class="form-input" type="number" style="width:50px;padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="width:60px;padding:4px 8px;font-size:11px"><option>Yes</option><option>No</option><option>N/A</option></select></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Why?"></td>
+        </tr>
+        <tr>
+          <td>Gov. Review</td>
+          <td>5</td>
+          <td><input class="form-input" type="number" style="width:50px;padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="width:60px;padding:4px 8px;font-size:11px"><option>Yes</option><option>No</option><option>N/A</option></select></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Why?"></td>
+        </tr>
+        <tr>
+          <td>Contracting</td>
+          <td>7</td>
+          <td><input class="form-input" type="number" style="width:50px;padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="width:60px;padding:4px 8px;font-size:11px"><option>Yes</option><option>No</option><option>N/A</option></select></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Why?"></td>
+        </tr>
+        <tr>
+          <td>Go-Live</td>
+          <td>5</td>
+          <td><input class="form-input" type="number" style="width:50px;padding:4px 8px;font-size:12px"></td>
+          <td><select class="form-select" style="width:60px;padding:4px 8px;font-size:11px"><option>Yes</option><option>No</option><option>N/A</option></select></td>
+          <td><input class="form-input" style="padding:4px 8px;font-size:12px" placeholder="Why?"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="form-card">
+    <h3>Lessons Learned</h3>
+    <div class="subtitle">Capture what worked and what didn't. Review these quarterly to improve the process.</div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">What went well?</label>
+        <textarea class="form-textarea" placeholder="What aspects of this onboarding were smooth? Any reviewers particularly responsive?"></textarea>
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">What caused delays?</label>
+        <textarea class="form-textarea" placeholder="Where did the process stall? Was it a person, a missing document, an unclear requirement?"></textarea>
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label class="form-label">Process improvement suggestions</label>
+        <textarea class="form-textarea" placeholder="If you could change one thing about this process, what would it be?"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card highlight">
+    <h3>Close-Out Notification</h3>
+    <div class="subtitle">Send to the requester and all stakeholders when the request is closed.</div>
+    <div class="email-template">
+<button class="copy-btn" onclick="copyTemplate(this)">Copy</button>Subject: Software Onboarding Complete - <span class="placeholder">[Software Name]</span>
+
+Hi <span class="placeholder">[Requester Name]</span>,
+
+Your software onboarding request has been completed.
+
+  Request ID:     <span class="placeholder">[ONB-2026-XXX]</span>
+  Software:       <span class="placeholder">[Name]</span>
+  Outcome:        <span class="placeholder">[Onboarded / Rejected / Withdrawn]</span>
+  Total Duration: <span class="placeholder">[N]</span> business days
+  SLA Target:     <span class="placeholder">[N]</span> business days
+  SLA Met:        <span class="placeholder">[Yes / No - overdue by N days]</span>
+
+<span class="placeholder">[If onboarded:]</span>
+NEXT STEPS:
+  - Ongoing monitoring assigned to: <span class="placeholder">[Team/Person]</span>
+  - Review cadence: <span class="placeholder">[Quarterly / Semi-annual / Annual]</span>
+  - Contract renewal date: <span class="placeholder">[Date]</span>
+  - Support contact: <span class="placeholder">[Vendor support info]</span>
+
+<span class="placeholder">[If rejected:]</span>
+REJECTION RATIONALE:
+  <span class="placeholder">[Summary of governance committee decision]</span>
+  Alternative recommendations: <span class="placeholder">[If applicable]</span>
+
+Thank you for working with us through this process. If you
+have feedback on how we can improve, please reply to this email.
+
+Best regards,
+<span class="placeholder">[Sherpa Name]</span>
+Onboarding Facilitator</div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<script>
+// Section navigation
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// Copy email template
+function copyTemplate(btn) {
+  const template = btn.parentElement;
+  const text = template.innerText.replace('Copy', '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+// Risk tier calculator
+function calcTier() {
+  const inputs = document.querySelectorAll('#sec-tier .data-table input[type="number"]');
+  let total = 0;
+  let hasThree = false;
+  let aiAndReg = false;
+  let filled = 0;
+  let aiScore = 0, regScore = 0;
+
+  inputs.forEach((inp, i) => {
+    const v = parseInt(inp.value) || 0;
+    if (v > 0) filled++;
+    if (v === 3) hasThree = true;
+    if (i === 4) aiScore = v;
+    if (i === 5) regScore = v;
+    total += v;
+  });
+
+  if (aiScore === 3 && regScore === 3) aiAndReg = true;
+
+  const totalEl = document.getElementById('tierTotal');
+  const resultEl = document.getElementById('tierResult');
+
+  if (filled === 0) {
+    totalEl.textContent = '--';
+    resultEl.innerHTML = '';
+    return;
+  }
+
+  totalEl.textContent = total;
+
+  let tier, badge;
+  if (aiAndReg || total >= 14) {
+    tier = 'Enhanced';
+    badge = 'red';
+  } else if (hasThree || total >= 9) {
+    tier = 'Standard';
+    badge = 'yellow';
+  } else {
+    tier = 'Fast-Track';
+    badge = 'green';
+  }
+
+  resultEl.innerHTML = '<span class="badge ' + badge + '">' + tier + '</span>' +
+    (hasThree && total < 14 ? ' <span style="font-size:11px;color:var(--warn);margin-left:8px">Elevated: dimension scored 3</span>' : '') +
+    (aiAndReg ? ' <span style="font-size:11px;color:var(--danger);margin-left:8px">AI + Regulatory override</span>' : '');
+}
+</script>
+</body>
+</html>
