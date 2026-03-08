@@ -8,16 +8,19 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; padding: 24px; }
   h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  h2 { font-size: 1.1rem; margin: 20px 0 8px; color: #94a3b8; }
   .subtitle { color: #94a3b8; font-size: 0.875rem; margin-bottom: 20px; }
-  .stats { display: flex; gap: 16px; margin-bottom: 20px; }
-  .stat { background: #1e293b; border-radius: 8px; padding: 12px 20px; flex: 1; text-align: center; }
+  .stats { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat { background: #1e293b; border-radius: 8px; padding: 12px 16px; flex: 1; min-width: 100px; text-align: center; }
   .stat .value { font-size: 1.75rem; font-weight: 700; }
-  .stat .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat .label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
   .stat.outbound .value { color: #38bdf8; }
   .stat.inbound .value { color: #4ade80; }
   .stat.error .value { color: #f87171; }
   .stat.pending .value { color: #fbbf24; }
-  table { width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 8px; overflow: hidden; }
+  .stat.warnings .value { color: #fb923c; }
+  .stat.breaches .value { color: #ef4444; }
+  table { width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
   th { background: #334155; padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; }
   td { padding: 10px 14px; border-top: 1px solid #334155; font-size: 0.875rem; }
   tr:hover { background: #334155; }
@@ -25,21 +28,39 @@
   .badge.outbound { background: #0c4a6e; color: #38bdf8; }
   .badge.inbound { background: #14532d; color: #4ade80; }
   .badge.error { background: #7f1d1d; color: #f87171; }
+  .badge.sla-warning { background: #78350f; color: #fbbf24; }
+  .badge.sla-breach, .badge.chronic-breach { background: #7f1d1d; color: #f87171; }
   a { color: #38bdf8; text-decoration: none; }
   a:hover { text-decoration: underline; }
   .empty { text-align: center; padding: 40px; color: #64748b; }
   .refresh-note { color: #64748b; font-size: 0.75rem; margin-top: 12px; text-align: right; }
+  .sla-bar { width: 100%; height: 8px; background: #334155; border-radius: 4px; overflow: hidden; }
+  .sla-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+  .sla-ok .sla-bar-fill { background: #4ade80; }
+  .sla-warn .sla-bar-fill { background: #fbbf24; }
+  .sla-breach .sla-bar-fill { background: #ef4444; }
+  .sla-pct { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
 </style>
 </head>
 <body>
   <h1>Jira Sync Status</h1>
-  <p class="subtitle">Camunda 8 &harr; Jira AP Project &mdash; Bidirectional Task Sync</p>
+  <p class="subtitle">Camunda 8 &harr; Jira AP Project &mdash; RACI-Aware Bidirectional Sync with SLA Escalation</p>
   <div class="stats">
     <div class="stat outbound"><div class="value" id="countOutbound">-</div><div class="label">Outbound</div></div>
     <div class="stat inbound"><div class="value" id="countInbound">-</div><div class="label">Inbound</div></div>
     <div class="stat pending"><div class="value" id="countPending">-</div><div class="label">Pending</div></div>
+    <div class="stat warnings"><div class="value" id="countWarnings">-</div><div class="label">SLA Warnings</div></div>
+    <div class="stat breaches"><div class="value" id="countBreaches">-</div><div class="label">SLA Breaches</div></div>
     <div class="stat error"><div class="value" id="countError">-</div><div class="label">Errors</div></div>
   </div>
+
+  <h2>Active SLA Tracking</h2>
+  <table>
+    <thead><tr><th>Jira Issue</th><th>Role (R)</th><th>SLA Progress</th><th>Remaining</th><th>Status</th></tr></thead>
+    <tbody id="slaTracking"><tr><td colspan="5" class="empty">No active SLA items</td></tr></tbody>
+  </table>
+
+  <h2>Event Log</h2>
   <table>
     <thead><tr><th>Time</th><th>Direction</th><th>Camunda Task</th><th>Jira Issue</th><th>Status</th></tr></thead>
     <tbody id="events"><tr><td colspan="5" class="empty">Waiting for sync events...</td></tr></tbody>
@@ -47,7 +68,24 @@
   <p class="refresh-note">Auto-refreshes every 5s</p>
 <script>
 const JIRA_BASE = 'https://agentic-sdlc.atlassian.net';
-const OPERATE_BASE = 'https://ric-1.operate.camunda.io/425f10fa-c898-4b4b-b303-eac095286716';
+
+function esc(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function slaClass(pct) {
+  if (pct >= 100) return 'sla-breach';
+  if (pct >= 80) return 'sla-warn';
+  return 'sla-ok';
+}
+
+function slaStatusLabel(item) {
+  if (item.escalated) return '<span class="badge sla-breach">BREACHED</span>';
+  if (item.warned) return '<span class="badge sla-warning">AT RISK</span>';
+  return '<span class="badge outbound">OK</span>';
+}
 
 async function refresh() {
   try {
@@ -56,18 +94,46 @@ async function refresh() {
     document.getElementById('countOutbound').textContent = data.stats.outbound;
     document.getElementById('countInbound').textContent = data.stats.inbound;
     document.getElementById('countPending').textContent = data.stats.pending;
+    document.getElementById('countWarnings').textContent = data.stats.warnings;
+    document.getElementById('countBreaches').textContent = data.stats.breaches;
     document.getElementById('countError').textContent = data.stats.errors;
+
+    // SLA tracking table
+    const slaTbody = document.getElementById('slaTracking');
+    if (!data.slaStatus || !data.slaStatus.length) {
+      slaTbody.innerHTML = '<tr><td colspan="5" class="empty">No active SLA items</td></tr>';
+    } else {
+      slaTbody.innerHTML = data.slaStatus.map(s => {
+        const cls = slaClass(s.pct);
+        const barWidth = Math.min(s.pct, 100);
+        const remaining = s.remainingMin >= 60
+          ? `${Math.floor(s.remainingMin / 60)}h ${s.remainingMin % 60}m`
+          : `${s.remainingMin}m`;
+        return `<tr>
+          <td><a href="${JIRA_BASE}/browse/${esc(s.jiraIssueKey)}" target="_blank">${esc(s.jiraIssueKey)}</a></td>
+          <td>${esc(s.candidateGroup)}</td>
+          <td class="${cls}">
+            <div class="sla-bar"><div class="sla-bar-fill" style="width:${barWidth}%"></div></div>
+            <div class="sla-pct">${s.pct}%</div>
+          </td>
+          <td>${s.pct >= 100 ? 'OVERDUE' : remaining}</td>
+          <td>${slaStatusLabel(s)}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // Event log
     const tbody = document.getElementById('events');
     if (!data.events.length) {
       tbody.innerHTML = '<tr><td colspan="5" class="empty">Waiting for sync events...</td></tr>';
       return;
     }
     tbody.innerHTML = data.events.map(e => `<tr>
-      <td>${new Date(e.timestamp).toLocaleTimeString()}</td>
-      <td><span class="badge ${e.direction}">${e.direction.toUpperCase()}</span></td>
-      <td>${e.camundaTaskKey || '-'}</td>
-      <td>${e.jiraIssueKey ? `<a href="${JIRA_BASE}/browse/${e.jiraIssueKey}" target="_blank">${e.jiraIssueKey}</a>` : '-'}</td>
-      <td>${e.status}</td>
+      <td>${esc(new Date(e.timestamp).toLocaleTimeString())}</td>
+      <td><span class="badge ${esc(e.direction)}">${esc(e.direction.toUpperCase())}</span></td>
+      <td>${esc(e.camundaTaskKey || '-')}</td>
+      <td>${e.jiraIssueKey ? `<a href="${JIRA_BASE}/browse/${esc(e.jiraIssueKey)}" target="_blank">${esc(e.jiraIssueKey)}</a>` : '-'}</td>
+      <td>${esc(e.status)}</td>
     </tr>`).join('');
   } catch { /* retry next cycle */ }
 }
