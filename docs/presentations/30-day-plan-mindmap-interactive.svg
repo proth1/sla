@@ -692,7 +692,7 @@
   .mm-visible { opacity: 1; pointer-events: auto; transition: opacity 0.4s ease; }
   .node.mm-expanded > ellipse, .node.mm-expanded > path { filter: drop-shadow(0 0 8px currentColor); }
 </style>
-<script>
+<script><![CDATA[
 (function(){
   // Initially hide levels 1-4
   var allNodes = document.querySelectorAll('.node[data-level]');
@@ -783,5 +783,5 @@
     });
   });
 })();
-</script>
+]]></script>
 </svg>
