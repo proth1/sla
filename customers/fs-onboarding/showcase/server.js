@@ -1,100 +1,49 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
+const { createCamundaAuth } = require('./camunda-auth');
+
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const fs = require('fs');
+// --- Shared Camunda Auth ---
+const auth = createCamundaAuth();
+const CONFIG = auth.config;
+CONFIG.processId = 'Process_Onboarding_v8';
 
-const CONFIG = {
-  clusterId: process.env.CAMUNDA_CLUSTER_ID || '425f10fa-c898-4b4b-b303-eac095286716',
-  region: process.env.CAMUNDA_REGION || 'ric-1',
-  clientId: process.env.CAMUNDA_CLIENT_ID || process.env.ZEEBE_CLIENT_ID,
-  clientSecret: process.env.CAMUNDA_CLIENT_SECRET || process.env.ZEEBE_CLIENT_SECRET,
-  authUrl: 'https://login.cloud.camunda.io/oauth/token',
-  processId: 'Process_Onboarding_v8',
-  useZbctl: false,
-};
+// --- Personas ---
+const PERSONAS = JSON.parse(fs.readFileSync(path.join(__dirname, 'public', 'personas-data.json'), 'utf8'));
 
-// If no client credentials, fall back to zbctl-managed token from ~/.camunda/credentials
-if (!CONFIG.clientId || !CONFIG.clientSecret) {
-  const credPath = path.join(require('os').homedir(), '.camunda', 'credentials');
-  if (fs.existsSync(credPath)) {
-    CONFIG.useZbctl = true;
-    console.log('No CAMUNDA_CLIENT_ID/SECRET — using zbctl-managed token from ~/.camunda/credentials');
-  } else {
-    console.error('Missing CAMUNDA_CLIENT_ID/SECRET and no ~/.camunda/credentials found');
-    process.exit(1);
-  }
+function getPersonaFromReq(req) {
+  const id = req.headers['x-sla-persona'];
+  if (!id) return null;
+  return PERSONAS.find(p => p.id === id) || null;
 }
 
-CONFIG.zeebeUrl = `https://${CONFIG.region}.zeebe.camunda.io/${CONFIG.clusterId}`;
-CONFIG.tasklistUrl = `https://${CONFIG.region}.tasklist.camunda.io/${CONFIG.clusterId}`;
-
-let tokenCache = { zeebe: null, tasklist: null };
-
-function readZbctlToken() {
-  const credPath = path.join(require('os').homedir(), '.camunda', 'credentials');
-  const content = fs.readFileSync(credPath, 'utf8');
-  const tokenMatch = content.match(/accesstoken:\s*(\S+)/);
-  const expiryMatch = content.match(/expiry:\s*(\S+)/);
-  if (!tokenMatch) throw new Error('No access token in ~/.camunda/credentials');
-  const expiry = expiryMatch ? new Date(expiryMatch[1]).getTime() : Date.now() + 3600000;
-  return { token: tokenMatch[1], expiresAt: expiry };
+function getPersonaGroups(persona) {
+  if (!persona) return null;
+  return persona.groups || [];
 }
 
-function refreshZbctlToken() {
-  const { execSync } = require('child_process');
-  try {
-    execSync('/opt/homebrew/bin/zbctl status --address ric-1.zeebe.camunda.io:443/425f10fa-c898-4b4b-b303-eac095286716', {
-      timeout: 15000, stdio: 'pipe',
-    });
-  } catch {
-    // zbctl refreshes the token even if the status command fails
-  }
-}
-
-async function getToken(audience) {
-  if (CONFIG.useZbctl) {
-    // zbctl tokens work for both zeebe and tasklist (same OAuth audience scope)
-    const cached = tokenCache.zeebe;
-    if (cached && cached.expiresAt > Date.now() + 60000) return cached.token;
-    // Token expired or about to — refresh via zbctl
-    if (!cached || cached.expiresAt <= Date.now() + 60000) {
-      refreshZbctlToken();
-    }
-    const fresh = readZbctlToken();
-    tokenCache.zeebe = fresh;
-    tokenCache.tasklist = fresh;
-    return fresh.token;
-  }
-
-  const cached = tokenCache[audience === 'zeebe.camunda.io' ? 'zeebe' : 'tasklist'];
-  if (cached && cached.expiresAt > Date.now()) return cached.token;
-
-  const res = await fetch(CONFIG.authUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'client_credentials',
-      client_id: CONFIG.clientId,
-      client_secret: CONFIG.clientSecret,
-      audience,
-    }),
+function filterTasksByPersona(tasks, persona) {
+  if (!persona) return tasks;
+  const groups = getPersonaGroups(persona);
+  if (!groups || groups.length === 0) return tasks;
+  return tasks.filter(t => {
+    const tGroups = t.candidateGroups || [];
+    return tGroups.some(g => groups.includes(g));
   });
-  const data = await res.json();
-  const key = audience === 'zeebe.camunda.io' ? 'zeebe' : 'tasklist';
-  tokenCache[key] = { token: data.access_token, expiresAt: Date.now() + (data.expires_in - 60) * 1000 };
-  return data.access_token;
 }
 
-async function zeebeApi(method, path, body) {
-  const token = await getToken('zeebe.camunda.io');
+// --- API Helpers ---
+async function zeebeApi(method, apiPath, body) {
+  const token = await auth.getToken('zeebe.camunda.io');
   const opts = { method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } };
   if (body) opts.body = JSON.stringify(body);
-  const url = `${CONFIG.zeebeUrl}${path}`;
+  const url = `${CONFIG.zeebeUrl}${apiPath}`;
   const t0 = Date.now();
-  console.log(`\x1b[36m→ ZEEBE ${method} ${path}\x1b[0m${body ? ' ' + JSON.stringify(body).slice(0, 200) : ''}`);
+  console.log(`\x1b[36m→ ZEEBE ${method} ${apiPath}\x1b[0m${body ? ' ' + JSON.stringify(body).slice(0, 200) : ''}`);
   const res = await fetch(url, opts);
   const ms = Date.now() - t0;
   if (!res.ok) {
@@ -107,13 +56,13 @@ async function zeebeApi(method, path, body) {
   return text ? JSON.parse(text) : {};
 }
 
-async function tasklistApi(method, path, body) {
-  const token = await getToken('tasklist.camunda.io');
+async function tasklistApi(method, apiPath, body) {
+  const token = await auth.getToken('tasklist.camunda.io');
   const opts = { method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } };
   if (body) opts.body = JSON.stringify(body);
-  const url = `${CONFIG.tasklistUrl}${path}`;
+  const url = `${CONFIG.tasklistUrl}${apiPath}`;
   const t0 = Date.now();
-  console.log(`\x1b[33m→ TASKLIST ${method} ${path}\x1b[0m${body ? ' ' + JSON.stringify(body).slice(0, 200) : ''}`);
+  console.log(`\x1b[33m→ TASKLIST ${method} ${apiPath}\x1b[0m${body ? ' ' + JSON.stringify(body).slice(0, 200) : ''}`);
   const res = await fetch(url, opts);
   const ms = Date.now() - t0;
   if (!res.ok) {
@@ -126,6 +75,11 @@ async function tasklistApi(method, path, body) {
   console.log(`\x1b[32m← TASKLIST ${res.status} ${ms}ms\x1b[0m ${preview}${preview.length >= 150 ? '...' : ''}`);
   return data;
 }
+
+// --- Personas endpoint ---
+app.get('/api/personas', (req, res) => {
+  res.json(PERSONAS);
+});
 
 // Start a new process instance
 app.post('/api/process/start', async (req, res) => {
@@ -161,13 +115,15 @@ app.delete('/api/process/:key', async (req, res) => {
   }
 });
 
-// List active tasks (optionally filter by processInstanceKey)
+// List active tasks (filtered by persona)
 app.get('/api/tasks', async (req, res) => {
   try {
     const query = { state: 'CREATED' };
     if (req.query.processInstanceKey) query.processInstanceKey = req.query.processInstanceKey;
     const tasks = await tasklistApi('POST', '/v1/tasks/search', query);
-    res.json(tasks);
+    const persona = getPersonaFromReq(req);
+    const filtered = Array.isArray(tasks) ? filterTasksByPersona(tasks, persona) : tasks;
+    res.json(filtered);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -225,11 +181,13 @@ app.get('/api/tasks/:id/variables', async (req, res) => {
   }
 });
 
-// Assign task to current user (claim)
+// Assign task (uses persona ID as assignee if available)
 app.post('/api/tasks/:id/assign', async (req, res) => {
   try {
+    const persona = getPersonaFromReq(req);
+    const assignee = persona ? persona.id : 'showcase-user';
     const result = await tasklistApi('PATCH', `/v1/tasks/${req.params.id}/assign`, {
-      assignee: 'showcase-user',
+      assignee,
       allowOverrideAssignment: true,
     });
     res.json(result);
@@ -295,10 +253,9 @@ app.post('/api/tasks/search', async (req, res) => {
   }
 });
 
-// Get variables for a process instance (via Zeebe search)
+// Get variables for a process instance
 app.get('/api/process/:key/variables', async (req, res) => {
   try {
-    // Get variables via tasklist - search tasks for this instance to find variables
     const tasks = await tasklistApi('POST', '/v1/tasks/search', {
       processInstanceKey: req.params.key,
     });
@@ -319,12 +276,10 @@ app.get('/api/process/:key/variables', async (req, res) => {
 
 const MINI_RFP_PROCESS_ID = 'Process_MiniRFP';
 
-// Basic input validation for path parameters
 function isValidKey(key) {
   return /^\d{1,19}$/.test(key);
 }
 
-// Start a new Mini RFP process instance
 app.post('/api/mini-rfp/start', async (req, res) => {
   try {
     const variables = req.body.variables || {};
@@ -338,7 +293,6 @@ app.post('/api/mini-rfp/start', async (req, res) => {
   }
 });
 
-// Get Mini RFP instance status with current step info
 app.get('/api/mini-rfp/:key/status', async (req, res) => {
   if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
   try {
@@ -364,7 +318,6 @@ app.get('/api/mini-rfp/:key/status', async (req, res) => {
   }
 });
 
-// List active Mini RFP instances (for concierge dashboard)
 app.get('/api/mini-rfp/active', async (req, res) => {
   try {
     const result = await zeebeApi('POST', '/v2/process-instances/search', {
@@ -376,21 +329,17 @@ app.get('/api/mini-rfp/active', async (req, res) => {
   }
 });
 
-// Generate a vendor portal token for a Mini RFP instance
 app.post('/api/mini-rfp/:key/vendor-token', async (req, res) => {
   if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
   try {
     const { randomBytes } = require('crypto');
     const vendorToken = `vrfp-${req.params.key}-${randomBytes(12).toString('hex')}`;
-    // Set the token as a process variable via a task update or direct variable set
-    // For the showcase, we store the token and return it
     res.json({ vendorToken, portalUrl: `/vendor-portal.html?token=${vendorToken}&instance=${req.params.key}` });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
 
-// Correlate a vendor response message to resume the receive task
 app.post('/api/mini-rfp/:key/vendor-response', async (req, res) => {
   if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
   try {
@@ -407,11 +356,9 @@ app.post('/api/mini-rfp/:key/vendor-response', async (req, res) => {
   }
 });
 
-// Transfer SP0 data to SP1 — reads Mini RFP variables and optionally starts onboarding
 app.post('/api/mini-rfp/:key/transfer', async (req, res) => {
   if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
   try {
-    // Get variables from Mini RFP instance via any available task
     let vars = [];
     try {
       const tasks = await tasklistApi('POST', '/v1/tasks/search', {
@@ -422,7 +369,6 @@ app.post('/api/mini-rfp/:key/transfer', async (req, res) => {
       }
     } catch (e) { /* may have no tasks if completed */ }
 
-    // Map Mini RFP variables to onboarding intake variables
     const varMap = {};
     vars.forEach(v => {
       try { varMap[v.name] = JSON.parse(v.value); } catch { varMap[v.name] = v.value; }
@@ -440,13 +386,11 @@ app.post('/api/mini-rfp/:key/transfer', async (req, res) => {
       miniRfpInstanceKey: req.params.key,
       miniRfpTransferred: true,
       miniRfpTransferDate: new Date().toISOString(),
-      // Pass-through governance routing variables
       hasAI: varMap.hasAI === 'yes',
       dataClassification: varMap.dataClassification || '',
       regulatoryScope: varMap.regulatoryScope || '',
       technologyType: varMap.technologyType || '',
       businessCriticality: varMap.businessCriticality || '',
-      // Default gateway variables for demo flow
       approved: true,
       buildPathway: false,
       needsAssessment: true,
@@ -477,7 +421,7 @@ app.post('/api/mini-rfp/:key/transfer', async (req, res) => {
 // Deploy BPMN + forms to cluster
 app.post('/api/deploy', async (req, res) => {
   try {
-    const token = await getToken('zeebe.camunda.io');
+    const token = await auth.getToken('zeebe.camunda.io');
     const syncDir = path.join(__dirname, '..', 'processes', 'camunda-sync');
     const files = fs.readdirSync(syncDir).filter(f => f.endsWith('.bpmn') || f.endsWith('.form'));
 

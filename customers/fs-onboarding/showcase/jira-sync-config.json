@@ -1,22 +1,60 @@
 {
-  "processDefinitionKey": "Process_JiraSync_Test_v1",
+  "processDefinitionKey": "Process_Onboarding_v8",
   "jira": {
     "baseUrl": "https://agentic-sdlc.atlassian.net",
-    "projectKey": "AP",
+    "projectKey": "SLA",
     "issueType": "Task",
     "doneStatusCategory": "done"
   },
   "polling": {
     "outboundIntervalMs": 15000,
-    "inboundIntervalMs": 15000,
     "slaCheckIntervalMs": 30000
   },
+  "webhook": {
+    "enabled": true,
+    "path": "/webhook/jira",
+    "secret": null
+  },
+  "routing": {
+    "jiraGroups": [
+      "business-lane",
+      "governance-lane",
+      "contracting-lane",
+      "technical-assessment",
+      "ai-review",
+      "compliance-lane",
+      "oversight-lane",
+      "procurement-lane",
+      "finance-lane"
+    ],
+    "excludeGroups": [
+      "automation-lane",
+      "vendor-response"
+    ]
+  },
+  "components": {
+    "business-lane": "Business Approval",
+    "governance-lane": "Governance Review",
+    "contracting-lane": "Contracting",
+    "technical-assessment": "Security Review",
+    "ai-review": "AI Governance",
+    "compliance-lane": "Compliance Check",
+    "oversight-lane": "Oversight Audit",
+    "procurement-lane": "Procurement",
+    "finance-lane": "Finance"
+  },
   "candidateGroupLabels": {
-    "technical-assessment": "security-review",
-    "compliance-lane": "compliance-check",
     "business-lane": "business-approval",
     "governance-lane": "governance-signoff",
-    "oversight-lane": "oversight-audit"
+    "contracting-lane": "contract-review",
+    "technical-assessment": "security-review",
+    "ai-review": "ai-governance-review",
+    "compliance-lane": "compliance-check",
+    "oversight-lane": "oversight-audit",
+    "automation-lane": "automation",
+    "vendor-response": "vendor",
+    "procurement-lane": "procurement",
+    "finance-lane": "finance"
   },
   "raci": {
     "technical-assessment": {
@@ -53,6 +91,34 @@
       "informed": ["governance-lane"],
       "sla": "P5D",
       "escalationChain": []
+    },
+    "ai-review": {
+      "accountable": "governance-lane",
+      "consulted": ["technical-assessment"],
+      "informed": ["compliance-lane"],
+      "sla": "P1D",
+      "escalationChain": ["governance-lane", "oversight-lane"]
+    },
+    "contracting-lane": {
+      "accountable": "governance-lane",
+      "consulted": ["business-lane"],
+      "informed": ["compliance-lane"],
+      "sla": "P3D",
+      "escalationChain": ["governance-lane", "oversight-lane"]
+    },
+    "procurement-lane": {
+      "accountable": "governance-lane",
+      "consulted": ["finance-lane"],
+      "informed": ["business-lane"],
+      "sla": "P2D",
+      "escalationChain": ["governance-lane", "oversight-lane"]
+    },
+    "finance-lane": {
+      "accountable": "governance-lane",
+      "consulted": ["procurement-lane"],
+      "informed": ["business-lane"],
+      "sla": "P2D",
+      "escalationChain": ["governance-lane", "oversight-lane"]
     }
   }
 }

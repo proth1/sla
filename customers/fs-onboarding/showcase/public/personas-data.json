@@ -1,0 +1,9 @@
+[
+  { "id": "sarah.chen", "name": "Sarah Chen", "title": "VP, Global Markets Technology", "initials": "SC", "color": "#3b82f6", "groups": ["business-lane"] },
+  { "id": "jennifer.martinez", "name": "Jennifer Martinez", "title": "Sr. Technology Governance Analyst", "initials": "JM", "color": "#8b5cf6", "groups": ["governance-lane", "oversight-lane"] },
+  { "id": "marcus.johnson", "name": "Marcus Johnson", "title": "Chief Security Architect", "initials": "MJ", "color": "#22c55e", "groups": ["technical-assessment", "ai-review"] },
+  { "id": "lisa.park", "name": "Lisa Park", "title": "Compliance Officer", "initials": "LP", "color": "#f59e0b", "groups": ["compliance-lane"] },
+  { "id": "david.kim", "name": "David Kim", "title": "Sr. Procurement Manager", "initials": "DK", "color": "#ef4444", "groups": ["contracting-lane", "procurement-lane", "finance-lane"] },
+  { "id": "ahmed.saleh", "name": "Ahmed Saleh", "title": "Process Automation Lead", "initials": "AS", "color": "#6366f1", "groups": ["automation-lane"] },
+  { "id": "vendor.demo", "name": "Vendor Demo", "title": "External Vendor Representative", "initials": "VD", "color": "#ec4899", "groups": ["vendor-response"] }
+]

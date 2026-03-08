@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const { createCamundaAuth } = require('./camunda-auth');
 
 // --- Config ---
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'jira-sync-config.json'), 'utf8'));
@@ -13,85 +14,13 @@ if (!JIRA_EMAIL || !JIRA_API_TOKEN) {
   process.exit(1);
 }
 
-// --- Camunda Config (same pattern as server.js) ---
-const CAMUNDA = {
-  clusterId: process.env.CAMUNDA_CLUSTER_ID || '425f10fa-c898-4b4b-b303-eac095286716',
-  region: process.env.CAMUNDA_REGION || 'ric-1',
-  clientId: process.env.CAMUNDA_CLIENT_ID || process.env.ZEEBE_CLIENT_ID,
-  clientSecret: process.env.CAMUNDA_CLIENT_SECRET || process.env.ZEEBE_CLIENT_SECRET,
-  authUrl: 'https://login.cloud.camunda.io/oauth/token',
-  useZbctl: false,
-};
-
-if (!CAMUNDA.clientId || !CAMUNDA.clientSecret) {
-  const credPath = path.join(require('os').homedir(), '.camunda', 'credentials');
-  if (fs.existsSync(credPath)) {
-    CAMUNDA.useZbctl = true;
-    console.log('Using zbctl-managed token from ~/.camunda/credentials');
-  } else {
-    console.error('Missing CAMUNDA_CLIENT_ID/SECRET and no ~/.camunda/credentials found');
-    process.exit(1);
-  }
-}
-
-CAMUNDA.zeebeUrl = `https://${CAMUNDA.region}.zeebe.camunda.io/${CAMUNDA.clusterId}`;
-CAMUNDA.tasklistUrl = `https://${CAMUNDA.region}.tasklist.camunda.io/${CAMUNDA.clusterId}`;
-
-// --- Token Management ---
-let tokenCache = { zeebe: null, tasklist: null };
-
-function readZbctlToken() {
-  const credPath = path.join(require('os').homedir(), '.camunda', 'credentials');
-  const content = fs.readFileSync(credPath, 'utf8');
-  const tokenMatch = content.match(/accesstoken:\s*(\S+)/);
-  const expiryMatch = content.match(/expiry:\s*(\S+)/);
-  if (!tokenMatch) throw new Error('No access token in ~/.camunda/credentials');
-  const expiry = expiryMatch ? new Date(expiryMatch[1]).getTime() : Date.now() + 3600000;
-  return { token: tokenMatch[1], expiresAt: expiry };
-}
-
-function refreshZbctlToken() {
-  const { execSync } = require('child_process');
-  try {
-    execSync(`/opt/homebrew/bin/zbctl status --address ${CAMUNDA.region}.zeebe.camunda.io:443/${CAMUNDA.clusterId}`, {
-      timeout: 15000, stdio: 'pipe',
-    });
-  } catch { /* zbctl refreshes token even on failure */ }
-}
-
-async function getToken(audience) {
-  if (CAMUNDA.useZbctl) {
-    const cached = tokenCache.zeebe;
-    if (cached && cached.expiresAt > Date.now() + 60000) return cached.token;
-    if (!cached || cached.expiresAt <= Date.now() + 60000) refreshZbctlToken();
-    const fresh = readZbctlToken();
-    tokenCache.zeebe = fresh;
-    tokenCache.tasklist = fresh;
-    return fresh.token;
-  }
-
-  const key = audience === 'zeebe.camunda.io' ? 'zeebe' : 'tasklist';
-  const cached = tokenCache[key];
-  if (cached && cached.expiresAt > Date.now()) return cached.token;
-
-  const res = await fetch(CAMUNDA.authUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'client_credentials',
-      client_id: CAMUNDA.clientId,
-      client_secret: CAMUNDA.clientSecret,
-      audience,
-    }),
-  });
-  const data = await res.json();
-  tokenCache[key] = { token: data.access_token, expiresAt: Date.now() + (data.expires_in - 60) * 1000 };
-  return data.access_token;
-}
+// --- Shared Camunda Auth ---
+const auth = createCamundaAuth();
+const CAMUNDA = auth.config;
 
 // --- API Helpers ---
 async function tasklistApi(method, apiPath, body) {
-  const token = await getToken('tasklist.camunda.io');
+  const token = await auth.getToken('tasklist.camunda.io');
   const opts = { method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } };
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(`${CAMUNDA.tasklistUrl}${apiPath}`, opts);
@@ -104,7 +33,7 @@ async function tasklistApi(method, apiPath, body) {
 }
 
 async function zeebeApi(method, apiPath, body) {
-  const token = await getToken('zeebe.camunda.io');
+  const token = await auth.getToken('zeebe.camunda.io');
   const opts = { method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } };
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(`${CAMUNDA.zeebeUrl}${apiPath}`, opts);
@@ -142,7 +71,7 @@ function parseDuration(iso) {
   }
   const m = iso.match(/^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/);
   if (!m) {
-    throw new Error(`Invalid SLA duration: "${iso}" does not match ISO 8601 pattern (e.g. PT4H, P1D, P2DT6H)`);
+    throw new Error(`Invalid SLA duration: "${iso}" does not match ISO 8601 pattern`);
   }
   const days = parseInt(m[1] || 0);
   const hours = parseInt(m[2] || 0);
@@ -155,25 +84,29 @@ function parseDuration(iso) {
 }
 
 // --- Sync State ---
-// syncMap: camundaTaskKey -> {
-//   jiraIssueKey, status: 'synced'|'completed',
-//   createdAt (ms), slaDeadlineMs (ms),
-//   candidateGroup, processInstanceKey,
-//   warned (bool), escalated (bool)
-// }
 const syncMap = new Map();
 const eventLog = [];
 let numericProcessDefinitionKey = null;
-
-// Track breach count per process instance for chronic escalation
 const instanceBreachCount = new Map();
 
 function logEvent(direction, camundaTaskKey, jiraIssueKey, status) {
   const entry = { timestamp: new Date().toISOString(), direction, camundaTaskKey, jiraIssueKey, status };
   eventLog.unshift(entry);
   if (eventLog.length > 200) eventLog.length = 200;
-  const arrows = { outbound: '>>>', inbound: '<<<', 'sla-warning': '!! ', 'sla-breach': '!!!', 'chronic-breach': 'XXX', error: 'ERR' };
+  const arrows = { outbound: '>>>', webhook: '<<<', 'sla-warning': '!! ', 'sla-breach': '!!!', 'chronic-breach': 'XXX', error: 'ERR' };
   console.log(`[${entry.timestamp}] ${arrows[direction] || '---'} ${direction.toUpperCase()}: ${status} | Camunda: ${camundaTaskKey || '-'} | Jira: ${jiraIssueKey || '-'}`);
+}
+
+// --- Routing Filter ---
+function shouldSyncGroup(candidateGroup) {
+  if (!config.routing) return true;
+  if (config.routing.excludeGroups && config.routing.excludeGroups.includes(candidateGroup)) return false;
+  if (config.routing.jiraGroups) return config.routing.jiraGroups.includes(candidateGroup);
+  return true;
+}
+
+function getComponentForGroup(candidateGroup) {
+  return config.components?.[candidateGroup] || null;
 }
 
 // --- RACI Helpers ---
@@ -232,10 +165,10 @@ function buildRaciDescription(candidateGroup, task) {
   };
 }
 
-// --- Outbound: Camunda -> Jira (RACI-aware) ---
+// --- Outbound: Camunda -> Jira (RACI-aware with routing + components) ---
 async function outboundSync() {
   if (!numericProcessDefinitionKey) {
-    console.log('Outbound skipped: waiting for processDefinitionKey from deployment...');
+    console.log('Outbound skipped: waiting for processDefinitionKey...');
     return;
   }
   try {
@@ -250,20 +183,27 @@ async function outboundSync() {
       if (syncMap.has(task.id)) continue;
 
       const candidateGroup = task.candidateGroups?.[0] || 'unassigned';
+      if (!shouldSyncGroup(candidateGroup)) continue;
+
       const raci = getRaci(candidateGroup);
       const label = getLabelForGroup(candidateGroup);
       const slaDurationMs = parseDuration(raci.sla);
       const now = Date.now();
 
-      const issue = await jiraApi('POST', '/rest/api/3/issue', {
-        fields: {
-          project: { key: config.jira.projectKey },
-          issuetype: { name: config.jira.issueType },
-          summary: `[Camunda] ${(task.name || task.taskDefinitionId).replace(/\n/g, ' ')}`,
-          description: buildRaciDescription(candidateGroup, task),
-          labels: [label, 'camunda-synced'],
-        },
-      });
+      const fields = {
+        project: { key: config.jira.projectKey },
+        issuetype: { name: config.jira.issueType },
+        summary: `[Camunda] ${(task.name || task.taskDefinitionId).replace(/\n/g, ' ')}`,
+        description: buildRaciDescription(candidateGroup, task),
+        labels: [label, 'camunda-synced'],
+      };
+
+      const component = getComponentForGroup(candidateGroup);
+      if (component) {
+        fields.components = [{ name: component }];
+      }
+
+      const issue = await jiraApi('POST', '/rest/api/3/issue', { fields });
 
       syncMap.set(task.id, {
         jiraIssueKey: issue.key,
@@ -282,64 +222,75 @@ async function outboundSync() {
   }
 }
 
-// --- Inbound: Jira -> Camunda (with I-role notification) ---
-async function inboundSync() {
+// --- Webhook: Jira -> Camunda (replaces inbound polling) ---
+async function handleJiraWebhook(payload) {
   try {
-    const jql = `project = ${config.jira.projectKey} AND labels = camunda-synced AND labels != sla-escalation AND status = Done AND updated >= -2m`;
-    const result = await jiraApi('POST', '/rest/api/3/search/jql', {
-      jql,
-      fields: ['description', 'summary', 'status'],
+    if (payload.webhookEvent !== 'jira:issue_updated') return;
+
+    const changelog = payload.changelog;
+    if (!changelog || !changelog.items) return;
+    const statusChange = changelog.items.find(
+      item => item.field === 'status' && item.toString && item.toString.toLowerCase() === 'done'
+    );
+    if (!statusChange) return;
+
+    const issue = payload.issue;
+    if (!issue) return;
+
+    const labels = issue.fields?.labels || [];
+    if (!labels.includes('camunda-synced')) return;
+    if (labels.includes('sla-escalation')) return;
+
+    const descText = extractDescriptionText(issue.fields?.description);
+    const taskKeyMatch = descText.match(/\[camunda:taskKey:([^\]]+)\]/);
+    if (!taskKeyMatch) {
+      logEvent('webhook', null, issue.key, 'No camunda:taskKey found in description');
+      return;
+    }
+
+    const camundaTaskKey = taskKeyMatch[1];
+    const entry = syncMap.get(camundaTaskKey);
+    if (entry && entry.status === 'completed') {
+      logEvent('webhook', camundaTaskKey, issue.key, 'Already completed — skipping');
+      return;
+    }
+
+    await tasklistApi('PATCH', `/v1/tasks/${camundaTaskKey}/assign`, {
+      assignee: 'jira-sync',
+      allowOverrideAssignment: true,
     });
 
-    if (!result.issues) return;
+    await tasklistApi('PATCH', `/v1/tasks/${camundaTaskKey}/complete`, {
+      variables: [],
+    });
 
-    for (const issue of result.issues) {
-      const descText = extractDescriptionText(issue.fields.description);
-      const taskKeyMatch = descText.match(/\[camunda:taskKey:([^\]]+)\]/);
-      if (!taskKeyMatch) continue;
+    if (entry) entry.status = 'completed';
 
-      const camundaTaskKey = taskKeyMatch[1];
-      const entry = syncMap.get(camundaTaskKey);
-      if (!entry || entry.status === 'completed') continue;
+    const candidateGroup = entry?.candidateGroup || 'unknown';
+    const raci = getRaci(candidateGroup);
+    const informedLabels = raci.informed.map(getLabelForGroup).join(', ');
+    const completionNote = informedLabels
+      ? `Task completed in Camunda via webhook. Informed: ${informedLabels}.`
+      : 'Task completed in Camunda via webhook.';
 
-      // Assign then complete (Tasklist requires assignment before completion)
-      await tasklistApi('PATCH', `/v1/tasks/${camundaTaskKey}/assign`, {
-        assignee: 'jira-sync',
-        allowOverrideAssignment: true,
-      });
+    await jiraApi('POST', `/rest/api/3/issue/${issue.key}/comment`, {
+      body: {
+        type: 'doc',
+        version: 1,
+        content: [{
+          type: 'paragraph',
+          content: [{ type: 'text', text: completionNote }],
+        }],
+      },
+    });
 
-      await tasklistApi('PATCH', `/v1/tasks/${camundaTaskKey}/complete`, {
-        variables: [],
-      });
-
-      entry.status = 'completed';
-
-      // Notify I (Informed) roles via comment
-      const raci = getRaci(entry.candidateGroup);
-      const informedLabels = raci.informed.map(getLabelForGroup).join(', ');
-      const completionNote = informedLabels
-        ? `Task completed in Camunda via jira-sync. Informed: ${informedLabels}.`
-        : 'Task completed in Camunda via jira-sync.';
-
-      await jiraApi('POST', `/rest/api/3/issue/${issue.key}/comment`, {
-        body: {
-          type: 'doc',
-          version: 1,
-          content: [{
-            type: 'paragraph',
-            content: [{ type: 'text', text: completionNote }],
-          }],
-        },
-      });
-
-      logEvent('inbound', camundaTaskKey, issue.key, 'Completed Camunda task from Jira Done');
-    }
+    logEvent('webhook', camundaTaskKey, issue.key, 'Completed Camunda task from Jira webhook');
   } catch (err) {
-    logEvent('error', null, null, `Inbound error: ${err.message}`);
+    logEvent('error', null, null, `Webhook handler error: ${err.message}`);
   }
 }
 
-// --- SLA Monitor: Warning + Breach + Chronic Escalation ---
+// --- SLA Monitor ---
 async function slaMonitor() {
   const now = Date.now();
 
@@ -350,7 +301,6 @@ async function slaMonitor() {
     const total = entry.slaDeadlineMs - entry.createdAt;
     const pct = elapsed / total;
 
-    // 80% warning
     if (pct >= 0.8 && !entry.warned) {
       entry.warned = true;
       const raci = getRaci(entry.candidateGroup);
@@ -358,50 +308,36 @@ async function slaMonitor() {
       const remaining = Math.max(0, Math.round((entry.slaDeadlineMs - now) / 60000));
 
       try {
-        // Add warning comment to the existing Jira issue
         await jiraApi('POST', `/rest/api/3/issue/${entry.jiraIssueKey}/comment`, {
           body: {
-            type: 'doc',
-            version: 1,
-            content: [{
-              type: 'paragraph',
-              content: [
-                { type: 'text', text: 'SLA WARNING (80% elapsed)', marks: [{ type: 'strong' }] },
-                { type: 'text', text: ` — ${remaining} minutes remaining. Accountable: ${aLabel}. Please complete or escalate.` },
-              ],
-            }],
+            type: 'doc', version: 1,
+            content: [{ type: 'paragraph', content: [
+              { type: 'text', text: 'SLA WARNING (80% elapsed)', marks: [{ type: 'strong' }] },
+              { type: 'text', text: ` — ${remaining} minutes remaining. Accountable: ${aLabel}. Please complete or escalate.` },
+            ]}],
           },
         });
-
-        // Add sla-at-risk label
         await jiraApi('PUT', `/rest/api/3/issue/${entry.jiraIssueKey}`, {
           update: { labels: [{ add: 'sla-at-risk' }] },
         });
-
         logEvent('sla-warning', taskKey, entry.jiraIssueKey, `80% elapsed — ${remaining}min left, notified ${aLabel}`);
       } catch (err) {
         logEvent('error', taskKey, entry.jiraIssueKey, `SLA warning failed: ${err.message}`);
       }
     }
 
-    // 100% breach
     if (pct >= 1.0 && !entry.escalated) {
       entry.escalated = true;
       const raci = getRaci(entry.candidateGroup);
-
-      // Track breach count per process instance
       const piKey = entry.processInstanceKey;
       const breachCount = (instanceBreachCount.get(piKey) || 0) + 1;
       instanceBreachCount.set(piKey, breachCount);
 
-      // Determine escalation target: chronic (3+) goes to end of chain
       const isChronic = breachCount >= 3;
       const escalationTarget = isChronic
         ? raci.escalationChain[raci.escalationChain.length - 1] || raci.accountable
         : raci.escalationChain[0] || raci.accountable;
       const targetLabel = getLabelForGroup(escalationTarget);
-
-      const originIssueKey = entry.jiraIssueKey;
 
       try {
         const summaryPrefix = isChronic ? 'CHRONIC SLA BREACH' : 'ESCALATION: SLA Breach';
@@ -409,53 +345,39 @@ async function slaMonitor() {
           fields: {
             project: { key: config.jira.projectKey },
             issuetype: { name: config.jira.issueType },
-            summary: `[${summaryPrefix}] ${originIssueKey} — overdue task`,
+            summary: `[${summaryPrefix}] ${entry.jiraIssueKey} — overdue task`,
             priority: { name: 'High' },
             description: {
-              type: 'doc',
-              version: 1,
-              content: [
-                {
-                  type: 'paragraph',
-                  content: [
-                    { type: 'text', text: `SLA breach on Camunda task.\n\n`, marks: [{ type: 'strong' }] },
-                    { type: 'text', text: `Original issue: ${entry.jiraIssueKey}\n` },
-                    { type: 'text', text: `[camunda:taskKey:${taskKey}]\n` },
-                    { type: 'text', text: `[camunda:processInstanceKey:${piKey}]\n` },
-                    { type: 'text', text: `Responsible: ${getLabelForGroup(entry.candidateGroup)}\n` },
-                    { type: 'text', text: `Escalated to: ${targetLabel}\n` },
-                    { type: 'text', text: `Breach count (this instance): ${breachCount}\n` },
-                    { type: 'text', text: `\nPer REQ-NFR-006: Escalation to next governance level required.` },
-                  ],
-                },
-              ],
+              type: 'doc', version: 1,
+              content: [{ type: 'paragraph', content: [
+                { type: 'text', text: `SLA breach on Camunda task.\n\n`, marks: [{ type: 'strong' }] },
+                { type: 'text', text: `Original issue: ${entry.jiraIssueKey}\n` },
+                { type: 'text', text: `[camunda:taskKey:${taskKey}]\n` },
+                { type: 'text', text: `[camunda:processInstanceKey:${piKey}]\n` },
+                { type: 'text', text: `Responsible: ${getLabelForGroup(entry.candidateGroup)}\n` },
+                { type: 'text', text: `Escalated to: ${targetLabel}\n` },
+                { type: 'text', text: `Breach count (this instance): ${breachCount}\n` },
+                { type: 'text', text: `\nPer REQ-NFR-006: Escalation to next governance level required.` },
+              ]}],
             },
             labels: [targetLabel, 'sla-escalation', 'camunda-synced'],
           },
         });
 
-        // Add sla-breached label to original issue
         await jiraApi('PUT', `/rest/api/3/issue/${entry.jiraIssueKey}`, {
           update: { labels: [{ add: 'sla-breached' }] },
         });
-
-        // Comment on original issue linking to escalation
         await jiraApi('POST', `/rest/api/3/issue/${entry.jiraIssueKey}/comment`, {
           body: {
-            type: 'doc',
-            version: 1,
-            content: [{
-              type: 'paragraph',
-              content: [
-                { type: 'text', text: 'SLA BREACHED (100% elapsed)', marks: [{ type: 'strong' }] },
-                { type: 'text', text: ` — Escalation issue created: ${escalationIssue.key}. Assigned to ${targetLabel}.` },
-              ],
-            }],
+            type: 'doc', version: 1,
+            content: [{ type: 'paragraph', content: [
+              { type: 'text', text: 'SLA BREACHED (100% elapsed)', marks: [{ type: 'strong' }] },
+              { type: 'text', text: ` — Escalation issue created: ${escalationIssue.key}. Assigned to ${targetLabel}.` },
+            ]}],
           },
         });
 
-        const direction = isChronic ? 'chronic-breach' : 'sla-breach';
-        logEvent(direction, taskKey, escalationIssue.key, `${summaryPrefix} — escalated to ${targetLabel} (breach #${breachCount})`);
+        logEvent(isChronic ? 'chronic-breach' : 'sla-breach', taskKey, escalationIssue.key, `${summaryPrefix} — escalated to ${targetLabel} (breach #${breachCount})`);
       } catch (err) {
         logEvent('error', taskKey, entry.jiraIssueKey, `SLA escalation failed: ${err.message}`);
       }
@@ -476,7 +398,7 @@ function extractDescriptionText(description) {
   return text;
 }
 
-// --- Crash Recovery (with SLA state rebuild) ---
+// --- Crash Recovery ---
 async function recoverSyncMap() {
   try {
     const jql = `project = ${config.jira.projectKey} AND labels = camunda-synced AND labels != sla-escalation AND status != Done`;
@@ -499,9 +421,6 @@ async function recoverSyncMap() {
       const createdAt = new Date(issue.fields.created).getTime();
 
       const labels = issue.fields.labels || [];
-      const warned = labels.includes('sla-at-risk');
-      const escalated = labels.includes('sla-breached');
-
       syncMap.set(taskKeyMatch[1], {
         jiraIssueKey: issue.key,
         status: 'synced',
@@ -509,84 +428,26 @@ async function recoverSyncMap() {
         slaDeadlineMs: createdAt + slaDurationMs,
         candidateGroup,
         processInstanceKey: piMatch ? piMatch[1] : 'unknown',
-        warned,
-        escalated,
+        warned: labels.includes('sla-at-risk'),
+        escalated: labels.includes('sla-breached'),
       });
-      logEvent('outbound', taskKeyMatch[1], issue.key, `Recovered (pending, SLA deadline: ${new Date(createdAt + slaDurationMs).toISOString()})`);
+      logEvent('outbound', taskKeyMatch[1], issue.key, `Recovered (pending)`);
     }
     console.log(`Crash recovery: rebuilt ${syncMap.size} entries from Jira`);
 
-    // Recover instanceBreachCount from escalation issues
-    await recoverBreachCounts();
+    // Recover breach counts
+    const escJql = `project = ${config.jira.projectKey} AND labels = sla-escalation`;
+    const escResult = await jiraApi('POST', '/rest/api/3/search/jql', { jql: escJql, fields: ['description'] });
+    if (escResult.issues) {
+      for (const issue of escResult.issues) {
+        const descText = extractDescriptionText(issue.fields.description);
+        const piMatch = descText.match(/\[camunda:processInstanceKey:([^\]]+)\]/);
+        if (piMatch) instanceBreachCount.set(piMatch[1], (instanceBreachCount.get(piMatch[1]) || 0) + 1);
+      }
+    }
   } catch (err) {
     console.error(`Crash recovery failed: ${err.message}`);
   }
-}
-
-async function recoverBreachCounts() {
-  try {
-    const jql = `project = ${config.jira.projectKey} AND labels = sla-escalation`;
-    const result = await jiraApi('POST', '/rest/api/3/search/jql', {
-      jql,
-      fields: ['description'],
-    });
-    if (!result.issues) return;
-
-    for (const issue of result.issues) {
-      const descText = extractDescriptionText(issue.fields.description);
-      const piMatch = descText.match(/\[camunda:processInstanceKey:([^\]]+)\]/);
-      if (!piMatch) continue;
-      const piKey = piMatch[1];
-      instanceBreachCount.set(piKey, (instanceBreachCount.get(piKey) || 0) + 1);
-    }
-    if (instanceBreachCount.size > 0) {
-      console.log(`Crash recovery: rebuilt breach counts for ${instanceBreachCount.size} process instances`);
-    }
-  } catch (err) {
-    console.error(`Breach count recovery failed: ${err.message}`);
-  }
-}
-
-// --- Deploy Test BPMN ---
-async function deployTestProcess() {
-  try {
-    const bpmnPath = path.join(__dirname, '..', 'processes', 'jira-sync-test.bpmn');
-    const bpmnContent = fs.readFileSync(bpmnPath);
-    const token = await getToken('zeebe.camunda.io');
-
-    const boundary = '----JiraSyncDeploy' + Date.now();
-    const parts = [
-      `--${boundary}\r\nContent-Disposition: form-data; name="resources"; filename="jira-sync-test.bpmn"\r\nContent-Type: application/octet-stream\r\n\r\n`,
-      bpmnContent,
-      `\r\n--${boundary}--\r\n`,
-    ];
-    const body = Buffer.concat(parts.map(p => typeof p === 'string' ? Buffer.from(p) : p));
-
-    const res = await fetch(`${CAMUNDA.zeebeUrl}/v2/deployments`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
-      },
-      body,
-    });
-    const text = await res.text();
-    if (!res.ok) throw new Error(`Deploy ${res.status}: ${text}`);
-    const result = JSON.parse(text);
-    console.log('Test BPMN deployed:', JSON.stringify(result.deploymentKey || result));
-
-    const procDef = result.deployments?.find(d => d.processDefinition)?.processDefinition;
-    if (procDef?.processDefinitionKey) {
-      numericProcessDefinitionKey = String(procDef.processDefinitionKey);
-      console.log(`Resolved processDefinitionKey: ${numericProcessDefinitionKey}`);
-    }
-    return result;
-  } catch (err) {
-    console.error(`Deploy failed: ${err.message}`);
-    console.log('Attempting to look up existing process definition...');
-  }
-
-  await resolveProcessDefinitionKey();
 }
 
 async function resolveProcessDefinitionKey() {
@@ -596,7 +457,7 @@ async function resolveProcessDefinitionKey() {
     });
     if (search.items?.length) {
       numericProcessDefinitionKey = String(search.items[0].processDefinitionKey);
-      console.log(`Resolved processDefinitionKey via search: ${numericProcessDefinitionKey}`);
+      console.log(`Resolved processDefinitionKey: ${numericProcessDefinitionKey}`);
     } else {
       console.error('Could not resolve processDefinitionKey — deploy the BPMN first');
     }
@@ -610,12 +471,20 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Webhook endpoint: Jira -> Camunda
+app.post('/webhook/jira', (req, res) => {
+  res.status(200).json({ received: true });
+  handleJiraWebhook(req.body).catch(err => {
+    logEvent('error', null, null, `Webhook processing error: ${err.message}`);
+  });
+});
+
 app.get('/api/sync-status', (req, res) => {
-  const stats = { outbound: 0, inbound: 0, pending: 0, errors: 0, warnings: 0, breaches: 0 };
+  const stats = { outbound: 0, webhooks: 0, pending: 0, errors: 0, warnings: 0, breaches: 0 };
   for (const e of eventLog) {
     if (e.direction === 'error') stats.errors++;
     else if (e.direction === 'outbound') stats.outbound++;
-    else if (e.direction === 'inbound') stats.inbound++;
+    else if (e.direction === 'webhook') stats.webhooks++;
     else if (e.direction === 'sla-warning') stats.warnings++;
     else if (e.direction === 'sla-breach' || e.direction === 'chronic-breach') stats.breaches++;
   }
@@ -623,7 +492,6 @@ app.get('/api/sync-status', (req, res) => {
     if (v.status === 'synced') stats.pending++;
   }
 
-  // Build SLA status for pending items
   const now = Date.now();
   const slaStatus = [];
   for (const [taskKey, entry] of syncMap) {
@@ -632,12 +500,8 @@ app.get('/api/sync-status', (req, res) => {
     const total = entry.slaDeadlineMs - entry.createdAt;
     const pct = Math.min(Math.round((elapsed / total) * 100), 999);
     slaStatus.push({
-      taskKey,
-      jiraIssueKey: entry.jiraIssueKey,
-      candidateGroup: entry.candidateGroup,
-      pct,
-      warned: entry.warned,
-      escalated: entry.escalated,
+      taskKey, jiraIssueKey: entry.jiraIssueKey, candidateGroup: entry.candidateGroup,
+      pct, warned: entry.warned, escalated: entry.escalated,
       remainingMin: Math.max(0, Math.round((entry.slaDeadlineMs - now) / 60000)),
     });
   }
@@ -647,17 +511,13 @@ app.get('/api/sync-status', (req, res) => {
 
 app.post('/start', async (req, res) => {
   if (!numericProcessDefinitionKey) {
-    return res.status(503).json({ error: 'Process not yet deployed — no processDefinitionKey available' });
+    return res.status(503).json({ error: 'Process not yet deployed' });
   }
   try {
     const result = await zeebeApi('POST', '/v2/process-instances', {
       processDefinitionKey: numericProcessDefinitionKey,
-      variables: {
-        requestName: 'Jira Sync Test',
-        startedAt: new Date().toISOString(),
-      },
+      variables: { requestName: 'Jira Sync Test', startedAt: new Date().toISOString() },
     });
-    console.log(`Started process instance: ${result.processInstanceKey}`);
     res.json({ processInstanceKey: result.processInstanceKey });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -666,26 +526,25 @@ app.post('/start', async (req, res) => {
 
 // --- Main ---
 async function main() {
-  console.log('=== Jira Sync Service (RACI + SLA Escalation) ===');
+  console.log('=== Jira Sync Service (RACI + Webhook + SLA Escalation) ===');
   console.log(`Process: ${config.processDefinitionKey}`);
   console.log(`Jira: ${config.jira.baseUrl} / ${config.jira.projectKey}`);
-  console.log(`Polling: outbound=${config.polling.outboundIntervalMs}ms, inbound=${config.polling.inboundIntervalMs}ms, sla=${config.polling.slaCheckIntervalMs}ms`);
+  console.log(`Polling: outbound=${config.polling.outboundIntervalMs}ms, sla=${config.polling.slaCheckIntervalMs}ms`);
+  console.log(`Webhook: ${config.webhook?.enabled ? 'ENABLED at /webhook/jira' : 'disabled'}`);
+  console.log(`Routing: sync=${(config.routing?.jiraGroups || []).length} groups, exclude=${(config.routing?.excludeGroups || []).length} groups`);
   console.log(`RACI groups: ${Object.keys(config.raci).join(', ')}`);
 
-  await deployTestProcess();
+  await resolveProcessDefinitionKey();
   await recoverSyncMap();
 
-  // Start polling loops
   setInterval(outboundSync, config.polling.outboundIntervalMs);
-  setInterval(inboundSync, config.polling.inboundIntervalMs);
   setInterval(slaMonitor, config.polling.slaCheckIntervalMs);
 
-  // Run once immediately
   await outboundSync();
 
   app.listen(3848, '127.0.0.1', () => {
-    console.log('Status dashboard: http://127.0.0.1:3848/jira-sync-status.html');
-    console.log('Start instance:   curl -X POST http://127.0.0.1:3848/start');
+    console.log('Jira sync service: http://127.0.0.1:3848');
+    console.log('Webhook endpoint:  POST http://127.0.0.1:3848/webhook/jira');
   });
 }
 
