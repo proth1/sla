@@ -1,5 +1,190 @@
 # Changelog
 
+## [2026.03.60] - 2026-03-08
+
+### Added
+- Mini RFP Concierge Dashboard (`concierge.html`) — process owner monitoring for SP0 pipeline with 5 KPI cards, sortable active RFP table, classification validation queue with claim/complete, SLA timeline visualization (D3/7/11/14), step distribution bar, 10s auto-refresh (PR #75)
+
+### Changed
+- Navigation: added Concierge link to index.html, mini-rfp.html, and dashboard.html headers
+
+## [2026.03.59] - 2026-03-08
+
+### Fixed
+- v11 onboarding BPMN: added missing BPMNEdge for TechArch connection flow (PR #74)
+
+## [2026.03.58] - 2026-03-08
+
+### Changed
+- v11 onboarding BPMN: SP3 port with split tasks, FEEL conditions, TechArch fix (PR #72)
+
+## [2026.03.57] - 2026-03-07
+
+### Added
+- Mini RFP Launcher wizard UI (`mini-rfp.html`) — standalone 9-step requester wizard for self-service vendor pre-screening (SP0) with Camunda 8 JSON form rendering, deal-killer alerts, vendor waiting screen, scoring, and SP0-to-SP1 data transfer
+- Mini RFP auto-fill defaults (`defaults-mini-rfp.js`) — synthetic demo data for all wizard form fields
+- 6 Mini RFP API endpoints in `server.js`: start, status, active list, vendor-token, vendor-response (message correlation), and SP0-to-SP1 transfer with variable mapping
+
+### Changed
+- Task Worker UI (`index.html`): added navigation links to Mini RFP launcher and Dashboard in header
+
+### Security
+- XSS protection: `escapeHtml()` applied to all dynamic content (toast messages, form labels, variable display, error messages)
+- Input validation: `isValidKey()` on all Mini RFP API path parameters
+- Vendor token generation uses `crypto.randomBytes()` instead of predictable timestamps
+
+## [2026.03.56] - 2026-03-07
+
+### Changed
+- v10 onboarding BPMN: Buy/Build descriptive labels on SP4 pathway gateway (was Yes/No), new merge gateway (`Gateway_0m1ca2l`) separating coding-loop convergence from pathway merge, Modeler re-serialization (PR #70)
+
+## [2026.03.55] - 2026-03-07
+
+### Changed
+- Committee voting BPMN: new merge gateway (`Gateway_091ha3q`) separating QA phase/timer convergence from QA bypass merge, DI coordinate shifts for remediation loop elements (PR #69)
+- Add `.gitignore` entry for `.playwright-mcp/` (removed console logs with cluster IDs per reviewer finding)
+
+## [2026.03.54] - 2026-03-07
+
+### Added
+- v10 onboarding BPMN model (`onboarding-to-be-ideal-state-v10-c8.bpmn`) — new iteration based on v8
+- Mini RFP pre-screen BPMN process (`mini-rfp-pre-screen.bpmn`)
+- Jira sync test BPMN process (`jira-sync-test.bpmn`)
+- Jira sync module for showcase: worker (`jira-sync.js`), config, status UI
+- 6 SVG renders of v8 sub-processes for presentation embedding (PDLC, SP1-SP5)
+- `deploy-and-migrate.sh` utility for Camunda 8 Cloud deployments with token refresh and instance migration
+
+### Changed
+- v8 BPMN: Camunda Modeler re-serialization (cosmetic normalization)
+- Showcase `server.js` enhancements
+- Flow direction checker validator improvements (message flow exclusion, sub-process loop detection)
+- BPMN rules updates: hierarchical subprocess and visual clarity refinements
+- Memory bank and platform state updates
+
+## [2026.03.53] - 2026-03-07
+
+### Changed
+- Accept Camunda Modeler canonical re-serialization of committee-voting-process.bpmn: entity encoding (`&#38;`), default attribute stripping, DI element reordering, SP edge grouping, timer label repositioning, end event vertical spread (PR #67)
+- Codify 4 new Modeler normalization patterns in `bpmn-modeling-standards.md`: entity encoding, default attribute stripping, internal SP edge grouping, timer labels below timers, multi-outcome end event spread
+
+## [2026.03.52] - 2026-03-07
+
+### Added
+- Committee Governance Assurance subsystem: reusable callable process (`Process_CommitteeVoting`) with configurable voting methods (unanimous, majority, super_majority, veto, weighted, single_reviewer), Q&A phase, multi-instance voting, condition reconciliation, remediation loops with max iteration guard, and 3-tier timer escalation (PR #66)
+- Test driver process (`Process_CommitteeVoting_TestDriver`) with DMN/Manual mode toggle for 14 test permutations
+- DMN-10 decision table (`OB_DMN_CommitteeVotingRules`) — FIRST hit policy, 3 inputs (riskTier, governancePhase, contractValueBand), 11 outputs, 8 rules
+- 8 Camunda 8 JSON forms for committee voting workflow (config, brief review, Q&A, voting, reconciliation, remediation, summary)
+- Showcase form defaults (`defaults-committee-voting.js`) for test automation
+
+### Fixed
+- FEEL null safety in multi-instance completion condition (`earlyTermination` variable guard)
+- Form ID mismatch: aligned form `id` fields with BPMN `formId` references (kebab-case)
+- Missing `sequenceFlow` element for `Flow_AutoEscalate_EndEscalated`
+
+## [2026.03.51] - 2026-03-07
+
+### Fixed
+- Dashboard process ID mismatch: `Process_Onboarding_v7` → `Process_Onboarding_v8` in both instance search calls, fixing 0 instances displayed (PR #65)
+
+### Added
+- Instance drill-down slide-out panel: click any instance row to see metadata, pending/completed tasks, assignee info, and Operate link
+- Task reassignment modal: assign tasks to specific users or return to candidate group pool
+- Server endpoints: `POST /api/tasks/:id/reassign` and `POST /api/tasks/:id/unassign`
+- Reassign icons (pencil) in pending task queue for quick access
+- Input validation on reassign endpoint (type check, trim, length limit)
+
+### Security
+- Escape single quotes in onclick handler attributes to prevent XSS via Camunda usernames
+
+## [2026.03.50] - 2026-03-07
+
+### Fixed
+- Showcase server processId updated from `Process_Onboarding_v7` to `Process_Onboarding_v8` (PR #64)
+- Added `ZEEBE_CLIENT_ID`/`ZEEBE_CLIENT_SECRET` env var fallback for credential flexibility
+
+### Added
+- zbctl-managed token mode: server reads bearer token from `~/.camunda/credentials` when no client credentials are set, auto-refreshes via zbctl on expiry
+
+## [2026.03.49] - 2026-03-07
+
+### Changed
+- SP3 parallel fan-out layout widened from ~80px to ~120px branch spacing for improved readability (PR #63)
+- Flow label "Elevated/Major" → "Elevated or Major" (multi-line, no "/" separator)
+- Pattern C in hierarchical subprocess rules updated: 9 branches, ~120px spacing, branch sub-routing pattern
+- Added multi-value flow label convention to modeling standards: use "or" with line breaks, not "/"
+
+## [2026.03.48] - 2026-03-07
+
+### Changed
+- SP3 (Evaluation & Due Diligence): Replace parallel gateway with inclusive gateway for conditional team activation (PR #62)
+- Split monolithic "Risk, Compliance, and Legal" task into 4 independent tasks: Risk Assessment, Compliance Review, Privacy Assessment, Legal Review
+- Add FEEL condition expressions on all 9 inclusive gateway branches based on DART Formation output
+- Reassign Task_InitialTriage from governance-lane to business-lane for Onboarding Facilitator (Quarterback/Sherpa) role
+- Reposition SP3 DI layout for 9-branch fan-out with ~80px vertical spacing
+
+## [2026.03.47] - 2026-03-07
+
+### Changed
+- Reduced presentation from 67 to 41 slides (PR #60)
+- Removed 13 section divider slides, merged 11 governance topic pairs into two-column layouts
+- Consolidated 4 DMN slides into 2 (Risk Tier + SLA Breach, Pathway + Priority)
+- Updated all navigation indices (nav-links, Agenda, slide counter)
+
+### Added
+- `scripts/reduce-presentation.py` — deterministic presentation transform script
+
+## [2026.03.46] - 2026-03-07
+
+### Fixed
+- Enterprise pool expanded from 290px to 390px for SP0 abandonment path spacing (PR #58)
+- Vendor pool and all elements shifted +100px to maintain inter-pool gap
+- Removed invalid zeebe:subscription from message start event definitions
+- Timer label repositioned to avoid SP0 overlap
+
+## [2026.03.45] - 2026-03-07
+
+### Added
+- Vendor pool Mini RFP message path: Start_MiniRFPVendor, Task_VendorMiniRFP, End_MiniRFPVendorComplete (PR #56)
+- 2 message flows (MsgFlow_MiniRFPRequest, MsgFlow_MiniRFPResponse) with vendorToken correlation
+- 2 message definitions (Message_MiniRFPRequest, Message_MiniRFPResponse)
+- P20D interrupting boundary timer on SP0_MiniRFP (Timer_SP0_Abandon)
+- Concierge cancel review task (Task_ConciergeCancel, governance-lane)
+- End_SP0_Abandoned end event for abandoned Mini RFPs
+
+## [2026.03.44] - 2026-03-07
+
+### Added
+- SP0 internal BPMN: 6 user tasks (Steps 1-5 + Classification Validation), 2 business rule tasks (Deal-Killer Pre-Screen, Question Selection), gateway routing (PR #55)
+- Deal-killer rejection path with End_DealKillerFail end event
+
+### Fixed
+- PRD v1.1.0: 3 HIGH findings (budgetRange enum, Cat 4 trigger, Cat 9 trigger) + 3 MEDIUM findings (form count, question count, default weights)
+
+## [2026.03.43] - 2026-03-07
+
+### Added
+- SP0 Mini RFP sub-process inserted into v8-c8 top-level BPMN (PR #54)
+- GW_MiniRFP gateway, SP0_MiniRFP collapsed sub-process, merge gateway
+- Yes/No bypass routing with pool expansion (+340px)
+
+## [2026.03.42] - 2026-03-07
+
+### Added
+- 10 vendor category forms for Mini RFP question bank (PR #53)
+- 167 questions across 10 categories with weighted scoring and evidence uploads
+
+## [2026.03.41] - 2026-03-07
+
+### Added
+- 6 Mini RFP wizard forms: Steps 1-5 + Classification Validation (PR #52)
+- OB-DMN-8 Question Selection, OB-DMN-9 Team Engagement, question bank schema (PR #51)
+
+## [2026.03.39] - 2026-03-07
+
+### Added
+- Mini RFP PRD v1.1.0: 37 findings, weighted scoring, question bank schema (PR #50)
+- 7 Jira epics (SLA-6 through SLA-13) + 35 stories
+
 ## [2026.03.38] - 2026-03-07
 
 ### Fixed

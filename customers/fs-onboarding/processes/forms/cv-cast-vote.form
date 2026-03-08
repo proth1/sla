@@ -1,0 +1,102 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "cv-cast-vote",
+  "components": [
+    {
+      "type": "group",
+      "label": "Cast Your Committee Vote",
+      "id": "Field_CV_CV_001",
+      "components": [
+        {
+          "type": "text",
+          "text": "Review the evidence brief and cast your governance committee vote.",
+          "id": "Field_CV_CV_002"
+        },
+        {
+          "type": "textfield",
+          "key": "requestSummary",
+          "label": "Request summary",
+          "disabled": true,
+          "id": "Field_CV_CV_003"
+        },
+        {
+          "type": "textfield",
+          "key": "requestTrackingNumber",
+          "label": "Tracking number",
+          "disabled": true,
+          "id": "Field_CV_CV_004"
+        },
+        {
+          "type": "select",
+          "key": "vote",
+          "label": "Vote",
+          "values": [
+            {
+              "label": "Approve",
+              "value": "Approve"
+            },
+            {
+              "label": "Approve with Conditions",
+              "value": "Approve with Conditions"
+            },
+            {
+              "label": "Reject",
+              "value": "Reject"
+            },
+            {
+              "label": "Abstain",
+              "value": "Abstain"
+            },
+            {
+              "label": "Recuse",
+              "value": "Recuse"
+            },
+            {
+              "label": "Veto",
+              "value": "Veto"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_CV_005"
+        },
+        {
+          "type": "textarea",
+          "key": "conditions",
+          "label": "Conditions (if approving with conditions)",
+          "id": "Field_CV_CV_006"
+        },
+        {
+          "type": "textarea",
+          "key": "rationale",
+          "label": "Rationale",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_CV_007"
+        },
+        {
+          "type": "textarea",
+          "key": "dissentingOpinion",
+          "label": "Dissenting opinion (optional)",
+          "id": "Field_CV_CV_008"
+        },
+        {
+          "type": "textfield",
+          "key": "authorityLevel",
+          "label": "Authority level",
+          "disabled": true,
+          "id": "Field_CV_CV_009"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

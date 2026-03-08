@@ -1,0 +1,82 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "cv-submit-question",
+  "components": [
+    {
+      "type": "group",
+      "label": "Submit Question for Brief Author",
+      "id": "Field_CV_SQ_001",
+      "components": [
+        {
+          "type": "text",
+          "text": "Submit a question about the evidence brief. The brief author will respond before the voting period begins.",
+          "id": "Field_CV_SQ_002"
+        },
+        {
+          "type": "select",
+          "key": "questionCategory",
+          "label": "Question category",
+          "values": [
+            {
+              "label": "Technical",
+              "value": "Technical"
+            },
+            {
+              "label": "Compliance",
+              "value": "Compliance"
+            },
+            {
+              "label": "Financial",
+              "value": "Financial"
+            },
+            {
+              "label": "Risk",
+              "value": "Risk"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ],
+          "id": "Field_CV_SQ_003"
+        },
+        {
+          "type": "textarea",
+          "key": "questionText",
+          "label": "Question",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_SQ_004"
+        },
+        {
+          "type": "select",
+          "key": "questionPriority",
+          "label": "Priority",
+          "values": [
+            {
+              "label": "High",
+              "value": "High"
+            },
+            {
+              "label": "Medium",
+              "value": "Medium"
+            },
+            {
+              "label": "Low",
+              "value": "Low"
+            }
+          ],
+          "id": "Field_CV_SQ_005"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

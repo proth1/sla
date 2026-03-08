@@ -207,6 +207,31 @@ Example: A 3-way Request Type gateway routes "Defined Need" through an NDA task 
 
 **Rule**: When a skip/bypass flow and a normal flow must reach the same downstream gateway, insert a merge gateway between them. Never route two flows directly into a decision gateway — the merge gateway separates structural convergence from decision logic.
 
+### Separate Merge Gateways Per Convergence Concern
+
+When two logically distinct bypass flows converge before the same downstream task, use **separate merge gateways** — one per convergence concern. Do not overload a single merge gateway with unrelated bypass paths.
+
+```
+[NDA merge] → [RFP?] → Mini RFP → [Mini RFP merge] → [RFP merge] → [Next Task]
+                    └─── RFP Yes ──────────────────────→ ↑
+```
+
+In this example, `Mini RFP merge` handles the Mini RFP Yes/No convergence, and `RFP merge` handles the RFP Yes bypass convergence. Combining both into a single gateway obscures the two independent decision domains.
+
+**Rule**: Each merge gateway should represent ONE convergence concern. If a merge gateway would collect flows from two unrelated decision points, split it into two sequential merge gateways.
+
+### Legal Prerequisite Tasks on Main Flow
+
+Legal prerequisite tasks (NDA, DPA, confidentiality agreements) that apply to the **majority** of requests should be placed ON the main horizontal flow line, not as a branch. The skip path (e.g., "already signed") routes below via L-shape to a merge gateway.
+
+```
+y=100    [NDA Gateway] --No--> [Execute NDA] --> [Merge] --> [Next Task]
+              |                                     ↑
+y=180         +-- Yes (L-shape below) ──────────────┘
+```
+
+**Rationale**: Most new software requests do not have a pre-existing NDA. Placing the NDA execution task on the main flow keeps the common path straight and horizontal, with the less-common skip path as the visual detour.
+
 ---
 
 ## Vendor Pool at Top Level
@@ -338,9 +363,11 @@ y=460                                                           [SLA Breach End]
 - SLA escalation end events positioned BELOW the timer (~100px)
 - Vertical gap between levels: **160px**
 
-### Pattern B: Bypass Below Main Flow (SP2 — Planning & Routing)
+### Pattern B: Bypass Below Main Flow (Internal Sub-Process Convention)
 
-When a gateway's "No" path skips a task to reach a merge gateway:
+In **internal sub-process diagrams**, bypass/skip flows route **BELOW** the main flow. This differs from the top-level pattern where bypasses route ABOVE. Internal diagrams have limited vertical space above the start event, and routing below keeps the main processing path as the topmost horizontal line.
+
+This pattern applies to all internal bypass scenarios: planning bypasses (SP2), NDA "already signed" skips (SP1), RFP "already completed" skips (SP1), etc.
 
 ```
 y=140    [Start] → [Prelim] → [GW Needs?] ──Yes──→ [Backlog] → [Merge] → [Routing] → [End]
@@ -349,7 +376,7 @@ y=220                               └─────── No ─────�
                                     (routes UNDER main flow)
 ```
 
-- "No" bypass exits from gateway **bottom**, routes horizontally below tasks, enters merge gateway **bottom**
+- "No" or skip bypass exits from gateway **bottom**, routes horizontally below tasks, enters merge gateway **bottom**
 - Vertical drop: ~80px below main flow
 - Merge gateway has NO name (structural purpose only)
 
@@ -365,24 +392,45 @@ y=220                               └─────── No ─────�
 
 ### Pattern C: Parallel Fan-Out (SP3 — Evaluation & DD)
 
-5 parallel branches spread vertically from a center split gateway:
+9 parallel branches spread vertically from a center split gateway:
 
 ```
-y=80     [Tech Arch Review]          → ↘
-y=183    [Security Assessment]       → →
-y=291    [Risk, Compliance, Legal]   → → [Join] → [Vendor DD] → [Await] → [Evaluate] → [End]
-y=399    [Financial Analysis]        → ↗              │timer
-y=500    [Assess Vendor Landscape]   → ↗           [SLA Breach]
-          ↑                            ↑
-     [Split GW at y=306]        [Join GW at y=306]
+y=140    [Security Assessment Routing] → [XOR: Level?] → [Baseline] / [Elevated] → [Merge] → ↘
+y=370    [Tech Arch Review]            → ────────────────────────────────────────────────────→ ↘
+y=486    [Risk Assessment]             → ─────────────────────────────────────────────────────→ ↘
+y=607    [Compliance Review]           → ──────────────────────────────────────────────────────→ →
+                                         ↑ Split GW at y=660                    Join GW at y=660 ↑
+y=728    [Privacy Assessment]          → ──────────────────────────────────────────────────────→ ↗
+y=849    [Legal Review]                → ─────────────────────────────────────────────────────→ ↗
+y=970    [Financial Analysis]          → ────────────────────────────────────────────────────→ ↗
+y=1091   [Assess Vendor Landscape]     → ───────────────────────────────────────────────────→ ↗
+y=1210   [AI Governance Review]        → ──────────────────────────────────────────────────→ ↗
 ```
 
 Rules:
-- Split and join gateways centered vertically among branches (y=306 for 5 branches spanning y=80-540)
-- **~100-110px vertical spacing** between branches (tighter than the 170-180px used in flat multi-lane models, because internal diagrams have no lane structure)
+- Split and join gateways centered vertically among branches (y=660 for 9 branches spanning y=100-1250)
+- **~120px vertical spacing** between branches — wider than the old ~80-100px to improve readability when branch count exceeds 5
+- **Branches with internal sub-routing** (e.g., Security Assessment with its own XOR gateway) get **extra vertical space** (~230px to the next branch) to accommodate the sub-routing elements
 - Branches fan both UP and DOWN from center
 - L-shaped routing: vertical from gateway → horizontal into task
+- **L-shaped join routing**: each branch routes horizontally RIGHT from the task end to the join gateway's X-coordinate, then vertically to the join gateway center. This ensures consistent, non-overlapping join paths
 - Post-join flow continues on the center Y-level
+
+### Branch Sub-Routing Within Parallel Fan-Out
+
+When a parallel branch contains its own decision gateway (e.g., Security Assessment Routing → XOR: Baseline vs Elevated), the sub-routing elements occupy the same vertical band as the branch:
+
+```
+y=100    [SAR Task] → [XOR: Level?] ──Baseline──→ [Baseline Check] → [Merge] → (to join)
+                           │                                            ↑
+y=224                      └──Elevated or Major──→ [Full Assessment] ──┘
+```
+
+Rules:
+- The XOR gateway sits at the same Y as the branch task (right of task)
+- Sub-branches spread vertically within the branch's allocated space
+- A merge gateway (no name) collects sub-branches before routing to the parallel join
+- Allocate ~230px vertical span for branches with sub-routing (vs ~120px for simple branches)
 
 ### Pattern D: Two-Path Execution (SP4 — Contracting & Build)
 
@@ -599,7 +647,7 @@ Before saving any hierarchical BPMN file:
 ### Internal Diagrams
 - [ ] Independent coordinate spaces (start at x=180)
 - [ ] 60px gap between tasks
-- [ ] Parallel branches: ~100px vertical spacing
+- [ ] Parallel branches: ~120px vertical spacing (~230px for branches with internal sub-routing)
 - [ ] Loop-back flows route ABOVE main flow
 - [ ] Timer + SLA breach: L-shape routing
 - [ ] Internal start events have NO name
@@ -621,5 +669,5 @@ Before saving any hierarchical BPMN file:
 
 ---
 
-**Version**: 1.1.0 | **Created**: 2026-03-05 | **Updated**: 2026-03-05
+**Version**: 1.2.0 | **Created**: 2026-03-05 | **Updated**: 2026-03-07
 **Source**: Extracted from user's manual Camunda Modeler edits to onboarding-to-be-ideal-state-v5.bpmn

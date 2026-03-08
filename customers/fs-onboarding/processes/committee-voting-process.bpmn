@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_CommitteeVoting" targetNamespace="http://sla.governance/bpmn/committee-voting" exporter="Camunda Modeler" exporterVersion="5.44.0">
+  <bpmn:process id="Process_CommitteeVoting" name="Committee Governance Voting" isExecutable="true">
+    <bpmn:startEvent id="CV_Start" name="Voting&#10;Requested">
+      <bpmn:outgoing>Flow_Start_DetermineRules</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:businessRuleTask id="Task_DetermineVotingRules" name="Determine&#10;Voting Rules">
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="OB_DMN_CommitteeVotingRules" resultVariable="votingConfig" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Start_DetermineRules</bpmn:incoming>
+      <bpmn:outgoing>Flow_DetermineRules_ResolveAuthority</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:serviceTask id="Task_ResolveAuthority" name="Resolve&#10;Committee Authority">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="resolve-committee-authority" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_DetermineRules_ResolveAuthority</bpmn:incoming>
+      <bpmn:outgoing>Flow_ResolveAuthority_AssembleBrief</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_AssembleBrief" name="Assemble&#10;Committee Brief">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="assemble-committee-brief" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ResolveAuthority_AssembleBrief</bpmn:incoming>
+      <bpmn:outgoing>Flow_AssembleBrief_ReviewBrief</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Task_ReviewBrief" name="Review&#10;Brief">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="cv-review-brief" />
+        <zeebe:assignmentDefinition candidateGroups="governance-lane" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_AssembleBrief_ReviewBrief</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReviewBrief_DistributeMerge</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="GW_DistributeMerge">
+      <bpmn:incoming>Flow_ReviewBrief_DistributeMerge</bpmn:incoming>
+      <bpmn:incoming>Flow_MaxIterations_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_DistributeMerge_Distribute</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_DistributeBrief" name="Distribute&#10;Brief">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="distribute-committee-brief" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_DistributeMerge_Distribute</bpmn:incoming>
+      <bpmn:outgoing>Flow_Distribute_QAEnabled</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_QAEnabled" name="Q&#38;A&#10;Enabled?" default="Flow_QA_No">
+      <bpmn:incoming>Flow_Distribute_QAEnabled</bpmn:incoming>
+      <bpmn:outgoing>Flow_QA_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_QA_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:subProcess id="SP_QAPhase" name="Q&#38;A Phase">
+      <bpmn:incoming>Flow_QA_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_QAPhase_QAMerge</bpmn:outgoing>
+      <bpmn:startEvent id="SPQA_Start">
+        <bpmn:outgoing>Flow_SPQA_Start_Submit</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:userTask id="Task_SubmitQuestion" name="Submit&#10;Question">
+        <bpmn:extensionElements>
+          <zeebe:formDefinition formId="cv-submit-question" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SPQA_Start_Submit</bpmn:incoming>
+        <bpmn:incoming>Flow_SPQA_MoreYes</bpmn:incoming>
+        <bpmn:outgoing>Flow_SPQA_Submit_Answer</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_AnswerQuestion" name="Answer&#10;Question">
+        <bpmn:extensionElements>
+          <zeebe:formDefinition formId="cv-answer-question" />
+          <zeebe:assignmentDefinition candidateGroups="governance-lane" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SPQA_Submit_Answer</bpmn:incoming>
+        <bpmn:outgoing>Flow_SPQA_Answer_More</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:exclusiveGateway id="GW_MoreQuestions" name="More&#10;Questions?" default="Flow_SPQA_MoreNo">
+        <bpmn:incoming>Flow_SPQA_Answer_More</bpmn:incoming>
+        <bpmn:outgoing>Flow_SPQA_MoreYes</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SPQA_MoreNo</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:endEvent id="SPQA_End">
+        <bpmn:incoming>Flow_SPQA_MoreNo</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_SPQA_Start_Submit" sourceRef="SPQA_Start" targetRef="Task_SubmitQuestion" />
+      <bpmn:sequenceFlow id="Flow_SPQA_Submit_Answer" sourceRef="Task_SubmitQuestion" targetRef="Task_AnswerQuestion" />
+      <bpmn:sequenceFlow id="Flow_SPQA_Answer_More" sourceRef="Task_AnswerQuestion" targetRef="GW_MoreQuestions" />
+      <bpmn:sequenceFlow id="Flow_SPQA_MoreYes" name="Yes" sourceRef="GW_MoreQuestions" targetRef="Task_SubmitQuestion">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=moreQuestions = true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SPQA_MoreNo" name="No" sourceRef="GW_MoreQuestions" targetRef="SPQA_End" />
+    </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Timer_QAPeriod" name="Q&#38;A&#10;Period" attachedToRef="SP_QAPhase">
+      <bpmn:outgoing>Flow_QATimer_QAMerge</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_QAPeriod">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=votingConfig.qaPeriodDuration</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:exclusiveGateway id="GW_QAMerge">
+      <bpmn:incoming>Flow_QA_No</bpmn:incoming>
+      <bpmn:incoming>Flow_09a0w28</bpmn:incoming>
+      <bpmn:outgoing>Flow_QAMerge_VotingPhase</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:subProcess id="SP_VotingPhase" name="Voting Phase">
+      <bpmn:incoming>Flow_QAMerge_VotingPhase</bpmn:incoming>
+      <bpmn:outgoing>Flow_VotingPhase_TallyVotes</bpmn:outgoing>
+      <bpmn:startEvent id="SPV_Start">
+        <bpmn:outgoing>Flow_SPV_Start_CastVote</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:userTask id="Task_CastVote" name="Cast&#10;Vote">
+        <bpmn:extensionElements>
+          <zeebe:formDefinition formId="cv-cast-vote" />
+          <zeebe:assignmentDefinition assignee="=committeeMember.email" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SPV_Start_CastVote</bpmn:incoming>
+        <bpmn:outgoing>Flow_SPV_CastVote_End</bpmn:outgoing>
+        <bpmn:multiInstanceLoopCharacteristics>
+          <bpmn:extensionElements>
+            <zeebe:loopCharacteristics inputCollection="=lockedRoster" inputElement="committeeMember" outputCollection="votes" outputElement="=memberVote" />
+          </bpmn:extensionElements>
+          <bpmn:completionCondition xsi:type="bpmn:tFormalExpression">=if earlyTermination != null then earlyTermination else false</bpmn:completionCondition>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:userTask>
+      <bpmn:endEvent id="SPV_End">
+        <bpmn:incoming>Flow_SPV_CastVote_End</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_SPV_Start_CastVote" sourceRef="SPV_Start" targetRef="Task_CastVote" />
+      <bpmn:sequenceFlow id="Flow_SPV_CastVote_End" sourceRef="Task_CastVote" targetRef="SPV_End" />
+    </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Timer_Reminder" name="Voting&#10;Reminder" cancelActivity="false" attachedToRef="SP_VotingPhase">
+      <bpmn:outgoing>Flow_Reminder_SendReminder</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Reminder">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=votingConfig.reminderDuration</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_Escalation" name="Voting&#10;Escalation" cancelActivity="false" attachedToRef="SP_VotingPhase">
+      <bpmn:outgoing>Flow_Escalation_SendEscalation</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Escalation">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=votingConfig.escalationDuration</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_Deadline" name="Voting&#10;Deadline" attachedToRef="SP_VotingPhase">
+      <bpmn:outgoing>Flow_Deadline_ApplyDefault</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Deadline">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=votingConfig.deadlineDuration</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="Task_SendReminder" name="Send&#10;Reminder">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="send-voting-reminder" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Reminder_SendReminder</bpmn:incoming>
+      <bpmn:outgoing>Flow_SendReminder_EndReminder</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_ReminderSent" name="Reminder&#10;Sent">
+      <bpmn:incoming>Flow_SendReminder_EndReminder</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_SendEscalation" name="Send&#10;Escalation">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="send-voting-escalation" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Escalation_SendEscalation</bpmn:incoming>
+      <bpmn:outgoing>Flow_SendEscalation_EndEscalation</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_EscalationSent" name="Escalation&#10;Sent">
+      <bpmn:incoming>Flow_SendEscalation_EndEscalation</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_ApplyDefaultRule" name="Apply Default&#10;Voting Rule">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="apply-default-voting-rule" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Deadline_ApplyDefault</bpmn:incoming>
+      <bpmn:outgoing>Flow_ApplyDefault_TallyMerge</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_TallyMerge">
+      <bpmn:incoming>Flow_VotingPhase_TallyVotes</bpmn:incoming>
+      <bpmn:incoming>Flow_ApplyDefault_TallyMerge</bpmn:incoming>
+      <bpmn:outgoing>Flow_TallyMerge_Tally</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_TallyVotes" name="Tally&#10;Votes">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="tally-committee-votes" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_TallyMerge_Tally</bpmn:incoming>
+      <bpmn:outgoing>Flow_Tally_ConditionsConflict</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_ConditionsConflict" name="Conditions&#10;Conflict?" default="Flow_Conditions_No">
+      <bpmn:incoming>Flow_Tally_ConditionsConflict</bpmn:incoming>
+      <bpmn:outgoing>Flow_Conditions_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Conditions_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_ReconcileConditions" name="Reconcile&#10;Conditions">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="cv-reconcile-conditions" />
+        <zeebe:assignmentDefinition candidateGroups="governance-lane" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Conditions_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_Reconcile_ConditionsMerge</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="GW_ConditionsMerge">
+      <bpmn:incoming>Flow_Reconcile_ConditionsMerge</bpmn:incoming>
+      <bpmn:incoming>Flow_Conditions_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConditionsMerge_Outcome</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="GW_VotingOutcome" name="Outcome?" default="Flow_Outcome_Remediation">
+      <bpmn:incoming>Flow_ConditionsMerge_Outcome</bpmn:incoming>
+      <bpmn:outgoing>Flow_Outcome_Approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Outcome_Conditional</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Outcome_Rejected</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Outcome_Remediation</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_Approved" name="Committee&#10;Approved">
+      <bpmn:incoming>Flow_Outcome_Approved</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_ApprovedConditional" name="Approved&#10;with Conditions">
+      <bpmn:incoming>Flow_Outcome_Conditional</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_Rejected" name="Committee&#10;Rejected">
+      <bpmn:incoming>Flow_Outcome_Rejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_ReviseBrief" name="Revise&#10;Brief">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="cv-remediation-revise" />
+        <zeebe:assignmentDefinition candidateGroups="governance-lane" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Outcome_Remediation</bpmn:incoming>
+      <bpmn:outgoing>Flow_Revise_MaxIterations</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="GW_MaxIterations" name="Max&#10;Loops?" default="Flow_MaxIterations_No">
+      <bpmn:incoming>Flow_Revise_MaxIterations</bpmn:incoming>
+      <bpmn:outgoing>Flow_MaxIterations_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_MaxIterations_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_AutoEscalate" name="Auto&#10;Escalate">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="auto-escalate-governance" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_MaxIterations_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_AutoEscalate_EndEscalated</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Escalated" name="Auto&#10;Escalated">
+      <bpmn:incoming>Flow_AutoEscalate_EndEscalated</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Start_DetermineRules" sourceRef="CV_Start" targetRef="Task_DetermineVotingRules" />
+    <bpmn:sequenceFlow id="Flow_DetermineRules_ResolveAuthority" sourceRef="Task_DetermineVotingRules" targetRef="Task_ResolveAuthority" />
+    <bpmn:sequenceFlow id="Flow_ResolveAuthority_AssembleBrief" sourceRef="Task_ResolveAuthority" targetRef="Task_AssembleBrief" />
+    <bpmn:sequenceFlow id="Flow_AssembleBrief_ReviewBrief" sourceRef="Task_AssembleBrief" targetRef="Task_ReviewBrief" />
+    <bpmn:sequenceFlow id="Flow_ReviewBrief_DistributeMerge" sourceRef="Task_ReviewBrief" targetRef="GW_DistributeMerge" />
+    <bpmn:sequenceFlow id="Flow_DistributeMerge_Distribute" sourceRef="GW_DistributeMerge" targetRef="Task_DistributeBrief" />
+    <bpmn:sequenceFlow id="Flow_Distribute_QAEnabled" sourceRef="Task_DistributeBrief" targetRef="GW_QAEnabled" />
+    <bpmn:sequenceFlow id="Flow_QA_Yes" name="Yes" sourceRef="GW_QAEnabled" targetRef="SP_QAPhase">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=votingConfig.qaEnabled = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_QA_No" name="No" sourceRef="GW_QAEnabled" targetRef="GW_QAMerge" />
+    <bpmn:sequenceFlow id="Flow_QAPhase_QAMerge" sourceRef="SP_QAPhase" targetRef="Gateway_091ha3q" />
+    <bpmn:sequenceFlow id="Flow_QATimer_QAMerge" sourceRef="Timer_QAPeriod" targetRef="Gateway_091ha3q" />
+    <bpmn:sequenceFlow id="Flow_QAMerge_VotingPhase" sourceRef="GW_QAMerge" targetRef="SP_VotingPhase" />
+    <bpmn:sequenceFlow id="Flow_Reminder_SendReminder" sourceRef="Timer_Reminder" targetRef="Task_SendReminder" />
+    <bpmn:sequenceFlow id="Flow_SendReminder_EndReminder" sourceRef="Task_SendReminder" targetRef="End_ReminderSent" />
+    <bpmn:sequenceFlow id="Flow_Escalation_SendEscalation" sourceRef="Timer_Escalation" targetRef="Task_SendEscalation" />
+    <bpmn:sequenceFlow id="Flow_SendEscalation_EndEscalation" sourceRef="Task_SendEscalation" targetRef="End_EscalationSent" />
+    <bpmn:sequenceFlow id="Flow_Deadline_ApplyDefault" sourceRef="Timer_Deadline" targetRef="Task_ApplyDefaultRule" />
+    <bpmn:sequenceFlow id="Flow_ApplyDefault_TallyMerge" sourceRef="Task_ApplyDefaultRule" targetRef="GW_TallyMerge" />
+    <bpmn:sequenceFlow id="Flow_VotingPhase_TallyVotes" sourceRef="SP_VotingPhase" targetRef="GW_TallyMerge" />
+    <bpmn:sequenceFlow id="Flow_TallyMerge_Tally" sourceRef="GW_TallyMerge" targetRef="Task_TallyVotes" />
+    <bpmn:sequenceFlow id="Flow_Tally_ConditionsConflict" sourceRef="Task_TallyVotes" targetRef="GW_ConditionsConflict" />
+    <bpmn:sequenceFlow id="Flow_Conditions_Yes" name="Yes" sourceRef="GW_ConditionsConflict" targetRef="Task_ReconcileConditions">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=conditionalCount &gt; 1 and hasConflictingConditions = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Conditions_No" name="No" sourceRef="GW_ConditionsConflict" targetRef="GW_ConditionsMerge" />
+    <bpmn:sequenceFlow id="Flow_Reconcile_ConditionsMerge" sourceRef="Task_ReconcileConditions" targetRef="GW_ConditionsMerge" />
+    <bpmn:sequenceFlow id="Flow_ConditionsMerge_Outcome" sourceRef="GW_ConditionsMerge" targetRef="GW_VotingOutcome" />
+    <bpmn:sequenceFlow id="Flow_Outcome_Approved" name="Approved" sourceRef="GW_VotingOutcome" targetRef="End_Approved">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=committeeDecision = "Approved"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Outcome_Conditional" name="Approved&#10;w/ Conditions" sourceRef="GW_VotingOutcome" targetRef="End_ApprovedConditional">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=committeeDecision = "ApprovedConditional"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Outcome_Rejected" name="Rejected" sourceRef="GW_VotingOutcome" targetRef="End_Rejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=committeeDecision = "Rejected"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Outcome_Remediation" name="Remediation" sourceRef="GW_VotingOutcome" targetRef="Task_ReviseBrief" />
+    <bpmn:sequenceFlow id="Flow_Revise_MaxIterations" sourceRef="Task_ReviseBrief" targetRef="GW_MaxIterations" />
+    <bpmn:sequenceFlow id="Flow_MaxIterations_Yes" name="Yes" sourceRef="GW_MaxIterations" targetRef="Task_AutoEscalate">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=remediationLoopCount &gt;= votingConfig.maxRemediationLoops</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_MaxIterations_No" name="No" sourceRef="GW_MaxIterations" targetRef="GW_DistributeMerge" />
+    <bpmn:sequenceFlow id="Flow_AutoEscalate_EndEscalated" sourceRef="Task_AutoEscalate" targetRef="End_Escalated" />
+    <bpmn:exclusiveGateway id="Gateway_091ha3q">
+      <bpmn:incoming>Flow_QAPhase_QAMerge</bpmn:incoming>
+      <bpmn:incoming>Flow_QATimer_QAMerge</bpmn:incoming>
+      <bpmn:outgoing>Flow_09a0w28</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_09a0w28" sourceRef="Gateway_091ha3q" targetRef="GW_QAMerge" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Main">
+    <bpmndi:BPMNPlane id="BPMNPlane_Main" bpmnElement="Process_CommitteeVoting">
+      <bpmndi:BPMNShape id="CV_Start_di" bpmnElement="CV_Start">
+        <dc:Bounds x="180" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="172" y="325" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DetermineVotingRules_di" bpmnElement="Task_DetermineVotingRules">
+        <dc:Bounds x="270" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ResolveAuthority_di" bpmnElement="Task_ResolveAuthority">
+        <dc:Bounds x="430" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AssembleBrief_di" bpmnElement="Task_AssembleBrief">
+        <dc:Bounds x="590" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReviewBrief_di" bpmnElement="Task_ReviewBrief">
+        <dc:Bounds x="750" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_DistributeMerge_di" bpmnElement="GW_DistributeMerge" isMarkerVisible="true">
+        <dc:Bounds x="905" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DistributeBrief_di" bpmnElement="Task_DistributeBrief">
+        <dc:Bounds x="1010" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_QAEnabled_di" bpmnElement="GW_QAEnabled" isMarkerVisible="true">
+        <dc:Bounds x="1165" y="275" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1136" y="246" width="47" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AutoEscalate_di" bpmnElement="Task_AutoEscalate">
+        <dc:Bounds x="3540" y="480" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Escalated_di" bpmnElement="End_Escalated">
+        <dc:Bounds x="3692" y="502" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3686" y="545" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_MaxIterations_di" bpmnElement="GW_MaxIterations" isMarkerVisible="true">
+        <dc:Bounds x="3395" y="495" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3401" y="554.5" width="37" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReviseBrief_di" bpmnElement="Task_ReviseBrief">
+        <dc:Bounds x="3240" y="480" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Rejected_di" bpmnElement="End_Rejected">
+        <dc:Bounds x="3272" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3263" y="426" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_ApprovedConditional_di" bpmnElement="End_ApprovedConditional">
+        <dc:Bounds x="3272" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3252" y="325" width="75" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Approved_di" bpmnElement="End_Approved">
+        <dc:Bounds x="3272" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3263" y="225" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_TallyMerge_di" bpmnElement="GW_TallyMerge" isMarkerVisible="true">
+        <dc:Bounds x="2495" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_TallyVotes_di" bpmnElement="Task_TallyVotes">
+        <dc:Bounds x="2600" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_ConditionsConflict_di" bpmnElement="GW_ConditionsConflict" isMarkerVisible="true">
+        <dc:Bounds x="2755" y="275" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2754" y="332" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReconcileConditions_di" bpmnElement="Task_ReconcileConditions">
+        <dc:Bounds x="2850" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_ConditionsMerge_di" bpmnElement="GW_ConditionsMerge" isMarkerVisible="true">
+        <dc:Bounds x="3005" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_VotingOutcome_di" bpmnElement="GW_VotingOutcome" isMarkerVisible="true">
+        <dc:Bounds x="3105" y="275" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3104" y="251" width="51" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_QAMerge_di" bpmnElement="GW_QAMerge" isMarkerVisible="true">
+        <dc:Bounds x="1965" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendReminder_di" bpmnElement="Task_SendReminder">
+        <dc:Bounds x="2070" y="450" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_ReminderSent_di" bpmnElement="End_ReminderSent">
+        <dc:Bounds x="2102" y="562" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2096" y="605" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendEscalation_di" bpmnElement="Task_SendEscalation">
+        <dc:Bounds x="2190" y="450" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_EscalationSent_di" bpmnElement="End_EscalationSent">
+        <dc:Bounds x="2222" y="562" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2215" y="605" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ApplyDefaultRule_di" bpmnElement="Task_ApplyDefaultRule">
+        <dc:Bounds x="2310" y="450" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_091ha3q_di" bpmnElement="Gateway_091ha3q" isMarkerVisible="true">
+        <dc:Bounds x="1855" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP_QAPhase_di" bpmnElement="SP_QAPhase" isExpanded="true">
+        <dc:Bounds x="1270" y="180" width="538" height="210" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SPQA_Start_di" bpmnElement="SPQA_Start">
+        <dc:Bounds x="1290" y="282" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SubmitQuestion_di" bpmnElement="Task_SubmitQuestion">
+        <dc:Bounds x="1370" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AnswerQuestion_di" bpmnElement="Task_AnswerQuestion">
+        <dc:Bounds x="1520" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_MoreQuestions_di" bpmnElement="GW_MoreQuestions" isMarkerVisible="true">
+        <dc:Bounds x="1670" y="275" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1667" y="332" width="56" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SPQA_End_di" bpmnElement="SPQA_End">
+        <dc:Bounds x="1752" y="282" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_SPQA_Start_Submit_di" bpmnElement="Flow_SPQA_Start_Submit">
+        <di:waypoint x="1326" y="300" />
+        <di:waypoint x="1370" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SPQA_MoreYes_di" bpmnElement="Flow_SPQA_MoreYes">
+        <di:waypoint x="1695" y="275" />
+        <di:waypoint x="1695" y="230" />
+        <di:waypoint x="1420" y="230" />
+        <di:waypoint x="1420" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1550" y="213" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SPQA_Submit_Answer_di" bpmnElement="Flow_SPQA_Submit_Answer">
+        <di:waypoint x="1470" y="300" />
+        <di:waypoint x="1520" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SPQA_Answer_More_di" bpmnElement="Flow_SPQA_Answer_More">
+        <di:waypoint x="1620" y="300" />
+        <di:waypoint x="1670" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SPQA_MoreNo_di" bpmnElement="Flow_SPQA_MoreNo">
+        <di:waypoint x="1720" y="300" />
+        <di:waypoint x="1752" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1729" y="283" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="SP_VotingPhase_di" bpmnElement="SP_VotingPhase" isExpanded="true">
+        <dc:Bounds x="2070" y="210" width="360" height="180" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SPV_Start_di" bpmnElement="SPV_Start">
+        <dc:Bounds x="2100" y="282" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CastVote_di" bpmnElement="Task_CastVote">
+        <dc:Bounds x="2190" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SPV_End_di" bpmnElement="SPV_End">
+        <dc:Bounds x="2352" y="282" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_SPV_Start_CastVote_di" bpmnElement="Flow_SPV_Start_CastVote">
+        <di:waypoint x="2136" y="300" />
+        <di:waypoint x="2190" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SPV_CastVote_End_di" bpmnElement="Flow_SPV_CastVote_End">
+        <di:waypoint x="2290" y="300" />
+        <di:waypoint x="2352" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Timer_QAPeriod_di" bpmnElement="Timer_QAPeriod">
+        <dc:Bounds x="1532" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1564" y="416" width="32" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_Deadline_di" bpmnElement="Timer_Deadline">
+        <dc:Bounds x="2342" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2384" y="406" width="44" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_Escalation_di" bpmnElement="Timer_Escalation">
+        <dc:Bounds x="2222" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2254" y="406" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_Reminder_di" bpmnElement="Timer_Reminder">
+        <dc:Bounds x="2102" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2136" y="406" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Start_DetermineRules_di" bpmnElement="Flow_Start_DetermineRules">
+        <di:waypoint x="216" y="300" />
+        <di:waypoint x="270" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DetermineRules_ResolveAuthority_di" bpmnElement="Flow_DetermineRules_ResolveAuthority">
+        <di:waypoint x="370" y="300" />
+        <di:waypoint x="430" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ResolveAuthority_AssembleBrief_di" bpmnElement="Flow_ResolveAuthority_AssembleBrief">
+        <di:waypoint x="530" y="300" />
+        <di:waypoint x="590" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AssembleBrief_ReviewBrief_di" bpmnElement="Flow_AssembleBrief_ReviewBrief">
+        <di:waypoint x="690" y="300" />
+        <di:waypoint x="750" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReviewBrief_DistributeMerge_di" bpmnElement="Flow_ReviewBrief_DistributeMerge">
+        <di:waypoint x="850" y="300" />
+        <di:waypoint x="905" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DistributeMerge_Distribute_di" bpmnElement="Flow_DistributeMerge_Distribute">
+        <di:waypoint x="955" y="300" />
+        <di:waypoint x="1010" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Distribute_QAEnabled_di" bpmnElement="Flow_Distribute_QAEnabled">
+        <di:waypoint x="1110" y="300" />
+        <di:waypoint x="1165" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_QA_Yes_di" bpmnElement="Flow_QA_Yes">
+        <di:waypoint x="1215" y="300" />
+        <di:waypoint x="1270" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1234" y="282" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_QA_No_di" bpmnElement="Flow_QA_No">
+        <di:waypoint x="1190" y="325" />
+        <di:waypoint x="1190" y="500" />
+        <di:waypoint x="1990" y="500" />
+        <di:waypoint x="1990" y="325" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1583" y="482" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_QAPhase_QAMerge_di" bpmnElement="Flow_QAPhase_QAMerge">
+        <di:waypoint x="1808" y="300" />
+        <di:waypoint x="1855" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_QATimer_QAMerge_di" bpmnElement="Flow_QATimer_QAMerge">
+        <di:waypoint x="1550" y="408" />
+        <di:waypoint x="1550" y="460" />
+        <di:waypoint x="1880" y="460" />
+        <di:waypoint x="1880" y="325" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_QAMerge_VotingPhase_di" bpmnElement="Flow_QAMerge_VotingPhase">
+        <di:waypoint x="2015" y="300" />
+        <di:waypoint x="2070" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Reminder_SendReminder_di" bpmnElement="Flow_Reminder_SendReminder">
+        <di:waypoint x="2120" y="408" />
+        <di:waypoint x="2120" y="450" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SendReminder_EndReminder_di" bpmnElement="Flow_SendReminder_EndReminder">
+        <di:waypoint x="2120" y="530" />
+        <di:waypoint x="2120" y="562" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Escalation_SendEscalation_di" bpmnElement="Flow_Escalation_SendEscalation">
+        <di:waypoint x="2240" y="408" />
+        <di:waypoint x="2240" y="450" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SendEscalation_EndEscalation_di" bpmnElement="Flow_SendEscalation_EndEscalation">
+        <di:waypoint x="2240" y="530" />
+        <di:waypoint x="2240" y="562" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Deadline_ApplyDefault_di" bpmnElement="Flow_Deadline_ApplyDefault">
+        <di:waypoint x="2360" y="408" />
+        <di:waypoint x="2360" y="450" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ApplyDefault_TallyMerge_di" bpmnElement="Flow_ApplyDefault_TallyMerge">
+        <di:waypoint x="2410" y="490" />
+        <di:waypoint x="2520" y="490" />
+        <di:waypoint x="2520" y="325" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VotingPhase_TallyVotes_di" bpmnElement="Flow_VotingPhase_TallyVotes">
+        <di:waypoint x="2430" y="300" />
+        <di:waypoint x="2495" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TallyMerge_Tally_di" bpmnElement="Flow_TallyMerge_Tally">
+        <di:waypoint x="2545" y="300" />
+        <di:waypoint x="2600" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Tally_ConditionsConflict_di" bpmnElement="Flow_Tally_ConditionsConflict">
+        <di:waypoint x="2700" y="300" />
+        <di:waypoint x="2755" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Conditions_Yes_di" bpmnElement="Flow_Conditions_Yes">
+        <di:waypoint x="2780" y="275" />
+        <di:waypoint x="2780" y="210" />
+        <di:waypoint x="2850" y="210" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2790" y="193" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Conditions_No_di" bpmnElement="Flow_Conditions_No">
+        <di:waypoint x="2805" y="300" />
+        <di:waypoint x="3005" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2820" y="283" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Reconcile_ConditionsMerge_di" bpmnElement="Flow_Reconcile_ConditionsMerge">
+        <di:waypoint x="2950" y="210" />
+        <di:waypoint x="3030" y="210" />
+        <di:waypoint x="3030" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ConditionsMerge_Outcome_di" bpmnElement="Flow_ConditionsMerge_Outcome">
+        <di:waypoint x="3055" y="300" />
+        <di:waypoint x="3105" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Outcome_Approved_di" bpmnElement="Flow_Outcome_Approved">
+        <di:waypoint x="3130" y="275" />
+        <di:waypoint x="3130" y="200" />
+        <di:waypoint x="3272" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3182" y="183" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Outcome_Conditional_di" bpmnElement="Flow_Outcome_Conditional">
+        <di:waypoint x="3155" y="300" />
+        <di:waypoint x="3272" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3168" y="266" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Outcome_Rejected_di" bpmnElement="Flow_Outcome_Rejected">
+        <di:waypoint x="3130" y="325" />
+        <di:waypoint x="3130" y="400" />
+        <di:waypoint x="3272" y="400" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3184" y="383" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Outcome_Remediation_di" bpmnElement="Flow_Outcome_Remediation">
+        <di:waypoint x="3130" y="325" />
+        <di:waypoint x="3130" y="520" />
+        <di:waypoint x="3240" y="520" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3153" y="503" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Revise_MaxIterations_di" bpmnElement="Flow_Revise_MaxIterations">
+        <di:waypoint x="3340" y="520" />
+        <di:waypoint x="3395" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MaxIterations_Yes_di" bpmnElement="Flow_MaxIterations_Yes">
+        <di:waypoint x="3445" y="520" />
+        <di:waypoint x="3540" y="520" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3473" y="503" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MaxIterations_No_di" bpmnElement="Flow_MaxIterations_No">
+        <di:waypoint x="3420" y="495" />
+        <di:waypoint x="3420" y="110" />
+        <di:waypoint x="930" y="110" />
+        <di:waypoint x="930" y="275" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3428" y="127" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AutoEscalate_EndEscalated_di" bpmnElement="Flow_AutoEscalate_EndEscalated">
+        <di:waypoint x="3640" y="520" />
+        <di:waypoint x="3692" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09a0w28_di" bpmnElement="Flow_09a0w28">
+        <di:waypoint x="1905" y="300" />
+        <di:waypoint x="1965" y="300" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

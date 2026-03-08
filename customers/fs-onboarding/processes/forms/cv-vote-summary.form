@@ -1,0 +1,102 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "cv-vote-summary",
+  "components": [
+    {
+      "type": "group",
+      "label": "Committee Voting Results",
+      "id": "Field_CV_VS_001",
+      "components": [
+        {
+          "type": "text",
+          "text": "Read-only summary of committee voting results and audit trail.",
+          "id": "Field_CV_VS_002"
+        },
+        {
+          "type": "textfield",
+          "key": "committeeDecision",
+          "label": "Committee decision",
+          "disabled": true,
+          "id": "Field_CV_VS_003"
+        },
+        {
+          "type": "number",
+          "key": "approveCount",
+          "label": "Approve votes",
+          "disabled": true,
+          "id": "Field_CV_VS_004"
+        },
+        {
+          "type": "number",
+          "key": "rejectCount",
+          "label": "Reject votes",
+          "disabled": true,
+          "id": "Field_CV_VS_005"
+        },
+        {
+          "type": "number",
+          "key": "conditionalCount",
+          "label": "Approve with conditions votes",
+          "disabled": true,
+          "id": "Field_CV_VS_006"
+        },
+        {
+          "type": "number",
+          "key": "abstainCount",
+          "label": "Abstain votes",
+          "disabled": true,
+          "id": "Field_CV_VS_007"
+        },
+        {
+          "type": "number",
+          "key": "recusalCount",
+          "label": "Recusal votes",
+          "disabled": true,
+          "id": "Field_CV_VS_008"
+        },
+        {
+          "type": "checkbox",
+          "key": "vetoExercised",
+          "label": "Veto exercised",
+          "disabled": true,
+          "id": "Field_CV_VS_009"
+        },
+        {
+          "type": "textarea",
+          "key": "consolidatedConditions",
+          "label": "Consolidated conditions",
+          "disabled": true,
+          "id": "Field_CV_VS_010"
+        },
+        {
+          "type": "textarea",
+          "key": "dissentingOpinions",
+          "label": "Dissenting opinions",
+          "disabled": true,
+          "id": "Field_CV_VS_011"
+        },
+        {
+          "type": "textfield",
+          "key": "votingCompletedDate",
+          "label": "Voting completed date",
+          "disabled": true,
+          "id": "Field_CV_VS_012"
+        },
+        {
+          "type": "number",
+          "key": "remediationLoopCount",
+          "label": "Remediation loops completed",
+          "disabled": true,
+          "id": "Field_CV_VS_013"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

@@ -25,6 +25,61 @@ Timer boundary events without outgoing flows are **INVALID**.
 
 **Default**: Use `cancelActivity="false"` for SLA timers.
 
+## Boundary Timers on Receive Tasks (Camunda 8 / Zeebe)
+
+**Rule: Wrap receive tasks in an expanded sub-process when attaching boundary timers**
+
+In Camunda 8 (Zeebe), boundary timer events on receive tasks require a sub-process wrapper. The receive task goes inside an expanded sub-process, and the boundary timers attach to the sub-process — not the receive task directly.
+
+```xml
+<!-- Sub-process wrapping the receive task -->
+<bpmn:subProcess id="SP_AwaitResponse">
+  <bpmn:incoming>Flow_In</bpmn:incoming>
+  <bpmn:outgoing>Flow_Out</bpmn:outgoing>
+  <bpmn:startEvent id="SP_Start">
+    <bpmn:outgoing>Flow_ToReceive</bpmn:outgoing>
+  </bpmn:startEvent>
+  <bpmn:receiveTask id="Receive_Response" name="Await&#10;Response" messageRef="Message_Ref">
+    <bpmn:incoming>Flow_ToReceive</bpmn:incoming>
+    <bpmn:outgoing>Flow_ToEnd</bpmn:outgoing>
+  </bpmn:receiveTask>
+  <bpmn:endEvent id="SP_End">
+    <bpmn:incoming>Flow_ToEnd</bpmn:incoming>
+  </bpmn:endEvent>
+  <bpmn:sequenceFlow id="Flow_ToReceive" sourceRef="SP_Start" targetRef="Receive_Response" />
+  <bpmn:sequenceFlow id="Flow_ToEnd" sourceRef="Receive_Response" targetRef="SP_End" />
+</bpmn:subProcess>
+
+<!-- Timers attach to the SUB-PROCESS, not the receive task -->
+<bpmn:boundaryEvent id="Timer_SLA" cancelActivity="false" attachedToRef="SP_AwaitResponse">
+  <bpmn:outgoing>Flow_ToEscalation</bpmn:outgoing>
+  <bpmn:timerEventDefinition>
+    <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+  </bpmn:timerEventDefinition>
+</bpmn:boundaryEvent>
+```
+
+### Visual Layout
+
+The expanded sub-process provides more room for boundary timers than a 100px-wide task:
+
+```
+[Expanded Sub-Process: 390x140px]
+┌──────────────────────────────────────────┐
+│ (Start) → [Receive Task: 100x80] → (End)│
+└──────────────────────────────────────────┘
+   ⏱D3        ⏱D7        ⏱D11       ⏱SLA
+   │           │           │           │
+   ↓           ↓           ↓           └→ [SLA Breach End]
+ [Send D3]  [Send D7]   [Send D11]
+   │           │           │
+  (End)      (End)       (End)
+```
+
+**Spacing**: With a ~390px-wide sub-process, space timers at ~130px intervals along the bottom edge. Each timer drops straight down to its service task. SLA breach routes down-right via L-shape to an end event to the RIGHT of the sub-process.
+
+**Why not attach directly?** Camunda Modeler enforces this pattern for Zeebe-targeted models. Direct boundary timers on receive tasks may cause deployment errors.
+
 ## Phase Transition Events
 
 **Rule: Use Intermediate Throw Events for Phase Transitions**
@@ -191,10 +246,39 @@ When BPMN files are saved through Camunda Modeler (Desktop or Web), the Modeler 
 |-----------|-----------------|---------|
 | **Attribute order** | `name` before `default` | `name="Approved?" default="Flow_No"` |
 | **Indentation** | Consistent depth per nesting level | Extension elements at 10 spaces inside tasks |
-| **Entity encoding** | `'` instead of `&#39;` in documentation | Apostrophes in prose |
+| **Entity encoding** | `&#38;` for ampersands, `&gt;` for greater-than in FEEL | `Q&#38;A` not `Q&amp;A`; `&gt;=` not `>=` in expressions |
+| **Default attribute stripping** | Removes `cancelActivity="true"` from interrupting timers | Only `cancelActivity="false"` appears explicitly |
 | **Trailing whitespace** | No space before `>` in self-closing tags | `targetRef="Task_X">` not `targetRef="Task_X" >` |
 | **Element ordering** | Modeler's canonical order (may differ from hand-edited order) | Start events, flows, gateways, sub-processes reordered |
+| **Internal SP edge grouping** | Edges for elements inside an expanded sub-process are placed INSIDE the parent `BPMNShape` block in the DI section, not at the end | SP_QAPhase edges appear right after SP_QAPhase shapes |
 | **Exporter version** | Updated to match Modeler version | `exporterVersion="5.42.0"` |
+
+### Timer Label Positioning (Modeler Convention)
+
+When boundary timers are attached to the bottom edge of an expanded sub-process, the Modeler positions timer labels **below** the timer icon (y + 34), not beside it:
+
+```xml
+<!-- Timer at y=372, label at y=406 (below) -->
+<bpmndi:BPMNShape id="Timer_Reminder_di" bpmnElement="Timer_Reminder">
+  <dc:Bounds x="1992" y="372" width="36" height="36" />
+  <bpmndi:BPMNLabel>
+    <dc:Bounds x="2026" y="406" width="48" height="27" />
+  </bpmndi:BPMNLabel>
+</bpmndi:BPMNShape>
+```
+
+This differs from the earlier convention of labels beside timers (same y). Accept the Modeler's below-timer positioning.
+
+### Multi-Outcome Gateway End Event Spread
+
+When an XOR gateway routes to 3+ end events, space them with **~100px vertical gaps** to prevent label overlap:
+
+```
+y=182    [End: Approved]            (gateway y=275, offset -93)
+y=282    [End: Approved Conditional] (gateway y=275, offset +7)
+y=382    [End: Rejected]            (gateway y=275, offset +107)
+y=480    [Task: Revise Brief]       (gateway y=275, offset +205, remediation path)
+```
 
 **Rule**: After manual Modeler edits, the resulting diff will show massive reordering/reformatting. This is expected. Focus PR review on **semantic changes** (new elements, rerouted flows, removed elements) not formatting noise.
 
@@ -400,6 +484,18 @@ Do NOT use action-specific labels like "Approve"/"Reject", "Build"/"Buy", or "Pa
 ```
 
 The gateway name provides the question context ("Approved?"), and the flows provide the answer ("Yes" / "No"). This creates a natural reading: "Approved? → Yes / No".
+
+**Exception: Multi-value routing gateways** — When an XOR gateway routes to 3+ branches based on enumerated values (e.g., "Baseline" vs "Elevated or Major"), use descriptive value labels instead of "Yes"/"No". For multi-value labels, use `"or"` with `&#10;` line breaks — never use `"/"` as a separator:
+
+```xml
+<!-- CORRECT: "or" with line break -->
+<bpmn:sequenceFlow id="Flow_Elevated" name="Elevated or&#10;Major" ... />
+
+<!-- WRONG: "/" separator -->
+<bpmn:sequenceFlow id="Flow_Elevated" name="Elevated/Major" ... />
+```
+
+**Why?** The "/" character is visually ambiguous — it can look like a path separator or abbreviation. "or" with a line break is unambiguous and fits within BPMN label bounding boxes.
 
 ## Cross-Lane Notification Pattern
 

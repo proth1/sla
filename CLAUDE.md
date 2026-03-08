@@ -55,9 +55,9 @@ npx wrangler deploy
 
 ## Workflow
 
-1. Create a Jira issue (SLA-XXX) at https://agentic-sdlc.atlassian.net
-2. Branch from main: `feature/SLA-{id}-description`
-3. Commit format: `SLA-XXX: Description`
+1. Create a Jira issue (SLM-XXX) at https://agentic-sdlc.atlassian.net
+2. Branch from main: `feature/SLM-{id}-description`
+3. Commit format: `SLM-XXX: Description`
 4. PR via `gh pr create` — triggers automatic `pr-orchestrator` review (PostToolUse hook)
 5. After merge — PostToolUse hook triggers CHANGELOG, Jira transition, and cleanup
 
