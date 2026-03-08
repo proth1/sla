@@ -1,5 +1,23 @@
 # Changelog
 
+## [2026.03.60] - 2026-03-08
+
+### Added
+- Mini RFP Concierge Dashboard (`concierge.html`) — process owner monitoring for SP0 pipeline with 5 KPI cards, sortable active RFP table, classification validation queue with claim/complete, SLA timeline visualization (D3/7/11/14), step distribution bar, 10s auto-refresh (PR #75)
+
+### Changed
+- Navigation: added Concierge link to index.html, mini-rfp.html, and dashboard.html headers
+
+## [2026.03.59] - 2026-03-08
+
+### Fixed
+- v11 onboarding BPMN: added missing BPMNEdge for TechArch connection flow (PR #74)
+
+## [2026.03.58] - 2026-03-08
+
+### Changed
+- v11 onboarding BPMN: SP3 port with split tasks, FEEL conditions, TechArch fix (PR #72)
+
 ## [2026.03.57] - 2026-03-07
 
 ### Added

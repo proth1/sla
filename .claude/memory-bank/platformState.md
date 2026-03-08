@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.57
-**Last Release**: 2026-03-07
-**Total Releases**: 57
+**Current Version**: 2026.03.60
+**Last Release**: 2026-03-08
+**Total Releases**: 60
 
 ## Artifact Counts
 
@@ -33,12 +33,10 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.60 | 2026-03-08 | #75 | Mini RFP Concierge Dashboard (Phase B) |
+| 2026.03.59 | 2026-03-08 | #74 | Fix missing DI edge for TechArch connection in v11 |
+| 2026.03.58 | 2026-03-08 | #72 | v11 SP3 port: split tasks, FEEL conditions, TechArch fix |
 | 2026.03.57 | 2026-03-07 | #73 | Mini RFP Launcher wizard UI with server API routes |
 | 2026.03.56 | 2026-03-07 | #70 | v10 Buy/Build labels + coding-loop merge gateway |
 | 2026.03.55 | 2026-03-07 | #69 | Committee voting Modeler edits + .gitignore for Playwright logs |
 | 2026.03.54 | 2026-03-07 | #68 | Working tree consolidation: v10 model, Jira sync, SVGs, deploy tooling |
-| 2026.03.53 | 2026-03-07 | #67 | Modeler cosmetic normalization + 4 codified patterns |
-| 2026.03.52 | 2026-03-07 | #66 | Committee Governance Assurance subsystem (voting process + test driver + DMN-10 + 8 forms) |
-| 2026.03.51 | 2026-03-07 | #65 | Dashboard drill-down, task reassignment, process ID fix |
-| 2026.03.50 | 2026-03-07 | #64 | Fix showcase server: processId v8, zbctl token fallback |
-| 2026.03.49 | 2026-03-07 | #63 | SP3 fan-out spacing widened to ~120px + label conventions codified |
