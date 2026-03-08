@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="OB-DMN3-GovernanceReviewRouting-definitions"
+             name="OB-DMN-3: Governance Review Routing (Onboarding)"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="OB_DMN_GovernanceReviewRouting"
+            name="Governance Review Routing (Onboarding)"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="OB_DMN_GovernanceReviewRouting-table" hitPolicy="UNIQUE">
+
+      <!--
+        OB-DMN-3: Governance Review Routing (Onboarding Variant)
+        Phase: 4 (Governance Review and Approval) — Task 4.2 Risk-Tiered Review Routing
+        Hit Policy: UNIQUE
+        Derived from: DMN_GovernanceReviewRouting (shared)
+        Changes:
+          - Added input: pathway (string) — enables Fast-Track routing
+          - New rule: Fast-Track + non-Unacceptable → Fast Path Reviewer (2 days)
+          - Tighter SLAs: Advisory Board 7d (was 10), Committee 5d (was 7), Fast Path 2d (was 3)
+      -->
+
+      <input id="ob3-input-riskTier" label="Risk Tier">
+        <inputExpression id="ob3-inputExpr-riskTier" typeRef="string">
+          <text>riskTier</text>
+        </inputExpression>
+        <inputValues id="ob3-inputVals-riskTier">
+          <text>"Unacceptable","High","Limited","Minimal"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob3-input-pathway" label="Governance Pathway">
+        <inputExpression id="ob3-inputExpr-pathway" typeRef="string">
+          <text>pathway</text>
+        </inputExpression>
+        <inputValues id="ob3-inputVals-pathway">
+          <text>"Fast-Track","Build","Buy","Hybrid"</text>
+        </inputValues>
+      </input>
+
+      <output id="ob3-output-reviewAuthority"
+              label="Review Authority"
+              name="reviewAuthority"
+              typeRef="string" />
+
+      <output id="ob3-output-reviewSLADays"
+              label="Review SLA (Calendar Days)"
+              name="reviewSLADays"
+              typeRef="integer" />
+
+      <output id="ob3-output-reviewScope"
+              label="Review Scope"
+              name="reviewScope"
+              typeRef="string" />
+
+      <!-- RULE 1: Unacceptable — Auto-Reject regardless of pathway -->
+      <rule id="ob3-rule-1">
+        <description>Unacceptable Risk: Auto-Reject — immediate rejection without governance review</description>
+        <inputEntry id="ob3-ie-1-1"><text>"Unacceptable"</text></inputEntry>
+        <inputEntry id="ob3-ie-1-2"><text>-</text></inputEntry>
+        <outputEntry id="ob3-oe-1-1"><text>"Auto-Reject"</text></outputEntry>
+        <outputEntry id="ob3-oe-1-2"><text>0</text></outputEntry>
+        <outputEntry id="ob3-oe-1-3"><text>"Immediate rejection: risk profile exceeds acceptable threshold. Document rejection rationale and notify business owner."</text></outputEntry>
+      </rule>
+
+      <!-- RULE 2: Fast-Track pathway with Limited/Minimal risk → expedited review -->
+      <rule id="ob3-rule-2">
+        <description>Fast-Track + Limited Risk: Fast Path Reviewer — accelerated 2-day review for known vendors</description>
+        <inputEntry id="ob3-ie-2-1"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ob3-ie-2-2"><text>"Fast-Track"</text></inputEntry>
+        <outputEntry id="ob3-oe-2-1"><text>"Fast Path Reviewer"</text></outputEntry>
+        <outputEntry id="ob3-oe-2-2"><text>2</text></outputEntry>
+        <outputEntry id="ob3-oe-2-3"><text>"Expedited fast path review: validate against pre-approved criteria; single-reviewer sign-off; automated compliance pre-check. Accelerated for known vendor relationship."</text></outputEntry>
+      </rule>
+
+      <rule id="ob3-rule-3">
+        <description>Fast-Track + Minimal Risk: Fast Path Reviewer — accelerated 2-day review for known vendors</description>
+        <inputEntry id="ob3-ie-3-1"><text>"Minimal"</text></inputEntry>
+        <inputEntry id="ob3-ie-3-2"><text>"Fast-Track"</text></inputEntry>
+        <outputEntry id="ob3-oe-3-1"><text>"Fast Path Reviewer"</text></outputEntry>
+        <outputEntry id="ob3-oe-3-2"><text>2</text></outputEntry>
+        <outputEntry id="ob3-oe-3-3"><text>"Expedited fast path review: validate against pre-approved criteria; single-reviewer sign-off; automated compliance pre-check. Minimal risk with known vendor."</text></outputEntry>
+      </rule>
+
+      <!-- RULE 4: High Risk (non-Fast-Track) — Advisory Board with tighter SLA -->
+      <rule id="ob3-rule-4">
+        <description>High Risk: Advisory Board review — 7-day SLA (accelerated from 10-day shared)</description>
+        <inputEntry id="ob3-ie-4-1"><text>"High"</text></inputEntry>
+        <inputEntry id="ob3-ie-4-2"><text>-</text></inputEntry>
+        <outputEntry id="ob3-oe-4-1"><text>"AI Governance Advisory Board"</text></outputEntry>
+        <outputEntry id="ob3-oe-4-2"><text>7</text></outputEntry>
+        <outputEntry id="ob3-oe-4-3"><text>"Full board review: comprehensive evidence evaluation; legal review; compliance assessment against NIST CSF 2.0, ISO 27001, DORA, EU AI Act, SR 11-7; risk acceptance documentation; ethical impact assessment. Accelerated 7-day SLA for onboarding."</text></outputEntry>
+      </rule>
+
+      <!-- RULE 5: Limited Risk (non-Fast-Track) — Governance Committee with tighter SLA -->
+      <rule id="ob3-rule-5">
+        <description>Limited Risk: Governance Committee review — 5-day SLA (accelerated from 7-day shared)</description>
+        <inputEntry id="ob3-ie-5-1"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ob3-ie-5-2"><text>"Build","Buy","Hybrid"</text></inputEntry>
+        <outputEntry id="ob3-oe-5-1"><text>"Governance Committee"</text></outputEntry>
+        <outputEntry id="ob3-oe-5-2"><text>5</text></outputEntry>
+        <outputEntry id="ob3-oe-5-3"><text>"Standard committee review: compliance cross-reference (NIST CSF, ISO 27001, DORA); stakeholder input from Compliance and Business lanes; full committee deliberation. Accelerated 5-day SLA for onboarding."</text></outputEntry>
+      </rule>
+
+      <!-- RULE 6: Minimal Risk (non-Fast-Track) — Fast Path Reviewer -->
+      <rule id="ob3-rule-6">
+        <description>Minimal Risk: Fast Path Reviewer — 2-day SLA (accelerated from 3-day shared)</description>
+        <inputEntry id="ob3-ie-6-1"><text>"Minimal"</text></inputEntry>
+        <inputEntry id="ob3-ie-6-2"><text>"Build","Buy","Hybrid"</text></inputEntry>
+        <outputEntry id="ob3-oe-6-1"><text>"Fast Path Reviewer"</text></outputEntry>
+        <outputEntry id="ob3-oe-6-2"><text>2</text></outputEntry>
+        <outputEntry id="ob3-oe-6-3"><text>"Fast path review: validate against pre-approved criteria checklist; single-reviewer sign-off; automated compliance pre-check. Accelerated 2-day SLA for onboarding."</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="OB-DMN3-diagram">
+      <dmndi:DMNShape id="OB-DMN3-shape" dmnElementRef="OB_DMN_GovernanceReviewRouting">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

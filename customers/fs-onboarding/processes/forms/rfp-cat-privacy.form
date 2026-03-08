@@ -1,0 +1,237 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Cat4",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Category 4: Data Privacy and Protection\nData privacy practices, GDPR compliance, and data protection controls.\n\n**Governance topics**: Privacy, Compliance",
+      "id": "Field_Cat4_Header"
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat4_Sep1"
+    },
+    {
+      "id": "Field_C4_1",
+      "label": "C4.1: Data processing locations (countries)",
+      "type": "textarea",
+      "key": "c4_1"
+    },
+    {
+      "id": "Field_C4_2",
+      "label": "C4.2: Cross-border data transfer mechanisms (SCCs, adequacy decisions)",
+      "type": "textarea",
+      "key": "c4_2"
+    },
+    {
+      "id": "Field_C4_3",
+      "label": "C4.3: Data retention policy and configurable retention periods",
+      "type": "textarea",
+      "key": "c4_3"
+    },
+    {
+      "id": "Field_C4_4",
+      "label": "C4.4: Data subject rights support (access, deletion, portability)",
+      "type": "checklist",
+      "key": "c4_4",
+      "values": [
+        {
+          "label": "Access",
+          "value": "access"
+        },
+        {
+          "label": "Deletion",
+          "value": "deletion"
+        },
+        {
+          "label": "Portability",
+          "value": "portability"
+        },
+        {
+          "label": "Rectification",
+          "value": "rectification"
+        },
+        {
+          "label": "Restriction",
+          "value": "restriction"
+        }
+      ]
+    },
+    {
+      "id": "Field_C4_5",
+      "label": "C4.5: Sub-processors list and notification process for changes",
+      "type": "textarea",
+      "key": "c4_5"
+    },
+    {
+      "id": "Field_C4_6",
+      "label": "C4.6: Data Protection Impact Assessment (DPIA) conducted",
+      "type": "radio",
+      "key": "c4_6",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "label": "Partial",
+          "value": "partial"
+        }
+      ]
+    },
+    {
+      "id": "Field_C4_7",
+      "label": "C4.7: Privacy by design and by default practices",
+      "type": "textarea",
+      "key": "c4_7"
+    },
+    {
+      "id": "Field_C4_8",
+      "label": "C4.8: Customer data used for model training",
+      "type": "radio",
+      "key": "c4_8",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "label": "Partial",
+          "value": "partial"
+        }
+      ]
+    },
+    {
+      "id": "Field_C4_9",
+      "label": "C4.9: Opt-out mechanism for training data usage",
+      "type": "textarea",
+      "key": "c4_9"
+    },
+    {
+      "id": "Field_C4_10",
+      "label": "C4.10: Data lineage and provenance tracking",
+      "type": "textarea",
+      "key": "c4_10"
+    },
+    {
+      "id": "Field_C4_11",
+      "label": "C4.11: Privacy-enhancing technologies (federated learning, differential privacy)",
+      "type": "checklist",
+      "key": "c4_11",
+      "values": [
+        {
+          "label": "Federated Learning",
+          "value": "federated_learning"
+        },
+        {
+          "label": "Differential Privacy",
+          "value": "differential_privacy"
+        },
+        {
+          "label": "Homomorphic Encryption",
+          "value": "homomorphic_encryption"
+        },
+        {
+          "label": "Secure MPC",
+          "value": "secure_mpc"
+        },
+        {
+          "label": "None",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "id": "Field_C4_12",
+      "label": "C4.12: Data classification and sensitivity labeling support",
+      "type": "textarea",
+      "key": "c4_12"
+    },
+    {
+      "id": "Field_C4_13",
+      "label": "C4.13: Breach notification timeline and process",
+      "type": "textarea",
+      "key": "c4_13"
+    },
+    {
+      "id": "Field_C4_14",
+      "label": "C4.14: Data anonymization/pseudonymization capabilities",
+      "type": "textarea",
+      "key": "c4_14"
+    },
+    {
+      "id": "Field_C4_15",
+      "label": "C4.15: Cookie and tracking consent management",
+      "type": "radio",
+      "key": "c4_15",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "label": "Partial",
+          "value": "partial"
+        }
+      ]
+    },
+    {
+      "id": "Field_C4_16",
+      "label": "C4.16: Vendor role per GDPR Art. 26-28: data controller, processor, or joint controller",
+      "type": "select",
+      "key": "c4_16",
+      "values": [
+        {
+          "label": "Data Controller",
+          "value": "data_controller"
+        },
+        {
+          "label": "Data Processor",
+          "value": "data_processor"
+        },
+        {
+          "label": "Joint Controller",
+          "value": "joint_controller"
+        },
+        {
+          "label": "Not Applicable",
+          "value": "not_applicable"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat4_EvidSep"
+    },
+    {
+      "type": "text",
+      "text": "### Evidence Uploads\nPlease attach relevant certifications, audit reports, or assessment summaries below.",
+      "id": "Field_Cat4_EvidHeader"
+    },
+    {
+      "type": "textarea",
+      "key": "cat4_evidence_description",
+      "label": "Evidence Description",
+      "description": "List the documents you are attaching (e.g., SOC 2 Type II report, ISO 27001 certificate).",
+      "id": "Field_Cat4_EvidDesc"
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="OB-DMN7-DealKillerPrescreen-definitions"
+             name="OB-DMN-7: Deal Killer Pre-Screen (Onboarding)"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="OB_DMN_DealKillerPrescreen"
+            name="Deal Killer Pre-Screen (Onboarding)"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="OB_DMN_DealKillerPrescreen-table" hitPolicy="FIRST">
+
+      <input id="ob7-input-vendorName" label="Vendor Name">
+        <inputExpression id="ob7-inputExpr-vendorName" typeRef="string">
+          <text>vendorName</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob7-input-aiModelName" label="AI Model Name">
+        <inputExpression id="ob7-inputExpr-aiModelName" typeRef="string">
+          <text>aiModelName</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob7-input-dataResidency" label="Data Residency Requirement">
+        <inputExpression id="ob7-inputExpr-dataResidency" typeRef="string">
+          <text>dataResidencyRequirement</text>
+        </inputExpression>
+        <inputValues id="ob7-inputVals-dataResidency">
+          <text>"US-Only","EU-Only","Any","Non-Compliant"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob7-input-complianceBlocker" label="Compliance Blocker">
+        <inputExpression id="ob7-inputExpr-complianceBlocker" typeRef="boolean">
+          <text>complianceBlocker</text>
+        </inputExpression>
+      </input>
+
+      <output id="ob7-output-dealKillerResult"
+              label="Deal Killer Result"
+              name="dealKillerResult"
+              typeRef="string" />
+
+      <output id="ob7-output-blockReason"
+              label="Block Reason"
+              name="blockReason"
+              typeRef="string" />
+
+      <!-- Rule 1: Known blocked vendors (sanctions, debarred, previous termination for cause) -->
+      <rule id="ob7-rule-1">
+        <description>Blocked: Vendor on internal blocked list (sanctions, debarment, prior termination for cause)</description>
+        <inputEntry id="ob7-ie-1-1"><text>list contains(["BlockedVendorA","BlockedVendorB","SanctionedCorp"], vendorName)</text></inputEntry>
+        <inputEntry id="ob7-ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-1-4"><text>-</text></inputEntry>
+        <outputEntry id="ob7-oe-1-1"><text>"Blocked"</text></outputEntry>
+        <outputEntry id="ob7-oe-1-2"><text>"Vendor is on the internal blocked vendor list"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: Known blocked AI models (prohibited under EU AI Act or internal policy) -->
+      <rule id="ob7-rule-2">
+        <description>Blocked: AI model on prohibited list (EU AI Act Annex I or internal AI policy)</description>
+        <inputEntry id="ob7-ie-2-1"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-2-2"><text>list contains(["ProhibitedModelA","BannedAISystem"], aiModelName)</text></inputEntry>
+        <inputEntry id="ob7-ie-2-3"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-2-4"><text>-</text></inputEntry>
+        <outputEntry id="ob7-oe-2-1"><text>"Blocked"</text></outputEntry>
+        <outputEntry id="ob7-oe-2-2"><text>"AI model is on the prohibited model list"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Non-compliant data residency -->
+      <rule id="ob7-rule-3">
+        <description>Blocked: Data residency requirement cannot be met</description>
+        <inputEntry id="ob7-ie-3-1"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-3-2"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-3-3"><text>"Non-Compliant"</text></inputEntry>
+        <inputEntry id="ob7-ie-3-4"><text>-</text></inputEntry>
+        <outputEntry id="ob7-oe-3-1"><text>"Blocked"</text></outputEntry>
+        <outputEntry id="ob7-oe-3-2"><text>"Data residency requirement cannot be satisfied"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Explicit compliance blocker flag -->
+      <rule id="ob7-rule-4">
+        <description>Blocked: Compliance team has flagged a hard blocker</description>
+        <inputEntry id="ob7-ie-4-1"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-4-2"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-4-3"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-4-4"><text>true</text></inputEntry>
+        <outputEntry id="ob7-oe-4-1"><text>"Blocked"</text></outputEntry>
+        <outputEntry id="ob7-oe-4-2"><text>"Compliance blocker identified during classification"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: Default — no deal killers detected -->
+      <rule id="ob7-rule-5">
+        <description>Proceed: No deal killers detected — request may continue</description>
+        <inputEntry id="ob7-ie-5-1"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-5-2"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ob7-ie-5-4"><text>-</text></inputEntry>
+        <outputEntry id="ob7-oe-5-1"><text>"Proceed"</text></outputEntry>
+        <outputEntry id="ob7-oe-5-2"><text>"No deal killers detected"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="OB-DMN7-diagram">
+      <dmndi:DMNShape id="OB-DMN7-shape" dmnElementRef="OB_DMN_DealKillerPrescreen">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

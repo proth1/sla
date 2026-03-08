@@ -8,13 +8,16 @@ MEMORY_DIR="$CLAUDE_PROJECT_DIR/.claude/memory-bank"
 BRANCH=$(git -C "$CLAUDE_PROJECT_DIR" branch --show-current 2>/dev/null || echo "unknown")
 PULL_STATUS=""
 if [ "$BRANCH" = "main" ]; then
-  PULL_RESULT=$(git -C "$CLAUDE_PROJECT_DIR" pull --no-rebase 2>&1)
-  if echo "$PULL_RESULT" | grep -q "Already up to date"; then
-    PULL_STATUS="up to date"
-  elif echo "$PULL_RESULT" | grep -q "Updating"; then
-    PULL_STATUS="pulled new changes"
+  if ! git -C "$CLAUDE_PROJECT_DIR" pull origin main --no-rebase 2>/dev/null; then
+    echo "⚠ Warning: git pull failed, continuing with local state"
+    PULL_STATUS="pull failed"
   else
-    PULL_STATUS="pull skipped"
+    PULL_RESULT=$(git -C "$CLAUDE_PROJECT_DIR" log -1 --format="%s" 2>/dev/null || echo "")
+    if git -C "$CLAUDE_PROJECT_DIR" status 2>/dev/null | grep -q "Your branch is up to date"; then
+      PULL_STATUS="up to date"
+    else
+      PULL_STATUS="pulled new changes"
+    fi
   fi
 fi
 

@@ -1,0 +1,110 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Step1",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Step 1: Understand the Need\nTell us about the software or service you're evaluating. This drives which questions vendors will be asked.",
+      "id": "Field_S1_01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S1_02"
+    },
+    {
+      "type": "select",
+      "key": "technologyType",
+      "label": "Technology Type",
+      "description": "What type of technology is this?",
+      "validate": { "required": true },
+      "values": [
+        { "label": "SaaS Platform", "value": "SaaS" },
+        { "label": "On-Premise Software", "value": "OnPrem" },
+        { "label": "API / Integration", "value": "API" },
+        { "label": "AI / ML Platform", "value": "AI_ML" },
+        { "label": "Infrastructure", "value": "Infrastructure" },
+        { "label": "Data Platform", "value": "DataPlatform" },
+        { "label": "Other", "value": "Other" }
+      ],
+      "id": "Field_S1_03"
+    },
+    {
+      "type": "textarea",
+      "key": "primaryUseCase",
+      "label": "Primary Use Case",
+      "description": "What business problem does this solve? Be specific — this helps determine which governance teams will engage.",
+      "validate": { "required": true, "minLength": 20 },
+      "id": "Field_S1_04"
+    },
+    {
+      "type": "select",
+      "key": "rfpUrgency",
+      "label": "Urgency",
+      "description": "How urgently is this needed?",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Critical — blocking active project", "value": "critical" },
+        { "label": "High — needed within 3 months", "value": "high" },
+        { "label": "Standard — planned initiative", "value": "standard" },
+        { "label": "Exploratory — evaluating options", "value": "exploratory" }
+      ],
+      "id": "Field_S1_05"
+    },
+    {
+      "type": "select",
+      "key": "budgetRange",
+      "label": "Budget Range",
+      "description": "Estimated annual cost of this engagement.",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Under $25K", "value": "under_25k" },
+        { "label": "$25K - $100K", "value": "25k_100k" },
+        { "label": "$100K - $500K", "value": "100k_500k" },
+        { "label": "Over $500K", "value": "over_500k" },
+        { "label": "Unknown", "value": "unknown" }
+      ],
+      "id": "Field_S1_06"
+    },
+    {
+      "type": "radio",
+      "key": "hasAI",
+      "label": "AI / ML Involvement",
+      "description": "Does this technology use artificial intelligence or machine learning?",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Yes", "value": "yes" },
+        { "label": "No", "value": "no" },
+        { "label": "Unsure", "value": "unsure" }
+      ],
+      "id": "Field_S1_07"
+    },
+    {
+      "type": "select",
+      "key": "businessCriticality",
+      "label": "Business Criticality",
+      "description": "How critical is this to business operations? (Different from urgency — this is about organizational impact, not timeline.)",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Mission-Critical — failure causes significant business disruption", "value": "mission-critical" },
+        { "label": "Significant — important but alternatives exist", "value": "significant" },
+        { "label": "Standard — supports normal operations", "value": "standard" },
+        { "label": "Exploratory — no operational dependency", "value": "exploratory" }
+      ],
+      "id": "Field_S1_08"
+    },
+    {
+      "type": "textfield",
+      "key": "costCenter",
+      "label": "Cost Center",
+      "description": "Cost center code for budget validation.",
+      "validate": { "required": true },
+      "id": "Field_S1_09"
+    }
+  ]
+}

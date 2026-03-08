@@ -1,0 +1,54 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "cv-answer-question",
+  "components": [
+    {
+      "type": "group",
+      "label": "Answer Committee Question",
+      "id": "Field_CV_AQ_001",
+      "components": [
+        {
+          "type": "text",
+          "text": "Review and respond to the committee member's question about the evidence brief.",
+          "id": "Field_CV_AQ_002"
+        },
+        {
+          "type": "textarea",
+          "key": "questionText",
+          "label": "Question",
+          "disabled": true,
+          "id": "Field_CV_AQ_003"
+        },
+        {
+          "type": "textfield",
+          "key": "questionCategory",
+          "label": "Category",
+          "disabled": true,
+          "id": "Field_CV_AQ_004"
+        },
+        {
+          "type": "textarea",
+          "key": "answerText",
+          "label": "Answer",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_AQ_005"
+        },
+        {
+          "type": "checkbox",
+          "key": "briefUpdated",
+          "label": "Brief updated to address this question",
+          "id": "Field_CV_AQ_006"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

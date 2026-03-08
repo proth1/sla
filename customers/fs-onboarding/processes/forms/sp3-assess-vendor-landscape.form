@@ -1,0 +1,177 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_AssessVendorLandscape",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Vendor Landscape Assessment",
+      "id": "Field_001"
+    },
+    {
+      "type": "text",
+      "text": "Evaluate the vendor market, compare candidates, and make a selection recommendation.",
+      "id": "Field_002"
+    },
+    {
+      "type": "separator",
+      "id": "Field_003"
+    },
+    {
+      "type": "group",
+      "label": "Market Analysis",
+      "id": "Field_004",
+      "components": [
+        {
+          "type": "number",
+          "key": "vendorsEvaluated",
+          "label": "Vendors Evaluated",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        },
+        {
+          "type": "textarea",
+          "key": "vendorShortlist",
+          "label": "Vendor Shortlist",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_006"
+        },
+        {
+          "type": "select",
+          "key": "marketMaturityAssessment",
+          "label": "Market Maturity Assessment",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Emerging",
+              "value": "emerging"
+            },
+            {
+              "label": "Growing",
+              "value": "growing"
+            },
+            {
+              "label": "Mature",
+              "value": "mature"
+            },
+            {
+              "label": "Declining",
+              "value": "declining"
+            }
+          ],
+          "id": "Field_007"
+        },
+        {
+          "type": "textarea",
+          "key": "competitiveLandscapeSummary",
+          "label": "Competitive Landscape Summary",
+          "id": "Field_008"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_009"
+    },
+    {
+      "type": "group",
+      "label": "Vendor Comparison",
+      "id": "Field_010",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "evaluationCriteriaUsed",
+          "label": "Evaluation Criteria Used",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_011"
+        },
+        {
+          "type": "textfield",
+          "key": "topVendorRecommendation",
+          "label": "Top Vendor Recommendation",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_012"
+        },
+        {
+          "type": "textarea",
+          "key": "recommendationRationale",
+          "label": "Recommendation Rationale",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_013"
+        },
+        {
+          "type": "textarea",
+          "key": "concentrationRiskAssessment",
+          "label": "Concentration Risk Assessment",
+          "id": "Field_014"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_015"
+    },
+    {
+      "type": "group",
+      "label": "Selection Decision",
+      "id": "Field_016",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "vendorSelectedName",
+          "label": "Vendor Selected",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_017"
+        },
+        {
+          "type": "textarea",
+          "key": "selectionDecisionRationale",
+          "label": "Selection Decision Rationale",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_018"
+        },
+        {
+          "type": "radio",
+          "key": "vendorSelected",
+          "label": "Vendor Selected",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_019"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

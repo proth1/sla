@@ -37,15 +37,29 @@ if [ -f "$ACTIVE_CONTEXT" ]; then
 fi
 
 # Write state file
-cat > "$STATE_FILE" << EOF
+HAD_UNCOMMITTED=$([ -n "$STATUS" ] && echo "true" || echo "false")
+if command -v jq &>/dev/null; then
+  jq -n \
+    --arg lastSessionEnd "$TIMESTAMP" \
+    --arg branch "$BRANCH" \
+    --arg lastCommit "$LAST_COMMIT" \
+    --argjson hadUncommittedChanges "$HAD_UNCOMMITTED" \
+    --argjson activeContextUpdated "$CONTEXT_UPDATED" \
+    '{lastSessionEnd: $lastSessionEnd, branch: $branch, lastCommit: $lastCommit, hadUncommittedChanges: $hadUncommittedChanges, activeContextUpdated: $activeContextUpdated}' \
+    > "$STATE_FILE"
+else
+  BRANCH_ESC=$(printf '%s' "$BRANCH" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  LAST_COMMIT_ESC=$(printf '%s' "$LAST_COMMIT" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  cat > "$STATE_FILE" << JSONEOF
 {
   "lastSessionEnd": "$TIMESTAMP",
-  "branch": "$BRANCH",
-  "lastCommit": "$LAST_COMMIT",
-  "hadUncommittedChanges": $([ -n "$STATUS" ] && echo "true" || echo "false"),
+  "branch": "$BRANCH_ESC",
+  "lastCommit": "$LAST_COMMIT_ESC",
+  "hadUncommittedChanges": $HAD_UNCOMMITTED,
   "activeContextUpdated": $CONTEXT_UPDATED
 }
-EOF
+JSONEOF
+fi
 
 # If activeContext wasn't updated, append a warning marker
 if [ "$CONTEXT_UPDATED" = "false" ] && [ -f "$ACTIVE_CONTEXT" ]; then

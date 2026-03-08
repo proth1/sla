@@ -1,0 +1,223 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_EvaluateVendorResponse",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Evaluate Vendor Response",
+      "id": "Field_001"
+    },
+    {
+      "type": "text",
+      "text": "Evaluate the vendor's proposal against functional, technical, and commercial requirements.",
+      "id": "Field_002"
+    },
+    {
+      "type": "separator",
+      "id": "Field_003"
+    },
+    {
+      "type": "group",
+      "label": "Proposal Evaluation",
+      "id": "Field_004",
+      "components": [
+        {
+          "type": "select",
+          "key": "functionalRequirementsCoverage",
+          "label": "Functional Requirements Coverage",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Full",
+              "value": "full"
+            },
+            {
+              "label": "Partial",
+              "value": "partial"
+            },
+            {
+              "label": "Insufficient",
+              "value": "insufficient"
+            }
+          ],
+          "id": "Field_005"
+        },
+        {
+          "type": "select",
+          "key": "technicalRequirementsCoverage",
+          "label": "Technical Requirements Coverage",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Full",
+              "value": "full"
+            },
+            {
+              "label": "Partial",
+              "value": "partial"
+            },
+            {
+              "label": "Insufficient",
+              "value": "insufficient"
+            }
+          ],
+          "id": "Field_006"
+        },
+        {
+          "type": "radio",
+          "key": "slaCommitmentsAcceptable",
+          "label": "SLA Commitments Acceptable",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "Negotiation Needed",
+              "value": "negotiation-needed"
+            }
+          ],
+          "id": "Field_007"
+        },
+        {
+          "type": "select",
+          "key": "pricingAssessment",
+          "label": "Pricing Assessment",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Competitive",
+              "value": "competitive"
+            },
+            {
+              "label": "Acceptable",
+              "value": "acceptable"
+            },
+            {
+              "label": "Above Market",
+              "value": "above-market"
+            },
+            {
+              "label": "Unacceptable",
+              "value": "unacceptable"
+            }
+          ],
+          "id": "Field_008"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_009"
+    },
+    {
+      "type": "group",
+      "label": "Scoring",
+      "id": "Field_010",
+      "components": [
+        {
+          "type": "number",
+          "key": "overallVendorScore",
+          "label": "Overall Vendor Score (0-100)",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_011"
+        },
+        {
+          "type": "number",
+          "key": "functionalityScore",
+          "label": "Functionality Score (0-100)",
+          "id": "Field_012"
+        },
+        {
+          "type": "number",
+          "key": "securityScore",
+          "label": "Security Score (0-100)",
+          "id": "Field_013"
+        },
+        {
+          "type": "number",
+          "key": "performanceScore",
+          "label": "Performance Score (0-100)",
+          "id": "Field_014"
+        },
+        {
+          "type": "number",
+          "key": "integrationScore",
+          "label": "Integration Score (0-100)",
+          "id": "Field_015"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_016"
+    },
+    {
+      "type": "group",
+      "label": "Evaluation Decision",
+      "id": "Field_017",
+      "components": [
+        {
+          "type": "select",
+          "key": "evaluationApproved",
+          "label": "Evaluation Decision",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Approved",
+              "value": "approved"
+            },
+            {
+              "label": "Approved with Conditions",
+              "value": "approved-with-conditions"
+            },
+            {
+              "label": "Rejected",
+              "value": "rejected"
+            }
+          ],
+          "id": "Field_018"
+        },
+        {
+          "type": "textarea",
+          "key": "evaluationConditions",
+          "label": "Conditions",
+          "id": "Field_019"
+        },
+        {
+          "type": "textarea",
+          "key": "evaluationSummary",
+          "label": "Evaluation Summary",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_020"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

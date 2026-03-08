@@ -1,0 +1,189 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_VendorProposal",
+  "components": [
+    {
+      "type": "group",
+      "label": "Commercial Proposal",
+      "id": "Field_001",
+      "components": [
+        {
+          "type": "select",
+          "key": "pricingModel",
+          "label": "Pricing model",
+          "values": [
+            {
+              "label": "Subscription",
+              "value": "subscription"
+            },
+            {
+              "label": "Perpetual",
+              "value": "perpetual"
+            },
+            {
+              "label": "Consumption",
+              "value": "consumption"
+            },
+            {
+              "label": "Hybrid",
+              "value": "hybrid"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_002"
+        },
+        {
+          "type": "number",
+          "key": "annualCostEstimate",
+          "label": "Annual cost estimate",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_003"
+        },
+        {
+          "type": "number",
+          "key": "tcoEstimate3Year",
+          "label": "TCO estimate 3-year",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004"
+        },
+        {
+          "type": "textfield",
+          "key": "implementationTimeline",
+          "label": "Implementation timeline",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        },
+        {
+          "type": "textfield",
+          "key": "slaTargetsUptime",
+          "label": "SLA targets \u2014 uptime",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_006"
+        },
+        {
+          "type": "textfield",
+          "key": "slaTargetsResponseTime",
+          "label": "SLA targets \u2014 response time",
+          "id": "Field_007"
+        },
+        {
+          "type": "textfield",
+          "key": "slaTargetsResolutionTime",
+          "label": "SLA targets \u2014 resolution time",
+          "id": "Field_008"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Technical Proposal",
+      "id": "Field_009",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "technologyStack",
+          "label": "Technology stack",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_010"
+        },
+        {
+          "type": "textarea",
+          "key": "integrationApproach",
+          "label": "Integration approach",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_011"
+        },
+        {
+          "type": "textarea",
+          "key": "dataResidencyLocations",
+          "label": "Data residency locations",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_012"
+        },
+        {
+          "type": "textarea",
+          "key": "subProcessorList",
+          "label": "Sub-processor list",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_013"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Resources",
+      "id": "Field_014",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "keyPersonnelAssigned",
+          "label": "Key personnel assigned",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_015"
+        },
+        {
+          "type": "textarea",
+          "key": "implementationSupportModel",
+          "label": "Implementation support model",
+          "id": "Field_016"
+        },
+        {
+          "type": "textarea",
+          "key": "referenceCustomersFinServ",
+          "label": "Reference customers in financial services",
+          "id": "Field_017"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_018"
+    },
+    {
+      "type": "radio",
+      "key": "proposalSubmitted",
+      "label": "Proposal submitted",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        }
+      ],
+      "validate": {
+        "required": true
+      },
+      "id": "Field_019"
+    }
+  ],
+  "type": "default"
+}

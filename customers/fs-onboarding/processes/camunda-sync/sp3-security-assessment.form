@@ -1,0 +1,451 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_SecurityAssessment",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Security Assessment",
+      "id": "Field_001"
+    },
+    {
+      "type": "text",
+      "text": "Comprehensive cybersecurity assessment covering encryption, vulnerability management, incident response, and certifications.",
+      "id": "Field_002"
+    },
+    {
+      "type": "separator",
+      "id": "Field_003"
+    },
+    {
+      "type": "group",
+      "label": "Security Classification",
+      "id": "Field_800",
+      "components": [
+        {
+          "type": "select",
+          "key": "securityCategory",
+          "label": "Security Category",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Tier 1: Critical Infrastructure",
+              "value": "tier1-critical-infrastructure"
+            },
+            {
+              "label": "Tier 2: Sensitive Data",
+              "value": "tier2-sensitive-data"
+            },
+            {
+              "label": "Tier 3: Internal Systems",
+              "value": "tier3-internal-systems"
+            },
+            {
+              "label": "Tier 4: Non-sensitive",
+              "value": "tier4-non-sensitive"
+            },
+            {
+              "label": "Tier 5: Read-only",
+              "value": "tier5-read-only"
+            },
+            {
+              "label": "Tier 6: Public",
+              "value": "tier6-public"
+            }
+          ],
+          "id": "Field_801"
+        },
+        {
+          "type": "textfield",
+          "key": "assessmentLevel",
+          "label": "Assessment Level",
+          "disabled": true,
+          "description": "DMN-determined assessment level (read-only).",
+          "id": "Field_802"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_803"
+    },
+    {
+      "type": "group",
+      "label": "Security Questionnaire",
+      "id": "Field_004",
+      "components": [
+        {
+          "type": "radio",
+          "key": "encryptionAtRest",
+          "label": "Encryption at Rest",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "Partial",
+              "value": "partial"
+            }
+          ],
+          "id": "Field_005"
+        },
+        {
+          "type": "radio",
+          "key": "encryptionInTransit",
+          "label": "Encryption in Transit",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "Partial",
+              "value": "partial"
+            }
+          ],
+          "id": "Field_006"
+        },
+        {
+          "type": "textarea",
+          "key": "keyManagementApproach",
+          "label": "Key Management Approach",
+          "id": "Field_007"
+        },
+        {
+          "type": "radio",
+          "key": "mfaEnforcement",
+          "label": "MFA Enforcement",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "Partial",
+              "value": "partial"
+            }
+          ],
+          "id": "Field_008"
+        },
+        {
+          "type": "radio",
+          "key": "privilegedAccessManagement",
+          "label": "Privileged Access Management",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_009"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_010"
+    },
+    {
+      "type": "group",
+      "label": "Vulnerability Management",
+      "id": "Field_011",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "lastPenTestDate",
+          "label": "Last Penetration Test Date",
+          "id": "Field_012"
+        },
+        {
+          "type": "textarea",
+          "key": "penTestFindings",
+          "label": "Pen Test Findings Summary",
+          "id": "Field_013"
+        },
+        {
+          "type": "textfield",
+          "key": "mttpCriticalVulnerabilities",
+          "label": "Mean Time to Patch Critical Vulnerabilities",
+          "id": "Field_014"
+        },
+        {
+          "type": "radio",
+          "key": "vulnerabilityDisclosurePolicy",
+          "label": "Vulnerability Disclosure Policy",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_015"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_016"
+    },
+    {
+      "type": "group",
+      "label": "Incident Response",
+      "id": "Field_017",
+      "components": [
+        {
+          "type": "radio",
+          "key": "incidentResponsePlan",
+          "label": "Incident Response Plan",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_018"
+        },
+        {
+          "type": "textfield",
+          "key": "notificationSLA",
+          "label": "Notification SLA (e.g. 24 hours)",
+          "id": "Field_019"
+        },
+        {
+          "type": "textarea",
+          "key": "securityIncidentHistory",
+          "label": "Security Incident History",
+          "id": "Field_020"
+        },
+        {
+          "type": "radio",
+          "key": "breachHistoryPast3Years",
+          "label": "Breach History in Past 3 Years",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_021"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_022"
+    },
+    {
+      "type": "group",
+      "label": "Certifications",
+      "id": "Field_023",
+      "components": [
+        {
+          "type": "radio",
+          "key": "soc2TypeII",
+          "label": "SOC 2 Type II",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_024"
+        },
+        {
+          "type": "radio",
+          "key": "iso27001",
+          "label": "ISO 27001",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_025"
+        },
+        {
+          "type": "radio",
+          "key": "pciDss",
+          "label": "PCI DSS",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_026"
+        },
+        {
+          "type": "radio",
+          "key": "fedRamp",
+          "label": "FedRAMP",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_027"
+        },
+        {
+          "type": "textfield",
+          "key": "otherCertifications",
+          "label": "Other Certifications",
+          "id": "Field_028"
+        },
+        {
+          "type": "textarea",
+          "key": "certificationExpiryDates",
+          "label": "Certification Expiry Dates",
+          "id": "Field_029"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_030"
+    },
+    {
+      "type": "group",
+      "label": "Security Decision",
+      "id": "Field_031",
+      "components": [
+        {
+          "type": "select",
+          "key": "securityRiskRating",
+          "label": "Security Risk Rating",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Low",
+              "value": "low"
+            },
+            {
+              "label": "Medium",
+              "value": "medium"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            },
+            {
+              "label": "Critical",
+              "value": "critical"
+            }
+          ],
+          "id": "Field_032"
+        },
+        {
+          "type": "textarea",
+          "key": "securityAssessmentNotes",
+          "label": "Security Assessment Notes",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_033"
+        },
+        {
+          "type": "select",
+          "key": "securityApproval",
+          "label": "Security Approval",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Approved",
+              "value": "approved"
+            },
+            {
+              "label": "Conditional",
+              "value": "conditional"
+            },
+            {
+              "label": "Rejected",
+              "value": "rejected"
+            }
+          ],
+          "id": "Field_034"
+        },
+        {
+          "type": "textarea",
+          "key": "securityConditions",
+          "label": "Conditions",
+          "id": "Field_035"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

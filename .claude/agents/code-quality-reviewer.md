@@ -148,7 +148,7 @@ process_bpmn_file() {
 - No orphaned sequence flows
 - All gateways have matching conditions on outgoing flows
 - Element IDs follow `Task_[Phase]_[Action]`, `Gateway_[Phase]_[Decision]`, `Event_[Phase]_[Trigger]`
-- Lanes reference the correct 7 swim lane IDs
+- Lanes reference the correct 9+1 swim lane candidateGroups (business-lane, governance-lane, contracting-lane, technical-assessment, ai-review, compliance-lane, oversight-lane, automation-lane + vendor-response)
 
 ### DMN XML Quality Standards
 - Valid DMN 1.3 namespace declarations

@@ -1,0 +1,197 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Cat8",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Category 8: Third-Party Risk (OCC 2023-17)\nThird-party risk management, DORA compliance, and regulatory examination history.\n\n**Governance topics**: TPRM, Compliance",
+      "id": "Field_Cat8_Header"
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat8_Sep1"
+    },
+    {
+      "id": "Field_C8_1",
+      "label": "C8.1: Formal third-party risk management program",
+      "type": "textarea",
+      "key": "c8_1"
+    },
+    {
+      "id": "Field_C8_2",
+      "label": "C8.2: Risk assessment methodology",
+      "type": "textarea",
+      "key": "c8_2"
+    },
+    {
+      "id": "Field_C8_3",
+      "label": "C8.3: Subcontractor/fourth-party oversight program",
+      "type": "textarea",
+      "key": "c8_3"
+    },
+    {
+      "id": "Field_C8_4",
+      "label": "C8.4: Regulatory examination history (past 3 years)",
+      "type": "textarea",
+      "key": "c8_4"
+    },
+    {
+      "id": "Field_C8_5",
+      "label": "C8.5: Consent to audit rights",
+      "type": "radio",
+      "key": "c8_5",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "label": "Partial",
+          "value": "partial"
+        }
+      ]
+    },
+    {
+      "id": "Field_C8_6",
+      "label": "C8.6: Notification requirements for material changes",
+      "type": "textarea",
+      "key": "c8_6"
+    },
+    {
+      "id": "Field_C8_7",
+      "label": "C8.7: Contingency planning for vendor failure/exit",
+      "type": "textarea",
+      "key": "c8_7"
+    },
+    {
+      "id": "Field_C8_8",
+      "label": "C8.8: Key person dependencies and succession planning",
+      "type": "textarea",
+      "key": "c8_8"
+    },
+    {
+      "id": "Field_C8_9",
+      "label": "C8.9: Geographic risk factors (sanctions, political stability)",
+      "type": "textarea",
+      "key": "c8_9"
+    },
+    {
+      "id": "Field_C8_10",
+      "label": "C8.10: Concentration risk \u2014 services provided to other clients in same industry",
+      "type": "textarea",
+      "key": "c8_10"
+    },
+    {
+      "id": "Field_C8_11",
+      "label": "C8.11: Right to terminate without penalty for regulatory non-compliance",
+      "type": "radio",
+      "key": "c8_11",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        },
+        {
+          "label": "Partial",
+          "value": "partial"
+        }
+      ]
+    },
+    {
+      "id": "Field_C8_12",
+      "label": "C8.12: Data return and destruction obligations upon termination",
+      "type": "textarea",
+      "key": "c8_12"
+    },
+    {
+      "id": "Field_C8_13",
+      "label": "C8.13: Compliance with OCC 2023-17 third-party risk management guidance",
+      "type": "textarea",
+      "key": "c8_13"
+    },
+    {
+      "id": "Field_C8_14",
+      "label": "C8.14: Independent audit reports (SOC 1, SOC 2, ISAE 3402)",
+      "type": "checklist",
+      "key": "c8_14",
+      "values": [
+        {
+          "label": "SOC 1",
+          "value": "soc_1"
+        },
+        {
+          "label": "SOC 2",
+          "value": "soc_2"
+        },
+        {
+          "label": "ISAE 3402",
+          "value": "isae_3402"
+        },
+        {
+          "label": "None",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "id": "Field_C8_15",
+      "label": "C8.15: Remediation tracking for identified risk findings",
+      "type": "textarea",
+      "key": "c8_15"
+    },
+    {
+      "id": "Field_C8_16",
+      "label": "C8.16: DORA Information Register data: service description, data types, criticality, recovery objectives",
+      "type": "textarea",
+      "key": "c8_16"
+    },
+    {
+      "id": "Field_C8_17",
+      "label": "C8.17: Exit strategy: transition plan, data migration, timeline, alternative providers",
+      "type": "textarea",
+      "key": "c8_17"
+    },
+    {
+      "id": "Field_C8_18",
+      "label": "C8.18: DORA incident reporting: 4h initial, 72h intermediate, 1-month final timelines",
+      "type": "textarea",
+      "key": "c8_18"
+    },
+    {
+      "id": "Field_C8_19",
+      "label": "C8.19: Threat-Led Penetration Testing (TLPT) per DORA Art. 26",
+      "type": "textarea",
+      "key": "c8_19"
+    },
+    {
+      "type": "separator",
+      "id": "Field_Cat8_EvidSep"
+    },
+    {
+      "type": "text",
+      "text": "### Evidence Uploads\nPlease attach relevant certifications, audit reports, or assessment summaries below.",
+      "id": "Field_Cat8_EvidHeader"
+    },
+    {
+      "type": "textarea",
+      "key": "cat8_evidence_description",
+      "label": "Evidence Description",
+      "description": "List the documents you are attaching (e.g., SOC 2 Type II report, ISO 27001 certificate).",
+      "id": "Field_Cat8_EvidDesc"
+    }
+  ]
+}

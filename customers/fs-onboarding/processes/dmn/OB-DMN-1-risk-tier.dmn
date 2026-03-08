@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="OB-DMN1-RiskTierClassification-definitions"
+             name="OB-DMN-1: Risk Tier Classification (Onboarding)"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="OB_DMN_RiskTierClassification"
+            name="Risk Tier Classification (Onboarding)"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="OB_DMN_RiskTierClassification-table" hitPolicy="UNIQUE">
+
+      <!--
+        OB-DMN-1: Risk Tier Classification (Onboarding Variant)
+        Phase: 2 (Planning and Inherent Risk Scoping) — Task 2.3
+        Hit Policy: UNIQUE
+        Derived from: DMN_RiskTierClassification (shared)
+        Changes:
+          - Added output column: onboardingEligible (boolean)
+          - Unacceptable/High → onboardingEligible = false
+          - Limited/Minimal → onboardingEligible = true
+          - Removed rule-9 (Data >= 8 alone triggers High) since onboarding is bounded
+      -->
+
+      <input id="ob1-input-dataSensitivity" label="Data Sensitivity Score (1-10)">
+        <inputExpression id="ob1-inputExpr-dataSensitivity" typeRef="integer">
+          <text>dataSensitivityScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob1-input-regulatoryExposure" label="Regulatory Exposure Score (1-10)">
+        <inputExpression id="ob1-inputExpr-regulatoryExposure" typeRef="integer">
+          <text>regulatoryExposureScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob1-input-operationalCriticality" label="Operational Criticality Score (1-10)">
+        <inputExpression id="ob1-inputExpr-operationalCriticality" typeRef="integer">
+          <text>operationalCriticalityScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob1-input-aiComplexity" label="AI Complexity Score (1-10)">
+        <inputExpression id="ob1-inputExpr-aiComplexity" typeRef="integer">
+          <text>aiComplexityScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob1-input-thirdPartyDepth" label="Third-Party Dependency Depth Score (1-10)">
+        <inputExpression id="ob1-inputExpr-thirdPartyDepth" typeRef="integer">
+          <text>thirdPartyDependencyDepthScore</text>
+        </inputExpression>
+      </input>
+
+      <output id="ob1-output-riskTier"
+              label="Risk Tier"
+              name="riskTier"
+              typeRef="string" />
+
+      <output id="ob1-output-onboardingEligible"
+              label="Onboarding Eligible"
+              name="onboardingEligible"
+              typeRef="boolean" />
+
+      <!-- UNACCEPTABLE — Any single score >= 9 -->
+
+      <rule id="ob1-rule-1">
+        <description>Data Sensitivity >= 9: Unacceptable risk — not eligible for onboarding</description>
+        <inputEntry id="ob1-ie-1-1"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ob1-ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ob1-ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ob1-ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ob1-ie-1-5"><text>-</text></inputEntry>
+        <outputEntry id="ob1-oe-1-1"><text>"Unacceptable"</text></outputEntry>
+        <outputEntry id="ob1-oe-1-2"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="ob1-rule-2">
+        <description>Regulatory Exposure >= 9: Unacceptable risk — not eligible for onboarding</description>
+        <inputEntry id="ob1-ie-2-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-2-2"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ob1-ie-2-3"><text>-</text></inputEntry>
+        <inputEntry id="ob1-ie-2-4"><text>-</text></inputEntry>
+        <inputEntry id="ob1-ie-2-5"><text>-</text></inputEntry>
+        <outputEntry id="ob1-oe-2-1"><text>"Unacceptable"</text></outputEntry>
+        <outputEntry id="ob1-oe-2-2"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="ob1-rule-3">
+        <description>Operational Criticality >= 9: Unacceptable risk — not eligible for onboarding</description>
+        <inputEntry id="ob1-ie-3-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-3-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-3-3"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ob1-ie-3-4"><text>-</text></inputEntry>
+        <inputEntry id="ob1-ie-3-5"><text>-</text></inputEntry>
+        <outputEntry id="ob1-oe-3-1"><text>"Unacceptable"</text></outputEntry>
+        <outputEntry id="ob1-oe-3-2"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="ob1-rule-4">
+        <description>AI Complexity >= 9: Unacceptable risk — not eligible for onboarding</description>
+        <inputEntry id="ob1-ie-4-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-4-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-4-3"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-4-4"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ob1-ie-4-5"><text>-</text></inputEntry>
+        <outputEntry id="ob1-oe-4-1"><text>"Unacceptable"</text></outputEntry>
+        <outputEntry id="ob1-oe-4-2"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="ob1-rule-5">
+        <description>Third-Party Dependency >= 9: Unacceptable risk — not eligible for onboarding</description>
+        <inputEntry id="ob1-ie-5-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-5-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-5-3"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-5-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-5-5"><text>&gt;= 9</text></inputEntry>
+        <outputEntry id="ob1-oe-5-1"><text>"Unacceptable"</text></outputEntry>
+        <outputEntry id="ob1-oe-5-2"><text>false</text></outputEntry>
+      </rule>
+
+      <!-- HIGH — Weighted composite >= 7.0 (not eligible for onboarding fast-track) -->
+
+      <rule id="ob1-rule-6">
+        <description>High risk: Data >= 7, Regulatory >= 7, Operational >= 7 — not eligible for onboarding</description>
+        <inputEntry id="ob1-ie-6-1"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-6-2"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-6-3"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-6-4"><text>-</text></inputEntry>
+        <inputEntry id="ob1-ie-6-5"><text>-</text></inputEntry>
+        <outputEntry id="ob1-oe-6-1"><text>"High"</text></outputEntry>
+        <outputEntry id="ob1-oe-6-2"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="ob1-rule-7">
+        <description>High risk: Data >= 7, Regulatory >= 7, AI >= 7 — not eligible for onboarding</description>
+        <inputEntry id="ob1-ie-7-1"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-7-2"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-7-3"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob1-ie-7-4"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-7-5"><text>-</text></inputEntry>
+        <outputEntry id="ob1-oe-7-1"><text>"High"</text></outputEntry>
+        <outputEntry id="ob1-oe-7-2"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="ob1-rule-8">
+        <description>High risk: Data >= 7, Regulatory >= 7, Third-Party >= 7 — not eligible for onboarding</description>
+        <inputEntry id="ob1-ie-8-1"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-8-2"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-8-3"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob1-ie-8-4"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob1-ie-8-5"><text>[7..8]</text></inputEntry>
+        <outputEntry id="ob1-oe-8-1"><text>"High"</text></outputEntry>
+        <outputEntry id="ob1-oe-8-2"><text>false</text></outputEntry>
+      </rule>
+
+      <!-- Rule-9 from shared DMN removed: "Data >= 8 alone" not applicable for bounded onboarding -->
+
+      <rule id="ob1-rule-9">
+        <description>High risk: Operational >= 8, Data >= 5, Regulatory >= 5 — not eligible for onboarding</description>
+        <inputEntry id="ob1-ie-9-1"><text>[5..7]</text></inputEntry>
+        <inputEntry id="ob1-ie-9-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-9-3"><text>8</text></inputEntry>
+        <inputEntry id="ob1-ie-9-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-9-5"><text>[1..8]</text></inputEntry>
+        <outputEntry id="ob1-oe-9-1"><text>"High"</text></outputEntry>
+        <outputEntry id="ob1-oe-9-2"><text>false</text></outputEntry>
+      </rule>
+
+      <!-- LIMITED — Weighted composite >= 4.0 (eligible for onboarding) -->
+
+      <rule id="ob1-rule-10">
+        <description>Limited risk: Data >= 4, Regulatory >= 4, Operational >= 4 — eligible for onboarding</description>
+        <inputEntry id="ob1-ie-10-1"><text>[4..7]</text></inputEntry>
+        <inputEntry id="ob1-ie-10-2"><text>[4..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-10-3"><text>[4..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-10-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-10-5"><text>[1..8]</text></inputEntry>
+        <outputEntry id="ob1-oe-10-1"><text>"Limited"</text></outputEntry>
+        <outputEntry id="ob1-oe-10-2"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="ob1-rule-11">
+        <description>Limited risk: Data >= 4, Regulatory >= 4, AI >= 5 — eligible for onboarding</description>
+        <inputEntry id="ob1-ie-11-1"><text>[4..7]</text></inputEntry>
+        <inputEntry id="ob1-ie-11-2"><text>[4..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-11-3"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ob1-ie-11-4"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-11-5"><text>[1..8]</text></inputEntry>
+        <outputEntry id="ob1-oe-11-1"><text>"Limited"</text></outputEntry>
+        <outputEntry id="ob1-oe-11-2"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="ob1-rule-12">
+        <description>Limited risk: High third-party depth with moderate other scores — eligible for onboarding</description>
+        <inputEntry id="ob1-ie-12-1"><text>[4..7]</text></inputEntry>
+        <inputEntry id="ob1-ie-12-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-12-3"><text>[4..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-12-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-12-5"><text>[6..8]</text></inputEntry>
+        <outputEntry id="ob1-oe-12-1"><text>"Limited"</text></outputEntry>
+        <outputEntry id="ob1-oe-12-2"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="ob1-rule-13">
+        <description>Limited risk: Low data but high regulatory and operational — eligible for onboarding</description>
+        <inputEntry id="ob1-ie-13-1"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ob1-ie-13-2"><text>[6..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-13-3"><text>[6..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-13-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-13-5"><text>[1..8]</text></inputEntry>
+        <outputEntry id="ob1-oe-13-1"><text>"Limited"</text></outputEntry>
+        <outputEntry id="ob1-oe-13-2"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- MINIMAL — Low-scoring combinations (eligible for onboarding) -->
+
+      <rule id="ob1-rule-14">
+        <description>Minimal risk: Low scores across all dimensions — eligible for onboarding</description>
+        <inputEntry id="ob1-ie-14-1"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ob1-ie-14-2"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ob1-ie-14-3"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ob1-ie-14-4"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ob1-ie-14-5"><text>[1..5]</text></inputEntry>
+        <outputEntry id="ob1-oe-14-1"><text>"Minimal"</text></outputEntry>
+        <outputEntry id="ob1-oe-14-2"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="ob1-rule-15">
+        <description>Minimal risk: Low data, low regulatory, low AI — eligible for onboarding</description>
+        <inputEntry id="ob1-ie-15-1"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ob1-ie-15-2"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ob1-ie-15-3"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ob1-ie-15-4"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ob1-ie-15-5"><text>[1..5]</text></inputEntry>
+        <outputEntry id="ob1-oe-15-1"><text>"Minimal"</text></outputEntry>
+        <outputEntry id="ob1-oe-15-2"><text>true</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="OB-DMN1-diagram">
+      <dmndi:DMNShape id="OB-DMN1-shape" dmnElementRef="OB_DMN_RiskTierClassification">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

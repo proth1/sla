@@ -1,0 +1,984 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_OB_Phase3DueDiligence"
+                  targetNamespace="http://sla.governance/bpmn/onboarding"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="OB_Collaboration_Phase3DD">
+    <bpmn:participant id="OB_Participant_EnterpriseGov" name="Enterprise Governance — OB Phase 3: Due Diligence and Swarm Evaluation" processRef="Process_OB_Phase3_DueDiligence" />
+    <bpmn:participant id="OB_Participant_VendorThirdParty" name="Vendor / Third Party" processRef="OB_Process_VendorResponse" />
+    <bpmn:messageFlow id="OB_MsgFlow_DDRequest" name="Due Diligence Request" sourceRef="OB_Task_31_EvidenceCollection" targetRef="OB_Participant_VendorThirdParty" />
+    <bpmn:messageFlow id="OB_MsgFlow_VendorAttestation" name="Vendor Response / Attestation" sourceRef="OB_Participant_VendorThirdParty" targetRef="OB_Task_38_SwarmAggregation" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_OB_Phase3_DueDiligence" name="OB Phase 3: Due Diligence and Swarm Evaluation" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="OB_LaneSet_Phase3">
+
+      <bpmn:lane id="OB_Lane_Business" name="Business">
+        <bpmn:flowNodeRef>OB_Task_36_FinancialStability</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_36SLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="OB_Lane_Governance" name="Governance">
+        <bpmn:flowNodeRef>OB_EndEvent_Phase3Complete</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="OB_Lane_Contracting" name="Contracting" />
+
+      <bpmn:lane id="OB_Lane_TechnicalAssessment" name="Technical Assessment">
+        <bpmn:flowNodeRef>OB_Task_FT_33_SecurityAssessment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_FT33SLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_33_SecurityAssessment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_33SLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_37_OperationalResilience</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_37SLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_39_ArchitectureFeasibility</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_39SLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="OB_Lane_AIReview" name="AI Review">
+        <bpmn:flowNodeRef>OB_Task_FT_35_AIModelRisk</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_FT35SLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_35_AIModelRisk</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_35SLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="OB_Lane_Compliance" name="Compliance">
+        <bpmn:flowNodeRef>OB_Task_FT_34_ComplianceAssessment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_FT34SLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_34_ComplianceAssessment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_34SLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="OB_Lane_Oversight" name="Oversight" />
+
+      <bpmn:lane id="OB_Lane_Automation" name="Automation">
+        <bpmn:flowNodeRef>OB_StartEvent_Phase3Initiated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_31_EvidenceCollection</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_32_AgentSwarmDeployment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Timer_ProcessSLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_ProcessSLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_FastTrackCheck</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_FTParallelSplit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_FTParallelJoin</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_FullParallelSplit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_FullParallelJoin</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_PathMerge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_38_SwarmAggregation</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="OB_StartEvent_Phase3Initiated" name="Phase 2 Complete&#10;(Pathway Assigned)">
+      <bpmn:outgoing>OB_Flow_Start_31</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:serviceTask id="OB_Task_31_EvidenceCollection" name="3.1 Evidence&#10;Collection" camunda:type="external" camunda:topic="evidence-collection">
+      <bpmn:incoming>OB_Flow_Start_31</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_31_32</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="OB_Task_32_AgentSwarmDeployment" name="3.2 Agent Swarm&#10;Deployment" camunda:type="external" camunda:topic="swarm-deployment">
+      <bpmn:incoming>OB_Flow_31_32</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_32_FTCheck</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_ProcessSLA" name="5 Day&#10;SLA" attachedToRef="OB_Task_32_AgentSwarmDeployment" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_ProcessSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_ProcessSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:exclusiveGateway id="OB_Gateway_FastTrackCheck" name="Fast-Track&#10;Pathway?" default="OB_Flow_FullPath">
+      <bpmn:incoming>OB_Flow_32_FTCheck</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_FastTrackYes</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_FullPath</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:parallelGateway id="OB_Gateway_FTParallelSplit" name="Fast-Track&#10;Assessment Split">
+      <bpmn:incoming>OB_Flow_FastTrackYes</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_FTSplit_Security</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_FTSplit_Compliance</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_FTSplit_AI</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="OB_Task_FT_33_SecurityAssessment" name="3.3 Security&#10;Assessment" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>OB_Flow_FTSplit_Security</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_FT33_Join</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_FT33_SLA" name="1 Day&#10;SLA" attachedToRef="OB_Task_FT_33_SecurityAssessment" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_FT33SLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_FT33">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P1D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:serviceTask id="OB_Task_FT_34_ComplianceAssessment" name="3.4 Compliance&#10;Assessment" camunda:type="external" camunda:topic="compliance-assessment">
+      <bpmn:incoming>OB_Flow_FTSplit_Compliance</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_FT34_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_FT34_SLA" name="1 Day&#10;SLA" attachedToRef="OB_Task_FT_34_ComplianceAssessment" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_FT34SLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_FT34">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P1D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:userTask id="OB_Task_FT_35_AIModelRisk" name="3.5 AI Model&#10;Risk Assessment" camunda:candidateGroups="ai-review">
+      <bpmn:incoming>OB_Flow_FTSplit_AI</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_FT35_Join</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_FT35_SLA" name="2 Day&#10;SLA" attachedToRef="OB_Task_FT_35_AIModelRisk" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_FT35SLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_FT35">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:parallelGateway id="OB_Gateway_FTParallelJoin">
+      <bpmn:incoming>OB_Flow_FT33_Join</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_FT34_Join</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_FT35_Join</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_FTJoin_PathMerge</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:parallelGateway id="OB_Gateway_FullParallelSplit" name="Full Assessment&#10;Split">
+      <bpmn:incoming>OB_Flow_FullPath</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_FullSplit_Security</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_FullSplit_Compliance</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_FullSplit_AI</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_FullSplit_Financial</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_FullSplit_Resilience</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_FullSplit_Architecture</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="OB_Task_33_SecurityAssessment" name="3.3 Security&#10;Assessment" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>OB_Flow_FullSplit_Security</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_33_FullJoin</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_33_SLA" name="1 Day&#10;SLA" attachedToRef="OB_Task_33_SecurityAssessment" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_33SLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_33">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P1D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:serviceTask id="OB_Task_34_ComplianceAssessment" name="3.4 Compliance&#10;Assessment" camunda:type="external" camunda:topic="compliance-assessment">
+      <bpmn:incoming>OB_Flow_FullSplit_Compliance</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_34_FullJoin</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_34_SLA" name="1 Day&#10;SLA" attachedToRef="OB_Task_34_ComplianceAssessment" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_34SLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_34">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P1D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:userTask id="OB_Task_35_AIModelRisk" name="3.5 AI Model&#10;Risk Assessment" camunda:candidateGroups="ai-review">
+      <bpmn:incoming>OB_Flow_FullSplit_AI</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_35_FullJoin</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_35_SLA" name="2 Day&#10;SLA" attachedToRef="OB_Task_35_AIModelRisk" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_35SLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_35">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:userTask id="OB_Task_36_FinancialStability" name="3.6 Financial&#10;Stability Review" camunda:candidateGroups="business-lane">
+      <bpmn:incoming>OB_Flow_FullSplit_Financial</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_36_FullJoin</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_36_SLA" name="1 Day&#10;SLA" attachedToRef="OB_Task_36_FinancialStability" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_36SLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_36">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P1D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:userTask id="OB_Task_37_OperationalResilience" name="3.7 Operational&#10;Resilience Verification" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>OB_Flow_FullSplit_Resilience</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_37_FullJoin</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_37_SLA" name="1 Day&#10;SLA" attachedToRef="OB_Task_37_OperationalResilience" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_37SLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_37">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P1D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:userTask id="OB_Task_39_ArchitectureFeasibility" name="3.9 Architecture&#10;Feasibility Assessment" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>OB_Flow_FullSplit_Architecture</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_39_FullJoin</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="OB_Timer_39_SLA" name="2 Day&#10;SLA" attachedToRef="OB_Task_39_ArchitectureFeasibility" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_39SLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_39">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:parallelGateway id="OB_Gateway_FullParallelJoin">
+      <bpmn:incoming>OB_Flow_33_FullJoin</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_34_FullJoin</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_35_FullJoin</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_36_FullJoin</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_37_FullJoin</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_39_FullJoin</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_FullJoin_PathMerge</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:exclusiveGateway id="OB_Gateway_PathMerge">
+      <bpmn:incoming>OB_Flow_FTJoin_PathMerge</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_FullJoin_PathMerge</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_PathMerge_38</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:serviceTask id="OB_Task_38_SwarmAggregation" name="3.8 Swarm Results&#10;Aggregation" camunda:type="external" camunda:topic="swarm-aggregation">
+      <bpmn:incoming>OB_Flow_PathMerge_38</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_38_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="OB_EndEvent_Phase3Complete" name="Phase 3 Complete&#10;(Due Diligence Approved)">
+      <bpmn:incoming>OB_Flow_38_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_ProcessSLAEscalated" name="Process SLA&#10;Escalated (P5D)">
+      <bpmn:incoming>OB_Flow_ProcessSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_FT33SLAEscalated" name="Security Assessment&#10;SLA Escalated">
+      <bpmn:incoming>OB_Flow_FT33SLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_FT34SLAEscalated" name="Compliance Assessment&#10;SLA Escalated">
+      <bpmn:incoming>OB_Flow_FT34SLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_FT35SLAEscalated" name="AI Risk Assessment&#10;SLA Escalated">
+      <bpmn:incoming>OB_Flow_FT35SLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_33SLAEscalated" name="Security Assessment&#10;SLA Escalated">
+      <bpmn:incoming>OB_Flow_33SLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_34SLAEscalated" name="Compliance Assessment&#10;SLA Escalated">
+      <bpmn:incoming>OB_Flow_34SLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_35SLAEscalated" name="AI Risk Assessment&#10;SLA Escalated">
+      <bpmn:incoming>OB_Flow_35SLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_36SLAEscalated" name="Financial Review&#10;SLA Escalated">
+      <bpmn:incoming>OB_Flow_36SLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_37SLAEscalated" name="Operational Resilience&#10;SLA Escalated">
+      <bpmn:incoming>OB_Flow_37SLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_39SLAEscalated" name="Architecture Feasibility&#10;SLA Escalated">
+      <bpmn:incoming>OB_Flow_39SLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:textAnnotation id="OB_Annotation_OCC">
+      <bpmn:text>OCC 2023-17: Third-party risk management due diligence — security assessment and evidence collection required for all vendor engagements prior to contract execution.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_OCC" sourceRef="OB_Task_33_SecurityAssessment" targetRef="OB_Annotation_OCC" />
+
+    <bpmn:textAnnotation id="OB_Annotation_SOX">
+      <bpmn:text>SOX: Financial stability review documents vendor financial controls, audit readiness, and going-concern viability. All financial analysis logged for audit trail compliance.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_SOX" sourceRef="OB_Task_36_FinancialStability" targetRef="OB_Annotation_SOX" />
+
+    <bpmn:textAnnotation id="OB_Annotation_NIST">
+      <bpmn:text>NIST CSF 2.0: Security assessment validates vendor cybersecurity controls across Identify, Protect, Detect, Respond, and Recover functions per NIST CSF 2.0 framework.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_NIST" sourceRef="OB_Task_33_SecurityAssessment" targetRef="OB_Annotation_NIST" />
+
+    <bpmn:textAnnotation id="OB_Annotation_DORA">
+      <bpmn:text>DORA: Operational resilience verification validates ICT risk management, incident response capabilities, and digital operational resilience per EU DORA requirements for financial services.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_DORA" sourceRef="OB_Task_37_OperationalResilience" targetRef="OB_Annotation_DORA" />
+
+    <bpmn:textAnnotation id="OB_Annotation_TaskIO">
+      <bpmn:text>Task I/O: 3.1 IN(vendorName, knowledgeBaseEntryId) OUT(evidencePackageId) | 3.2 IN(evidencePackageId, pathway, riskTier) OUT(swarmTaskIds[]) | 3.3 IN(evidencePackageId) OUT(securityScore) | 3.4 IN(evidencePackageId, regulations[]) OUT(complianceScore) | 3.5 IN(evidencePackageId, aiRiskClassification) OUT(modelRiskScore) | 3.6 IN(vendorName) OUT(financialHealthScore) | 3.7 IN(evidencePackageId) OUT(resilienceScore) | 3.8 IN(all scores) OUT(aggregatedRiskScore) | 3.9 IN(technicalScope) OUT(architectureFeasible)</bpmn:text>
+    </bpmn:textAnnotation>
+
+    <bpmn:sequenceFlow id="OB_Flow_Start_31" sourceRef="OB_StartEvent_Phase3Initiated" targetRef="OB_Task_31_EvidenceCollection" />
+    <bpmn:sequenceFlow id="OB_Flow_31_32" sourceRef="OB_Task_31_EvidenceCollection" targetRef="OB_Task_32_AgentSwarmDeployment" />
+    <bpmn:sequenceFlow id="OB_Flow_32_FTCheck" sourceRef="OB_Task_32_AgentSwarmDeployment" targetRef="OB_Gateway_FastTrackCheck" />
+    <bpmn:sequenceFlow id="OB_Flow_ProcessSLAEscalate" sourceRef="OB_Timer_ProcessSLA" targetRef="OB_EndEvent_ProcessSLAEscalated" />
+
+    <bpmn:sequenceFlow id="OB_Flow_FastTrackYes" name="Yes" sourceRef="OB_Gateway_FastTrackCheck" targetRef="OB_Gateway_FTParallelSplit">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'FAST_TRACK'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="OB_Flow_FullPath" name="No" sourceRef="OB_Gateway_FastTrackCheck" targetRef="OB_Gateway_FullParallelSplit" />
+
+    <bpmn:sequenceFlow id="OB_Flow_FTSplit_Security" sourceRef="OB_Gateway_FTParallelSplit" targetRef="OB_Task_FT_33_SecurityAssessment" />
+    <bpmn:sequenceFlow id="OB_Flow_FTSplit_Compliance" sourceRef="OB_Gateway_FTParallelSplit" targetRef="OB_Task_FT_34_ComplianceAssessment" />
+    <bpmn:sequenceFlow id="OB_Flow_FTSplit_AI" sourceRef="OB_Gateway_FTParallelSplit" targetRef="OB_Task_FT_35_AIModelRisk" />
+
+    <bpmn:sequenceFlow id="OB_Flow_FT33_Join" sourceRef="OB_Task_FT_33_SecurityAssessment" targetRef="OB_Gateway_FTParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_FT34_Join" sourceRef="OB_Task_FT_34_ComplianceAssessment" targetRef="OB_Gateway_FTParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_FT35_Join" sourceRef="OB_Task_FT_35_AIModelRisk" targetRef="OB_Gateway_FTParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_FTJoin_PathMerge" sourceRef="OB_Gateway_FTParallelJoin" targetRef="OB_Gateway_PathMerge" />
+
+    <bpmn:sequenceFlow id="OB_Flow_FullSplit_Security" sourceRef="OB_Gateway_FullParallelSplit" targetRef="OB_Task_33_SecurityAssessment" />
+    <bpmn:sequenceFlow id="OB_Flow_FullSplit_Compliance" sourceRef="OB_Gateway_FullParallelSplit" targetRef="OB_Task_34_ComplianceAssessment" />
+    <bpmn:sequenceFlow id="OB_Flow_FullSplit_AI" sourceRef="OB_Gateway_FullParallelSplit" targetRef="OB_Task_35_AIModelRisk" />
+    <bpmn:sequenceFlow id="OB_Flow_FullSplit_Financial" sourceRef="OB_Gateway_FullParallelSplit" targetRef="OB_Task_36_FinancialStability" />
+    <bpmn:sequenceFlow id="OB_Flow_FullSplit_Resilience" sourceRef="OB_Gateway_FullParallelSplit" targetRef="OB_Task_37_OperationalResilience" />
+    <bpmn:sequenceFlow id="OB_Flow_FullSplit_Architecture" sourceRef="OB_Gateway_FullParallelSplit" targetRef="OB_Task_39_ArchitectureFeasibility" />
+
+    <bpmn:sequenceFlow id="OB_Flow_33_FullJoin" sourceRef="OB_Task_33_SecurityAssessment" targetRef="OB_Gateway_FullParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_34_FullJoin" sourceRef="OB_Task_34_ComplianceAssessment" targetRef="OB_Gateway_FullParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_35_FullJoin" sourceRef="OB_Task_35_AIModelRisk" targetRef="OB_Gateway_FullParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_36_FullJoin" sourceRef="OB_Task_36_FinancialStability" targetRef="OB_Gateway_FullParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_37_FullJoin" sourceRef="OB_Task_37_OperationalResilience" targetRef="OB_Gateway_FullParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_39_FullJoin" sourceRef="OB_Task_39_ArchitectureFeasibility" targetRef="OB_Gateway_FullParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_FullJoin_PathMerge" sourceRef="OB_Gateway_FullParallelJoin" targetRef="OB_Gateway_PathMerge" />
+
+    <bpmn:sequenceFlow id="OB_Flow_PathMerge_38" sourceRef="OB_Gateway_PathMerge" targetRef="OB_Task_38_SwarmAggregation" />
+    <bpmn:sequenceFlow id="OB_Flow_38_End" sourceRef="OB_Task_38_SwarmAggregation" targetRef="OB_EndEvent_Phase3Complete" />
+
+    <bpmn:sequenceFlow id="OB_Flow_FT33SLAEscalate" sourceRef="OB_Timer_FT33_SLA" targetRef="OB_EndEvent_FT33SLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_FT34SLAEscalate" sourceRef="OB_Timer_FT34_SLA" targetRef="OB_EndEvent_FT34SLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_FT35SLAEscalate" sourceRef="OB_Timer_FT35_SLA" targetRef="OB_EndEvent_FT35SLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_33SLAEscalate" sourceRef="OB_Timer_33_SLA" targetRef="OB_EndEvent_33SLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_34SLAEscalate" sourceRef="OB_Timer_34_SLA" targetRef="OB_EndEvent_34SLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_35SLAEscalate" sourceRef="OB_Timer_35_SLA" targetRef="OB_EndEvent_35SLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_36SLAEscalate" sourceRef="OB_Timer_36_SLA" targetRef="OB_EndEvent_36SLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_37SLAEscalate" sourceRef="OB_Timer_37_SLA" targetRef="OB_EndEvent_37SLAEscalated" />
+    <bpmn:sequenceFlow id="OB_Flow_39SLAEscalate" sourceRef="OB_Timer_39_SLA" targetRef="OB_EndEvent_39SLAEscalated" />
+
+  </bpmn:process>
+
+  <bpmn:process id="OB_Process_VendorResponse" name="Vendor / Third Party" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="OB_LaneSet_Vendor">
+      <bpmn:lane id="OB_Lane_VendorResponse" name="Vendor Response">
+        <bpmn:flowNodeRef>OB_StartEvent_VendorEngagement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_VendorEvidenceSubmission</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_VendorEngagementEnd</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="OB_StartEvent_VendorEngagement" name="Vendor Engagement&#10;Initiated">
+      <bpmn:outgoing>OB_Flow_VendorStart_Evidence</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="OB_Task_VendorEvidenceSubmission" name="Vendor Evidence&#10;Submission" camunda:candidateGroups="vendor-response">
+      <bpmn:incoming>OB_Flow_VendorStart_Evidence</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_VendorEvidence_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="OB_EndEvent_VendorEngagementEnd" name="Vendor Engagement&#10;Complete">
+      <bpmn:incoming>OB_Flow_VendorEvidence_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="OB_Flow_VendorStart_Evidence" sourceRef="OB_StartEvent_VendorEngagement" targetRef="OB_Task_VendorEvidenceSubmission" />
+    <bpmn:sequenceFlow id="OB_Flow_VendorEvidence_End" sourceRef="OB_Task_VendorEvidenceSubmission" targetRef="OB_EndEvent_VendorEngagementEnd" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_OB_Phase3DD">
+    <bpmndi:BPMNPlane id="BPMNPlane_OB_Phase3DD" bpmnElement="OB_Collaboration_Phase3DD">
+
+      <bpmndi:BPMNShape id="OB_Participant_EnterpriseGov_di" bpmnElement="OB_Participant_EnterpriseGov" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="2700" height="1200" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_Business_di" bpmnElement="OB_Lane_Business" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="2670" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_Governance_di" bpmnElement="OB_Lane_Governance" isHorizontal="true">
+        <dc:Bounds x="185" y="172" width="2670" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_Contracting_di" bpmnElement="OB_Lane_Contracting" isHorizontal="true">
+        <dc:Bounds x="185" y="297" width="2670" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_TechnicalAssessment_di" bpmnElement="OB_Lane_TechnicalAssessment" isHorizontal="true">
+        <dc:Bounds x="185" y="422" width="2670" height="250" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_AIReview_di" bpmnElement="OB_Lane_AIReview" isHorizontal="true">
+        <dc:Bounds x="185" y="672" width="2670" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_Compliance_di" bpmnElement="OB_Lane_Compliance" isHorizontal="true">
+        <dc:Bounds x="185" y="797" width="2670" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_Oversight_di" bpmnElement="OB_Lane_Oversight" isHorizontal="true">
+        <dc:Bounds x="185" y="922" width="2670" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_Automation_di" bpmnElement="OB_Lane_Automation" isHorizontal="true">
+        <dc:Bounds x="185" y="972" width="2670" height="275" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_StartEvent_Phase3Initiated_di" bpmnElement="OB_StartEvent_Phase3Initiated">
+        <dc:Bounds x="247" y="1086" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="221" y="1129" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_31_EvidenceCollection_di" bpmnElement="OB_Task_31_EvidenceCollection">
+        <dc:Bounds x="330" y="1064" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_32_AgentSwarmDeployment_di" bpmnElement="OB_Task_32_AgentSwarmDeployment">
+        <dc:Bounds x="480" y="1064" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_ProcessSLA_di" bpmnElement="OB_Timer_ProcessSLA">
+        <dc:Bounds x="534" y="1126" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="578" y="1130" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_ProcessSLAEscalated_di" bpmnElement="OB_EndEvent_ProcessSLAEscalated">
+        <dc:Bounds x="534" y="1175" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="510" y="1218" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_FastTrackCheck_di" bpmnElement="OB_Gateway_FastTrackCheck" isMarkerVisible="true">
+        <dc:Bounds x="630" y="1079" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="612" y="1136" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_FTParallelSplit_di" bpmnElement="OB_Gateway_FTParallelSplit">
+        <dc:Bounds x="730" y="1079" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="712" y="1136" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_FullParallelSplit_di" bpmnElement="OB_Gateway_FullParallelSplit">
+        <dc:Bounds x="730" y="1170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="712" y="1227" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_FT_33_SecurityAssessment_di" bpmnElement="OB_Task_FT_33_SecurityAssessment">
+        <dc:Bounds x="870" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_FT33_SLA_di" bpmnElement="OB_Timer_FT33_SLA">
+        <dc:Bounds x="924" y="506" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="968" y="510" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_FT33SLAEscalated_di" bpmnElement="OB_EndEvent_FT33SLAEscalated">
+        <dc:Bounds x="1022" y="424" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="998" y="464" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_FT_35_AIModelRisk_di" bpmnElement="OB_Task_FT_35_AIModelRisk">
+        <dc:Bounds x="870" y="694" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_FT35_SLA_di" bpmnElement="OB_Timer_FT35_SLA">
+        <dc:Bounds x="924" y="756" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="968" y="760" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_FT35SLAEscalated_di" bpmnElement="OB_EndEvent_FT35SLAEscalated">
+        <dc:Bounds x="1022" y="674" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="998" y="714" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_FT_34_ComplianceAssessment_di" bpmnElement="OB_Task_FT_34_ComplianceAssessment">
+        <dc:Bounds x="870" y="819" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_FT34_SLA_di" bpmnElement="OB_Timer_FT34_SLA">
+        <dc:Bounds x="924" y="881" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="968" y="885" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_FT34SLAEscalated_di" bpmnElement="OB_EndEvent_FT34SLAEscalated">
+        <dc:Bounds x="1022" y="829" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="998" y="872" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_33_SecurityAssessment_di" bpmnElement="OB_Task_33_SecurityAssessment">
+        <dc:Bounds x="1200" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_33_SLA_di" bpmnElement="OB_Timer_33_SLA">
+        <dc:Bounds x="1254" y="506" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1298" y="510" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_33SLAEscalated_di" bpmnElement="OB_EndEvent_33SLAEscalated">
+        <dc:Bounds x="1352" y="424" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1328" y="464" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_36_FinancialStability_di" bpmnElement="OB_Task_36_FinancialStability">
+        <dc:Bounds x="1200" y="69" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_36_SLA_di" bpmnElement="OB_Timer_36_SLA">
+        <dc:Bounds x="1254" y="131" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1298" y="135" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_36SLAEscalated_di" bpmnElement="OB_EndEvent_36SLAEscalated">
+        <dc:Bounds x="1352" y="79" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1328" y="56" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_37_OperationalResilience_di" bpmnElement="OB_Task_37_OperationalResilience">
+        <dc:Bounds x="1200" y="569" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_37_SLA_di" bpmnElement="OB_Timer_37_SLA">
+        <dc:Bounds x="1254" y="631" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1298" y="635" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_37SLAEscalated_di" bpmnElement="OB_EndEvent_37SLAEscalated">
+        <dc:Bounds x="1352" y="549" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1328" y="589" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_35_AIModelRisk_di" bpmnElement="OB_Task_35_AIModelRisk">
+        <dc:Bounds x="1200" y="694" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_35_SLA_di" bpmnElement="OB_Timer_35_SLA">
+        <dc:Bounds x="1254" y="756" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1298" y="760" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_35SLAEscalated_di" bpmnElement="OB_EndEvent_35SLAEscalated">
+        <dc:Bounds x="1352" y="674" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1328" y="714" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_34_ComplianceAssessment_di" bpmnElement="OB_Task_34_ComplianceAssessment">
+        <dc:Bounds x="1200" y="819" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_34_SLA_di" bpmnElement="OB_Timer_34_SLA">
+        <dc:Bounds x="1254" y="881" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1298" y="885" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_34SLAEscalated_di" bpmnElement="OB_EndEvent_34SLAEscalated">
+        <dc:Bounds x="1352" y="829" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1328" y="872" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_39_ArchitectureFeasibility_di" bpmnElement="OB_Task_39_ArchitectureFeasibility">
+        <dc:Bounds x="1200" y="1084" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Timer_39_SLA_di" bpmnElement="OB_Timer_39_SLA">
+        <dc:Bounds x="1254" y="1146" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1298" y="1150" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_39SLAEscalated_di" bpmnElement="OB_EndEvent_39SLAEscalated">
+        <dc:Bounds x="1200" y="1190" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1176" y="1233" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_FTParallelJoin_di" bpmnElement="OB_Gateway_FTParallelJoin">
+        <dc:Bounds x="1470" y="1079" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_FullParallelJoin_di" bpmnElement="OB_Gateway_FullParallelJoin">
+        <dc:Bounds x="1470" y="1170" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_PathMerge_di" bpmnElement="OB_Gateway_PathMerge" isMarkerVisible="true">
+        <dc:Bounds x="1590" y="1079" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_38_SwarmAggregation_di" bpmnElement="OB_Task_38_SwarmAggregation">
+        <dc:Bounds x="1690" y="1064" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_Phase3Complete_di" bpmnElement="OB_EndEvent_Phase3Complete">
+        <dc:Bounds x="1852" y="216" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1828" y="259" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Annotation_OCC_di" bpmnElement="OB_Annotation_OCC">
+        <dc:Bounds x="1430" y="340" width="310" height="44" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Annotation_SOX_di" bpmnElement="OB_Annotation_SOX">
+        <dc:Bounds x="1430" y="47" width="310" height="44" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Annotation_NIST_di" bpmnElement="OB_Annotation_NIST">
+        <dc:Bounds x="1430" y="400" width="310" height="44" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Annotation_DORA_di" bpmnElement="OB_Annotation_DORA">
+        <dc:Bounds x="1430" y="540" width="310" height="44" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Annotation_TaskIO_di" bpmnElement="OB_Annotation_TaskIO">
+        <dc:Bounds x="1690" y="960" width="680" height="90" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Start_31_di" bpmnElement="OB_Flow_Start_31">
+        <di:waypoint x="283" y="1104" />
+        <di:waypoint x="330" y="1104" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_31_32_di" bpmnElement="OB_Flow_31_32">
+        <di:waypoint x="430" y="1104" />
+        <di:waypoint x="480" y="1104" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_32_FTCheck_di" bpmnElement="OB_Flow_32_FTCheck">
+        <di:waypoint x="580" y="1104" />
+        <di:waypoint x="630" y="1104" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_ProcessSLAEscalate_di" bpmnElement="OB_Flow_ProcessSLAEscalate">
+        <di:waypoint x="552" y="1162" />
+        <di:waypoint x="552" y="1175" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FastTrackYes_di" bpmnElement="OB_Flow_FastTrackYes">
+        <di:waypoint x="680" y="1104" />
+        <di:waypoint x="730" y="1104" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="697" y="1086" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FullPath_di" bpmnElement="OB_Flow_FullPath">
+        <di:waypoint x="655" y="1129" />
+        <di:waypoint x="655" y="1195" />
+        <di:waypoint x="730" y="1195" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="661" y="1154" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FTSplit_Security_di" bpmnElement="OB_Flow_FTSplit_Security">
+        <di:waypoint x="755" y="1079" />
+        <di:waypoint x="755" y="484" />
+        <di:waypoint x="870" y="484" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FTSplit_AI_di" bpmnElement="OB_Flow_FTSplit_AI">
+        <di:waypoint x="755" y="1079" />
+        <di:waypoint x="755" y="734" />
+        <di:waypoint x="870" y="734" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FTSplit_Compliance_di" bpmnElement="OB_Flow_FTSplit_Compliance">
+        <di:waypoint x="755" y="1079" />
+        <di:waypoint x="755" y="859" />
+        <di:waypoint x="870" y="859" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FT33_Join_di" bpmnElement="OB_Flow_FT33_Join">
+        <di:waypoint x="970" y="484" />
+        <di:waypoint x="1495" y="484" />
+        <di:waypoint x="1495" y="1079" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FT35_Join_di" bpmnElement="OB_Flow_FT35_Join">
+        <di:waypoint x="970" y="734" />
+        <di:waypoint x="1495" y="734" />
+        <di:waypoint x="1495" y="1079" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FT34_Join_di" bpmnElement="OB_Flow_FT34_Join">
+        <di:waypoint x="970" y="859" />
+        <di:waypoint x="1495" y="859" />
+        <di:waypoint x="1495" y="1079" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FTJoin_PathMerge_di" bpmnElement="OB_Flow_FTJoin_PathMerge">
+        <di:waypoint x="1520" y="1104" />
+        <di:waypoint x="1590" y="1104" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FullSplit_Financial_di" bpmnElement="OB_Flow_FullSplit_Financial">
+        <di:waypoint x="755" y="1170" />
+        <di:waypoint x="755" y="109" />
+        <di:waypoint x="1200" y="109" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FullSplit_Security_di" bpmnElement="OB_Flow_FullSplit_Security">
+        <di:waypoint x="755" y="1170" />
+        <di:waypoint x="755" y="484" />
+        <di:waypoint x="1200" y="484" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FullSplit_Resilience_di" bpmnElement="OB_Flow_FullSplit_Resilience">
+        <di:waypoint x="755" y="1170" />
+        <di:waypoint x="755" y="609" />
+        <di:waypoint x="1200" y="609" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FullSplit_AI_di" bpmnElement="OB_Flow_FullSplit_AI">
+        <di:waypoint x="755" y="1170" />
+        <di:waypoint x="755" y="734" />
+        <di:waypoint x="1200" y="734" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FullSplit_Compliance_di" bpmnElement="OB_Flow_FullSplit_Compliance">
+        <di:waypoint x="755" y="1170" />
+        <di:waypoint x="755" y="859" />
+        <di:waypoint x="1200" y="859" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FullSplit_Architecture_di" bpmnElement="OB_Flow_FullSplit_Architecture">
+        <di:waypoint x="780" y="1195" />
+        <di:waypoint x="1200" y="1124" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_33_FullJoin_di" bpmnElement="OB_Flow_33_FullJoin">
+        <di:waypoint x="1300" y="484" />
+        <di:waypoint x="1495" y="484" />
+        <di:waypoint x="1495" y="1170" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_37_FullJoin_di" bpmnElement="OB_Flow_37_FullJoin">
+        <di:waypoint x="1300" y="609" />
+        <di:waypoint x="1495" y="609" />
+        <di:waypoint x="1495" y="1170" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_35_FullJoin_di" bpmnElement="OB_Flow_35_FullJoin">
+        <di:waypoint x="1300" y="734" />
+        <di:waypoint x="1495" y="734" />
+        <di:waypoint x="1495" y="1170" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_36_FullJoin_di" bpmnElement="OB_Flow_36_FullJoin">
+        <di:waypoint x="1300" y="109" />
+        <di:waypoint x="1495" y="109" />
+        <di:waypoint x="1495" y="1170" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_34_FullJoin_di" bpmnElement="OB_Flow_34_FullJoin">
+        <di:waypoint x="1300" y="859" />
+        <di:waypoint x="1495" y="859" />
+        <di:waypoint x="1495" y="1170" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_39_FullJoin_di" bpmnElement="OB_Flow_39_FullJoin">
+        <di:waypoint x="1300" y="1124" />
+        <di:waypoint x="1470" y="1195" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FullJoin_PathMerge_di" bpmnElement="OB_Flow_FullJoin_PathMerge">
+        <di:waypoint x="1495" y="1170" />
+        <di:waypoint x="1615" y="1170" />
+        <di:waypoint x="1615" y="1129" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_PathMerge_38_di" bpmnElement="OB_Flow_PathMerge_38">
+        <di:waypoint x="1640" y="1104" />
+        <di:waypoint x="1690" y="1104" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_38_End_di" bpmnElement="OB_Flow_38_End">
+        <di:waypoint x="1790" y="1104" />
+        <di:waypoint x="1870" y="1104" />
+        <di:waypoint x="1870" y="252" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FT33SLAEscalate_di" bpmnElement="OB_Flow_FT33SLAEscalate">
+        <di:waypoint x="942" y="506" />
+        <di:waypoint x="1022" y="442" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FT35SLAEscalate_di" bpmnElement="OB_Flow_FT35SLAEscalate">
+        <di:waypoint x="942" y="756" />
+        <di:waypoint x="1022" y="692" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_FT34SLAEscalate_di" bpmnElement="OB_Flow_FT34SLAEscalate">
+        <di:waypoint x="942" y="881" />
+        <di:waypoint x="1022" y="847" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_33SLAEscalate_di" bpmnElement="OB_Flow_33SLAEscalate">
+        <di:waypoint x="1272" y="506" />
+        <di:waypoint x="1352" y="442" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_37SLAEscalate_di" bpmnElement="OB_Flow_37SLAEscalate">
+        <di:waypoint x="1272" y="631" />
+        <di:waypoint x="1352" y="567" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_35SLAEscalate_di" bpmnElement="OB_Flow_35SLAEscalate">
+        <di:waypoint x="1272" y="756" />
+        <di:waypoint x="1352" y="692" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_36SLAEscalate_di" bpmnElement="OB_Flow_36SLAEscalate">
+        <di:waypoint x="1272" y="131" />
+        <di:waypoint x="1352" y="97" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_34SLAEscalate_di" bpmnElement="OB_Flow_34SLAEscalate">
+        <di:waypoint x="1272" y="881" />
+        <di:waypoint x="1352" y="847" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_39SLAEscalate_di" bpmnElement="OB_Flow_39SLAEscalate">
+        <di:waypoint x="1254" y="1162" />
+        <di:waypoint x="1236" y="1190" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Assoc_OCC_di" bpmnElement="OB_Assoc_OCC">
+        <di:waypoint x="1300" y="444" />
+        <di:waypoint x="1430" y="362" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Assoc_SOX_di" bpmnElement="OB_Assoc_SOX">
+        <di:waypoint x="1300" y="109" />
+        <di:waypoint x="1430" y="69" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Assoc_NIST_di" bpmnElement="OB_Assoc_NIST">
+        <di:waypoint x="1300" y="484" />
+        <di:waypoint x="1430" y="422" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Assoc_DORA_di" bpmnElement="OB_Assoc_DORA">
+        <di:waypoint x="1300" y="609" />
+        <di:waypoint x="1430" y="562" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNShape id="OB_Participant_VendorThirdParty_di" bpmnElement="OB_Participant_VendorThirdParty" isHorizontal="true">
+        <dc:Bounds x="155" y="1267" width="2700" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_VendorResponse_di" bpmnElement="OB_Lane_VendorResponse" isHorizontal="true">
+        <dc:Bounds x="185" y="1267" width="2670" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_StartEvent_VendorEngagement_di" bpmnElement="OB_StartEvent_VendorEngagement">
+        <dc:Bounds x="247" y="1302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="223" y="1345" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_VendorEvidenceSubmission_di" bpmnElement="OB_Task_VendorEvidenceSubmission">
+        <dc:Bounds x="330" y="1287" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_VendorEngagementEnd_di" bpmnElement="OB_EndEvent_VendorEngagementEnd">
+        <dc:Bounds x="482" y="1302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="458" y="1345" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="OB_Flow_VendorStart_Evidence_di" bpmnElement="OB_Flow_VendorStart_Evidence">
+        <di:waypoint x="283" y="1320" />
+        <di:waypoint x="330" y="1320" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_VendorEvidence_End_di" bpmnElement="OB_Flow_VendorEvidence_End">
+        <di:waypoint x="430" y="1320" />
+        <di:waypoint x="482" y="1320" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_MsgFlow_DDRequest_di" bpmnElement="OB_MsgFlow_DDRequest">
+        <di:waypoint x="380" y="1144" />
+        <di:waypoint x="380" y="1267" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="311" y="1198" width="97" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_MsgFlow_VendorAttestation_di" bpmnElement="OB_MsgFlow_VendorAttestation">
+        <di:waypoint x="430" y="1320" />
+        <di:waypoint x="1740" y="1320" />
+        <di:waypoint x="1740" y="1144" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="985" y="1298" width="121" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

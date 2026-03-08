@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_CommitteeVotingTestDriver" targetNamespace="http://sla.governance/bpmn/committee-voting" exporter="Camunda Modeler" exporterVersion="5.44.0">
+  <bpmn:process id="Process_CommitteeVoting_TestDriver" name="Committee Voting Test Driver" isExecutable="true">
+    <bpmn:startEvent id="TD_Start" name="Start&#10;Test">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="cv-test-driver-config" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_TD_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="GW_ConfigMode" name="Config&#10;Mode?" default="Flow_ManualMode">
+      <bpmn:incoming>Flow_TD_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMNMode</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ManualMode</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:businessRuleTask id="Task_ResolveDMN" name="Resolve via&#10;DMN-10">
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="OB_DMN_CommitteeVotingRules" resultVariable="votingConfig" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_DMNMode</bpmn:incoming>
+      <bpmn:outgoing>Flow_DMNMode_Out</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:exclusiveGateway id="GW_ConfigMerge">
+      <bpmn:incoming>Flow_DMNMode_Out</bpmn:incoming>
+      <bpmn:incoming>Flow_ManualMode</bpmn:incoming>
+      <bpmn:outgoing>Flow_TD_ToMockBrief</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_GenerateMockBrief" name="Generate&#10;Mock Brief">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="generate-mock-brief" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_TD_ToMockBrief</bpmn:incoming>
+      <bpmn:outgoing>Flow_TD_ToCallActivity</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:callActivity id="CA_CommitteeVoting" name="Committee&#10;Voting">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="Process_CommitteeVoting" propagateAllChildVariables="true" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_TD_ToCallActivity</bpmn:incoming>
+      <bpmn:outgoing>Flow_TD_ToReview</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:userTask id="Task_ReviewResults" name="Review&#10;Results">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="cv-vote-summary" />
+        <zeebe:assignmentDefinition candidateGroups="governance-lane" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_TD_ToReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_TD_ToEnd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="TD_End" name="Test&#10;Complete">
+      <bpmn:incoming>Flow_TD_ToEnd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_TD_1" sourceRef="TD_Start" targetRef="GW_ConfigMode" />
+    <bpmn:sequenceFlow id="Flow_DMNMode" name="DMN&#10;Mode" sourceRef="GW_ConfigMode" targetRef="Task_ResolveDMN">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=configMode = "DMN Mode"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_ManualMode" name="Manual&#10;Mode" sourceRef="GW_ConfigMode" targetRef="GW_ConfigMerge" />
+    <bpmn:sequenceFlow id="Flow_DMNMode_Out" sourceRef="Task_ResolveDMN" targetRef="GW_ConfigMerge" />
+    <bpmn:sequenceFlow id="Flow_TD_ToMockBrief" sourceRef="GW_ConfigMerge" targetRef="Task_GenerateMockBrief" />
+    <bpmn:sequenceFlow id="Flow_TD_ToCallActivity" sourceRef="Task_GenerateMockBrief" targetRef="CA_CommitteeVoting" />
+    <bpmn:sequenceFlow id="Flow_TD_ToReview" sourceRef="CA_CommitteeVoting" targetRef="Task_ReviewResults" />
+    <bpmn:sequenceFlow id="Flow_TD_ToEnd" sourceRef="Task_ReviewResults" targetRef="TD_End" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_TestDriver">
+    <bpmndi:BPMNPlane id="BPMNPlane_TestDriver" bpmnElement="Process_CommitteeVoting_TestDriver">
+      <bpmndi:BPMNShape id="TD_Start_di" bpmnElement="TD_Start">
+        <dc:Bounds x="200" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="203" y="225" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_ConfigMode_di" bpmnElement="GW_ConfigMode" isMarkerVisible="true">
+        <dc:Bounds x="290" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="293" y="232" width="44" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ResolveDMN_di" bpmnElement="Task_ResolveDMN">
+        <dc:Bounds x="390" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_ConfigMerge_di" bpmnElement="GW_ConfigMerge" isMarkerVisible="true">
+        <dc:Bounds x="540" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateMockBrief_di" bpmnElement="Task_GenerateMockBrief">
+        <dc:Bounds x="640" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CA_CommitteeVoting_di" bpmnElement="CA_CommitteeVoting">
+        <dc:Bounds x="790" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReviewResults_di" bpmnElement="Task_ReviewResults">
+        <dc:Bounds x="940" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TD_End_di" bpmnElement="TD_End">
+        <dc:Bounds x="1090" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1086" y="225" width="44" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_TD_1_di" bpmnElement="Flow_TD_1">
+        <di:waypoint x="236" y="200" />
+        <di:waypoint x="290" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DMNMode_di" bpmnElement="Flow_DMNMode">
+        <di:waypoint x="315" y="175" />
+        <di:waypoint x="315" y="120" />
+        <di:waypoint x="390" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="323" y="96" width="27" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ManualMode_di" bpmnElement="Flow_ManualMode">
+        <di:waypoint x="340" y="200" />
+        <di:waypoint x="540" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="415" y="176" width="38" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DMNMode_Out_di" bpmnElement="Flow_DMNMode_Out">
+        <di:waypoint x="490" y="120" />
+        <di:waypoint x="565" y="120" />
+        <di:waypoint x="565" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TD_ToMockBrief_di" bpmnElement="Flow_TD_ToMockBrief">
+        <di:waypoint x="590" y="200" />
+        <di:waypoint x="640" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TD_ToCallActivity_di" bpmnElement="Flow_TD_ToCallActivity">
+        <di:waypoint x="740" y="200" />
+        <di:waypoint x="790" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TD_ToReview_di" bpmnElement="Flow_TD_ToReview">
+        <di:waypoint x="890" y="200" />
+        <di:waypoint x="940" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TD_ToEnd_di" bpmnElement="Flow_TD_ToEnd">
+        <di:waypoint x="1040" y="200" />
+        <di:waypoint x="1090" y="200" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -19,14 +19,14 @@ Loads BPMN-specific context for process modeling work.
 ## Quick Reference
 
 ### BPMN Testing Workflow
-1. **Fast Validation**: `node scripts/bpmn-interpreter/tests/support/bpmn-validator.js [file]`
-2. **Visual Check**: `node scripts/bpmn-interpreter/tests/support/visual-overlap-checker.js [file]`
-3. **Generate Tests**: `/test-bpmn [process] --generate`
-4. **Execute Tests**: `npm run test:cucumber -- tests/features/generated/[process].feature` (deferred until Camunda available)
+1. **Fast Validation**: `node scripts/validators/bpmn-validator.js [file]`
+2. **Visual Check**: `node scripts/validators/visual-overlap-checker.js [file]`
+3. **Flow Direction**: `node scripts/validators/flow-direction-checker.js [file]`
+4. **Full Pipeline**: `bash scripts/validators/validate-bpmn.sh [file]`
+5. **Generate Tests**: `/test-bpmn [process] --generate`
 
 ### Commands
 - `/test-bpmn [process]` - Generate BDD tests
-- `/deploy-bpmn [env]` - Deploy to Camunda (deferred)
 
 ### Coverage Requirements
 - 80% minimum path coverage

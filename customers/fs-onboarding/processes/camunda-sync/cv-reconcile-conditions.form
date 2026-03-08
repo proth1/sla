@@ -1,0 +1,59 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "cv-reconcile-conditions",
+  "components": [
+    {
+      "type": "group",
+      "label": "Reconcile Conflicting Conditions",
+      "id": "Field_CV_RC_001",
+      "components": [
+        {
+          "type": "text",
+          "text": "Multiple committee members approved with conditions. Consolidate and reconcile conflicting conditions into a single actionable set.",
+          "id": "Field_CV_RC_002"
+        },
+        {
+          "type": "textarea",
+          "key": "allSubmittedConditions",
+          "label": "All submitted conditions",
+          "disabled": true,
+          "id": "Field_CV_RC_003"
+        },
+        {
+          "type": "textarea",
+          "key": "consolidatedConditions",
+          "label": "Consolidated conditions",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_RC_004"
+        },
+        {
+          "type": "textarea",
+          "key": "reconciliationRationale",
+          "label": "Reconciliation rationale",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_RC_005"
+        },
+        {
+          "type": "checkbox",
+          "key": "allConditionsAddressed",
+          "label": "All conditions have been addressed in consolidation",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_RC_006"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

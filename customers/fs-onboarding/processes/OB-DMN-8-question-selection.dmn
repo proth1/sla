@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="OB-DMN8-QuestionSelection-definitions"
+             name="OB-DMN-8: Mini RFP Question Selection"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="OB_DMN_QuestionSelection"
+            name="Mini RFP Question Selection"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="OB_DMN_QuestionSelection-table" hitPolicy="COLLECT">
+
+      <input id="ob8-input-technologyType" label="Technology Type">
+        <inputExpression id="ob8-inputExpr-technologyType" typeRef="string">
+          <text>technologyType</text>
+        </inputExpression>
+        <inputValues id="ob8-inputVals-technologyType">
+          <text>"SaaS","OnPrem","API","AI_ML","Infrastructure","DataPlatform","Other"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob8-input-deploymentModel" label="Deployment Model">
+        <inputExpression id="ob8-inputExpr-deploymentModel" typeRef="string">
+          <text>deploymentModel</text>
+        </inputExpression>
+        <inputValues id="ob8-inputVals-deploymentModel">
+          <text>"cloud","on-premise","hybrid","unknown"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob8-input-dataClassification" label="Data Classification">
+        <inputExpression id="ob8-inputExpr-dataClassification" typeRef="string">
+          <text>dataClassification</text>
+        </inputExpression>
+        <inputValues id="ob8-inputVals-dataClassification">
+          <text>"public","internal","confidential","restricted"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob8-input-hasAI" label="AI Involvement">
+        <inputExpression id="ob8-inputExpr-hasAI" typeRef="string">
+          <text>hasAI</text>
+        </inputExpression>
+        <inputValues id="ob8-inputVals-hasAI">
+          <text>"yes","no","unsure"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob8-input-existingRelationship" label="Existing Vendor Relationship">
+        <inputExpression id="ob8-inputExpr-existingRelationship" typeRef="string">
+          <text>existingRelationship</text>
+        </inputExpression>
+        <inputValues id="ob8-inputVals-existingRelationship">
+          <text>"yes","no"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob8-input-businessCriticality" label="Business Criticality">
+        <inputExpression id="ob8-inputExpr-businessCriticality" typeRef="string">
+          <text>businessCriticality</text>
+        </inputExpression>
+        <inputValues id="ob8-inputVals-businessCriticality">
+          <text>"mission-critical","significant","standard","exploratory"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob8-input-budgetRange" label="Budget Range">
+        <inputExpression id="ob8-inputExpr-budgetRange" typeRef="string">
+          <text>budgetRange</text>
+        </inputExpression>
+        <inputValues id="ob8-inputVals-budgetRange">
+          <text>"under_25k","25k_100k","100k_500k","over_500k","unknown"</text>
+        </inputValues>
+      </input>
+
+      <output id="ob8-output-categoryId"
+              label="Category ID"
+              name="categoryId"
+              typeRef="integer" />
+
+      <output id="ob8-output-categoryName"
+              label="Category Name"
+              name="categoryName"
+              typeRef="string" />
+
+      <output id="ob8-output-tier"
+              label="Tier"
+              name="tier"
+              typeRef="string" />
+
+      <output id="ob8-output-required"
+              label="Required"
+              name="required"
+              typeRef="boolean" />
+
+      <!-- R1: Company - basic (new vendor) -->
+      <rule id="ob8-rule-1">
+        <description>New vendor requires company and financial stability assessment</description>
+        <inputEntry id="ob8-ie-1-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-1-5"><text>"no"</text></inputEntry>
+        <inputEntry id="ob8-ie-1-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-1-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-1-1"><text>1</text></outputEntry>
+        <outputEntry id="ob8-oe-1-2"><text>"Company and Financial Stability"</text></outputEntry>
+        <outputEntry id="ob8-oe-1-3"><text>"basic"</text></outputEntry>
+        <outputEntry id="ob8-oe-1-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R2: Company - skip (existing vendor) -->
+      <rule id="ob8-rule-2">
+        <description>Existing vendor relationship — skip company assessment</description>
+        <inputEntry id="ob8-ie-2-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-2-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-2-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-2-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-2-5"><text>"yes"</text></inputEntry>
+        <inputEntry id="ob8-ie-2-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-2-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-2-1"><text>1</text></outputEntry>
+        <outputEntry id="ob8-oe-2-2"><text>"Company and Financial Stability"</text></outputEntry>
+        <outputEntry id="ob8-oe-2-3"><text>"skip"</text></outputEntry>
+        <outputEntry id="ob8-oe-2-4"><text>false</text></outputEntry>
+      </rule>
+
+      <!-- R3: Product - basic (always) -->
+      <rule id="ob8-rule-3">
+        <description>Product capabilities always assessed at basic tier</description>
+        <inputEntry id="ob8-ie-3-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-3-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-3-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-3-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-3-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-3-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-3-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-3-1"><text>2</text></outputEntry>
+        <outputEntry id="ob8-oe-3-2"><text>"Product/Solution Capabilities"</text></outputEntry>
+        <outputEntry id="ob8-oe-3-3"><text>"basic"</text></outputEntry>
+        <outputEntry id="ob8-oe-3-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R4: Product - full (AI/ML platform) -->
+      <rule id="ob8-rule-4">
+        <description>AI/ML platforms require full product assessment including model capabilities</description>
+        <inputEntry id="ob8-ie-4-1"><text>"AI_ML"</text></inputEntry>
+        <inputEntry id="ob8-ie-4-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-4-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-4-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-4-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-4-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-4-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-4-1"><text>2</text></outputEntry>
+        <outputEntry id="ob8-oe-4-2"><text>"Product/Solution Capabilities"</text></outputEntry>
+        <outputEntry id="ob8-oe-4-3"><text>"full"</text></outputEntry>
+        <outputEntry id="ob8-oe-4-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R5: Security - basic (always) -->
+      <rule id="ob8-rule-5">
+        <description>Security assessment always required at minimum basic tier</description>
+        <inputEntry id="ob8-ie-5-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-5-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-5-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-5-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-5-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-5-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-5-1"><text>3</text></outputEntry>
+        <outputEntry id="ob8-oe-5-2"><text>"Security and Compliance"</text></outputEntry>
+        <outputEntry id="ob8-oe-5-3"><text>"basic"</text></outputEntry>
+        <outputEntry id="ob8-oe-5-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R6: Security - full (cloud + confidential/restricted) -->
+      <rule id="ob8-rule-6">
+        <description>Cloud deployment with sensitive data requires full security assessment</description>
+        <inputEntry id="ob8-ie-6-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-6-2"><text>"cloud"</text></inputEntry>
+        <inputEntry id="ob8-ie-6-3"><text>"confidential","restricted"</text></inputEntry>
+        <inputEntry id="ob8-ie-6-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-6-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-6-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-6-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-6-1"><text>3</text></outputEntry>
+        <outputEntry id="ob8-oe-6-2"><text>"Security and Compliance"</text></outputEntry>
+        <outputEntry id="ob8-oe-6-3"><text>"full"</text></outputEntry>
+        <outputEntry id="ob8-oe-6-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R7: Privacy - full (PII/PHI/Financial data) — uses dataClassification as proxy -->
+      <rule id="ob8-rule-7">
+        <description>Confidential or restricted data classification triggers full privacy assessment</description>
+        <inputEntry id="ob8-ie-7-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-7-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-7-3"><text>"confidential","restricted"</text></inputEntry>
+        <inputEntry id="ob8-ie-7-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-7-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-7-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-7-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-7-1"><text>4</text></outputEntry>
+        <outputEntry id="ob8-oe-7-2"><text>"Data Privacy and Protection"</text></outputEntry>
+        <outputEntry id="ob8-oe-7-3"><text>"full"</text></outputEntry>
+        <outputEntry id="ob8-oe-7-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R8: Integration - basic (always) -->
+      <rule id="ob8-rule-8">
+        <description>Integration assessment always required at basic tier</description>
+        <inputEntry id="ob8-ie-8-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-8-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-8-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-8-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-8-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-8-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-8-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-8-1"><text>5</text></outputEntry>
+        <outputEntry id="ob8-oe-8-2"><text>"Integration and Architecture"</text></outputEntry>
+        <outputEntry id="ob8-oe-8-3"><text>"basic"</text></outputEntry>
+        <outputEntry id="ob8-oe-8-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R9: Integration - full (on-prem or hybrid) -->
+      <rule id="ob8-rule-9">
+        <description>On-premise or hybrid deployment requires full integration assessment</description>
+        <inputEntry id="ob8-ie-9-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-9-2"><text>"on-premise","hybrid"</text></inputEntry>
+        <inputEntry id="ob8-ie-9-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-9-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-9-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-9-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-9-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-9-1"><text>5</text></outputEntry>
+        <outputEntry id="ob8-oe-9-2"><text>"Integration and Architecture"</text></outputEntry>
+        <outputEntry id="ob8-oe-9-3"><text>"full"</text></outputEntry>
+        <outputEntry id="ob8-oe-9-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R10: Implementation - standard (always) -->
+      <rule id="ob8-rule-10">
+        <description>Implementation assessment always active at standard tier</description>
+        <inputEntry id="ob8-ie-10-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-10-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-10-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-10-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-10-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-10-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-10-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-10-1"><text>6</text></outputEntry>
+        <outputEntry id="ob8-oe-10-2"><text>"Implementation and Support"</text></outputEntry>
+        <outputEntry id="ob8-oe-10-3"><text>"standard"</text></outputEntry>
+        <outputEntry id="ob8-oe-10-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R11: Pricing - standard (always) -->
+      <rule id="ob8-rule-11">
+        <description>Pricing assessment always active at standard tier</description>
+        <inputEntry id="ob8-ie-11-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-11-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-11-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-11-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-11-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-11-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-11-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-11-1"><text>7</text></outputEntry>
+        <outputEntry id="ob8-oe-11-2"><text>"Pricing and Commercial"</text></outputEntry>
+        <outputEntry id="ob8-oe-11-3"><text>"standard"</text></outputEntry>
+        <outputEntry id="ob8-oe-11-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R12: TPRM - full (confidential/restricted data) -->
+      <rule id="ob8-rule-12">
+        <description>Sensitive data classification triggers TPRM assessment (OCC 2023-17)</description>
+        <inputEntry id="ob8-ie-12-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-12-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-12-3"><text>"confidential","restricted"</text></inputEntry>
+        <inputEntry id="ob8-ie-12-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-12-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-12-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-12-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-12-1"><text>8</text></outputEntry>
+        <outputEntry id="ob8-oe-12-2"><text>"Third-Party Risk (OCC 2023-17)"</text></outputEntry>
+        <outputEntry id="ob8-oe-12-3"><text>"full"</text></outputEntry>
+        <outputEntry id="ob8-oe-12-4"><text>false</text></outputEntry>
+      </rule>
+
+      <!-- R13: Resilience - full (mission-critical/significant or infrastructure) -->
+      <rule id="ob8-rule-13">
+        <description>Mission-critical or infrastructure systems require operational resilience assessment</description>
+        <inputEntry id="ob8-ie-13-1"><text>"Infrastructure"</text></inputEntry>
+        <inputEntry id="ob8-ie-13-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-13-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-13-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-13-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-13-6"><text>"mission-critical","significant"</text></inputEntry>
+        <inputEntry id="ob8-ie-13-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-13-1"><text>9</text></outputEntry>
+        <outputEntry id="ob8-oe-13-2"><text>"Operational Resilience"</text></outputEntry>
+        <outputEntry id="ob8-oe-13-3"><text>"full"</text></outputEntry>
+        <outputEntry id="ob8-oe-13-4"><text>false</text></outputEntry>
+      </rule>
+
+      <!-- R14: AI Governance - full (hasAI = yes) -->
+      <rule id="ob8-rule-14">
+        <description>AI involvement triggers full AI governance assessment</description>
+        <inputEntry id="ob8-ie-14-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-14-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-14-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-14-4"><text>"yes"</text></inputEntry>
+        <inputEntry id="ob8-ie-14-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-14-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-14-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-14-1"><text>10</text></outputEntry>
+        <outputEntry id="ob8-oe-14-2"><text>"AI Governance"</text></outputEntry>
+        <outputEntry id="ob8-oe-14-3"><text>"full"</text></outputEntry>
+        <outputEntry id="ob8-oe-14-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R15: AI Governance - full (unsure + AI/ML platform) -->
+      <rule id="ob8-rule-15">
+        <description>AI/ML platform with uncertain AI involvement — assess as if AI present</description>
+        <inputEntry id="ob8-ie-15-1"><text>"AI_ML"</text></inputEntry>
+        <inputEntry id="ob8-ie-15-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-15-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-15-4"><text>"unsure"</text></inputEntry>
+        <inputEntry id="ob8-ie-15-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-15-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-15-7"><text>-</text></inputEntry>
+        <outputEntry id="ob8-oe-15-1"><text>10</text></outputEntry>
+        <outputEntry id="ob8-oe-15-2"><text>"AI Governance"</text></outputEntry>
+        <outputEntry id="ob8-oe-15-3"><text>"full"</text></outputEntry>
+        <outputEntry id="ob8-oe-15-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!-- R16: Micro-RFP override (sub-$25K) — sets all active categories to minimal tier -->
+      <rule id="ob8-rule-16">
+        <description>Sub-$25K engagements use minimal tier (12-15 questions) across all categories</description>
+        <inputEntry id="ob8-ie-16-1"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-16-2"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-16-3"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-16-4"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-16-5"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-16-6"><text>-</text></inputEntry>
+        <inputEntry id="ob8-ie-16-7"><text>"under_25k"</text></inputEntry>
+        <outputEntry id="ob8-oe-16-1"><text>0</text></outputEntry>
+        <outputEntry id="ob8-oe-16-2"><text>"Tier Override: Minimal"</text></outputEntry>
+        <outputEntry id="ob8-oe-16-3"><text>"minimal"</text></outputEntry>
+        <outputEntry id="ob8-oe-16-4"><text>false</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="OB-DMN8-diagram">
+      <dmndi:DMNShape id="OB-DMN8-shape" dmnElementRef="OB_DMN_QuestionSelection">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN6-ChangeRiskScoring-definitions"
+             name="DMN-6: Change Risk Scoring"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_ChangeRiskScoring"
+            name="Change Risk Scoring"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-04 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: SOX, NIST CSF 2.0, DORA, BCBS d577</description>
+    <decisionTable id="DMN_ChangeRiskScoring-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-6: Change Risk Scoring
+        Phase: 8 (Production Operations) — Sub-Process 8-Change: Change Management, Task 8C.1
+        Hit Policy: FIRST (most specific rule wins — evaluated top to bottom)
+        Description: Classifies a proposed production change into one of five change types
+                     based on a composite risk score derived from five dimensions.
+                     Implements the AI risk scoring described in task 8C.1:
+          - Standard  (composite < 20):  Auto-approve, no CAB required
+          - Normal-Low (20-50):          Team lead approval required
+          - Normal-Medium (50-75):       Change Advisory Board (CAB) review required
+          - Major (> 75):                CAB + VP-level approval required
+          - Emergency (incident-driven): Incident flag overrides all scoring — expedited process
+        Inputs (all scored 1-100):
+          codeChangeComplexity:   Scope and complexity of code modifications
+          dependencyImpact:       Number and criticality of downstream dependencies affected
+          deploymentContext:      Risk of deployment environment (prod peak, maintenance window, etc.)
+          historicalSuccessRate:  Historical success rate of similar changes (0-100, higher = safer)
+          rollbackComplexity:     Difficulty of rolling back if deployment fails
+        Note: historicalSuccessRate is INVERTED for risk calculation — higher success rate = lower risk.
+              An Emergency flag input is handled as a separate boolean checked first.
+      -->
+
+      <input id="input-emergencyFlag" label="Emergency / Incident Flag">
+        <inputExpression id="inputExpr-emergencyFlag" typeRef="boolean">
+          <text>emergencyFlag</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-codeComplexity" label="Code Change Complexity (1-100)">
+        <inputExpression id="inputExpr-codeComplexity" typeRef="integer">
+          <text>codeChangeComplexity</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-dependencyImpact" label="Dependency Impact (1-100)">
+        <inputExpression id="inputExpr-dependencyImpact" typeRef="integer">
+          <text>dependencyImpact</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-deploymentContext" label="Deployment Context Risk (1-100)">
+        <inputExpression id="inputExpr-deploymentContext" typeRef="integer">
+          <text>deploymentContext</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-historicalSuccessRate" label="Historical Success Rate (0-100%)">
+        <inputExpression id="inputExpr-historicalSuccessRate" typeRef="integer">
+          <text>historicalSuccessRate</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-rollbackComplexity" label="Rollback Complexity (1-100)">
+        <inputExpression id="inputExpr-rollbackComplexity" typeRef="integer">
+          <text>rollbackComplexity</text>
+        </inputExpression>
+      </input>
+
+      <output id="output-changeType"
+              label="Change Type"
+              name="changeType"
+              typeRef="string" />
+
+      <output id="output-approvalRequirement"
+              label="Approval Requirement"
+              name="approvalRequirement"
+              typeRef="string" />
+
+      <output id="output-changeSLAHours"
+              label="Change Implementation SLA (Hours)"
+              name="changeSLAHours"
+              typeRef="integer" />
+
+      <!--
+        RULE 1: EMERGENCY — Incident-driven change
+        Emergency flag set = immediate incident-driven change, bypasses normal scoring.
+        Expedited approval process: on-call manager + incident commander.
+        SLA: 4 hours maximum implementation window.
+      -->
+      <rule id="rule-1">
+        <description>Emergency: Incident flag set — expedited change process; on-call manager approval; bypasses normal CAB</description>
+        <inputEntry id="ie-1-1"><text>true</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-5"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-6"><text>-</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"Emergency"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"Incident Commander + On-Call Engineering Manager verbal approval; retrospective CAB review within 24 hours of resolution"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>4</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 2: STANDARD — Composite score < 20
+        Very low complexity, minimal dependency, low-risk deployment, high success rate, easy rollback.
+        Auto-approve: no human approval gate required.
+        Profile: simple patch/config, no dependencies, maintenance window, >90% historical success, trivial rollback.
+      -->
+      <rule id="rule-2">
+        <description>Standard: Very low complexity and impact — composite score &lt; 20; auto-approve; no CAB required</description>
+        <inputEntry id="ie-2-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>[1..20]</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>[1..15]</text></inputEntry>
+        <inputEntry id="ie-2-4"><text>[1..15]</text></inputEntry>
+        <inputEntry id="ie-2-5"><text>&gt;= 85</text></inputEntry>
+        <inputEntry id="ie-2-6"><text>[1..20]</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"Standard"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"Auto-approved: no human approval gate required; automated CI/CD deployment permitted; log and audit only"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>48</text></outputEntry>
+      </rule>
+
+      <rule id="rule-3">
+        <description>Standard: Minimal across all dimensions with strong historical success — composite well below 20 threshold</description>
+        <inputEntry id="ie-3-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>[1..15]</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>[1..20]</text></inputEntry>
+        <inputEntry id="ie-3-4"><text>[1..20]</text></inputEntry>
+        <inputEntry id="ie-3-5"><text>&gt;= 90</text></inputEntry>
+        <inputEntry id="ie-3-6"><text>[1..15]</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Standard"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"Auto-approved: all dimensions score minimal; strong historical success record; automated deployment authorized"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>48</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP: NORMAL-LOW — Composite 20-50
+        Moderate complexity or impact. Team lead approval. Standard CAB not required.
+        SLA: 5 business days.
+      -->
+      <rule id="rule-4">
+        <description>Normal-Low: Moderate complexity, limited dependency, good success rate — composite 20-50; team lead approval</description>
+        <inputEntry id="ie-4-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>[21..50]</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>[1..40]</text></inputEntry>
+        <inputEntry id="ie-4-4"><text>[1..40]</text></inputEntry>
+        <inputEntry id="ie-4-5"><text>&gt;= 70</text></inputEntry>
+        <inputEntry id="ie-4-6"><text>[1..40]</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Normal-Low"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"Team lead approval required; no CAB required; change window scheduling required; rollback plan documented"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>120</text></outputEntry>
+      </rule>
+
+      <rule id="rule-5">
+        <description>Normal-Low: Low complexity but elevated dependency impact — composite in 20-50 range; team lead required</description>
+        <inputEntry id="ie-5-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>[1..30]</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>[21..50]</text></inputEntry>
+        <inputEntry id="ie-5-4"><text>[1..40]</text></inputEntry>
+        <inputEntry id="ie-5-5"><text>&gt;= 65</text></inputEntry>
+        <inputEntry id="ie-5-6"><text>[1..50]</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"Normal-Low"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"Team lead approval required; dependency impact assessment mandatory; notify downstream team owners; rollback plan required"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>120</text></outputEntry>
+      </rule>
+
+      <rule id="rule-6">
+        <description>Normal-Low: Moderate overall profile with moderate success history — composite 20-50 band</description>
+        <inputEntry id="ie-6-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>[21..40]</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>[21..40]</text></inputEntry>
+        <inputEntry id="ie-6-4"><text>[21..40]</text></inputEntry>
+        <inputEntry id="ie-6-5"><text>[60..84]</text></inputEntry>
+        <inputEntry id="ie-6-6"><text>[21..40]</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"Normal-Low"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"Team lead approval required; peer review of change plan; change window coordination; tested rollback procedure required"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>120</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP: NORMAL-MEDIUM — Composite 50-75
+        Significant complexity or multiple elevated dimensions. CAB review required.
+        SLA: 10 business days.
+      -->
+      <rule id="rule-7">
+        <description>Normal-Medium: High complexity with significant dependency or deployment risk — composite 50-75; CAB required</description>
+        <inputEntry id="ie-7-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>[51..75]</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>[30..70]</text></inputEntry>
+        <inputEntry id="ie-7-4"><text>[1..70]</text></inputEntry>
+        <inputEntry id="ie-7-5"><text>[40..79]</text></inputEntry>
+        <inputEntry id="ie-7-6"><text>[1..70]</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"Normal-Medium"</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"CAB review and approval required; full change documentation package; stakeholder notification 48h in advance; tested rollback with dry-run; post-implementation review mandatory"</text></outputEntry>
+        <outputEntry id="oe-7-3"><text>240</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8">
+        <description>Normal-Medium: Moderate complexity, high deployment context risk — composite 50-75; CAB required</description>
+        <inputEntry id="ie-8-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>[21..60]</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>[1..60]</text></inputEntry>
+        <inputEntry id="ie-8-4"><text>[51..75]</text></inputEntry>
+        <inputEntry id="ie-8-5"><text>[40..79]</text></inputEntry>
+        <inputEntry id="ie-8-6"><text>[1..70]</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"Normal-Medium"</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"CAB review required; deployment context risk elevated — select low-traffic window; rollback rehearsal required; monitoring intensification during change window"</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>240</text></outputEntry>
+      </rule>
+
+      <rule id="rule-9">
+        <description>Normal-Medium: Moderate complexity, high rollback complexity — composite 50-75; CAB required</description>
+        <inputEntry id="ie-9-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>[30..60]</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>[30..60]</text></inputEntry>
+        <inputEntry id="ie-9-4"><text>[30..60]</text></inputEntry>
+        <inputEntry id="ie-9-5"><text>[40..79]</text></inputEntry>
+        <inputEntry id="ie-9-6"><text>[51..75]</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"Normal-Medium"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"CAB review required; rollback complexity elevated — detailed rollback runbook mandatory; dual-engineer deployment team; extended monitoring window post-deployment"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>240</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP: MAJOR — Composite > 75
+        Very high complexity, high dependency impact, or multiple severe risk factors.
+        CAB + VP-level approval required. Strict SLA.
+      -->
+      <rule id="rule-10">
+        <description>Major: Very high code complexity — composite &gt; 75; CAB + VP approval required</description>
+        <inputEntry id="ie-10-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>&gt; 75</text></inputEntry>
+        <inputEntry id="ie-10-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-10-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-10-5"><text>-</text></inputEntry>
+        <inputEntry id="ie-10-6"><text>-</text></inputEntry>
+        <outputEntry id="oe-10-1"><text>"Major"</text></outputEntry>
+        <outputEntry id="oe-10-2"><text>"CAB + VP-level approval required; full architecture review; 72h advance stakeholder notification; dress rehearsal in staging mandatory; dedicated war room during deployment; 30-day post-implementation monitoring"</text></outputEntry>
+        <outputEntry id="oe-10-3"><text>480</text></outputEntry>
+      </rule>
+
+      <rule id="rule-11">
+        <description>Major: High dependency impact — composite &gt; 75 via broad blast radius; CAB + VP approval</description>
+        <inputEntry id="ie-11-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-11-2"><text>[1..75]</text></inputEntry>
+        <inputEntry id="ie-11-3"><text>&gt; 75</text></inputEntry>
+        <inputEntry id="ie-11-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-11-5"><text>-</text></inputEntry>
+        <inputEntry id="ie-11-6"><text>-</text></inputEntry>
+        <outputEntry id="oe-11-1"><text>"Major"</text></outputEntry>
+        <outputEntry id="oe-11-2"><text>"CAB + VP-level approval required; all dependent system owners must sign off; integration regression test suite mandatory; phased deployment with canary release; full rollback plan with tested execution"</text></outputEntry>
+        <outputEntry id="oe-11-3"><text>480</text></outputEntry>
+      </rule>
+
+      <rule id="rule-12">
+        <description>Major: Low historical success rate with moderate-high complexity — composite &gt; 75; CAB + VP approval</description>
+        <inputEntry id="ie-12-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-12-2"><text>&gt;= 40</text></inputEntry>
+        <inputEntry id="ie-12-3"><text>&gt;= 40</text></inputEntry>
+        <inputEntry id="ie-12-4"><text>&gt;= 40</text></inputEntry>
+        <inputEntry id="ie-12-5"><text>&lt; 40</text></inputEntry>
+        <inputEntry id="ie-12-6"><text>&gt;= 40</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>"Major"</text></outputEntry>
+        <outputEntry id="oe-12-2"><text>"CAB + VP-level approval required; low historical success rate mandates enhanced risk mitigation; root cause analysis of prior failures required before approval; staged rollout with automated rollback triggers"</text></outputEntry>
+        <outputEntry id="oe-12-3"><text>480</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 13: CATCH-ALL DEFAULT — Normal-Medium (conservative)
+        Catches any non-emergency input combination not matched by rules 2-12.
+        Normal-Medium is a conservative default requiring CAB review.
+        Under FIRST hit policy, this only fires if no earlier rule matched.
+      -->
+      <rule id="rule-13">
+        <description>Default catch-all: Unclassified change risk profile — assigned Normal-Medium pending CAB review and manual risk assessment</description>
+        <inputEntry id="ie-13-1"><text>false</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-5"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-6"><text>-</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"Normal-Medium"</text></outputEntry>
+        <outputEntry id="oe-13-2"><text>"CAB review required: unclassified change risk profile — manual risk assessment required before approval; default to CAB review as conservative safeguard"</text></outputEntry>
+        <outputEntry id="oe-13-3"><text>240</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN6-diagram">
+      <dmndi:DMNShape id="DMN6-shape" dmnElementRef="DMN_ChangeRiskScoring">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

@@ -1,0 +1,197 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_FinalizeContract",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Finalize and Execute Contract",
+      "id": "Field_001"
+    },
+    {
+      "type": "group",
+      "label": "Execution Details",
+      "id": "Field_002",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "contractReferenceNumber",
+          "label": "Contract Reference Number",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_003"
+        },
+        {
+          "type": "textfield",
+          "key": "executionDate",
+          "label": "Execution Date",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004"
+        },
+        {
+          "type": "textfield",
+          "key": "contractEffectiveDate",
+          "label": "Contract Effective Date",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        },
+        {
+          "type": "textfield",
+          "key": "authorizedSignatoryOurSide",
+          "label": "Authorized Signatory - Our Side",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_006"
+        },
+        {
+          "type": "textfield",
+          "key": "authorizedSignatoryVendorSide",
+          "label": "Authorized Signatory - Vendor Side",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_007"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_008"
+    },
+    {
+      "type": "group",
+      "label": "Verification",
+      "id": "Field_009",
+      "components": [
+        {
+          "type": "checkbox",
+          "key": "allOccProvisionsPresent",
+          "label": "All OCC Provisions Present",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_010"
+        },
+        {
+          "type": "checkbox",
+          "key": "dpaExecuted",
+          "label": "DPA Executed",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_011"
+        },
+        {
+          "type": "checkbox",
+          "key": "insuranceCertificatesVerified",
+          "label": "Insurance Certificates Verified",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_012"
+        },
+        {
+          "type": "radio",
+          "key": "boardCommitteeApproval",
+          "label": "Board/Committee Approval Obtained?",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "label": "Not Required",
+              "value": "not-required"
+            }
+          ],
+          "id": "Field_013"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_014"
+    },
+    {
+      "type": "group",
+      "label": "Contract Deviations",
+      "id": "Field_820",
+      "components": [
+        {
+          "type": "number",
+          "key": "contractDeviations",
+          "label": "Number of Contract Deviations",
+          "id": "Field_821"
+        },
+        {
+          "type": "textarea",
+          "key": "deviationSummary",
+          "label": "Deviation Summary",
+          "description": "Summarize any deviations from standard contract terms.",
+          "id": "Field_822"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_823"
+    },
+    {
+      "type": "group",
+      "label": "Post-Execution",
+      "id": "Field_015",
+      "components": [
+        {
+          "type": "checkbox",
+          "key": "contractFiledInRepository",
+          "label": "Contract Filed in Repository",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_016"
+        },
+        {
+          "type": "checkbox",
+          "key": "ictRegisterUpdated",
+          "label": "ICT Register Updated",
+          "id": "Field_017"
+        },
+        {
+          "type": "radio",
+          "key": "contractFinalized",
+          "label": "Contract Finalized?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_018"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

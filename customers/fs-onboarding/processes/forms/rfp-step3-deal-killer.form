@@ -1,0 +1,96 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_Step3",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Step 3: Deal-Killer Screen\nAutomated checks and manual confirmations before investing vendor time in questionnaire completion.",
+      "id": "Field_S3_01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S3_02"
+    },
+    {
+      "type": "text",
+      "text": "### Automated Pre-Screen Results (OB-DMN-7)",
+      "id": "Field_S3_03"
+    },
+    {
+      "type": "textfield",
+      "key": "dealKillerResult",
+      "label": "Pre-Screen Result",
+      "readonly": true,
+      "description": "Proceed or Blocked",
+      "id": "Field_S3_04"
+    },
+    {
+      "type": "textarea",
+      "key": "blockReason",
+      "label": "Block Reason",
+      "readonly": true,
+      "conditional": { "hide": "=dealKillerResult != \"Blocked\"" },
+      "id": "Field_S3_05"
+    },
+    {
+      "type": "textfield",
+      "key": "vendorSanctionsStatus",
+      "label": "OFAC / Sanctions Screening",
+      "readonly": true,
+      "description": "OCC 2023-17 compliance check",
+      "id": "Field_S3_06"
+    },
+    {
+      "type": "separator",
+      "id": "Field_S3_07"
+    },
+    {
+      "type": "text",
+      "text": "### Manual Confirmations",
+      "id": "Field_S3_08"
+    },
+    {
+      "type": "radio",
+      "key": "vendorConcentrationAck",
+      "label": "Vendor Concentration Acknowledgment",
+      "description": "If this vendor already provides 3+ services to the organization, acknowledge the concentration risk.",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Not applicable — vendor provides fewer than 3 services", "value": "not_applicable" },
+        { "label": "Acknowledged — aware of concentration risk", "value": "acknowledged" }
+      ],
+      "id": "Field_S3_09"
+    },
+    {
+      "type": "radio",
+      "key": "hasExecutiveSponsor",
+      "label": "Executive Sponsor Identified",
+      "description": "An executive sponsor has been identified for this request.",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Yes", "value": "yes" },
+        { "label": "No — will identify before SP1 submission", "value": "no" }
+      ],
+      "id": "Field_S3_10"
+    },
+    {
+      "type": "radio",
+      "key": "budgetAuthorized",
+      "label": "Budget Authorization",
+      "description": "Preliminary budget authorization obtained or not required.",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Yes — budget authorized", "value": "yes" },
+        { "label": "Not required — exploratory", "value": "not_required" },
+        { "label": "No — will obtain before SP1 submission", "value": "no" }
+      ],
+      "id": "Field_S3_11"
+    }
+  ]
+}
