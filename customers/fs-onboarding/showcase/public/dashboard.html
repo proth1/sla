@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Process Owner Dashboard | SLA Governance</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1e293b;--surface3:#283548;
+  --border:#334155;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#3b82f6;--accent2:#6366f1;--accent3:#8b5cf6;
+  --success:#22c55e;--warn:#f59e0b;--danger:#ef4444;
+  --glow:rgba(99,102,241,0.15);
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* --- HEADER --- */
+.header{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+.header-left{display:flex;align-items:center;gap:14px}
+.logo{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent3));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;box-shadow:0 0 24px rgba(99,102,241,0.3)}
+.header h1{font-size:18px;font-weight:600;background:linear-gradient(135deg,#e2e8f0,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-sub{font-size:12px;color:var(--text3);font-weight:400}
+.header-right{display:flex;gap:10px;align-items:center}
+.cluster-badge{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:11px;color:var(--text2);display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace}
+.cluster-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px rgba(34,197,94,0.5);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.back-link{color:var(--text3);text-decoration:none;font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:8px;transition:all .2s;display:flex;align-items:center;gap:6px}
+.back-link:hover{color:var(--text);border-color:var(--text3)}
+.refresh-indicator{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.refresh-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.5;transition:opacity .3s}
+.refresh-dot.active{opacity:1;box-shadow:0 0 8px rgba(59,130,246,0.6)}
+.btn-refresh{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text3);cursor:pointer;padding:4px 10px;font-size:11px;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:4px}
+.btn-refresh:hover{color:var(--text);border-color:var(--accent)}
+.btn-refresh svg{transition:transform .3s}
+.btn-refresh.spinning svg{animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* --- MAIN CONTENT --- */
+.dashboard{padding:24px 32px;max-width:1600px;margin:0 auto}
+
+/* --- KPI CARDS --- */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;transition:border-color .2s}
+.kpi-card:hover{border-color:var(--accent)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .2s}
+.kpi-card:hover::before{opacity:1}
+.kpi-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:500;margin-bottom:8px}
+.kpi-value{font-size:32px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:4px}
+.kpi-sub{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.kpi-trend-up{color:var(--success)}
+.kpi-trend-down{color:var(--danger)}
+.kpi-card.danger{border-color:rgba(239,68,68,0.3)}
+.kpi-card.danger .kpi-value{color:var(--danger)}
+.kpi-card.warn .kpi-value{color:var(--warn)}
+.kpi-card.success .kpi-value{color:var(--success)}
+
+/* --- PHASE DISTRIBUTION --- */
+.phase-section{margin-bottom:24px}
+.section-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-title .line{flex:1;height:1px;background:var(--border)}
+.phase-bar-container{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.phase-bar{display:flex;height:40px;border-radius:8px;overflow:hidden;background:var(--surface2);margin-bottom:12px}
+.phase-segment{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#fff;transition:all .4s;min-width:0;position:relative;cursor:default}
+.phase-segment:hover{filter:brightness(1.2)}
+.phase-segment .seg-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 8px}
+.phase-legend{display:flex;gap:20px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+.phase-colors{--sp1:#3b82f6;--sp2:#8b5cf6;--sp3:#f59e0b;--sp4:#ef4444;--sp5:#22c55e;--completed:#475569;--incident:#dc2626}
+
+/* --- TABLE SECTION --- */
+.table-section{margin-bottom:24px}
+.table-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.table-filters{display:flex;gap:8px}
+.filter-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text3);cursor:pointer;padding:5px 14px;font-size:11px;font-family:inherit;transition:all .2s;font-weight:500}
+.filter-btn:hover{color:var(--text);border-color:var(--text3)}
+.filter-btn.active{color:var(--accent);border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:var(--surface2)}
+thead th{padding:12px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;transition:color .2s}
+thead th:hover{color:var(--text)}
+thead th .sort-icon{display:inline-block;margin-left:4px;opacity:.3;transition:opacity .2s;font-size:10px}
+thead th.sorted .sort-icon{opacity:1;color:var(--accent)}
+tbody tr{border-bottom:1px solid rgba(51,65,85,0.4);transition:background .15s;cursor:pointer}
+tbody tr:hover{background:rgba(59,130,246,0.04)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:10px 16px;vertical-align:middle}
+.status-indicator{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px}
+.status-active{background:rgba(59,130,246,0.12);color:#60a5fa}
+.status-completed{background:rgba(34,197,94,0.12);color:#4ade80}
+.status-incident{background:rgba(239,68,68,0.12);color:#f87171}
+.status-canceled{background:rgba(148,163,184,0.12);color:#94a3b8}
+.status-dot{width:6px;height:6px;border-radius:50%}
+.status-active .status-dot{background:#60a5fa;box-shadow:0 0 6px rgba(96,165,250,0.5)}
+.status-completed .status-dot{background:#4ade80}
+.status-incident .status-dot{background:#f87171;animation:pulse 1.5s infinite}
+.status-canceled .status-dot{background:#94a3b8}
+.row-active{border-left:2px solid var(--accent)}
+.row-completed{border-left:2px solid var(--success)}
+.row-incident{border-left:2px solid var(--danger)}
+.row-canceled{border-left:2px solid var(--text3)}
+.instance-key{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);font-weight:500}
+.phase-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.phase-sp1{background:rgba(59,130,246,0.15);color:#60a5fa}
+.phase-sp2{background:rgba(139,92,246,0.15);color:#c084fc}
+.phase-sp3{background:rgba(245,158,11,0.15);color:#fbbf24}
+.phase-sp4{background:rgba(239,68,68,0.15);color:#f87171}
+.phase-sp5{background:rgba(34,197,94,0.15);color:#4ade80}
+.phase-done{background:rgba(71,85,105,0.2);color:#94a3b8}
+.time-value{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2)}
+.time-warn{color:var(--warn)}
+.time-danger{color:var(--danger)}
+.btn-view{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);border-radius:6px;color:var(--accent);cursor:pointer;padding:4px 12px;font-size:11px;font-family:inherit;font-weight:500;transition:all .2s;text-decoration:none;display:inline-block}
+.btn-view:hover{background:rgba(59,130,246,0.2);border-color:var(--accent)}
+.empty-state{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty-state h3{font-size:16px;color:var(--text2);margin-bottom:6px}
+
+/* --- TASK QUEUE --- */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.task-queue{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.queue-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.queue-header h3{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px}
+.queue-count{background:var(--accent);color:#fff;font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px}
+.queue-list{max-height:320px;overflow-y:auto}
+.queue-group-title{padding:8px 20px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;background:var(--surface2);border-bottom:1px solid rgba(51,65,85,0.3);position:sticky;top:0;z-index:1}
+.queue-item{padding:10px 20px;border-bottom:1px solid rgba(51,65,85,0.3);display:flex;align-items:center;justify-content:space-between;transition:background .15s}
+.queue-item:hover{background:rgba(59,130,246,0.04)}
+.queue-item:last-child{border-bottom:none}
+.queue-task-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.queue-task-meta{font-size:10px;color:var(--text3);display:flex;gap:8px;align-items:center}
+.queue-task-meta .key{font-family:'JetBrains Mono',monospace}
+.queue-age{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.queue-age.stale{color:var(--warn)}
+.queue-age.critical{color:var(--danger)}
+
+/* --- ACTIVITY LOG --- */
+.activity-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.activity-list{max-height:320px;overflow-y:auto;padding:8px 0}
+.activity-item{padding:8px 20px;display:flex;gap:12px;align-items:flex-start;font-size:12px}
+.activity-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.activity-dot.created{background:var(--accent)}
+.activity-dot.completed{background:var(--success)}
+.activity-dot.incident{background:var(--danger)}
+.activity-time{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap;margin-top:2px}
+
+/* --- SCROLLBAR --- */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* --- LOADING --- */
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+.loading-row td{text-align:center;padding:32px}
+
+/* --- INSTANCE DETAIL PANEL --- */
+.detail-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,0.4);z-index:200;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+.detail-overlay.open{opacity:1;visibility:visible}
+.detail-panel{position:fixed;top:0;right:-500px;bottom:0;width:500px;background:var(--surface);border-left:1px solid var(--border);z-index:201;transition:right .3s ease;display:flex;flex-direction:column;box-shadow:-8px 0 32px rgba(0,0,0,0.3)}
+.detail-panel.open{right:0}
+.detail-panel-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
+.detail-panel-header h3{font-size:14px;font-weight:600;color:var(--text)}
+.detail-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:20px;padding:4px 8px;border-radius:4px;transition:all .2s;line-height:1}
+.detail-close:hover{color:var(--text);background:var(--surface3)}
+.detail-body{flex:1;overflow-y:auto;padding:0}
+.detail-meta{padding:16px 20px;border-bottom:1px solid var(--border)}
+.detail-meta-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12px}
+.detail-meta-label{color:var(--text3);font-weight:500}
+.detail-meta-value{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px}
+.detail-section-title{padding:12px 20px 8px;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.detail-task-row{padding:12px 20px;border-bottom:1px solid rgba(51,65,85,0.3);transition:background .15s}
+.detail-task-row:hover{background:rgba(59,130,246,0.04)}
+.detail-task-row:last-child{border-bottom:none}
+.detail-task-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.detail-task-info{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--text3)}
+.assignee-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500}
+.assignee-badge.assigned{background:rgba(59,130,246,0.12);color:#60a5fa}
+.assignee-badge.unassigned{background:rgba(148,163,184,0.1);color:var(--text3)}
+.btn-reassign{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text3);cursor:pointer;padding:3px 8px;font-size:10px;font-family:inherit;font-weight:500;transition:all .2s;margin-left:auto}
+.btn-reassign:hover{color:var(--accent);border-color:var(--accent)}
+.detail-operate-link{display:block;padding:12px 20px;text-align:center;color:var(--accent);text-decoration:none;font-size:12px;font-weight:500;border-top:1px solid var(--border);transition:background .2s}
+.detail-operate-link:hover{background:rgba(59,130,246,0.06)}
+
+/* --- REASSIGN MODAL --- */
+.modal-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.modal-backdrop.open{opacity:1;visibility:visible}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:380px;max-width:90vw;box-shadow:0 16px 48px rgba(0,0,0,0.4)}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-header h4{font-size:14px;font-weight:600;color:var(--text)}
+.modal-body{padding:20px}
+.modal-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:500;margin-bottom:6px;display:block}
+.modal-current{font-size:12px;color:var(--text2);margin-bottom:16px;padding:8px 12px;background:var(--surface2);border-radius:6px}
+.modal-input{width:100%;padding:8px 12px;font-size:13px;font-family:inherit;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none;transition:border-color .2s}
+.modal-input:focus{border-color:var(--accent)}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.modal-btn{flex:1;padding:8px 14px;font-size:12px;font-family:inherit;font-weight:500;border-radius:6px;cursor:pointer;transition:all .2s;border:1px solid var(--border)}
+.modal-btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.modal-btn-primary:hover{background:#2563eb}
+.modal-btn-secondary{background:var(--surface2);color:var(--text2)}
+.modal-btn-secondary:hover{background:var(--surface3);color:var(--text)}
+.modal-btn-danger{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:#f87171}
+.modal-btn-danger:hover{background:rgba(239,68,68,0.2)}
+.toast{position:fixed;bottom:24px;right:24px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:400;transform:translateY(60px);opacity:0;transition:all .3s ease}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:#166534;color:#4ade80;border:1px solid rgba(34,197,94,0.3)}
+.toast.error{background:#7f1d1d;color:#fca5a5;border:1px solid rgba(239,68,68,0.3)}
+.queue-item .btn-reassign-inline{background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 6px;font-size:14px;transition:color .2s;line-height:1}
+.queue-item .btn-reassign-inline:hover{color:var(--accent)}
+
+/* --- RESPONSIVE --- */
+@media(max-width:1200px){
+  .kpi-row{grid-template-columns:repeat(3,1fr)}
+  .bottom-grid{grid-template-columns:1fr}
+  .detail-panel{width:100%}
+}
+@media(max-width:768px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .dashboard{padding:16px}
+  .header{padding:12px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">PO</div>
+    <div>
+      <h1>Process Owner Dashboard</h1>
+      <div class="header-sub">Software Onboarding Governance | Operational View</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <a href="/" class="back-link">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Showcase
+    </a>
+    <a href="concierge.html" class="back-link">Concierge</a>
+    <div class="cluster-badge">
+      <span class="dot"></span>
+      sla-onboarding-dev | us-east-1
+    </div>
+    <div class="refresh-indicator">
+      <span class="refresh-dot" id="refreshDot"></span>
+      <span id="lastRefreshed">--</span>
+    </div>
+    <button class="btn-refresh" onclick="manualRefresh()" id="refreshBtn" title="Refresh now">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="dashboard">
+  <!-- KPI ROW -->
+  <div class="kpi-row" id="kpiRow">
+    <div class="kpi-card" id="kpiActive">
+      <div class="kpi-label">Active Instances</div>
+      <div class="kpi-value" id="kpiActiveVal">--</div>
+      <div class="kpi-sub" id="kpiActiveSub">Loading...</div>
+    </div>
+    <div class="kpi-card" id="kpiPending">
+      <div class="kpi-label">Tasks Pending</div>
+      <div class="kpi-value" id="kpiPendingVal">--</div>
+      <div class="kpi-sub" id="kpiPendingSub">Awaiting action</div>
+    </div>
+    <div class="kpi-card" id="kpiCycle">
+      <div class="kpi-label">Avg Cycle Time</div>
+      <div class="kpi-value" id="kpiCycleVal">--</div>
+      <div class="kpi-sub" id="kpiCycleSub">Active instances</div>
+    </div>
+    <div class="kpi-card success" id="kpiCompleted">
+      <div class="kpi-label">Completed Today</div>
+      <div class="kpi-value" id="kpiCompletedVal">--</div>
+      <div class="kpi-sub" id="kpiCompletedSub">Since midnight</div>
+    </div>
+    <div class="kpi-card" id="kpiIncidents">
+      <div class="kpi-label">Incidents</div>
+      <div class="kpi-value" id="kpiIncidentsVal">0</div>
+      <div class="kpi-sub" id="kpiIncidentsSub">No incidents</div>
+    </div>
+  </div>
+
+  <!-- PHASE DISTRIBUTION -->
+  <div class="phase-section phase-colors">
+    <div class="section-title">Phase Distribution <span class="line"></span></div>
+    <div class="phase-bar-container">
+      <div class="phase-bar" id="phaseBar"></div>
+      <div class="phase-legend" id="phaseLegend"></div>
+    </div>
+  </div>
+
+  <!-- INSTANCE TABLE -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="section-title" style="margin-bottom:0">Process Instances <span class="line"></span></div>
+      <div class="table-filters">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn" data-filter="ACTIVE" onclick="setFilter('ACTIVE',this)">Active</button>
+        <button class="filter-btn" data-filter="COMPLETED" onclick="setFilter('COMPLETED',this)">Completed</button>
+        <button class="filter-btn" data-filter="INCIDENT" onclick="setFilter('INCIDENT',this)">Incidents</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="key" onclick="sortTable('key')">Instance Key <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="software" onclick="sortTable('software')">Software Name <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="pathway" onclick="sortTable('pathway')">Pathway <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="requestType" onclick="sortTable('requestType')">Request Type <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="phase" onclick="sortTable('phase')">Current Phase <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="task" onclick="sortTable('task')">Current Task <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="status" onclick="sortTable('status')">Status <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="started" onclick="sortTable('started')">Started <span class="sort-icon">&#9650;</span></th>
+            <th data-sort="timeInPhase" onclick="sortTable('timeInPhase')">Time in Phase <span class="sort-icon">&#9650;</span></th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="instanceTableBody">
+          <tr class="loading-row"><td colspan="10"><span class="spinner"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- BOTTOM: TASK QUEUE + ACTIVITY -->
+  <div class="bottom-grid">
+    <div class="task-queue">
+      <div class="queue-header">
+        <h3>Pending Task Queue</h3>
+        <span class="queue-count" id="queueCount">0</span>
+      </div>
+      <div class="queue-list" id="queueList">
+        <div class="empty-state" style="padding:32px"><p>No pending tasks</p></div>
+      </div>
+    </div>
+    <div class="activity-panel">
+      <div class="queue-header">
+        <h3>Recent Activity</h3>
+      </div>
+      <div class="activity-list" id="activityList">
+        <div class="empty-state" style="padding:32px"><p>No recent activity</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Instance Detail Panel (slide-out) -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetailPanel()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-panel-header">
+    <h3 id="detailTitle">Instance Details</h3>
+    <button class="detail-close" onclick="closeDetailPanel()">&times;</button>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- Reassignment Modal -->
+<div class="modal-backdrop" id="reassignModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h4>Reassign Task</h4>
+      <button class="detail-close" onclick="closeReassignModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="reassignTaskName" style="font-size:13px;font-weight:500;margin-bottom:12px"></div>
+      <label class="modal-label">Current Assignment</label>
+      <div class="modal-current" id="reassignCurrent">--</div>
+      <label class="modal-label" for="reassignInput">Assign to User</label>
+      <input class="modal-input" id="reassignInput" type="text" placeholder="Enter username or email">
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-danger" onclick="unassignTask()">Return to Pool</button>
+        <button class="modal-btn modal-btn-secondary" onclick="closeReassignModal()">Cancel</button>
+        <button class="modal-btn modal-btn-primary" onclick="confirmReassign()">Assign</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// --- CONFIGURATION ---
+const REFRESH_INTERVAL = 10000;
+const PHASE_MAP = {
+  Task_ReviewExisting: 'SP1', Task_LeverageExisting: 'SP1', Task_GatherDocs: 'SP1', Task_SubmitRequest: 'SP1', Task_InitialTriage: 'SP1', Task_ClassifyRequest: 'SP1', Task_DealKillerCheck: 'SP1',
+  Task_PrelimAnalysis: 'SP2', Task_BacklogPrioritization: 'SP2', Task_PathwayRouting: 'SP2', Task_PrioritizationScoring: 'SP2',
+  Task_TechArchReview: 'SP3', Task_SecurityAssessment: 'SP3', Task_RiskCompliance: 'SP3', Task_FinancialAnalysis: 'SP3', Task_AssessVendorLandscape: 'SP3', Task_VendorDD: 'SP3', Task_EvaluateResponse: 'SP3', Task_AIGovernanceReview: 'SP3', Receive_VendorResponse: 'SP3', Task_DARTFormation: 'SP3', Task_CreateOneTrustAssessment: 'SP3', Task_SecurityTierRouting: 'SP3', Task_BaselineScan: 'SP3', Task_RetrieveOneTrustResults: 'SP3',
+  Task_RefineRequirements: 'SP4', Task_PerformPoC: 'SP4', Task_TechRiskEval: 'SP4', Task_NegotiateContract: 'SP4', Task_FinalizeContract: 'SP4', Task_DefineBuildReqs: 'SP4', Receive_SignedContract: 'SP4', Task_ComplianceReview: 'SP4', Task_EnableContractExec: 'SP4', Task_ContractDeviation: 'SP4', Task_CodingCorrection: 'SP4',
+  Task_PerformUAT: 'SP5', Task_FinalApproval: 'SP5', Task_OnboardSoftware: 'SP5', Activity_0zf4l0g: 'SP5', Task_CloseRequest: 'SP5', Task_AssignOwnership: 'SP5', Task_ConditionVerification: 'SP5',
+};
+const PHASE_NAMES = { SP1: 'Request & Triage', SP2: 'Planning & Routing', SP3: 'Evaluation & DD', SP4: 'Contracting & Build', SP5: 'UAT & Go-Live' };
+const PHASE_COLORS = { SP1: '#3b82f6', SP2: '#8b5cf6', SP3: '#f59e0b', SP4: '#ef4444', SP5: '#22c55e' };
+const PHASE_CSS = { SP1: 'phase-sp1', SP2: 'phase-sp2', SP3: 'phase-sp3', SP4: 'phase-sp4', SP5: 'phase-sp5' };
+const LANE_LABELS = {
+  'business-lane': 'Business', 'governance-lane': 'Governance', 'contracting-lane': 'Contracting',
+  'technical-assessment': 'Tech Assessment', 'ai-review': 'AI Review', 'compliance-lane': 'Compliance',
+  'oversight-lane': 'Oversight', 'automation-lane': 'Automation', 'vendor-response': 'Vendor',
+  'procurement-lane': 'Procurement', 'requester-lane': 'Requester', 'product-management': 'Product Mgmt',
+};
+
+let state = {
+  instances: [],
+  tasks: [],
+  enriched: [],       // instances enriched with task/variable data
+  sortCol: 'started',
+  sortDir: 'desc',
+  filter: 'all',
+  lastRefresh: null,
+  refreshTimer: null,
+  tickTimer: null,
+  activityLog: [],
+};
+
+// --- API HELPERS ---
+async function fetchJSON(url, opts) {
+  try {
+    const res = await fetch(url, opts);
+    if (!res.ok) throw new Error(`${res.status}`);
+    return await res.json();
+  } catch (e) {
+    console.error(`API error ${url}:`, e);
+    return null;
+  }
+}
+
+// --- DATA FETCHING ---
+async function fetchDashboardData() {
+  const dot = document.getElementById('refreshDot');
+  dot.classList.add('active');
+
+  // 1. Fetch active + completed instances in parallel
+  const [activeData, completedData, pendingTasks] = await Promise.all([
+    fetchJSON('/api/instances/search', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v8' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 50 } }),
+    }),
+    fetchJSON('/api/instances/search', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v8', state: 'COMPLETED' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 20 } }),
+    }),
+    fetchJSON('/api/tasks/search', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: 'CREATED' }),
+    }),
+  ]);
+
+  const activeInstances = activeData?.items || [];
+  const completedInstances = completedData?.items || [];
+  state.tasks = Array.isArray(pendingTasks) ? pendingTasks : [];
+
+  // Merge instances (active includes all states from the filter-less query, completed is separate)
+  const instanceMap = new Map();
+  for (const inst of activeInstances) instanceMap.set(inst.processInstanceKey, inst);
+  for (const inst of completedInstances) instanceMap.set(inst.processInstanceKey, inst);
+  state.instances = Array.from(instanceMap.values());
+
+  // 2. Enrich instances with task data
+  await enrichInstances();
+
+  // 3. Update UI
+  renderKPIs();
+  renderPhaseBar();
+  renderInstanceTable();
+  renderTaskQueue();
+  renderActivity();
+
+  state.lastRefresh = Date.now();
+  dot.classList.remove('active');
+  updateRefreshTimer();
+}
+
+async function enrichInstances() {
+  const tasksByInstance = new Map();
+  for (const task of state.tasks) {
+    const key = task.processInstanceKey;
+    if (!tasksByInstance.has(key)) tasksByInstance.set(key, []);
+    tasksByInstance.get(key).push(task);
+  }
+
+  state.enriched = state.instances.map(inst => {
+    const key = inst.processInstanceKey;
+    const tasks = tasksByInstance.get(key) || [];
+    const currentTask = tasks[0] || null;
+    const taskDefId = currentTask?.taskDefinitionId || null;
+    const phase = taskDefId ? (PHASE_MAP[taskDefId] || null) : null;
+    const hasIncident = inst.state === 'INCIDENT' || inst.hasActiveOperation === true;
+
+    return {
+      key,
+      state: hasIncident ? 'INCIDENT' : (inst.state || 'ACTIVE'),
+      startDate: inst.startDate,
+      endDate: inst.endDate || null,
+      phase,
+      phaseName: phase ? PHASE_NAMES[phase] : (inst.state === 'COMPLETED' ? 'Completed' : '--'),
+      currentTaskName: currentTask ? (currentTask.name || '').replace(/\n/g, ' ') : (inst.state === 'COMPLETED' ? '--' : 'Waiting...'),
+      currentTaskId: currentTask?.taskDefinitionId || null,
+      softwareName: null,  // will try to get from variables
+      selectedPathway: null,
+      requestType: null,
+      tasks,
+      raw: inst,
+    };
+  });
+
+  // Try to get softwareName from task variables for active instances with tasks
+  const varPromises = state.enriched
+    .filter(e => e.tasks.length > 0)
+    .slice(0, 10)  // limit to 10 to avoid overwhelming API
+    .map(async (e) => {
+      try {
+        const vars = await fetchJSON(`/api/tasks/${e.tasks[0].id}/variables`, {
+          method: 'GET',
+        });
+        if (Array.isArray(vars)) {
+          const sv = vars.find(v => v.name === 'softwareName');
+          if (sv) {
+            try { e.softwareName = JSON.parse(sv.value); } catch { e.softwareName = sv.value; }
+          }
+          const pw = vars.find(v => v.name === 'selectedPathway');
+          if (pw) {
+            try { e.selectedPathway = JSON.parse(pw.value); } catch { e.selectedPathway = pw.value; }
+          }
+          const rt = vars.find(v => v.name === 'requestType');
+          if (rt) {
+            try { e.requestType = JSON.parse(rt.value); } catch { e.requestType = rt.value; }
+          }
+        }
+      } catch { /* ignore */ }
+    });
+  await Promise.all(varPromises);
+
+  // For instances without tasks, try process-level variables
+  const noTaskInstances = state.enriched.filter(e => e.tasks.length === 0 && e.state === 'ACTIVE').slice(0, 5);
+  const varPromises2 = noTaskInstances.map(async (e) => {
+    try {
+      const vars = await fetchJSON(`/api/process/${e.key}/variables`);
+      if (Array.isArray(vars)) {
+        const sv = vars.find(v => v.name === 'softwareName');
+        if (sv) {
+          try { e.softwareName = JSON.parse(sv.value); } catch { e.softwareName = sv.value; }
+        }
+        const pw = vars.find(v => v.name === 'selectedPathway');
+        if (pw) {
+          try { e.selectedPathway = JSON.parse(pw.value); } catch { e.selectedPathway = pw.value; }
+        }
+        const rt = vars.find(v => v.name === 'requestType');
+        if (rt) {
+          try { e.requestType = JSON.parse(rt.value); } catch { e.requestType = rt.value; }
+        }
+      }
+    } catch { /* ignore */ }
+  });
+  await Promise.all(varPromises2);
+}
+
+// --- RENDER: KPIs ---
+function renderKPIs() {
+  const active = state.enriched.filter(e => e.state === 'ACTIVE').length;
+  const pending = state.tasks.length;
+  const incidents = state.enriched.filter(e => e.state === 'INCIDENT').length;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const completedToday = state.enriched.filter(e => e.state === 'COMPLETED' && e.endDate && new Date(e.endDate) >= today).length;
+
+  // Avg cycle time for active instances
+  const activeInstances = state.enriched.filter(e => e.state === 'ACTIVE' && e.startDate);
+  let avgCycle = '--';
+  if (activeInstances.length > 0) {
+    const now = Date.now();
+    const totalMs = activeInstances.reduce((sum, e) => sum + (now - new Date(e.startDate).getTime()), 0);
+    avgCycle = formatDuration(totalMs / activeInstances.length);
+  }
+
+  document.getElementById('kpiActiveVal').textContent = active;
+  document.getElementById('kpiActiveSub').textContent = `${state.enriched.length} total tracked`;
+  document.getElementById('kpiPendingVal').textContent = pending;
+  document.getElementById('kpiPendingSub').textContent = pending > 0 ? `Across ${new Set(state.tasks.map(t => t.processInstanceKey)).size} instances` : 'All clear';
+  document.getElementById('kpiCycleVal').textContent = avgCycle;
+  document.getElementById('kpiCycleSub').textContent = `${activeInstances.length} active instances`;
+  document.getElementById('kpiCompletedVal').textContent = completedToday;
+  document.getElementById('kpiIncidentsVal').textContent = incidents;
+
+  // Style incidents card
+  const incCard = document.getElementById('kpiIncidents');
+  incCard.className = incidents > 0 ? 'kpi-card danger' : 'kpi-card';
+  document.getElementById('kpiIncidentsSub').textContent = incidents > 0 ? 'Requires attention' : 'No incidents';
+}
+
+// --- RENDER: PHASE BAR ---
+function renderPhaseBar() {
+  const bar = document.getElementById('phaseBar');
+  const legend = document.getElementById('phaseLegend');
+  const activeInstances = state.enriched.filter(e => e.state === 'ACTIVE');
+  const counts = { SP1: 0, SP2: 0, SP3: 0, SP4: 0, SP5: 0, unknown: 0 };
+  for (const inst of activeInstances) {
+    if (inst.phase && counts[inst.phase] !== undefined) counts[inst.phase]++;
+    else counts.unknown++;
+  }
+  const total = activeInstances.length || 1;
+
+  bar.innerHTML = '';
+  legend.innerHTML = '';
+  const phases = ['SP1', 'SP2', 'SP3', 'SP4', 'SP5'];
+  for (const p of phases) {
+    if (counts[p] === 0) continue;
+    const pct = (counts[p] / total * 100);
+    const seg = document.createElement('div');
+    seg.className = 'phase-segment';
+    seg.style.width = pct + '%';
+    seg.style.background = PHASE_COLORS[p];
+    seg.title = `${PHASE_NAMES[p]}: ${counts[p]} instance${counts[p] > 1 ? 's' : ''}`;
+    seg.innerHTML = `<span class="seg-label">${p} (${counts[p]})</span>`;
+    bar.appendChild(seg);
+  }
+  if (counts.unknown > 0) {
+    const seg = document.createElement('div');
+    seg.className = 'phase-segment';
+    seg.style.width = (counts.unknown / total * 100) + '%';
+    seg.style.background = '#475569';
+    seg.innerHTML = `<span class="seg-label">? (${counts.unknown})</span>`;
+    bar.appendChild(seg);
+  }
+  if (activeInstances.length === 0) {
+    bar.innerHTML = '<div class="phase-segment" style="width:100%;background:var(--surface2);color:var(--text3);font-size:12px">No active instances</div>';
+  }
+
+  // Legend
+  for (const p of phases) {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-dot" style="background:${PHASE_COLORS[p]}"></span>${p}: ${PHASE_NAMES[p]} (${counts[p]})`;
+    legend.appendChild(item);
+  }
+}
+
+// --- RENDER: INSTANCE TABLE ---
+function renderInstanceTable() {
+  const tbody = document.getElementById('instanceTableBody');
+  let data = [...state.enriched];
+
+  // Filter
+  if (state.filter !== 'all') {
+    data = data.filter(e => e.state === state.filter);
+  }
+
+  // Sort
+  data.sort((a, b) => {
+    let va, vb;
+    switch (state.sortCol) {
+      case 'key': va = a.key; vb = b.key; break;
+      case 'software': va = (a.softwareName || '').toLowerCase(); vb = (b.softwareName || '').toLowerCase(); break;
+      case 'pathway': va = (a.selectedPathway || '').toLowerCase(); vb = (b.selectedPathway || '').toLowerCase(); break;
+      case 'requestType': va = (a.requestType || '').toLowerCase(); vb = (b.requestType || '').toLowerCase(); break;
+      case 'phase': va = a.phase || 'ZZ'; vb = b.phase || 'ZZ'; break;
+      case 'task': va = (a.currentTaskName || '').toLowerCase(); vb = (b.currentTaskName || '').toLowerCase(); break;
+      case 'status': va = a.state; vb = b.state; break;
+      case 'started': va = a.startDate || ''; vb = b.startDate || ''; break;
+      case 'timeInPhase': va = a.startDate ? Date.now() - new Date(a.startDate).getTime() : 0; vb = b.startDate ? Date.now() - new Date(b.startDate).getTime() : 0; break;
+      default: va = a.key; vb = b.key;
+    }
+    if (va < vb) return state.sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return state.sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  if (data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><h3>No instances found</h3><p>No process instances match the current filter.</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(inst => {
+    const statusCls = inst.state === 'COMPLETED' ? 'completed' : inst.state === 'INCIDENT' ? 'incident' : inst.state === 'CANCELED' ? 'canceled' : 'active';
+    const rowCls = `row-${statusCls}`;
+    const phaseCls = inst.phase ? PHASE_CSS[inst.phase] : 'phase-done';
+    const phaseLabel = inst.phase || (inst.state === 'COMPLETED' ? 'Done' : '--');
+    const started = inst.startDate ? formatDate(inst.startDate) : '--';
+    const timeInPhase = inst.startDate && inst.state === 'ACTIVE' ? formatDuration(Date.now() - new Date(inst.startDate).getTime()) : (inst.endDate ? formatDuration(new Date(inst.endDate).getTime() - new Date(inst.startDate).getTime()) : '--');
+    const timeMs = inst.startDate ? Date.now() - new Date(inst.startDate).getTime() : 0;
+    const timeCls = timeMs > 7 * 86400000 ? 'time-danger' : timeMs > 3 * 86400000 ? 'time-warn' : '';
+
+    return `<tr class="${rowCls}" onclick="openDetailPanel('${inst.key}')">
+      <td><span class="instance-key">${inst.key}</span></td>
+      <td>${inst.softwareName || '<span style="color:var(--text3)">--</span>'}</td>
+      <td>${inst.selectedPathway ? esc(capitalize(inst.selectedPathway)) : '<span style="color:var(--text3)">--</span>'}</td>
+      <td>${inst.requestType ? esc(inst.requestType.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())) : '<span style="color:var(--text3)">--</span>'}</td>
+      <td><span class="phase-badge ${phaseCls}">${phaseLabel}</span></td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(inst.currentTaskName)}">${esc(inst.currentTaskName)}</td>
+      <td><span class="status-indicator status-${statusCls}"><span class="status-dot"></span>${capitalize(inst.state)}</span></td>
+      <td style="white-space:nowrap;font-size:12px;color:var(--text2)">${started}</td>
+      <td><span class="time-value ${timeCls}">${timeInPhase}</span></td>
+      <td><a class="btn-view" href="/?instance=${inst.key}" target="_blank" onclick="event.stopPropagation()">View</a></td>
+    </tr>`;
+  }).join('');
+
+  // Update sort indicators
+  document.querySelectorAll('thead th').forEach(th => {
+    const col = th.dataset.sort;
+    if (col === state.sortCol) {
+      th.classList.add('sorted');
+      th.querySelector('.sort-icon').innerHTML = state.sortDir === 'asc' ? '&#9650;' : '&#9660;';
+    } else {
+      th.classList.remove('sorted');
+      if (th.querySelector('.sort-icon')) th.querySelector('.sort-icon').innerHTML = '&#9650;';
+    }
+  });
+}
+
+// --- RENDER: TASK QUEUE ---
+function renderTaskQueue() {
+  const list = document.getElementById('queueList');
+  const count = document.getElementById('queueCount');
+  count.textContent = state.tasks.length;
+
+  if (state.tasks.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:32px"><p>No pending tasks</p></div>';
+    return;
+  }
+
+  // Group by candidateGroups (lane)
+  const grouped = new Map();
+  for (const task of state.tasks) {
+    const lane = (task.candidateGroups && task.candidateGroups[0]) || task.assignee || 'unassigned';
+    if (!grouped.has(lane)) grouped.set(lane, []);
+    grouped.get(lane).push(task);
+  }
+
+  let html = '';
+  for (const [lane, tasks] of grouped) {
+    const label = LANE_LABELS[lane] || lane.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    html += `<div class="queue-group-title">${esc(label)} (${tasks.length})</div>`;
+    for (const task of tasks) {
+      const name = (task.name || 'Unnamed').replace(/\n/g, ' ');
+      const age = task.creationDate ? timeSince(new Date(task.creationDate)) : '--';
+      const ageMs = task.creationDate ? Date.now() - new Date(task.creationDate).getTime() : 0;
+      const ageCls = ageMs > 86400000 ? 'critical' : ageMs > 3600000 ? 'stale' : '';
+      const assignee = task.assignee || '';
+      const groups = (task.candidateGroups || []).join(', ');
+      html += `<div class="queue-item">
+        <div>
+          <div class="queue-task-name">${esc(name)}</div>
+          <div class="queue-task-meta">
+            <span class="key">${task.processInstanceKey}</span>
+            <span>${task.taskDefinitionId || ''}</span>
+            ${assignee ? `<span class="assignee-badge assigned" style="font-size:10px;padding:1px 6px">&#9679; ${esc(assignee)}</span>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="btn-reassign-inline" title="Reassign task" onclick="openReassignModal('${task.id}', '${esc(name).replace(/'/g, "\\&#39;")}', '${(assignee || '').replace(/'/g, "\\&#39;")}', '${(groups || '').replace(/'/g, "\\&#39;")}')">&#9998;</button>
+          <div class="queue-age ${ageCls}">${age}</div>
+        </div>
+      </div>`;
+    }
+  }
+  list.innerHTML = html;
+}
+
+// --- RENDER: ACTIVITY LOG ---
+function renderActivity() {
+  const list = document.getElementById('activityList');
+
+  // Build activity from current state snapshot
+  const activities = [];
+  for (const inst of state.enriched) {
+    if (inst.startDate) {
+      activities.push({
+        time: new Date(inst.startDate),
+        type: 'created',
+        text: `Instance <strong>${inst.key}</strong> started${inst.softwareName ? ' (' + esc(inst.softwareName) + ')' : ''}`,
+      });
+    }
+    if (inst.state === 'COMPLETED' && inst.endDate) {
+      activities.push({
+        time: new Date(inst.endDate),
+        type: 'completed',
+        text: `Instance <strong>${inst.key}</strong> completed`,
+      });
+    }
+    if (inst.state === 'INCIDENT') {
+      activities.push({
+        time: new Date(inst.startDate),
+        type: 'incident',
+        text: `Instance <strong>${inst.key}</strong> has an incident`,
+      });
+    }
+  }
+  for (const task of state.tasks) {
+    if (task.creationDate) {
+      activities.push({
+        time: new Date(task.creationDate),
+        type: 'created',
+        text: `Task <strong>${esc((task.name || '').replace(/\n/g, ' '))}</strong> created in ${task.processInstanceKey}`,
+      });
+    }
+  }
+
+  activities.sort((a, b) => b.time - a.time);
+  const recent = activities.slice(0, 20);
+
+  if (recent.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:32px"><p>No recent activity</p></div>';
+    return;
+  }
+
+  list.innerHTML = recent.map(a => `
+    <div class="activity-item">
+      <span class="activity-dot ${a.type}"></span>
+      <div style="flex:1">
+        <div style="color:var(--text);line-height:1.4">${a.text}</div>
+        <div class="activity-time">${formatDate(a.time)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// --- TABLE SORTING ---
+function sortTable(col) {
+  if (state.sortCol === col) {
+    state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    state.sortCol = col;
+    state.sortDir = col === 'started' ? 'desc' : 'asc';
+  }
+  renderInstanceTable();
+}
+
+// --- TABLE FILTERING ---
+function setFilter(filter, btn) {
+  state.filter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderInstanceTable();
+}
+
+// --- REFRESH ---
+async function manualRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  await fetchDashboardData();
+  btn.classList.remove('spinning');
+}
+
+function updateRefreshTimer() {
+  if (state.tickTimer) clearInterval(state.tickTimer);
+  state.tickTimer = setInterval(() => {
+    if (!state.lastRefresh) return;
+    const sec = Math.floor((Date.now() - state.lastRefresh) / 1000);
+    document.getElementById('lastRefreshed').textContent = sec < 5 ? 'just now' : `${sec}s ago`;
+  }, 1000);
+}
+
+function startAutoRefresh() {
+  if (state.refreshTimer) clearInterval(state.refreshTimer);
+  state.refreshTimer = setInterval(fetchDashboardData, REFRESH_INTERVAL);
+}
+
+// --- UTILITY ---
+function formatDuration(ms) {
+  if (!ms || ms < 0) return '--';
+  const sec = Math.floor(ms / 1000);
+  if (sec < 60) return sec + 's';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return min + 'm';
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return hr + 'h ' + (min % 60) + 'm';
+  const days = Math.floor(hr / 24);
+  return days + 'd ' + (hr % 24) + 'h';
+}
+
+function formatDate(d) {
+  const date = d instanceof Date ? d : new Date(d);
+  if (isNaN(date.getTime())) return '--';
+  const now = new Date();
+  const diff = now - date;
+  if (diff < 86400000 && date.getDate() === now.getDate()) {
+    return 'Today ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+  if (diff < 172800000) {
+    return 'Yesterday ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+function timeSince(date) {
+  const sec = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (sec < 60) return sec + 's';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return min + 'm';
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return hr + 'h';
+  return Math.floor(hr / 24) + 'd';
+}
+
+function capitalize(s) {
+  if (!s) return '';
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
+function esc(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// --- INSTANCE DETAIL PANEL ---
+let detailInstance = null;
+let reassignTaskId = null;
+
+function openDetailPanel(instanceKey) {
+  const inst = state.enriched.find(e => e.key === instanceKey);
+  if (!inst) return;
+  detailInstance = inst;
+
+  document.getElementById('detailTitle').textContent = `Instance ${inst.key}`;
+  const body = document.getElementById('detailBody');
+
+  // Fetch all tasks (pending + completed) for this instance
+  Promise.all([
+    fetchJSON('/api/tasks/search', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: 'CREATED', processInstanceKey: instanceKey }),
+    }),
+    fetchJSON('/api/tasks/search', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: 'COMPLETED', processInstanceKey: instanceKey }),
+    }),
+  ]).then(([pending, completed]) => {
+    const pendingTasks = Array.isArray(pending) ? pending : [];
+    const completedTasks = Array.isArray(completed) ? completed : [];
+
+    let html = `<div class="detail-meta">`;
+    html += metaRow('Instance Key', inst.key);
+    html += metaRow('Status', `<span class="status-indicator status-${inst.state === 'COMPLETED' ? 'completed' : inst.state === 'INCIDENT' ? 'incident' : 'active'}"><span class="status-dot"></span>${capitalize(inst.state)}</span>`);
+    html += metaRow('Started', inst.startDate ? formatDate(inst.startDate) : '--');
+    if (inst.softwareName) html += metaRow('Software', esc(inst.softwareName));
+    if (inst.selectedPathway) html += metaRow('Pathway', esc(capitalize(inst.selectedPathway)));
+    if (inst.requestType) html += metaRow('Request Type', esc(inst.requestType.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())));
+    if (inst.phase) html += metaRow('Current Phase', `<span class="phase-badge ${PHASE_CSS[inst.phase]}">${inst.phase}: ${PHASE_NAMES[inst.phase]}</span>`);
+    html += `</div>`;
+
+    // Pending tasks
+    html += `<div class="detail-section-title">Pending Tasks (${pendingTasks.length})</div>`;
+    if (pendingTasks.length === 0) {
+      html += `<div style="padding:16px 20px;font-size:12px;color:var(--text3)">No pending tasks</div>`;
+    } else {
+      for (const task of pendingTasks) {
+        html += renderDetailTask(task, 'pending');
+      }
+    }
+
+    // Completed tasks
+    html += `<div class="detail-section-title">Completed Tasks (${completedTasks.length})</div>`;
+    if (completedTasks.length === 0) {
+      html += `<div style="padding:16px 20px;font-size:12px;color:var(--text3)">No completed tasks</div>`;
+    } else {
+      for (const task of completedTasks) {
+        html += renderDetailTask(task, 'completed');
+      }
+    }
+
+    // Operate link
+    const operateUrl = `https://ric-1.operate.camunda.io/425f10fa-c898-4b4b-b303-eac095286716/#/instances/${inst.key}`;
+    html += `<a class="detail-operate-link" href="${operateUrl}" target="_blank" rel="noopener">View in Operate &#8599;</a>`;
+
+    body.innerHTML = html;
+  });
+
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function renderDetailTask(task, status) {
+  const name = (task.name || 'Unnamed').replace(/\n/g, ' ');
+  const assignee = task.assignee;
+  const groups = (task.candidateGroups || []).map(g => LANE_LABELS[g] || g).join(', ');
+  const age = task.creationDate ? timeSince(new Date(task.creationDate)) : '--';
+  const badgeCls = assignee ? 'assigned' : 'unassigned';
+  const badgeText = assignee || 'Unassigned (group pool)';
+
+  let html = `<div class="detail-task-row">
+    <div class="detail-task-name">${esc(name)}</div>
+    <div class="detail-task-info">
+      <span class="assignee-badge ${badgeCls}">${assignee ? '&#9679; ' : '&#9675; '}${esc(badgeText)}</span>`;
+  if (groups) html += `<span style="color:var(--text3)">Group: ${esc(groups)}</span>`;
+  html += `<span style="color:var(--text3)">${age}</span>`;
+  if (status === 'pending') {
+    html += `<button class="btn-reassign" onclick="openReassignModal('${task.id}', '${esc(name).replace(/'/g, "\\&#39;")}', '${(assignee || '').replace(/'/g, "\\&#39;")}', '${(task.candidateGroups || []).join(', ').replace(/'/g, "\\&#39;")}')">Reassign</button>`;
+  }
+  if (status === 'completed') {
+    html += `<span style="color:var(--success);font-size:10px">&#10003; Done</span>`;
+  }
+  html += `</div></div>`;
+  return html;
+}
+
+function metaRow(label, value) {
+  return `<div class="detail-meta-row"><span class="detail-meta-label">${label}</span><span class="detail-meta-value">${value}</span></div>`;
+}
+
+function closeDetailPanel() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.getElementById('detailPanel').classList.remove('open');
+  detailInstance = null;
+}
+
+// --- REASSIGNMENT ---
+function openReassignModal(taskId, taskName, currentAssignee, candidateGroups) {
+  reassignTaskId = taskId;
+  document.getElementById('reassignTaskName').textContent = taskName;
+  document.getElementById('reassignCurrent').textContent = currentAssignee
+    ? `Assigned to: ${currentAssignee}`
+    : `Unassigned — Group pool: ${candidateGroups || 'none'}`;
+  document.getElementById('reassignInput').value = '';
+  document.getElementById('reassignModal').classList.add('open');
+  setTimeout(() => document.getElementById('reassignInput').focus(), 100);
+}
+
+function closeReassignModal() {
+  document.getElementById('reassignModal').classList.remove('open');
+  reassignTaskId = null;
+}
+
+async function confirmReassign() {
+  const assignee = document.getElementById('reassignInput').value.trim();
+  if (!assignee) { showToast('Enter a username', 'error'); return; }
+  if (!reassignTaskId) return;
+
+  try {
+    const res = await fetch(`/api/tasks/${reassignTaskId}/reassign`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ assignee }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    showToast(`Assigned to ${assignee}`, 'success');
+    closeReassignModal();
+    // Refresh detail panel if open
+    if (detailInstance) openDetailPanel(detailInstance.key);
+    fetchDashboardData();
+  } catch (e) {
+    showToast('Failed: ' + e.message, 'error');
+  }
+}
+
+async function unassignTask() {
+  if (!reassignTaskId) return;
+
+  try {
+    const res = await fetch(`/api/tasks/${reassignTaskId}/unassign`, { method: 'POST' });
+    if (!res.ok) throw new Error(await res.text());
+    showToast('Returned to group pool', 'success');
+    closeReassignModal();
+    if (detailInstance) openDetailPanel(detailInstance.key);
+    fetchDashboardData();
+  } catch (e) {
+    showToast('Failed: ' + e.message, 'error');
+  }
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = `toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// --- INIT ---
+fetchDashboardData();
+startAutoRefresh();
+</script>
+</body>
+</html>

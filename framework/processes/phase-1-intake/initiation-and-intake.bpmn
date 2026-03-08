@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Phase1Intake"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="Collaboration_Phase1Intake">
+    <bpmn:participant id="Participant_EnterpriseGovernance" name="Enterprise Governance" processRef="Process_SP_Phase1_Intake" />
+    <bpmn:participant id="Participant_VendorThirdParty" name="Vendor / Third Party" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_SP_Phase1_Intake" name="Phase 1: Initiation and Intake" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_Phase1Intake">
+      <bpmn:lane id="Lane_Business" name="Business">
+        <bpmn:flowNodeRef>StartEvent_IntakeRequest</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_1_1_InitiativeRequest</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_Task_1_1_PhaseSLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_1_SLAEscalation</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Governance" name="Governance">
+        <bpmn:flowNodeRef>Task_Phase1_QualityGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Phase1_Approval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_Phase1Transition</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Contracting" name="Contracting">
+      </bpmn:lane>
+      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
+      </bpmn:lane>
+      <bpmn:lane id="Lane_AIReview" name="AI Review">
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Compliance" name="Compliance">
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Oversight" name="Oversight">
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Automation" name="Automation">
+        <bpmn:flowNodeRef>Task_1_2_AIPreScreening</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_1_3_PreliminaryCategorization</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_1_4_CapabilityReuseAssessment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_1_5_KnowledgeHarvestingInitiation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_1_6_RoutingAssignment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Phase1Complete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase1Complete</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="StartEvent_IntakeRequest" name="Initiative&#10;Intake Request&#10;Received">
+      <bpmn:outgoing>Flow_StartEvent_Task_1_1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDef_IntakeRequest" />
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_1_1_InitiativeRequest" name="1.1 Initiative&#10;Request Submission"
+        camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_StartEvent_Task_1_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_Task_1_1_Task_1_2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="BoundaryEvent_Task_1_1_PhaseSLA" name="2 Day&#10;Phase SLA"
+        attachedToRef="Task_1_1_InitiativeRequest" cancelActivity="false">
+      <bpmn:outgoing>Flow_BoundaryEvent_Task_1_1_EndEvent_1_SLAEscalation</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDef_PhaseSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_1_SLAEscalation" name="Phase SLA&#10;Escalation">
+      <bpmn:incoming>Flow_BoundaryEvent_Task_1_1_EndEvent_1_SLAEscalation</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:serviceTask id="Task_1_2_AIPreScreening" name="1.2 AI&#10;Pre-Screening"
+        camunda:type="external" camunda:topic="ai-prescreening">
+      <bpmn:incoming>Flow_Task_1_1_Task_1_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_Task_1_2_Task_1_3</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_1_3_PreliminaryCategorization" name="1.3 Preliminary&#10;Categorization"
+        camunda:type="external" camunda:topic="initiative-categorization">
+      <bpmn:incoming>Flow_Task_1_2_Task_1_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_Task_1_3_Task_1_4</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_1_4_CapabilityReuseAssessment" name="1.4 Capability&#10;Reuse Assessment"
+        camunda:type="external" camunda:topic="capability-reuse-assessment">
+      <bpmn:incoming>Flow_Task_1_3_Task_1_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_Task_1_4_Task_1_5</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_1_5_KnowledgeHarvestingInitiation" name="1.5 Knowledge&#10;Harvesting"
+        camunda:type="external" camunda:topic="knowledge-harvesting">
+      <bpmn:incoming>Flow_Task_1_4_Task_1_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_Task_1_5_Task_1_6</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:businessRuleTask id="Task_1_6_RoutingAssignment" name="1.6 Routing&#10;Assignment"
+        camunda:decisionRef="DMN_PathwayRouting"
+        camunda:decisionRefBinding="latest"
+        camunda:resultVariable="selectedPathway"
+        camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_Task_1_5_Task_1_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_Task_1_6_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:exclusiveGateway id="Gateway_Phase1Complete" name="Phase 1&#10;Complete?">
+      <bpmn:incoming>Flow_Task_1_6_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase1Complete_Yes</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:businessRuleTask id="Task_Phase1_QualityGate" name="Phase 1&#10;Quality Gate"
+        camunda:decisionRef="DMN_AutomationTierAssignment"
+        camunda:decisionRefBinding="latest"
+        camunda:resultVariable="qualityGateResult"
+        camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_Phase1Complete_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_QualityGate_Approval</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:userTask id="Task_Phase1_Approval" name="Phase 1&#10;Approval" camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_QualityGate_Approval</bpmn:incoming>
+      <bpmn:outgoing>Flow_Approval_Transition</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:intermediateThrowEvent id="Event_Phase1Transition" name="Phase 1&#10;Complete">
+      <bpmn:incoming>Flow_Approval_Transition</bpmn:incoming>
+      <bpmn:outgoing>Flow_Transition_End</bpmn:outgoing>
+    </bpmn:intermediateThrowEvent>
+
+    <bpmn:endEvent id="EndEvent_Phase1Complete" name="Phase 1 Complete&#10;(Proceed to Phase 2)">
+      <bpmn:incoming>Flow_Transition_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_StartEvent_Task_1_1" sourceRef="StartEvent_IntakeRequest" targetRef="Task_1_1_InitiativeRequest" />
+    <bpmn:sequenceFlow id="Flow_Task_1_1_Task_1_2" sourceRef="Task_1_1_InitiativeRequest" targetRef="Task_1_2_AIPreScreening" />
+    <bpmn:sequenceFlow id="Flow_BoundaryEvent_Task_1_1_EndEvent_1_SLAEscalation" sourceRef="BoundaryEvent_Task_1_1_PhaseSLA" targetRef="EndEvent_1_SLAEscalation" />
+    <bpmn:sequenceFlow id="Flow_Task_1_2_Task_1_3" sourceRef="Task_1_2_AIPreScreening" targetRef="Task_1_3_PreliminaryCategorization" />
+    <bpmn:sequenceFlow id="Flow_Task_1_3_Task_1_4" sourceRef="Task_1_3_PreliminaryCategorization" targetRef="Task_1_4_CapabilityReuseAssessment" />
+    <bpmn:sequenceFlow id="Flow_Task_1_4_Task_1_5" sourceRef="Task_1_4_CapabilityReuseAssessment" targetRef="Task_1_5_KnowledgeHarvestingInitiation" />
+    <bpmn:sequenceFlow id="Flow_Task_1_5_Task_1_6" sourceRef="Task_1_5_KnowledgeHarvestingInitiation" targetRef="Task_1_6_RoutingAssignment" />
+    <bpmn:sequenceFlow id="Flow_Task_1_6_Gateway" sourceRef="Task_1_6_RoutingAssignment" targetRef="Gateway_Phase1Complete" />
+    <bpmn:sequenceFlow id="Flow_Phase1Complete_Yes" name="Yes" sourceRef="Gateway_Phase1Complete" targetRef="Task_Phase1_QualityGate" />
+    <bpmn:sequenceFlow id="Flow_QualityGate_Approval" sourceRef="Task_Phase1_QualityGate" targetRef="Task_Phase1_Approval" />
+    <bpmn:sequenceFlow id="Flow_Approval_Transition" sourceRef="Task_Phase1_Approval" targetRef="Event_Phase1Transition" />
+    <bpmn:sequenceFlow id="Flow_Transition_End" sourceRef="Event_Phase1Transition" targetRef="EndEvent_Phase1Complete" />
+
+    <bpmn:textAnnotation id="Annotation_DMNRouting">
+      <bpmn:text>DMN-2 (Pathway Routing): DMN_PathwayRouting determines governance pathway (Fast-Track / Standard / Enhanced / Emergency) and assigns risk analyst based on initiative type, risk score, and vendor category.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_DMNRouting" sourceRef="Task_1_6_RoutingAssignment" targetRef="Annotation_DMNRouting" />
+
+    <bpmn:textAnnotation id="Annotation_Regulatory">
+      <bpmn:text>Regulatory Alignment: OCC 2023-17 (Third-Party Risk — vendor reputation scan at intake) | GDPR/CCPA (data classification flags triggered by AI pre-screening) | EU AI Act (AI system classification at categorization) | SR 11-7 (model risk identification during preliminary categorization)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Regulatory" sourceRef="Task_1_2_AIPreScreening" targetRef="Annotation_Regulatory" />
+
+    <bpmn:textAnnotation id="Annotation_Automation">
+      <bpmn:text>Automation Target: 75% | Phase SLA: Standard/High Risk 1-2 days | Minimal Risk 0.5 days | Activities 1.2-1.6: Fully automated (AI Agent, Rule Engine, Registry Query, BPM+API Integration, DMN Table)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Automation" sourceRef="Task_1_5_KnowledgeHarvestingInitiation" targetRef="Annotation_Automation" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Phase1Intake">
+    <bpmndi:BPMNPlane id="BPMNPlane_Phase1Intake" bpmnElement="Collaboration_Phase1Intake">
+
+      <bpmndi:BPMNShape id="Participant_EnterpriseGovernance_di" bpmnElement="Participant_EnterpriseGovernance" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="1950" height="1210" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="1920" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
+        <dc:Bounds x="185" y="172" width="1920" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Contracting_di" bpmnElement="Lane_Contracting" isHorizontal="true">
+        <dc:Bounds x="185" y="297" width="1920" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_TechnicalAssessment_di" bpmnElement="Lane_TechnicalAssessment" isHorizontal="true">
+        <dc:Bounds x="185" y="422" width="1920" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_AIReview_di" bpmnElement="Lane_AIReview" isHorizontal="true">
+        <dc:Bounds x="185" y="547" width="1920" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
+        <dc:Bounds x="185" y="672" width="1920" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
+        <dc:Bounds x="185" y="797" width="1920" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
+        <dc:Bounds x="185" y="922" width="1920" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="StartEvent_IntakeRequest_di" bpmnElement="StartEvent_IntakeRequest">
+        <dc:Bounds x="248" y="91" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="225" y="134" width="83" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_1_1_InitiativeRequest_di" bpmnElement="Task_1_1_InitiativeRequest">
+        <dc:Bounds x="340" y="69" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="BoundaryEvent_Task_1_1_PhaseSLA_di" bpmnElement="BoundaryEvent_Task_1_1_PhaseSLA">
+        <dc:Bounds x="372" y="131" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="416" y="135" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_1_SLAEscalation_di" bpmnElement="EndEvent_1_SLAEscalation">
+        <dc:Bounds x="460" y="131" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="504" y="135" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_1_2_AIPreScreening_di" bpmnElement="Task_1_2_AIPreScreening">
+        <dc:Bounds x="520" y="944" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_1_3_PreliminaryCategorization_di" bpmnElement="Task_1_3_PreliminaryCategorization">
+        <dc:Bounds x="680" y="944" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_1_4_CapabilityReuseAssessment_di" bpmnElement="Task_1_4_CapabilityReuseAssessment">
+        <dc:Bounds x="840" y="944" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_1_5_KnowledgeHarvestingInitiation_di" bpmnElement="Task_1_5_KnowledgeHarvestingInitiation">
+        <dc:Bounds x="1000" y="944" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_1_6_RoutingAssignment_di" bpmnElement="Task_1_6_RoutingAssignment">
+        <dc:Bounds x="1160" y="944" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_Phase1Complete_di" bpmnElement="EndEvent_Phase1Complete">
+        <dc:Bounds x="1782" y="966" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1759" y="1009" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Annotation_Automation_di" bpmnElement="Annotation_Automation">
+        <dc:Bounds x="230" y="1060" width="600" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Annotation_Regulatory_di" bpmnElement="Annotation_Regulatory">
+        <dc:Bounds x="230" y="1125" width="700" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Annotation_DMNRouting_di" bpmnElement="Annotation_DMNRouting">
+        <dc:Bounds x="230" y="1190" width="700" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_StartEvent_Task_1_1_di" bpmnElement="Flow_StartEvent_Task_1_1">
+        <di:waypoint x="284" y="109" />
+        <di:waypoint x="340" y="109" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Task_1_1_Task_1_2_di" bpmnElement="Flow_Task_1_1_Task_1_2">
+        <di:waypoint x="440" y="109" />
+        <di:waypoint x="480" y="109" />
+        <di:waypoint x="480" y="984" />
+        <di:waypoint x="520" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_BoundaryEvent_Task_1_1_EndEvent_1_SLAEscalation_di" bpmnElement="Flow_BoundaryEvent_Task_1_1_EndEvent_1_SLAEscalation">
+        <di:waypoint x="408" y="149" />
+        <di:waypoint x="460" y="149" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Task_1_2_Task_1_3_di" bpmnElement="Flow_Task_1_2_Task_1_3">
+        <di:waypoint x="620" y="984" />
+        <di:waypoint x="680" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Task_1_3_Task_1_4_di" bpmnElement="Flow_Task_1_3_Task_1_4">
+        <di:waypoint x="780" y="984" />
+        <di:waypoint x="840" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Task_1_4_Task_1_5_di" bpmnElement="Flow_Task_1_4_Task_1_5">
+        <di:waypoint x="940" y="984" />
+        <di:waypoint x="1000" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Task_1_5_Task_1_6_di" bpmnElement="Flow_Task_1_5_Task_1_6">
+        <di:waypoint x="1100" y="984" />
+        <di:waypoint x="1160" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Task_1_6_Gateway_di" bpmnElement="Flow_Task_1_6_Gateway">
+        <di:waypoint x="1260" y="984" />
+        <di:waypoint x="1310" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNShape id="Gateway_Phase1Complete_di" bpmnElement="Gateway_Phase1Complete" isMarkerVisible="true">
+        <dc:Bounds x="1310" y="959" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1295" y="1016" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Phase1_QualityGate_di" bpmnElement="Task_Phase1_QualityGate">
+        <dc:Bounds x="1410" y="194" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Phase1_Approval_di" bpmnElement="Task_Phase1_Approval">
+        <dc:Bounds x="1550" y="194" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Event_Phase1Transition_di" bpmnElement="Event_Phase1Transition">
+        <dc:Bounds x="1692" y="216" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1670" y="259" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Phase1Complete_Yes_di" bpmnElement="Flow_Phase1Complete_Yes">
+        <di:waypoint x="1335" y="959" />
+        <di:waypoint x="1335" y="234" />
+        <di:waypoint x="1410" y="234" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1343" y="594" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_QualityGate_Approval_di" bpmnElement="Flow_QualityGate_Approval">
+        <di:waypoint x="1510" y="234" />
+        <di:waypoint x="1550" y="234" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Approval_Transition_di" bpmnElement="Flow_Approval_Transition">
+        <di:waypoint x="1650" y="234" />
+        <di:waypoint x="1692" y="234" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Transition_End_di" bpmnElement="Flow_Transition_End">
+        <di:waypoint x="1728" y="234" />
+        <di:waypoint x="1800" y="234" />
+        <di:waypoint x="1800" y="966" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_Automation_di" bpmnElement="Assoc_Automation">
+        <di:waypoint x="1050" y="1024" />
+        <di:waypoint x="1050" y="1060" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_Regulatory_di" bpmnElement="Assoc_Regulatory">
+        <di:waypoint x="570" y="1024" />
+        <di:waypoint x="570" y="1125" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_DMNRouting_di" bpmnElement="Assoc_DMNRouting">
+        <di:waypoint x="1210" y="1024" />
+        <di:waypoint x="1210" y="1190" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNShape id="Participant_VendorThirdParty_di" bpmnElement="Participant_VendorThirdParty" isHorizontal="true">
+        <dc:Bounds x="155" y="1300" width="1620" height="125" />
+      </bpmndi:BPMNShape>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

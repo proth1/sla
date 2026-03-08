@@ -1,0 +1,82 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "cv-remediation-revise",
+  "components": [
+    {
+      "type": "group",
+      "label": "Revise Evidence Brief",
+      "id": "Field_CV_RR_001",
+      "components": [
+        {
+          "type": "text",
+          "text": "The committee has returned the brief for revision. Address the concerns raised and resubmit for re-vote.",
+          "id": "Field_CV_RR_002"
+        },
+        {
+          "type": "textfield",
+          "key": "committeeDecision",
+          "label": "Committee decision",
+          "disabled": true,
+          "id": "Field_CV_RR_003"
+        },
+        {
+          "type": "textarea",
+          "key": "previousConditions",
+          "label": "Previous conditions / veto rationale",
+          "disabled": true,
+          "id": "Field_CV_RR_004"
+        },
+        {
+          "type": "textarea",
+          "key": "revisedExecutiveSummary",
+          "label": "Revised executive summary",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_RR_005"
+        },
+        {
+          "type": "textarea",
+          "key": "changesDescription",
+          "label": "Description of changes made",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_RR_006"
+        },
+        {
+          "type": "textarea",
+          "key": "addressedConcerns",
+          "label": "How concerns were addressed",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_RR_007"
+        },
+        {
+          "type": "number",
+          "key": "remediationLoopCount",
+          "label": "Current remediation loop",
+          "disabled": true,
+          "id": "Field_CV_RR_008"
+        },
+        {
+          "type": "checkbox",
+          "key": "readyForReVote",
+          "label": "Brief is ready for re-vote",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_RR_009"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

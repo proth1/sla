@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN4-AutomationTierAssignment-definitions"
+             name="DMN-4: Automation Tier Assignment"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_AutomationTierAssignment"
+            name="Automation Tier Assignment"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.1.0 | Effective Date: 2026-03-04 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: OCC 2023-17, NIST CSF 2.0, SR 11-7 | Change: v1.1.0 aligned input vocabulary with DMN-1 output values (Minimal/Limited/High/Unacceptable)</description>
+    <decisionTable id="DMN_AutomationTierAssignment-table" hitPolicy="UNIQUE">
+
+      <!--
+        DMN-4: Automation Tier Assignment
+        Phase: Cross-cutting (applies at each phase boundary and agent task assignment)
+        Hit Policy: UNIQUE
+        Description: Assigns the permissible level of automation, agent authority scope,
+                     human review requirements, and approval gate type for each initiative
+                     based on its risk tier. Governs the agentic SDLC pipeline constraints.
+          - Minimal:       Full automation permitted; agents act autonomously; spot-check human review
+          - Limited:       High automation with human oversight at key gates
+          - High:          Partial automation; human-in-the-loop for all decisions; CAB approval
+          - Unacceptable:  Manual execution only; full human control; board-level approval
+        Input:
+          riskTier: "Minimal" | "Limited" | "High" | "Unacceptable" (matches DMN-1 output values)
+        Outputs:
+          automationLevel:         Permitted automation percentage and scope
+          agentAuthority:          What agents are authorized to do autonomously
+          humanReviewRequirements: When and what humans must review
+          approvalGateType:        Type of approval gate at phase boundaries
+        Note: DMN-4 input values now directly match DMN-1 output vocabulary
+              (Minimal/Limited/High/Unacceptable) for seamless chaining.
+      -->
+
+      <input id="input-riskTier" label="Risk Tier">
+        <inputExpression id="inputExpr-riskTier" typeRef="string">
+          <text>riskTier</text>
+        </inputExpression>
+        <inputValues id="inputVals-riskTier">
+          <text>"Minimal","Limited","High","Unacceptable"</text>
+        </inputValues>
+      </input>
+
+      <output id="output-automationLevel"
+              label="Automation Level"
+              name="automationLevel"
+              typeRef="string" />
+
+      <output id="output-agentAuthority"
+              label="Agent Authority"
+              name="agentAuthority"
+              typeRef="string" />
+
+      <output id="output-humanReviewRequirements"
+              label="Human Review Requirements"
+              name="humanReviewRequirements"
+              typeRef="string" />
+
+      <output id="output-approvalGateType"
+              label="Approval Gate Type"
+              name="approvalGateType"
+              typeRef="string" />
+
+      <!--
+        RULE 1: MINIMAL RISK — Full Automation
+        Minimal risk tier from DMN-1.
+        Agents operate autonomously; humans review exceptions only.
+        Automation target: 75%+ per Phase 1 specification.
+        No formal approval gate required — automated pass/fail criteria.
+      -->
+      <rule id="rule-1">
+        <description>Minimal Risk: Full automation — agents operate autonomously with exception-based human review</description>
+        <inputEntry id="ie-1-1"><text>"Minimal"</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"Full automation permitted (target 75%+); all agent tasks execute autonomously within predefined parameters"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"Agents authorized to: execute all pipeline stages autonomously; auto-approve standard criteria matches; auto-merge passing CI/CD; auto-generate and submit documentation; escalate only on exception"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>"Human review: spot-check 20% of completed tasks; review only agent-flagged exceptions; mandatory human sign-off on final phase completion only"</text></outputEntry>
+        <outputEntry id="oe-1-4"><text>"Automated gate: policy-as-code pass/fail; no human approval required for standard criteria; auto-approve if all checks pass"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 2: LIMITED RISK — High Automation with Human Oversight
+        Limited risk tier from DMN-1.
+        Agents execute with human checkpoints at key decision gates.
+        Automation target: 60-70% per specification.
+        Team lead approval at phase gates.
+      -->
+      <rule id="rule-2">
+        <description>Limited Risk: High automation with human oversight at key gates — team lead approval required at phases</description>
+        <inputEntry id="ie-2-1"><text>"Limited"</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"High automation permitted (target 60-70%); agents execute tasks, humans approve at phase boundaries and exception conditions"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"Agents authorized to: execute assessment and evidence collection autonomously; generate recommendations and draft decisions; flag exceptions for human review; auto-approve low-impact sub-tasks within approved parameters"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"Human review: mandatory at every phase gate; review all agent-generated recommendations before progression; human sign-off on compliance assessments; risk analyst assigned and active throughout"</text></outputEntry>
+        <outputEntry id="oe-2-4"><text>"Standard approval gate: team lead or risk analyst sign-off; Governance Committee review at Phase 4; automated pre-checks before human review step"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 3: HIGH RISK — Partial Automation with Human-in-the-Loop
+        High risk tier from DMN-1.
+        Agents assist but humans make all significant decisions.
+        Automation target: 40-50% per specification.
+        CAB (Change Advisory Board) approval required.
+      -->
+      <rule id="rule-3">
+        <description>High Risk: Partial automation — human-in-the-loop for all decisions; CAB approval required at gates</description>
+        <inputEntry id="ie-3-1"><text>"High"</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Partial automation (target 40-50%); agents provide analysis and recommendations only; humans make all governance decisions"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"Agents authorized to: collect and synthesize evidence; generate risk analysis and draft reports; identify compliance gaps; propose remediation plans; execute only pre-approved automated tasks (evidence ingestion, scanning)"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"Human review: mandatory for every task output before progression; all agent recommendations require human validation; Ethics Committee review for AI components; legal and compliance review at each phase; executive sponsor required"</text></outputEntry>
+        <outputEntry id="oe-3-4"><text>"CAB approval gate: Change Advisory Board sign-off; Advisory Board review at Phase 4; VP-level approval for phase progression; documented risk acceptance for any residual risks"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 4: UNACCEPTABLE RISK — Manual Execution Only
+        Unacceptable risk tier from DMN-1.
+        No agent autonomous action; all steps require human execution or explicit authorization.
+        Automation target: minimal (< 20%) — administrative/logging only.
+        Board-level approval required.
+        Note: Unacceptable risk typically triggers Auto-Reject (DMN-3). This rule governs
+        any conditional re-routing where board grants exception to proceed with maximum controls.
+      -->
+      <rule id="rule-4">
+        <description>Unacceptable Risk: Manual execution only — board-level approval; agents serve as audit/logging tools only</description>
+        <inputEntry id="ie-4-1"><text>"Unacceptable"</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Manual execution required (automation limited to audit logging and administrative tasks only, target &lt; 20%); human engineers execute all substantive work"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"Agents authorized to: log and audit trail all human actions; generate document templates for human completion; run automated scans (read-only, output to human for analysis); NO autonomous decisions or actions permitted"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>"Human review: every task requires human execution and independent human review; dual-control required for all significant decisions; all reviews documented with named reviewers; continuous board-level oversight; independent third-party validation required"</text></outputEntry>
+        <outputEntry id="oe-4-4"><text>"Board approval gate: full Board of Directors or Risk Committee sign-off; independent compliance officer certification; legal counsel review; documented risk acceptance with named executives; ongoing monitoring program mandatory"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN4-diagram">
+      <dmndi:DMNShape id="DMN4-shape" dmnElementRef="DMN_AutomationTierAssignment">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

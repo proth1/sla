@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN2-PathwayRouting-definitions"
+             name="DMN-2: Pathway Routing"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_PathwayRouting"
+            name="Pathway Routing"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-04 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: OCC 2023-17, NIST CSF 2.0</description>
+    <decisionTable id="DMN_PathwayRouting-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-2: Pathway Routing
+        Phase: 1 (Initiation and Intake) — Task 1.6 Routing Assignment
+        Hit Policy: FIRST (most specific rule wins — evaluated top to bottom)
+        Description: Routes an initiative to one of four development pathways:
+          - Fast-Track: High capability reuse with minimal customization (reuse score >= 8, existing capability)
+          - Build:      Build analysis selected, sufficient organizational capacity (>= 6)
+          - Buy:        Buy analysis selected — vendor/COTS solution preferred
+          - Hybrid:     Mixed approach — partial reuse + development, or insufficient clarity for pure path
+        Inputs:
+          capabilityReuseScore:      1-10 (10 = full reuse available, 1 = no existing capability)
+          buildVsBuyAnalysis:        "Build" | "Buy" | "Hybrid"
+          organizationalCapacity:    1-10 (10 = high capacity, 1 = constrained)
+          strategicAlignment:        1-10 (10 = fully aligned, 1 = low alignment)
+          timeToValueScore:          1-10 (10 = fast time-to-value, 1 = long lead time)
+      -->
+
+      <input id="input-capabilityReuse" label="Capability Reuse Score (1-10)">
+        <inputExpression id="inputExpr-capabilityReuse" typeRef="integer">
+          <text>capabilityReuseScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-buildVsBuy" label="Build vs Buy Analysis">
+        <inputExpression id="inputExpr-buildVsBuy" typeRef="string">
+          <text>buildVsBuyAnalysis</text>
+        </inputExpression>
+        <inputValues id="inputVals-buildVsBuy">
+          <text>"Build","Buy","Hybrid"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-orgCapacity" label="Organizational Capacity (1-10)">
+        <inputExpression id="inputExpr-orgCapacity" typeRef="integer">
+          <text>organizationalCapacity</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-strategicAlignment" label="Strategic Alignment (1-10)">
+        <inputExpression id="inputExpr-strategicAlignment" typeRef="integer">
+          <text>strategicAlignment</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-timeToValue" label="Time-to-Value Score (1-10)">
+        <inputExpression id="inputExpr-timeToValue" typeRef="integer">
+          <text>timeToValueScore</text>
+        </inputExpression>
+      </input>
+
+      <output id="output-pathway"
+              label="Governance Pathway"
+              name="pathway"
+              typeRef="string" />
+
+      <!--
+        RULE 1: FAST-TRACK
+        High reuse score (>= 8) + Hybrid or Buy analysis + high time-to-value (>= 7)
+        Indicates existing capability can be leveraged with minimal new development.
+        Fast-Track pathway bypasses full due diligence — uses abbreviated review.
+      -->
+      <rule id="rule-1">
+        <description>Fast-Track: High capability reuse >= 8, Hybrid/Buy analysis, time-to-value >= 7 — leverage existing capability</description>
+        <inputEntry id="ie-1-1"><text>&gt;= 8</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>"Hybrid","Buy"</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-5"><text>&gt;= 7</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"Fast-Track"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-2">
+        <description>Fast-Track: Maximum reuse score (>= 9) regardless of analysis type — near-complete reuse available</description>
+        <inputEntry id="ie-2-1"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-4"><text>&gt;= 6</text></inputEntry>
+        <inputEntry id="ie-2-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"Fast-Track"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP: BUILD
+        Build analysis selected + sufficient organizational capacity (>= 6) to execute.
+        Strategic alignment matters: low alignment (< 4) routes to Hybrid instead.
+      -->
+      <rule id="rule-3">
+        <description>Build: Build analysis selected, capacity >= 6, strategic alignment >= 4 — internal development pathway</description>
+        <inputEntry id="ie-3-1"><text>[1..7]</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>"Build"</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>&gt;= 6</text></inputEntry>
+        <inputEntry id="ie-3-4"><text>&gt;= 4</text></inputEntry>
+        <inputEntry id="ie-3-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Build"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-4">
+        <description>Build: Build analysis, high capacity >= 8 — capacity compensates for moderate alignment</description>
+        <inputEntry id="ie-4-1"><text>[1..7]</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>"Build"</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>&gt;= 8</text></inputEntry>
+        <inputEntry id="ie-4-4"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-4-5"><text>&gt;= 5</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Build"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP: BUY
+        Buy analysis selected. Organization prefers COTS/vendor solution.
+        Capacity and strategic alignment confirm buy is preferable to build.
+      -->
+      <rule id="rule-5">
+        <description>Buy: Buy analysis selected, reuse score low (&lt; 6), strategic alignment &gt;= 5 — vendor solution preferred</description>
+        <inputEntry id="ie-5-1"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>"Buy"</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-4"><text>&gt;= 5</text></inputEntry>
+        <inputEntry id="ie-5-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"Buy"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-6">
+        <description>Buy: Buy analysis, moderate reuse (6-7), high time-to-value pressure >= 7 — speed favors procurement</description>
+        <inputEntry id="ie-6-1"><text>[6..7]</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>"Buy"</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-4"><text>[5..10]</text></inputEntry>
+        <inputEntry id="ie-6-5"><text>&gt;= 7</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"Buy"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-7">
+        <description>Buy: Buy analysis, high time-to-value >= 8 — urgent need drives procurement regardless of reuse</description>
+        <inputEntry id="ie-7-1"><text>[1..7]</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>"Buy"</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ie-7-4"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-7-5"><text>&gt;= 8</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"Buy"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP: HYBRID
+        Default for ambiguous or mixed-analysis cases:
+        - Hybrid analysis selected
+        - Build selected but insufficient capacity or low alignment
+        - Buy selected but low time-to-value and low alignment
+        - Moderate reuse that doesn't qualify for Fast-Track
+      -->
+      <rule id="rule-8">
+        <description>Hybrid: Hybrid analysis selected — mixed build and buy approach required</description>
+        <inputEntry id="ie-8-1"><text>[1..7]</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>"Hybrid"</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-5"><text>[1..6]</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-9">
+        <description>Hybrid: Build analysis but low organizational capacity (&lt; 6) — must supplement with vendor components</description>
+        <inputEntry id="ie-9-1"><text>[1..7]</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>"Build"</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ie-9-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-10">
+        <description>Hybrid: Build analysis selected but very low strategic alignment (&lt; 4) — reconsider with hybrid approach</description>
+        <inputEntry id="ie-10-1"><text>[1..7]</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>"Build"</text></inputEntry>
+        <inputEntry id="ie-10-3"><text>&gt;= 6</text></inputEntry>
+        <inputEntry id="ie-10-4"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-10-5"><text>[1..4]</text></inputEntry>
+        <outputEntry id="oe-10-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-11">
+        <description>Hybrid: Buy analysis but very low time-to-value and alignment — procurement not viable, supplement with build</description>
+        <inputEntry id="ie-11-1"><text>[1..7]</text></inputEntry>
+        <inputEntry id="ie-11-2"><text>"Buy"</text></inputEntry>
+        <inputEntry id="ie-11-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-11-4"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-11-5"><text>[1..6]</text></inputEntry>
+        <outputEntry id="oe-11-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-12">
+        <description>Hybrid: Moderate reuse (6-7), Hybrid analysis, low time-to-value — partial reuse with gap-fill procurement</description>
+        <inputEntry id="ie-12-1"><text>[6..7]</text></inputEntry>
+        <inputEntry id="ie-12-2"><text>"Hybrid"</text></inputEntry>
+        <inputEntry id="ie-12-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-12-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-12-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 13: CATCH-ALL DEFAULT — Hybrid (conservative)
+        Catches any input combination not matched by rules 1-12.
+        Hybrid is the safest default: combines build and buy governance controls.
+        Under FIRST hit policy, this only fires if no earlier rule matched.
+      -->
+      <rule id="rule-13">
+        <description>Default catch-all: Unclassified routing combination — assigned Hybrid pathway pending manual analysis by governance team</description>
+        <inputEntry id="ie-13-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN2-diagram">
+      <dmndi:DMNShape id="DMN2-shape" dmnElementRef="DMN_PathwayRouting">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

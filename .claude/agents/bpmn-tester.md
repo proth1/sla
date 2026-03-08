@@ -156,12 +156,12 @@ grep -A2 "serviceTask" process.bpmn | grep -L "camunda:topic"
    - Timer expression syntax error
    - Boundary event with missing event definition
    - Subprocess missing start or end event
-   - Invalid candidateGroups value (not in SLA 7 groups)
+   - Invalid candidateGroups value (not in SLA 9+1 groups)
 
 3. **Generate Fix Suggestion**:
    - Provide corrected BPMN XML snippet
-   - Recommend valid candidateGroups from SLA swim-lane list
-   - Suggest valid DMN table IDs from the 14 valid tables
+   - Recommend valid candidateGroups from SLA 9+1 swim-lane list
+   - Suggest valid DMN table IDs from the 8 valid tables
    - Provide timer expression corrections
    - Suggest boundary event placement
 
@@ -224,13 +224,15 @@ grep -A2 "serviceTask" process.bpmn | grep -L "camunda:topic"
 - Subprocesses: [count]/[total] ([percentage]%) with start/end events
 
 ### Swim-Lane Assignment Coverage
-- sla-governance-board: [count] tasks
-- business-owner: [count] tasks
-- it-architecture: [count] tasks
-- procurement: [count] tasks
-- legal-compliance: [count] tasks
-- information-security: [count] tasks
-- vendor-management: [count] tasks
+- business-lane: [count] tasks
+- governance-lane: [count] tasks
+- contracting-lane: [count] tasks
+- technical-assessment: [count] tasks
+- ai-review: [count] tasks
+- compliance-lane: [count] tasks
+- oversight-lane: [count] tasks
+- automation-lane: [count] tasks
+- vendor-response: [count] tasks
 
 ### DMN Reference Coverage
 - Valid references: [count]/[total]
@@ -270,14 +272,14 @@ Activate this SubAgent when user says:
 
 ## Work Item Pattern
 
-Reference work items using SLM-XXX format:
+Reference work items using SLA-XXX format:
 ```json
 {
-  "workItem": "SLM-XXX",
-  "process": "needs-assessment-process",
+  "workItem": "SLA-XXX",
+  "process": "initiation-and-intake",
   "timestamp": "2026-03-01T08:30:00Z",
   "structuralValidation": {
-    "bpmnFile": "processes/phase-1/needs-assessment.bpmn",
+    "bpmnFile": "processes/phase-1-intake/initiation-and-intake.bpmn",
     "pathsIdentified": 12,
     "scenariosGenerated": 10,
     "coveragePercent": 83
@@ -331,8 +333,8 @@ Reference work items using SLM-XXX format:
 - At least one boundary condition test per gateway
 
 **After Structural Validation**:
-- All swim-lane candidateGroups are valid SLA group names
-- All DMN references use valid table IDs
+- All swim-lane candidateGroups are valid SLA 9+1 group names
+- All DMN references use one of the 8 valid table IDs
 - All gateways have complete branch coverage
 - Structural validation report generated
 
@@ -348,4 +350,4 @@ Reference work items using SLM-XXX format:
 
 **Agent Version**: 1.0.0
 **Platform**: SLA Enterprise Software Governance Platform
-**Work Item Pattern**: SLM-XXX
+**Work Item Pattern**: SLA-XXX

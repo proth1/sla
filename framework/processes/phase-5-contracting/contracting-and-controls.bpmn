@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Phase5Contracting"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="Collaboration_Phase5">
+    <bpmn:participant id="Participant_EnterpriseGov" name="Phase 5: Contracting and Controls Implementation — Enterprise Governance Pool" processRef="Process_Phase5Contracting" />
+    <bpmn:participant id="Participant_VendorParty" name="Vendor / Third Party" processRef="Process_VendorResponse" />
+    <bpmn:messageFlow id="MsgFlow_ContractToVendor" sourceRef="Task_51_ContractNegotiation" targetRef="Task_VendorContractReview" />
+    <bpmn:messageFlow id="MsgFlow_VendorSignature" sourceRef="Task_VendorContractSignature" targetRef="Task_52_MandatoryProvisions" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_Phase5Contracting" name="Phase 5: Contracting and Controls Implementation" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_Phase5">
+
+      <bpmn:lane id="Lane_Business" name="Business">
+        <bpmn:flowNodeRef>StartEvent_Phase4Approved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_55b_ExitPlanBusiness</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="Lane_Governance" name="Governance">
+        <bpmn:flowNodeRef>Task_PhaseQualityGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase5Complete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_QGSLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="Lane_Contracting" name="Contracting">
+        <bpmn:flowNodeRef>Task_51_ContractNegotiation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_52_MandatoryProvisions</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_ContractNegotiationSLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ExitPlanSplit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ExitPlanJoin</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
+        <bpmn:flowNodeRef>Task_55a_ExitPlanTechnical</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="Lane_AIReview" name="AI Review">
+      </bpmn:lane>
+
+      <bpmn:lane id="Lane_Compliance" name="Compliance">
+        <bpmn:flowNodeRef>Task_53_ControlsConfiguration</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_ControlsSLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="Lane_Oversight" name="Oversight">
+      </bpmn:lane>
+
+      <bpmn:lane id="Lane_Automation" name="Automation">
+        <bpmn:flowNodeRef>Task_54_RemediationAssignment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_56_KnowledgeBaseUpdate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_ProcessSLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="StartEvent_Phase4Approved" name="Phase 4&#10;Approved">
+      <bpmn:outgoing>Flow_Start_51</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_51_ContractNegotiation" name="5.1 Contract&#10;Negotiation" camunda:candidateGroups="contracting-lane">
+      <bpmn:incoming>Flow_Start_51</bpmn:incoming>
+      <bpmn:outgoing>Flow_51_52</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_ContractNegotiationSLA" name="P7D&#10;SLA" attachedToRef="Task_51_ContractNegotiation" cancelActivity="false">
+      <bpmn:outgoing>Flow_ContractNegotiationSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_ContractNegotiationSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P7D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:userTask id="Task_52_MandatoryProvisions" name="5.2 Mandatory&#10;Provisions" camunda:candidateGroups="contracting-lane">
+      <bpmn:incoming>Flow_51_52</bpmn:incoming>
+      <bpmn:outgoing>Flow_52_53</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_53_ControlsConfiguration" name="5.3 Controls&#10;Configuration" camunda:candidateGroups="compliance-lane">
+      <bpmn:incoming>Flow_52_53</bpmn:incoming>
+      <bpmn:outgoing>Flow_53_54</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_ControlsSLA" name="P5D&#10;SLA" attachedToRef="Task_53_ControlsConfiguration" cancelActivity="false">
+      <bpmn:outgoing>Flow_ControlsSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_ControlsSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:serviceTask id="Task_54_RemediationAssignment" name="5.4 Remediation Task&#10;Assignment (Phase 3&#10;Findings)" camunda:type="external" camunda:topic="remediation-assignment">
+      <bpmn:incoming>Flow_53_54</bpmn:incoming>
+      <bpmn:outgoing>Flow_54_ExitSplit</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:parallelGateway id="Gateway_ExitPlanSplit">
+      <bpmn:incoming>Flow_54_ExitSplit</bpmn:incoming>
+      <bpmn:outgoing>Flow_ExitSplit_55a</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ExitSplit_55b</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="Task_55a_ExitPlanTechnical" name="5.5a Exit Plan&#10;(Technical)" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>Flow_ExitSplit_55a</bpmn:incoming>
+      <bpmn:outgoing>Flow_55a_ExitJoin</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_55b_ExitPlanBusiness" name="5.5b Exit Plan&#10;(Business)" camunda:candidateGroups="business-lane">
+      <bpmn:incoming>Flow_ExitSplit_55b</bpmn:incoming>
+      <bpmn:outgoing>Flow_55b_ExitJoin</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:parallelGateway id="Gateway_ExitPlanJoin">
+      <bpmn:incoming>Flow_55a_ExitJoin</bpmn:incoming>
+      <bpmn:incoming>Flow_55b_ExitJoin</bpmn:incoming>
+      <bpmn:outgoing>Flow_ExitJoin_56</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:serviceTask id="Task_56_KnowledgeBaseUpdate" name="5.6 Knowledge Base Update&#10;(Lessons Learned,&#10;Governance Patterns)" camunda:type="external" camunda:topic="knowledge-base-update">
+      <bpmn:incoming>Flow_ExitJoin_56</bpmn:incoming>
+      <bpmn:outgoing>Flow_56_QualityGate</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:userTask id="Task_PhaseQualityGate" name="Phase 5&#10;Quality Gate" camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_56_QualityGate</bpmn:incoming>
+      <bpmn:outgoing>Flow_QualityGate_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_QualityGateSLA" name="P3D&#10;SLA" attachedToRef="Task_PhaseQualityGate" cancelActivity="false">
+      <bpmn:outgoing>Flow_QGSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_QualityGateSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_Phase5Complete" name="Phase 5&#10;Complete">
+      <bpmn:incoming>Flow_QualityGate_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_ContractNegotiationSLAEscalated" name="Contract Negotiation&#10;SLA Escalated">
+      <bpmn:incoming>Flow_ContractNegotiationSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_ControlsSLAEscalated" name="Controls Configuration&#10;SLA Escalated">
+      <bpmn:incoming>Flow_ControlsSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_QGSLAEscalated" name="Quality Gate SLA&#10;Escalated">
+      <bpmn:incoming>Flow_QGSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_ProcessSLAEscalated" name="Process SLA&#10;Escalated">
+      <bpmn:incoming>Flow_ProcessSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:boundaryEvent id="Timer_ProcessSLA" name="P14D&#10;SLA" attachedToRef="Task_54_RemediationAssignment" cancelActivity="false">
+      <bpmn:outgoing>Flow_ProcessSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_ProcessSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P14D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:textAnnotation id="Annotation_OCC">
+      <bpmn:text>OCC 2023-17: Contract negotiations (5.1) and mandatory provisions (5.2) must address third-party risk management requirements including termination rights, audit access, sub-contracting controls, and business continuity obligations per OCC guidance on third-party relationships.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_OCC" sourceRef="Task_52_MandatoryProvisions" targetRef="Annotation_OCC" />
+
+    <bpmn:textAnnotation id="Annotation_DORA">
+      <bpmn:text>DORA (Digital Operational Resilience Act): Mandatory provisions (5.2) must incorporate DORA Article 30 contractual requirements for ICT third-party service providers, including SLA specifications, data location, audit rights, and exit strategies. Controls configuration (5.3) must align with DORA operational resilience testing standards.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_DORA" sourceRef="Task_53_ControlsConfiguration" targetRef="Annotation_DORA" />
+
+    <bpmn:textAnnotation id="Annotation_SOX">
+      <bpmn:text>SOX: Contract provisions and controls configuration must satisfy SOX Section 404 internal control requirements. Remediation assignment (5.4) closes findings from Phase 3 due diligence, creating an auditable remediation trail. Phase 5 Quality Gate approval constitutes a mandatory financial controls sign-off.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_SOX" sourceRef="Task_PhaseQualityGate" targetRef="Annotation_SOX" />
+
+    <bpmn:sequenceFlow id="Flow_Start_51" sourceRef="StartEvent_Phase4Approved" targetRef="Task_51_ContractNegotiation" />
+    <bpmn:sequenceFlow id="Flow_51_52" sourceRef="Task_51_ContractNegotiation" targetRef="Task_52_MandatoryProvisions" />
+    <bpmn:sequenceFlow id="Flow_52_53" sourceRef="Task_52_MandatoryProvisions" targetRef="Task_53_ControlsConfiguration" />
+    <bpmn:sequenceFlow id="Flow_53_54" sourceRef="Task_53_ControlsConfiguration" targetRef="Task_54_RemediationAssignment" />
+    <bpmn:sequenceFlow id="Flow_54_ExitSplit" sourceRef="Task_54_RemediationAssignment" targetRef="Gateway_ExitPlanSplit" />
+    <bpmn:sequenceFlow id="Flow_ExitSplit_55a" sourceRef="Gateway_ExitPlanSplit" targetRef="Task_55a_ExitPlanTechnical" />
+    <bpmn:sequenceFlow id="Flow_ExitSplit_55b" sourceRef="Gateway_ExitPlanSplit" targetRef="Task_55b_ExitPlanBusiness" />
+    <bpmn:sequenceFlow id="Flow_55a_ExitJoin" sourceRef="Task_55a_ExitPlanTechnical" targetRef="Gateway_ExitPlanJoin" />
+    <bpmn:sequenceFlow id="Flow_55b_ExitJoin" sourceRef="Task_55b_ExitPlanBusiness" targetRef="Gateway_ExitPlanJoin" />
+    <bpmn:sequenceFlow id="Flow_ExitJoin_56" sourceRef="Gateway_ExitPlanJoin" targetRef="Task_56_KnowledgeBaseUpdate" />
+    <bpmn:sequenceFlow id="Flow_56_QualityGate" sourceRef="Task_56_KnowledgeBaseUpdate" targetRef="Task_PhaseQualityGate" />
+    <bpmn:sequenceFlow id="Flow_QualityGate_End" sourceRef="Task_PhaseQualityGate" targetRef="EndEvent_Phase5Complete" />
+    <bpmn:sequenceFlow id="Flow_ContractNegotiationSLAEscalate" sourceRef="Timer_ContractNegotiationSLA" targetRef="EndEvent_ContractNegotiationSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_ControlsSLAEscalate" sourceRef="Timer_ControlsSLA" targetRef="EndEvent_ControlsSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_QGSLAEscalate" sourceRef="Timer_QualityGateSLA" targetRef="EndEvent_QGSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_ProcessSLAEscalate" sourceRef="Timer_ProcessSLA" targetRef="EndEvent_ProcessSLAEscalated" />
+
+  </bpmn:process>
+
+  <bpmn:process id="Process_VendorResponse" name="Vendor / Third Party Response" isExecutable="false" camunda:historyTimeToLive="180">
+    <bpmn:laneSet id="LaneSet_Vendor">
+      <bpmn:lane id="Lane_VendorResponse" name="Vendor Response">
+        <bpmn:flowNodeRef>StartEvent_VendorContractReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_VendorContractReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_VendorContractSignature</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_VendorContractSigned</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="StartEvent_VendorContractReceived" name="Contract Draft&#10;Received">
+      <bpmn:outgoing>Flow_VendorStart_Review</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_VendorContractReview" name="Contract Review&#10;and Redline Submission" camunda:candidateGroups="vendor-response">
+      <bpmn:incoming>Flow_VendorStart_Review</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorReview_Signature</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_VendorContractSignature" name="Contract Execution&#10;and Signature" camunda:candidateGroups="vendor-response">
+      <bpmn:incoming>Flow_VendorReview_Signature</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorSignature_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="EndEvent_VendorContractSigned" name="Contract Signed&#10;and Returned">
+      <bpmn:incoming>Flow_VendorSignature_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_VendorStart_Review" sourceRef="StartEvent_VendorContractReceived" targetRef="Task_VendorContractReview" />
+    <bpmn:sequenceFlow id="Flow_VendorReview_Signature" sourceRef="Task_VendorContractReview" targetRef="Task_VendorContractSignature" />
+    <bpmn:sequenceFlow id="Flow_VendorSignature_End" sourceRef="Task_VendorContractSignature" targetRef="EndEvent_VendorContractSigned" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Phase5">
+    <bpmndi:BPMNPlane id="BPMNPlane_Phase5" bpmnElement="Collaboration_Phase5">
+
+      <bpmndi:BPMNShape id="Participant_EnterpriseGov_di" bpmnElement="Participant_EnterpriseGov" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="1700" height="930" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="1670" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
+        <dc:Bounds x="185" y="177" width="1670" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Contracting_di" bpmnElement="Lane_Contracting" isHorizontal="true">
+        <dc:Bounds x="185" y="307" width="1670" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_TechnicalAssessment_di" bpmnElement="Lane_TechnicalAssessment" isHorizontal="true">
+        <dc:Bounds x="185" y="437" width="1670" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_AIReview_di" bpmnElement="Lane_AIReview" isHorizontal="true">
+        <dc:Bounds x="185" y="567" width="1670" height="60" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
+        <dc:Bounds x="185" y="627" width="1670" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
+        <dc:Bounds x="185" y="757" width="1670" height="60" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
+        <dc:Bounds x="185" y="817" width="1670" height="160" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Participant_VendorParty_di" bpmnElement="Participant_VendorParty" isHorizontal="true">
+        <dc:Bounds x="155" y="1007" width="1700" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_VendorResponse_di" bpmnElement="Lane_VendorResponse" isHorizontal="true">
+        <dc:Bounds x="185" y="1007" width="1670" height="130" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="StartEvent_Phase4Approved_di" bpmnElement="StartEvent_Phase4Approved">
+        <dc:Bounds x="222" y="94" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200" y="137" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_51_ContractNegotiation_di" bpmnElement="Task_51_ContractNegotiation">
+        <dc:Bounds x="340" y="332" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_ContractNegotiationSLA_di" bpmnElement="Timer_ContractNegotiationSLA">
+        <dc:Bounds x="372" y="394" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="416" y="398" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_ContractNegotiationSLAEscalated_di" bpmnElement="EndEvent_ContractNegotiationSLAEscalated">
+        <dc:Bounds x="460" y="394" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="436" y="437" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_52_MandatoryProvisions_di" bpmnElement="Task_52_MandatoryProvisions">
+        <dc:Bounds x="540" y="332" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_53_ControlsConfiguration_di" bpmnElement="Task_53_ControlsConfiguration">
+        <dc:Bounds x="700" y="652" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_ControlsSLA_di" bpmnElement="Timer_ControlsSLA">
+        <dc:Bounds x="732" y="714" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="776" y="718" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_ControlsSLAEscalated_di" bpmnElement="EndEvent_ControlsSLAEscalated">
+        <dc:Bounds x="830" y="714" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="806" y="757" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_54_RemediationAssignment_di" bpmnElement="Task_54_RemediationAssignment">
+        <dc:Bounds x="860" y="857" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_ProcessSLA_di" bpmnElement="Timer_ProcessSLA">
+        <dc:Bounds x="892" y="919" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="936" y="923" width="40" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_ProcessSLAEscalated_di" bpmnElement="EndEvent_ProcessSLAEscalated">
+        <dc:Bounds x="1000" y="919" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="976" y="962" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Gateway_ExitPlanSplit_di" bpmnElement="Gateway_ExitPlanSplit">
+        <dc:Bounds x="985" y="347" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_55a_ExitPlanTechnical_di" bpmnElement="Task_55a_ExitPlanTechnical">
+        <dc:Bounds x="1100" y="462" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_55b_ExitPlanBusiness_di" bpmnElement="Task_55b_ExitPlanBusiness">
+        <dc:Bounds x="1100" y="72" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Gateway_ExitPlanJoin_di" bpmnElement="Gateway_ExitPlanJoin">
+        <dc:Bounds x="1265" y="347" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_56_KnowledgeBaseUpdate_di" bpmnElement="Task_56_KnowledgeBaseUpdate">
+        <dc:Bounds x="1380" y="857" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_PhaseQualityGate_di" bpmnElement="Task_PhaseQualityGate">
+        <dc:Bounds x="1520" y="202" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_QualityGateSLA_di" bpmnElement="Timer_QualityGateSLA">
+        <dc:Bounds x="1552" y="264" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1596" y="268" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_Phase5Complete_di" bpmnElement="EndEvent_Phase5Complete">
+        <dc:Bounds x="1680" y="224" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1656" y="267" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_QGSLAEscalated_di" bpmnElement="EndEvent_QGSLAEscalated">
+        <dc:Bounds x="1660" y="264" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1636" y="307" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Annotation_OCC_di" bpmnElement="Annotation_OCC">
+        <dc:Bounds x="200" y="1167" width="700" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Annotation_DORA_di" bpmnElement="Annotation_DORA">
+        <dc:Bounds x="950" y="1167" width="700" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Annotation_SOX_di" bpmnElement="Annotation_SOX">
+        <dc:Bounds x="1700" y="1167" width="650" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="StartEvent_VendorContractReceived_di" bpmnElement="StartEvent_VendorContractReceived">
+        <dc:Bounds x="222" y="1054" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200" y="1097" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_VendorContractReview_di" bpmnElement="Task_VendorContractReview">
+        <dc:Bounds x="340" y="1032" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_VendorContractSignature_di" bpmnElement="Task_VendorContractSignature">
+        <dc:Bounds x="540" y="1032" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_VendorContractSigned_di" bpmnElement="EndEvent_VendorContractSigned">
+        <dc:Bounds x="700" y="1054" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="678" y="1097" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Start_51_di" bpmnElement="Flow_Start_51">
+        <di:waypoint x="258" y="112" />
+        <di:waypoint x="284" y="112" />
+        <di:waypoint x="284" y="372" />
+        <di:waypoint x="340" y="372" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_51_52_di" bpmnElement="Flow_51_52">
+        <di:waypoint x="440" y="372" />
+        <di:waypoint x="540" y="372" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_52_53_di" bpmnElement="Flow_52_53">
+        <di:waypoint x="640" y="372" />
+        <di:waypoint x="668" y="372" />
+        <di:waypoint x="668" y="692" />
+        <di:waypoint x="700" y="692" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_53_54_di" bpmnElement="Flow_53_54">
+        <di:waypoint x="800" y="692" />
+        <di:waypoint x="828" y="692" />
+        <di:waypoint x="828" y="897" />
+        <di:waypoint x="860" y="897" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_54_ExitSplit_di" bpmnElement="Flow_54_ExitSplit">
+        <di:waypoint x="960" y="897" />
+        <di:waypoint x="972" y="897" />
+        <di:waypoint x="972" y="372" />
+        <di:waypoint x="985" y="372" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ExitSplit_55a_di" bpmnElement="Flow_ExitSplit_55a">
+        <di:waypoint x="1010" y="397" />
+        <di:waypoint x="1010" y="502" />
+        <di:waypoint x="1100" y="502" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ExitSplit_55b_di" bpmnElement="Flow_ExitSplit_55b">
+        <di:waypoint x="1010" y="347" />
+        <di:waypoint x="1010" y="112" />
+        <di:waypoint x="1100" y="112" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_55a_ExitJoin_di" bpmnElement="Flow_55a_ExitJoin">
+        <di:waypoint x="1200" y="502" />
+        <di:waypoint x="1233" y="502" />
+        <di:waypoint x="1233" y="372" />
+        <di:waypoint x="1265" y="372" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_55b_ExitJoin_di" bpmnElement="Flow_55b_ExitJoin">
+        <di:waypoint x="1200" y="112" />
+        <di:waypoint x="1233" y="112" />
+        <di:waypoint x="1233" y="372" />
+        <di:waypoint x="1265" y="372" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ExitJoin_56_di" bpmnElement="Flow_ExitJoin_56">
+        <di:waypoint x="1315" y="372" />
+        <di:waypoint x="1348" y="372" />
+        <di:waypoint x="1348" y="897" />
+        <di:waypoint x="1380" y="897" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_56_QualityGate_di" bpmnElement="Flow_56_QualityGate">
+        <di:waypoint x="1480" y="897" />
+        <di:waypoint x="1498" y="897" />
+        <di:waypoint x="1498" y="242" />
+        <di:waypoint x="1520" y="242" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_QualityGate_End_di" bpmnElement="Flow_QualityGate_End">
+        <di:waypoint x="1620" y="242" />
+        <di:waypoint x="1680" y="242" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ContractNegotiationSLAEscalate_di" bpmnElement="Flow_ContractNegotiationSLAEscalate">
+        <di:waypoint x="408" y="412" />
+        <di:waypoint x="460" y="412" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ControlsSLAEscalate_di" bpmnElement="Flow_ControlsSLAEscalate">
+        <di:waypoint x="768" y="732" />
+        <di:waypoint x="830" y="732" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_QGSLAEscalate_di" bpmnElement="Flow_QGSLAEscalate">
+        <di:waypoint x="1588" y="282" />
+        <di:waypoint x="1660" y="282" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ProcessSLAEscalate_di" bpmnElement="Flow_ProcessSLAEscalate">
+        <di:waypoint x="928" y="937" />
+        <di:waypoint x="1000" y="937" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_OCC_di" bpmnElement="Assoc_OCC">
+        <di:waypoint x="590" y="412" />
+        <di:waypoint x="550" y="1167" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_DORA_di" bpmnElement="Assoc_DORA">
+        <di:waypoint x="750" y="732" />
+        <di:waypoint x="1300" y="1167" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Assoc_SOX_di" bpmnElement="Assoc_SOX">
+        <di:waypoint x="1570" y="282" />
+        <di:waypoint x="2025" y="1167" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_VendorStart_Review_di" bpmnElement="Flow_VendorStart_Review">
+        <di:waypoint x="258" y="1072" />
+        <di:waypoint x="340" y="1072" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_VendorReview_Signature_di" bpmnElement="Flow_VendorReview_Signature">
+        <di:waypoint x="440" y="1072" />
+        <di:waypoint x="540" y="1072" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_VendorSignature_End_di" bpmnElement="Flow_VendorSignature_End">
+        <di:waypoint x="640" y="1072" />
+        <di:waypoint x="700" y="1072" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="MsgFlow_ContractToVendor_di" bpmnElement="MsgFlow_ContractToVendor">
+        <di:waypoint x="390" y="412" />
+        <di:waypoint x="390" y="1032" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="MsgFlow_VendorSignature_di" bpmnElement="MsgFlow_VendorSignature">
+        <di:waypoint x="590" y="1032" />
+        <di:waypoint x="590" y="412" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

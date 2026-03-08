@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Onboarding Process Assessment | KPMG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --kpmg-blue: #00338D;
+  --kpmg-medium-blue: #005EB8;
+  --kpmg-light-blue: #0091DA;
+  --kpmg-dark-navy: #001D48;
+  --kpmg-white: #ffffff;
+  --kpmg-light-gray: #f5f5f5;
+  --kpmg-medium-gray: #666666;
+  --kpmg-dark-gray: #333333;
+  --kpmg-gold: #D4A843;
+  --font-heading: 'Open Sans Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Open Sans', Arial, Helvetica, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; height: 100%; }
+body { font-family: var(--font-body); background: var(--kpmg-white); color: var(--kpmg-dark-gray); height: 100%; line-height: 1.6; }
+h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
+
+/* Nav Bar */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: var(--kpmg-blue);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.nav-logo svg { height: 28px; width: auto; }
+.nav-title { color: var(--kpmg-white); font-family: var(--font-heading); font-size: 1rem; font-weight: 700; letter-spacing: 0.5px; }
+
+/* Scroll Container */
+.scroll-container {
+  scroll-snap-type: y proximity;
+  overflow-y: scroll;
+  height: 100vh;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--kpmg-medium-blue) transparent;
+}
+.scroll-container::-webkit-scrollbar { width: 6px; }
+.scroll-container::-webkit-scrollbar-thumb { background: var(--kpmg-medium-blue); border-radius: 3px; }
+.scroll-container::-webkit-scrollbar-track { background: transparent; }
+
+/* Sections */
+.section {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  padding: 80px 48px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+.section-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+}
+.section-white { background: var(--kpmg-white); }
+.section-gray { background: var(--kpmg-light-gray); }
+
+/* Hero Section */
+.section-hero {
+  background: linear-gradient(135deg, var(--kpmg-blue) 0%, var(--kpmg-medium-blue) 50%, var(--kpmg-light-blue) 100%);
+  color: var(--kpmg-white);
+  text-align: left;
+  padding: 80px 60px;
+}
+.section-hero .section-inner { max-width: 1080px; }
+.section-hero h1 { font-size: 3rem; line-height: 1.15; margin-bottom: 0.75rem; }
+.section-hero h2 { font-size: 1.5rem; font-weight: 300; color: var(--kpmg-gold); margin-bottom: 2rem; font-family: var(--font-body); }
+.section-hero .meta { font-size: 1rem; opacity: 0.85; line-height: 1.8; }
+.section-hero .meta strong { font-weight: 600; }
+.hero-divider { width: 80px; height: 3px; background: var(--kpmg-gold); margin: 1.5rem 0; }
+
+/* Section Headers */
+.section-number {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--kpmg-blue);
+  opacity: 0.12;
+  line-height: 1;
+  margin-bottom: -12px;
+}
+.section h2 {
+  font-size: 1.8rem;
+  color: var(--kpmg-blue);
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+.section-subtitle {
+  font-size: 0.95rem;
+  color: var(--kpmg-medium-gray);
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+.section p { font-size: 0.92rem; line-height: 1.7; margin-bottom: 0.75rem; max-width: 900px; }
+.section ul { margin-left: 1.25rem; margin-bottom: 1rem; }
+.section li { margin-bottom: 0.35rem; font-size: 0.9rem; line-height: 1.55; }
+.section h3 {
+  font-size: 1.1rem;
+  color: var(--kpmg-dark-navy);
+  margin: 1.25rem 0 0.5rem;
+  font-weight: 700;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.88rem;
+}
+thead th {
+  background: var(--kpmg-blue);
+  color: var(--kpmg-white);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.3px;
+}
+thead th:first-child { border-radius: 4px 0 0 0; }
+thead th:last-child { border-radius: 0 4px 0 0; }
+tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:nth-child(even) { background: rgba(0,51,141,0.03); }
+
+/* Key Findings Box */
+.findings-box {
+  background: var(--kpmg-white);
+  border-left: 4px solid var(--kpmg-blue);
+  padding: 1.25rem 1.5rem;
+  margin: 1rem 0;
+  border-radius: 0 6px 6px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.section-gray .findings-box { background: var(--kpmg-white); }
+.section-white .findings-box { background: var(--kpmg-light-gray); }
+
+/* Recommendation callout */
+.recommendation {
+  background: linear-gradient(135deg, var(--kpmg-blue), var(--kpmg-medium-blue));
+  color: var(--kpmg-white);
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+.recommendation strong { color: var(--kpmg-gold); }
+
+/* Bar Chart */
+.bar-chart { margin: 1.25rem 0; }
+.bar-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.bar-label {
+  width: 180px;
+  font-size: 0.85rem;
+  text-align: right;
+  padding-right: 14px;
+  flex-shrink: 0;
+  color: var(--kpmg-dark-gray);
+}
+.bar-track {
+  flex: 1;
+  background: #e8ecf2;
+  border-radius: 4px;
+  height: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--kpmg-white);
+  transition: width 0.8s ease;
+}
+
+/* Flow Diagram */
+.flow-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin: 1.5rem 0;
+}
+.flow-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.flow-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--kpmg-blue);
+  color: var(--kpmg-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.flow-text { font-size: 0.9rem; color: var(--kpmg-dark-gray); }
+.flow-connector {
+  width: 2px;
+  height: 24px;
+  background: var(--kpmg-medium-blue);
+  margin-left: 17px;
+}
+
+/* Horizontal Flow */
+.flow-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.flow-box {
+  background: var(--kpmg-blue);
+  color: var(--kpmg-white);
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: center;
+  min-width: 120px;
+}
+.flow-arrow {
+  color: var(--kpmg-medium-blue);
+  font-size: 1.4rem;
+  margin: 0 6px;
+  font-weight: 700;
+}
+
+/* Timeline / Roadmap */
+.roadmap {
+  display: flex;
+  gap: 0;
+  margin: 1.5rem 0;
+  position: relative;
+}
+.roadmap::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--kpmg-medium-blue);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+.phase-block {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  padding: 1rem;
+  text-align: center;
+}
+.phase-marker {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin: 0 auto 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--kpmg-white);
+}
+.phase-1 .phase-marker { background: var(--kpmg-blue); }
+.phase-2 .phase-marker { background: var(--kpmg-medium-blue); }
+.phase-3 .phase-marker { background: var(--kpmg-light-blue); }
+.phase-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--kpmg-blue);
+  margin-bottom: 0.25rem;
+}
+.phase-duration {
+  font-size: 0.8rem;
+  color: var(--kpmg-medium-gray);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.phase-items {
+  text-align: left;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.phase-items li {
+  font-size: 0.8rem;
+  padding: 3px 0;
+  position: relative;
+  padding-left: 14px;
+}
+.phase-items li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--kpmg-medium-blue);
+}
+
+/* Numbered Items */
+.numbered-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 1rem 0;
+}
+.numbered-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--kpmg-white);
+  border-radius: 6px;
+  border: 1px solid #e8ecf2;
+}
+.section-gray .numbered-item { background: var(--kpmg-white); }
+.section-white .numbered-item { background: var(--kpmg-light-gray); }
+.numbered-item .num {
+  background: var(--kpmg-blue);
+  color: var(--kpmg-white);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.numbered-item .text { font-size: 0.88rem; line-height: 1.45; padding-top: 3px; }
+
+/* Principles */
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 1.25rem 0;
+}
+.principle-card {
+  background: var(--kpmg-white);
+  border-top: 3px solid var(--kpmg-blue);
+  padding: 1rem 1.25rem;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.section-white .principle-card { background: var(--kpmg-light-gray); }
+.principle-card .num {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  color: var(--kpmg-blue);
+  opacity: 0.2;
+  font-weight: 700;
+  line-height: 1;
+}
+.principle-card .title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--kpmg-dark-navy);
+  margin-top: 4px;
+}
+
+/* Impact cards */
+.impact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 1rem 0;
+}
+.impact-card {
+  padding: 14px 18px;
+  border-left: 3px solid var(--kpmg-medium-blue);
+  background: var(--kpmg-white);
+  border-radius: 0 6px 6px 0;
+}
+.section-white .impact-card { background: var(--kpmg-light-gray); }
+.impact-card .label { font-size: 0.82rem; color: var(--kpmg-medium-gray); margin-bottom: 2px; }
+.impact-card .value { font-size: 1rem; font-weight: 700; color: var(--kpmg-blue); }
+
+/* Process Steps */
+.process-steps {
+  counter-reset: step;
+  margin: 1rem 0;
+}
+.process-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+.process-step:last-child { border-bottom: none; }
+.process-step::before {
+  counter-increment: step;
+  content: counter(step);
+  background: var(--kpmg-blue);
+  color: var(--kpmg-white);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.process-step span { font-size: 0.88rem; line-height: 1.5; }
+.process-note {
+  background: rgba(0,51,141,0.05);
+  border-left: 3px solid var(--kpmg-medium-blue);
+  padding: 8px 14px;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--kpmg-medium-gray);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Observation callout */
+.observation {
+  margin-top: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(0,51,141,0.04);
+  border-left: 3px solid var(--kpmg-gold);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.88rem;
+  color: var(--kpmg-dark-gray);
+}
+.observation strong { color: var(--kpmg-blue); }
+
+/* Decisions / Next Steps */
+.decisions-next {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 1.25rem 0;
+}
+.decisions-col h3 { margin-top: 0; }
+
+/* Section Counter */
+.section-counter {
+  position: fixed;
+  bottom: 20px;
+  right: 24px;
+  background: var(--kpmg-blue);
+  color: var(--kpmg-white);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  z-index: 1000;
+  opacity: 0.9;
+  font-family: var(--font-body);
+}
+
+/* Footer */
+.footer-bar {
+  background: var(--kpmg-dark-navy);
+  color: rgba(255,255,255,0.7);
+  padding: 32px 48px;
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+.footer-bar .tagline {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--kpmg-gold);
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+.footer-bar .legal { max-width: 900px; opacity: 0.6; }
+
+/* Two Column Layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 0.75rem 0;
+}
+
+/* Scope tags */
+.scope-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 1rem 0;
+}
+.scope-tag {
+  background: var(--kpmg-blue);
+  color: var(--kpmg-white);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* Benchmark badge */
+.benchmark-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 1rem 0;
+}
+.benchmark-badge {
+  background: rgba(0,51,141,0.08);
+  color: var(--kpmg-blue);
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid rgba(0,51,141,0.15);
+}
+
+@media (max-width: 768px) {
+  .section { padding: 72px 24px 40px; }
+  .section-hero { padding: 72px 32px; }
+  .section-hero h1 { font-size: 2rem; }
+  .numbered-grid, .impact-grid, .two-col, .decisions-next { grid-template-columns: 1fr; }
+  .principles-grid { grid-template-columns: 1fr 1fr; }
+  .bar-label { width: 120px; font-size: 0.78rem; }
+  .roadmap { flex-direction: column; }
+  .roadmap::before { display: none; }
+  .flow-horizontal { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+  table { font-size: 0.8rem; }
+  thead th, tbody td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Fixed Nav Bar -->
+<nav class="nav-bar">
+  <div class="nav-logo">
+    <svg viewBox="0 0 90 32" xmlns="http://www.w3.org/2000/svg">
+      <path d="M62.742.201v16.002l-.204.17-.204.168-.196.177-.187.177-.179.177-.178.185-.17.186-.17.185V.201h-17.89v14.57h-1.48V.2h-17.89v14.594h-1.48V.201H4.624v16.635L.056 31.919H4.07l2.016-6.677h.579L10 31.919h4.849l-3.233-6.677h7.333l-2.033 6.677h4.381l2.008-6.66h.97v-.017H34.04l-1.94 6.66h4.424l1.88-6.66h1.99l.052 6.66h3.709l4.262-6.66h2.79l-1.446 6.66h4.355l1.42-6.66h2.519l-.017.379.009.388.017.37.034.372.025.177.026.177.034.177.034.177.042.177.043.169.05.168.052.169.06.169.059.16.068.16.068.152.077.16.076.152.085.143.085.152.094.143.102.135.102.143.11.127.111.135.111.126.128.127.127.118.162.134.161.135.17.127.18.118.178.118.179.11.187.092.195.101.187.085.196.084.196.076.204.076.204.067.204.06.204.058.205.05.408.094.417.067.408.06.408.05.4.033.392.017.382.017h.366l.494-.008.493-.008.502-.025.502-.025.502-.043.501-.042.502-.05.502-.06.51-.067.511-.076.51-.084.51-.084.511-.093.51-.101.511-.101.519-.118 1.514-6.046h4.968V.202h-17.89zM6.282 24.618l.026-.093.06.093zm15.585-8.971l-.255.852-2.382 7.84-.094.279H11.31l-.604-1.282 8.43-8.54h-5.418l-6.593 7.04 2.135-7.04H5.262V.833h16.605v14.813zm4.62 6.627l-.128.008-.12.008-.127.008H25.644l-.145.008h-.136l-1.063-.008.493-1.804.23-.894.562-2.1h.365l.179-.007h.995l.502.008.46.016.204.008.195.017.187.026.17.025.154.025.144.042.136.043.12.05.102.05.093.068.085.068.068.084.043.068.034.067.034.076.025.084.017.093.01.093V18.714l-.01.119-.008.118-.025.135-.026.134-.076.287-.094.32-.093.27-.103.262-.11.244-.12.228-.059.1-.06.102-.068.101-.076.093-.077.093-.076.084-.085.084-.086.076-.093.068-.094.076-.102.059-.11.067-.111.06-.12.05-.118.05-.128.042-.136.051-.144.034-.154.033-.153.034-.17.025-.17.026-.179.017-.187.017zm12.096 2.344l1.744-6.155.068 6.155h-1.812zm2.654-9.848h-4.151l-2.859 9.848h-4.406l.204-.085.204-.084.196-.084.196-.093.187-.093.178-.11.179-.1.17-.11.17-.118.162-.118.153-.118.153-.135.145-.126.136-.144.136-.135.128-.151.127-.144.12-.16.11-.152.11-.168.102-.169.094-.169.094-.177.085-.185.085-.186.076-.185.068-.194.069-.202.05-.203.06-.202.043-.22.042-.21.06-.337.05-.32.035-.304.025-.287.01-.286-.01-.262-.008-.261-.034-.245-.034-.227-.06-.228-.059-.21-.085-.203-.094-.194-.102-.194-.119-.177-.136-.169-.11-.118-.111-.118-.12-.1-.127-.094-.136-.092-.136-.085-.145-.075-.144-.068-.153-.067-.153-.051-.162-.05-.162-.051-.17-.042-.17-.034-.17-.034-.179-.025-.366-.05-.365-.026-.375-.025-.382-.008h-4.824V.834h16.605v13.937zm10.089 9.848h-2.493l3.777-5.902zm9.28-9.57l-.008 3.415-.213.295-.195.304-.196.303-.179.304-.17.303-.17.312-.145.304-.144.303-.136.295-.12.304-.119.295-.102.287-.093.286-.085.278-.077.27-.068.27-.043.177-.042.186-.043.177-.034.185-.034.177-.025.177-.026.177-.017.186h-2.441l2.084-9.823-7.026-.008-6.287 9.831h-.46V.834h16.614v14.215zm9.58 13.591l-.35.06-.357.05-.357.05-.349.043-.348.033-.35.026-.34.017h-.561l-.221-.008-.213-.017-.212-.026-.205-.033-.195-.034-.196-.042-.187-.05-.179-.06-.178-.059-.17-.076-.162-.076-.162-.092-.153-.093-.145-.101-.136-.101-.136-.118-.119-.127-.119-.126-.11-.144-.103-.143-.093-.16-.085-.16-.085-.169-.068-.177-.06-.194-.051-.194-.051-.202-.034-.21-.026-.22-.017-.228-.009-.236h7.742l-.851 3.398zm9.816-4.021h-4.185l.689-2.749h-8.388l-.689 2.749h-4.057v-.565l.05-.236.043-.236.051-.253.051-.253.077-.278.076-.279.085-.278.094-.27.102-.27.11-.27.12-.26.119-.262.136-.261.136-.245.145-.253.161-.236.162-.236.161-.228.18-.219.186-.21.196-.203.196-.185.212-.186.213-.177.221-.16.238-.152.238-.135.247-.126.255-.118.264-.101.272-.085.281-.067.29-.06.297-.041.306-.026.315-.008.247.008.246.017.247.034.238.05.12.034.11.034.11.034.103.05.102.042.102.06.093.058.094.06.085.075.085.076.077.076.076.093.068.084.06.101.051.11.051.11.043.117.034.127.025.126.026.144.009.143v.312l-.017.169h5.002l.076-.346.068-.396.034-.211.017-.228.017-.227v-.236l-.008-.245-.025-.253-.026-.118-.017-.126-.034-.127-.034-.126-.042-.135-.043-.127-.05-.126-.06-.127-.06-.126-.077-.127-.076-.126-.085-.126-.102-.135-.11-.127-.112-.126-.119-.118-.127-.118-.136-.11-.136-.101-.145-.101-.153-.101-.153-.085-.162-.084-.17-.084-.17-.076-.179-.076-.187-.068-.187-.067-.187-.06-.204-.05-.196-.05-.213-.051-.212-.042-.213-.042-.221-.034-.23-.025-.468-.051-.476-.042-.502-.017-.51-.008-.383.008-.4.008-.417.025-.434.034-.45.05-.46.06-.468.075-.476.102-.238.05-.247.06-.238.067-.247.067-.247.076-.246.084-.247.085-.238.092-.247.102-.247.11-.238.109-.247.118-.238.126-.238.135-.238.135-.238.152V.833h16.63v23.784z" fill="#FFFFFF"/>
+    </svg>
+  </div>
+  <span class="nav-title">Vendor Onboarding Assessment</span>
+</nav>
+
+<!-- Section Counter -->
+<div class="section-counter" id="sectionCounter">Section 1 of 18</div>
+
+<!-- Scroll Container -->
+<div class="scroll-container" id="scrollContainer">
+
+  <!-- Section 1: Title Slide -->
+  <section class="section section-hero" data-section="1">
+    <div class="section-inner">
+      <h1>Vendor Onboarding<br>Process Assessment</h1>
+      <h2>Current State Analysis and Future State Recommendations</h2>
+      <div class="hero-divider"></div>
+      <div class="meta">
+        <strong>March 2026</strong><br>
+        Prepared for [Client Name]
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Executive Summary -->
+  <section class="section section-white" data-section="2">
+    <div class="section-inner">
+      <div class="section-number">02</div>
+      <h2>Executive Summary</h2>
+      <p class="section-subtitle">Assessment highlights and strategic recommendation</p>
+
+      <div class="findings-box">
+        <h3>Key Findings</h3>
+        <ul>
+          <li>Vendor onboarding currently averages 6+ months end-to-end</li>
+          <li>Multiple sequential reviews create bottlenecks at every stage</li>
+          <li>Vendor risk classification is inconsistent across functions</li>
+          <li>Contract negotiation cycles are prolonged due to unclear templates and ownership</li>
+        </ul>
+      </div>
+
+      <div class="recommendation">
+        <strong>Recommendation:</strong> Implement a risk-tiered onboarding model with parallel reviews and simplified governance.
+      </div>
+
+      <h3>Expected Outcome</h3>
+      <table>
+        <thead>
+          <tr><th>Metric</th><th>Current</th><th>Future</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Onboarding Time</td><td>~24 weeks</td><td>6-8 weeks</td></tr>
+          <tr><td>Review Stages</td><td>12+</td><td>6-7</td></tr>
+          <tr><td>Operational Efficiency</td><td>Low</td><td>High</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Section 3: Engagement Scope and Objectives -->
+  <section class="section section-gray" data-section="3">
+    <div class="section-inner">
+      <div class="section-number">03</div>
+      <h2>Engagement Scope and Objectives</h2>
+      <p class="section-subtitle">Defining the boundaries and goals of this assessment</p>
+
+      <div class="findings-box">
+        <h3>Objective</h3>
+        <p>Assess the current vendor onboarding process and design a future state model to accelerate onboarding while maintaining risk oversight.</p>
+      </div>
+
+      <h3>Areas Evaluated</h3>
+      <div class="scope-tags">
+        <span class="scope-tag">TPRM</span>
+        <span class="scope-tag">Sourcing and Procurement</span>
+        <span class="scope-tag">Cybersecurity Review</span>
+        <span class="scope-tag">Architecture Review Board</span>
+        <span class="scope-tag">Risk Evaluation</span>
+        <span class="scope-tag">Legal and Compliance</span>
+        <span class="scope-tag">Finance Approval</span>
+        <span class="scope-tag">AI Governance</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Assessment Methodology -->
+  <section class="section section-white" data-section="4">
+    <div class="section-inner">
+      <div class="section-number">04</div>
+      <h2>Assessment Methodology</h2>
+      <p class="section-subtitle">Structured approach to current state analysis and future state design</p>
+
+      <div class="two-col">
+        <div>
+          <h3>Inputs</h3>
+          <ul>
+            <li>Stakeholder interviews</li>
+            <li>Policy review</li>
+            <li>Process walkthroughs</li>
+            <li>Vendor onboarding documentation</li>
+            <li>Benchmarking analysis</li>
+          </ul>
+
+          <h3>Stakeholders Interviewed</h3>
+          <ul>
+            <li>Procurement</li>
+            <li>Vendor Management</li>
+            <li>Cybersecurity</li>
+            <li>Legal</li>
+            <li>Risk</li>
+            <li>Architecture Review Board</li>
+            <li>Finance</li>
+            <li>AI Governance</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Methodology Flow</h3>
+          <div class="flow-vertical">
+            <div class="flow-step">
+              <div class="flow-circle">1</div>
+              <div class="flow-text">Document Review</div>
+            </div>
+            <div class="flow-connector"></div>
+            <div class="flow-step">
+              <div class="flow-circle">2</div>
+              <div class="flow-text">Stakeholder Interviews</div>
+            </div>
+            <div class="flow-connector"></div>
+            <div class="flow-step">
+              <div class="flow-circle">3</div>
+              <div class="flow-text">Current State Process Mapping</div>
+            </div>
+            <div class="flow-connector"></div>
+            <div class="flow-step">
+              <div class="flow-circle">4</div>
+              <div class="flow-text">Pain Point Identification</div>
+            </div>
+            <div class="flow-connector"></div>
+            <div class="flow-step">
+              <div class="flow-circle">5</div>
+              <div class="flow-text">Future State Design</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Current State Process -->
+  <section class="section section-gray" data-section="5">
+    <div class="section-inner">
+      <div class="section-number">05</div>
+      <h2>End-to-End Vendor Onboarding Process</h2>
+      <p class="section-subtitle">Current state value chain from request to production</p>
+
+      <div class="process-steps">
+        <div class="process-step"><span>Vendor sourcing: Requestor submits via Jira SRR / ARCHER</span></div>
+        <div class="process-step"><span>Vendor intake: TGC / START team triage</span></div>
+        <div class="process-step"><span>DART creation: Decision and Risk Tracking record established</span></div>
+        <div class="process-step"><span>Review Council Milestone 1: Request Review</span></div>
+        <div class="process-step"><span>Discovery and Exploration Phase</span></div>
+        <div class="process-step"><span>Review Council Milestone 2: Solution Evaluation Review</span></div>
+        <div class="process-step"><span>Acquire Phase (Buy) or Design and Build</span></div>
+        <div class="process-step"><span>Review Council Milestone 3: Approval to Buy/Build</span></div>
+        <div class="process-step"><span>Architectural Review Board (ARB)</span></div>
+        <div class="process-step"><span>Architectural Runway to Production</span></div>
+      </div>
+
+      <div class="process-note">
+        A "Fast Path" bypass exists for low-risk items, but criteria for qualification are inconsistently applied across teams.
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Current State Timeline -->
+  <section class="section section-white" data-section="6">
+    <div class="section-inner">
+      <div class="section-number">06</div>
+      <h2>Current State Timeline Analysis</h2>
+      <p class="section-subtitle">Average duration by stage, totaling approximately 24 weeks</p>
+
+      <table>
+        <thead>
+          <tr><th>Stage</th><th>Avg Duration</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Vendor sourcing</td><td>3 weeks</td></tr>
+          <tr><td>TPRM review</td><td>6 weeks</td></tr>
+          <tr><td>Cybersecurity review</td><td>4 weeks</td></tr>
+          <tr><td>Architecture review</td><td>2 weeks</td></tr>
+          <tr><td>Legal contracting</td><td>6 weeks</td></tr>
+          <tr><td>Risk approvals</td><td>2 weeks</td></tr>
+          <tr><td>Finance approvals</td><td>1 week</td></tr>
+        </tbody>
+      </table>
+
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Vendor sourcing</div>
+          <div class="bar-track"><div class="bar-fill" style="width:12.5%;background:var(--kpmg-blue);">3 wk</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">TPRM review</div>
+          <div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--kpmg-blue);">6 wk</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Cybersecurity review</div>
+          <div class="bar-track"><div class="bar-fill" style="width:16.7%;background:var(--kpmg-medium-blue);">4 wk</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Architecture review</div>
+          <div class="bar-track"><div class="bar-fill" style="width:8.3%;background:var(--kpmg-medium-blue);">2 wk</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Legal contracting</div>
+          <div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--kpmg-blue);">6 wk</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Risk approvals</div>
+          <div class="bar-track"><div class="bar-fill" style="width:8.3%;background:var(--kpmg-light-blue);">2 wk</div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Finance approvals</div>
+          <div class="bar-track"><div class="bar-fill" style="width:4.2%;background:var(--kpmg-light-blue);">1 wk</div></div>
+        </div>
+      </div>
+
+      <div class="observation">
+        <strong>Total: ~24 weeks.</strong> TPRM review and legal contracting are the two largest bottlenecks, each consuming 6 weeks on average.
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Stakeholder Roles -->
+  <section class="section section-gray" data-section="7">
+    <div class="section-inner">
+      <div class="section-number">07</div>
+      <h2>Stakeholder Roles Across the Process</h2>
+      <p class="section-subtitle">Functional responsibilities in the current onboarding model</p>
+
+      <table>
+        <thead>
+          <tr><th>Function</th><th>Role</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Procurement</td><td>Vendor sourcing, RFP management, purchase order creation</td></tr>
+          <tr><td>TPRM</td><td>Vendor risk assessment, due diligence coordination</td></tr>
+          <tr><td>Cybersecurity</td><td>Security review, vulnerability assessment, penetration testing</td></tr>
+          <tr><td>ARB</td><td>Technology standards approval, architecture compliance</td></tr>
+          <tr><td>Legal</td><td>Contract negotiation, terms and conditions, NDA management</td></tr>
+          <tr><td>Finance</td><td>Budget approval, cost allocation, invoice setup</td></tr>
+          <tr><td>AI Governance</td><td>AI risk oversight, model risk classification, EU AI Act compliance</td></tr>
+        </tbody>
+      </table>
+
+      <div class="observation">
+        <strong>Observation:</strong> Ownership and accountability are fragmented across functions. No single point of coordination exists. Each team operates on its own timeline with limited visibility into other reviews.
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8: Key Pain Points -->
+  <section class="section section-white" data-section="8">
+    <div class="section-inner">
+      <div class="section-number">08</div>
+      <h2>Key Pain Points Identified</h2>
+      <p class="section-subtitle">Eight recurring issues surfaced through stakeholder interviews and process analysis</p>
+
+      <div class="numbered-grid">
+        <div class="numbered-item">
+          <div class="num">1</div>
+          <div class="text">Sequential review workflows force each function to wait for the previous one to complete</div>
+        </div>
+        <div class="numbered-item">
+          <div class="num">2</div>
+          <div class="text">Duplicate risk assessments across TPRM, cybersecurity, and compliance teams</div>
+        </div>
+        <div class="numbered-item">
+          <div class="num">3</div>
+          <div class="text">Lack of vendor risk tiering: all vendors receive the same level of scrutiny regardless of risk</div>
+        </div>
+        <div class="numbered-item">
+          <div class="num">4</div>
+          <div class="text">Excessive approval layers with unclear escalation criteria and decision authority</div>
+        </div>
+        <div class="numbered-item">
+          <div class="num">5</div>
+          <div class="text">Contract negotiation delays due to non-standardized templates and manual redlining</div>
+        </div>
+        <div class="numbered-item">
+          <div class="num">6</div>
+          <div class="text">Vendor documentation issues: incomplete submissions cause rework and re-requests</div>
+        </div>
+        <div class="numbered-item">
+          <div class="num">7</div>
+          <div class="text">Unclear ownership between teams during handoffs, causing requests to stall</div>
+        </div>
+        <div class="numbered-item">
+          <div class="num">8</div>
+          <div class="text">Rework due to incomplete intake: missing information at the start cascades through every downstream review</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 9: Root Cause Analysis -->
+  <section class="section section-gray" data-section="9">
+    <div class="section-inner">
+      <div class="section-number">09</div>
+      <h2>Root Cause Analysis</h2>
+      <p class="section-subtitle">Underlying drivers of process inefficiency</p>
+
+      <table>
+        <thead>
+          <tr><th>Root Cause</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Process Design</strong></td>
+            <td>Sequential review structure forces each function to wait for the previous one. No parallel execution paths exist for independent reviews.</td>
+          </tr>
+          <tr>
+            <td><strong>Governance</strong></td>
+            <td>Unclear decision authority across 12+ review stages. Escalation criteria are informal, and approvals are duplicated across committees.</td>
+          </tr>
+          <tr>
+            <td><strong>Risk Framework</strong></td>
+            <td>Overly conservative reviews applied uniformly regardless of vendor risk profile. A low-risk SaaS renewal receives the same scrutiny as a critical infrastructure vendor.</td>
+          </tr>
+          <tr>
+            <td><strong>Documentation</strong></td>
+            <td>Inconsistent vendor requirements across intake forms and questionnaires. Each function maintains its own templates, creating confusion for both internal teams and vendors.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Section 10: Industry Benchmark -->
+  <section class="section section-white" data-section="10">
+    <div class="section-inner">
+      <div class="section-number">10</div>
+      <h2>Industry Benchmark Comparison</h2>
+      <p class="section-subtitle">Current performance measured against financial services peers</p>
+
+      <table>
+        <thead>
+          <tr><th>Metric</th><th>Current</th><th>Industry Benchmark</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Onboarding Duration</td><td>24 weeks</td><td>4-8 weeks</td></tr>
+          <tr><td>Review Steps</td><td>12+</td><td>6-7</td></tr>
+          <tr><td>Parallel Reviews</td><td>No</td><td>Yes</td></tr>
+          <tr><td>Vendor Tiering</td><td>Limited</td><td>Standard practice</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Benchmark Practices Observed at Peer Institutions</h3>
+      <div class="benchmark-list">
+        <span class="benchmark-badge">Risk-based onboarding</span>
+        <span class="benchmark-badge">Parallel risk reviews</span>
+        <span class="benchmark-badge">Pre-approved vendor frameworks</span>
+        <span class="benchmark-badge">Standardized contracting templates</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 11: Future State Design Principles -->
+  <section class="section section-gray" data-section="11">
+    <div class="section-inner">
+      <div class="section-number">11</div>
+      <h2>Future State Design Principles</h2>
+      <p class="section-subtitle">Five guiding principles for the redesigned onboarding process</p>
+
+      <div class="principles-grid">
+        <div class="principle-card">
+          <div class="num">01</div>
+          <div class="title">Risk-Based Onboarding Tiers</div>
+          <p style="font-size:0.82rem;margin-top:6px;color:var(--kpmg-medium-gray);">Classify vendors by risk profile and apply proportional review depth.</p>
+        </div>
+        <div class="principle-card">
+          <div class="num">02</div>
+          <div class="title">Parallel Review Workflows</div>
+          <p style="font-size:0.82rem;margin-top:6px;color:var(--kpmg-medium-gray);">Execute independent reviews simultaneously instead of sequentially.</p>
+        </div>
+        <div class="principle-card">
+          <div class="num">03</div>
+          <div class="title">Simplified Governance Structure</div>
+          <p style="font-size:0.82rem;margin-top:6px;color:var(--kpmg-medium-gray);">Consolidate approval layers and define clear decision authority at each stage.</p>
+        </div>
+        <div class="principle-card">
+          <div class="num">04</div>
+          <div class="title">Standardized Vendor Intake</div>
+          <p style="font-size:0.82rem;margin-top:6px;color:var(--kpmg-medium-gray);">Unified intake form that collects all required information upfront.</p>
+        </div>
+        <div class="principle-card">
+          <div class="num">05</div>
+          <div class="title">Clear Ownership: Quarterback Role</div>
+          <p style="font-size:0.82rem;margin-top:6px;color:var(--kpmg-medium-gray);">Single point of accountability who shepherds each request through the lifecycle.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 12: Future State Process -->
+  <section class="section section-white" data-section="12">
+    <div class="section-inner">
+      <div class="section-number">12</div>
+      <h2>Future State Vendor Onboarding Process</h2>
+      <p class="section-subtitle">Streamlined workflow with parallel reviews and risk-based routing</p>
+
+      <div class="flow-horizontal">
+        <div class="flow-box">Vendor<br>Request</div>
+        <div class="flow-arrow">&#9654;</div>
+        <div class="flow-box">Risk Tier<br>Classification</div>
+        <div class="flow-arrow">&#9654;</div>
+        <div class="flow-box" style="background:var(--kpmg-medium-blue);">Parallel Reviews<br>(Cyber + Risk + Arch)</div>
+        <div class="flow-arrow">&#9654;</div>
+        <div class="flow-box">Procurement<br>Contracting</div>
+        <div class="flow-arrow">&#9654;</div>
+        <div class="flow-box">Legal<br>Review</div>
+        <div class="flow-arrow">&#9654;</div>
+        <div class="flow-box" style="background:var(--kpmg-light-blue);">Approval and<br>Activation</div>
+      </div>
+
+      <div class="two-col" style="margin-top:1.5rem;">
+        <div class="findings-box">
+          <h3>What Changed</h3>
+          <ul>
+            <li>Sequential reviews replaced with parallel execution</li>
+            <li>Risk tier classification drives review depth</li>
+            <li>Single quarterback coordinates across functions</li>
+            <li>Standardized templates reduce negotiation cycles</li>
+          </ul>
+        </div>
+        <div class="findings-box">
+          <h3>What Stays</h3>
+          <ul>
+            <li>All required risk reviews are preserved</li>
+            <li>Regulatory compliance gates remain in place</li>
+            <li>Governance sign-off at appropriate checkpoints</li>
+            <li>Full audit trail maintained throughout</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 13: Risk-Tiered Vendor Model -->
+  <section class="section section-gray" data-section="13">
+    <div class="section-inner">
+      <div class="section-number">13</div>
+      <h2>Risk-Tiered Vendor Model</h2>
+      <p class="section-subtitle">Proportional review depth based on vendor risk classification</p>
+
+      <table>
+        <thead>
+          <tr><th>Vendor Tier</th><th>Description</th><th>Review Level</th><th>SLA</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Fast-Track</strong> (6-8 pts)</td>
+            <td>Low Risk</td>
+            <td>Quarterback + 1 reviewer</td>
+            <td>5 days</td>
+          </tr>
+          <tr>
+            <td><strong>Standard</strong> (9-13 pts)</td>
+            <td>Moderate Risk</td>
+            <td>4 reviewers in parallel</td>
+            <td>15 days</td>
+          </tr>
+          <tr>
+            <td><strong>Enhanced</strong> (14-18 pts)</td>
+            <td>High Risk</td>
+            <td>All reviewers + executive briefing</td>
+            <td>25 days</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="observation">
+        This model allows lower-risk vendors to onboard faster while maintaining appropriate oversight for higher-risk engagements. Risk scoring uses a composite of data sensitivity, criticality, regulatory exposure, and vendor maturity.
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 14: Current vs Future Comparison -->
+  <section class="section section-white" data-section="14">
+    <div class="section-inner">
+      <div class="section-number">14</div>
+      <h2>Current vs Future Process Comparison</h2>
+      <p class="section-subtitle">Side-by-side view of operational improvements</p>
+
+      <table>
+        <thead>
+          <tr><th>Area</th><th>Current State</th><th>Future State</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Process Design</strong></td><td>Sequential</td><td>Parallel</td></tr>
+          <tr><td><strong>Vendor Classification</strong></td><td>Limited</td><td>Risk-tiered (3 levels)</td></tr>
+          <tr><td><strong>Governance</strong></td><td>Fragmented across 12+ stages</td><td>Defined ownership with clear authority</td></tr>
+          <tr><td><strong>Cycle Time</strong></td><td>~24 weeks</td><td>6-8 weeks</td></tr>
+          <tr><td><strong>Accountability</strong></td><td>Unclear, shared across teams</td><td>Quarterback role per request</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Section 15: Implementation Roadmap -->
+  <section class="section section-gray" data-section="15">
+    <div class="section-inner">
+      <div class="section-number">15</div>
+      <h2>Implementation Roadmap</h2>
+      <p class="section-subtitle">Three-phase rollout over 14 weeks</p>
+
+      <div class="roadmap">
+        <div class="phase-block phase-1">
+          <div class="phase-marker">P1</div>
+          <div class="phase-title">Process Redesign</div>
+          <div class="phase-duration">Weeks 1-4</div>
+          <ul class="phase-items">
+            <li>Define vendor risk tiers</li>
+            <li>Simplify workflow</li>
+            <li>Update governance model</li>
+          </ul>
+        </div>
+        <div class="phase-block phase-2">
+          <div class="phase-marker">P2</div>
+          <div class="phase-title">Policy Updates</div>
+          <div class="phase-duration">Weeks 5-8</div>
+          <ul class="phase-items">
+            <li>Update vendor onboarding policies</li>
+            <li>Standardize intake documentation</li>
+            <li>Update contract templates</li>
+          </ul>
+        </div>
+        <div class="phase-block phase-3">
+          <div class="phase-marker">P3</div>
+          <div class="phase-title">Operational Rollout</div>
+          <div class="phase-duration">Weeks 9-14</div>
+          <ul class="phase-items">
+            <li>Stakeholder training</li>
+            <li>Pilot new process</li>
+            <li>Launch onboarding framework</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 16: Business Impact -->
+  <section class="section section-white" data-section="16">
+    <div class="section-inner">
+      <div class="section-number">16</div>
+      <h2>Business Impact</h2>
+      <p class="section-subtitle">Quantified benefits of the future state model</p>
+
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="label">Onboarding Speed</div>
+          <div class="value">6 months reduced to 6 weeks</div>
+        </div>
+        <div class="impact-card">
+          <div class="label">Operational Efficiency</div>
+          <div class="value">40% reduction in process steps</div>
+        </div>
+        <div class="impact-card">
+          <div class="label">Vendor Adoption</div>
+          <div class="value">Faster deployment of technology vendors</div>
+        </div>
+        <div class="impact-card">
+          <div class="label">Business Enablement</div>
+          <div class="value">Accelerated technology adoption for business teams</div>
+        </div>
+      </div>
+
+      <div class="impact-grid">
+        <div class="impact-card" style="grid-column: span 2;">
+          <div class="label">Risk Coverage</div>
+          <div class="value">Appropriate oversight matched to actual risk level: more scrutiny where it matters, less where it does not</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 17: Risks and Mitigation -->
+  <section class="section section-gray" data-section="17">
+    <div class="section-inner">
+      <div class="section-number">17</div>
+      <h2>Risks and Mitigation</h2>
+      <p class="section-subtitle">Anticipated challenges and planned responses</p>
+
+      <table>
+        <thead>
+          <tr><th>Risk</th><th>Mitigation</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Stakeholder resistance</strong></td>
+            <td>Training programs and governance alignment workshops. Executive sponsor visible in communications.</td>
+          </tr>
+          <tr>
+            <td><strong>Policy update delays</strong></td>
+            <td>Executive sponsorship to drive approval timelines. Pre-drafted policy templates.</td>
+          </tr>
+          <tr>
+            <td><strong>Vendor compliance gaps</strong></td>
+            <td>Standard vendor documentation package distributed before onboarding begins.</td>
+          </tr>
+          <tr>
+            <td><strong>Transition disruption</strong></td>
+            <td>Phased rollout with pilot group. Parallel run of old and new process during transition.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Section 18: Key Decisions and Next Steps -->
+  <section class="section section-white" data-section="18">
+    <div class="section-inner">
+      <div class="section-number">18</div>
+      <h2>Key Decisions and Next Steps</h2>
+      <p class="section-subtitle">Actions required to proceed with implementation</p>
+
+      <div class="decisions-next">
+        <div class="decisions-col">
+          <h3>Decisions Needed</h3>
+          <div class="findings-box">
+            <ul>
+              <li>Approve future state process design</li>
+              <li>Approve vendor risk tier model and scoring criteria</li>
+              <li>Approve implementation roadmap and timeline</li>
+            </ul>
+          </div>
+        </div>
+        <div class="decisions-col">
+          <h3>Next Steps</h3>
+          <div class="findings-box">
+            <ul>
+              <li>Launch transformation working group with cross-functional representation</li>
+              <li>Begin process redesign workshops (Week 1)</li>
+              <li>Develop updated vendor onboarding playbook</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer-bar">
+    <div class="tagline">Let insights reveal new opportunity</div>
+    <div class="legal">
+      The information contained herein is of a general nature and is not intended to address the circumstances of any particular individual or entity. Although we endeavor to provide accurate and timely information, there can be no guarantee that such information is accurate as of the date it is received or that it will continue to be accurate in the future. No one should act on such information without appropriate professional advice after a thorough examination of the particular situation.
+      <br><br>
+      &copy; 2026 KPMG LLP, a Delaware limited liability partnership and a member firm of the KPMG global organization of independent member firms affiliated with KPMG International Limited, a private English company limited by guarantee. All rights reserved.
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// Section counter with IntersectionObserver
+(function() {
+  const counter = document.getElementById('sectionCounter');
+  const sections = document.querySelectorAll('.section');
+  const totalSections = sections.length;
+
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
+        const sectionNum = entry.target.getAttribute('data-section');
+        if (sectionNum) {
+          counter.textContent = 'Section ' + sectionNum + ' of ' + totalSections;
+        }
+      }
+    });
+  }, {
+    root: document.getElementById('scrollContainer'),
+    threshold: 0.3
+  });
+
+  sections.forEach(function(section) {
+    observer.observe(section);
+  });
+})();
+</script>
+
+</body>
+</html>

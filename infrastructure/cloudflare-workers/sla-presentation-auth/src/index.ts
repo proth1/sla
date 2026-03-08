@@ -11,19 +11,28 @@ interface Env {
   DESCOPE_PROJECT_ID: string;
   PAGES_URL: string;
   WORKER_DOMAIN: string;
+  PROXY_SECRET: string;
   CF_ACCESS_CLIENT_ID: string;
   CF_ACCESS_CLIENT_SECRET: string;
+  SESSION_SECRET: string;
+  RATE_LIMIT_KV: KVNamespace;
 }
 
 // Allowed email addresses and domains
 const ALLOWED_EMAILS = ['proth1@gmail.com'];
-const ALLOWED_DOMAINS = ['agentic-innovations.com'];
+const ALLOWED_DOMAINS = ['agentic-innovations.com', 'kpmg.com'];
 
 // Descope session cookie names
 const SESSION_COOKIE = 'DS';
 const REFRESH_COOKIE = 'DSR';
 const PENDING_EMAIL_COOKIE = 'PENDING_EMAIL';
+const SLA_SESSION_COOKIE = 'SLA_SESSION';
+const SLA_SESSION_TTL = 28800; // 8 hours in seconds
 const LOGIN_PATH = '/auth/login';
+
+// OTP verify rate limiting
+const OTP_VERIFY_MAX_ATTEMPTS = 5;
+const OTP_VERIFY_WINDOW_SECONDS = 600; // 10 minutes
 
 // SLA logo SVG markup (matches KMFlow style: single bold text)
 const SLA_LOGO_SVG = `<svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg">
@@ -37,6 +46,101 @@ function escapeHtml(unsafe: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+function sanitizeRedirect(redirect: string | null): string {
+  if (!redirect) return '/';
+  if (redirect.startsWith('/') && !redirect.startsWith('//')) return redirect;
+  return '/';
+}
+
+function getSessionSecret(env: Env): string {
+  return env.SESSION_SECRET || env.DESCOPE_PROJECT_ID;
+}
+
+async function hmacSign(data: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
+  return Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+async function createSLASession(email: string, env: Env): Promise<string> {
+  const expiry = Math.floor(Date.now() / 1000) + SLA_SESSION_TTL;
+  const data = `${email}|${expiry}`;
+  const signature = await hmacSign(data, getSessionSecret(env));
+  return `${data}|${signature}`;
+}
+
+async function validateSLASession(
+  token: string,
+  env: Env
+): Promise<{ valid: boolean; email?: string }> {
+  const parts = token.split('|');
+  if (parts.length !== 3) return { valid: false };
+
+  const [email, expiryStr, signature] = parts;
+  const expiry = parseInt(expiryStr, 10);
+
+  if (isNaN(expiry) || expiry < Math.floor(Date.now() / 1000)) {
+    return { valid: false };
+  }
+
+  const data = `${email}|${expiryStr}`;
+  const expected = await hmacSign(data, getSessionSecret(env));
+
+  if (signature !== expected) return { valid: false };
+
+  return { valid: true, email };
+}
+
+function getSLASessionToken(request: Request): string | null {
+  const cookie = request.headers.get('Cookie') || '';
+  const match = cookie.match(new RegExp(`${SLA_SESSION_COOKIE}=([^;]+)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+async function checkOTPVerifyRateLimit(
+  email: string,
+  env: Env
+): Promise<{ allowed: boolean; remaining: number }> {
+  const key = `otp_attempts:${email.toLowerCase()}`;
+  const existing = await env.RATE_LIMIT_KV.get(key);
+  const attempts = existing ? parseInt(existing, 10) : 0;
+
+  if (attempts >= OTP_VERIFY_MAX_ATTEMPTS) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  return { allowed: true, remaining: OTP_VERIFY_MAX_ATTEMPTS - attempts };
+}
+
+async function incrementOTPVerifyAttempts(
+  email: string,
+  env: Env
+): Promise<void> {
+  const key = `otp_attempts:${email.toLowerCase()}`;
+  const existing = await env.RATE_LIMIT_KV.get(key);
+  const attempts = existing ? parseInt(existing, 10) : 0;
+  await env.RATE_LIMIT_KV.put(key, String(attempts + 1), {
+    expirationTtl: OTP_VERIFY_WINDOW_SECONDS,
+  });
+}
+
+async function clearOTPVerifyAttempts(
+  email: string,
+  env: Env
+): Promise<void> {
+  const key = `otp_attempts:${email.toLowerCase()}`;
+  await env.RATE_LIMIT_KV.delete(key);
 }
 
 export default {
@@ -63,7 +167,19 @@ export default {
       return handleLogout(url);
     }
 
-    // Check for valid session
+    // Check SLA_SESSION cookie FIRST (worker-managed, 8h TTL)
+    const slaSession = getSLASessionToken(request);
+    if (slaSession) {
+      const slaValidation = await validateSLASession(slaSession, env);
+      if (slaValidation.valid && slaValidation.email) {
+        if (isEmailAuthorized(slaValidation.email)) {
+          return proxyToPages(request, env, url);
+        }
+        return renderUnauthorizedPage(slaValidation.email);
+      }
+    }
+
+    // Fall through to Descope JWT validation
     const sessionToken = getSessionToken(request);
     const refreshToken = getRefreshToken(request);
 
@@ -72,14 +188,14 @@ export default {
     }
 
     // Validate JWT
-    let validation = sessionToken ? await validateDescopeJWT(sessionToken) : { valid: false, reason: 'No session token' };
+    let validation = sessionToken ? await validateDescopeJWT(sessionToken, env.DESCOPE_PROJECT_ID) : { valid: false, reason: 'No session token' };
 
     // If session expired but we have refresh token, try server-side refresh
     if (!validation.valid && refreshToken) {
       const refreshResult = await refreshSessionServerSide(refreshToken, env);
 
       if (refreshResult.success && refreshResult.sessionJwt) {
-        validation = await validateDescopeJWT(refreshResult.sessionJwt);
+        validation = await validateDescopeJWT(refreshResult.sessionJwt, env.DESCOPE_PROJECT_ID);
 
         if (validation.valid) {
           const email = validation.payload?.email as string | undefined;
@@ -201,7 +317,15 @@ function renderUnauthorizedPage(email: string | undefined): Response {
 
   return new Response(html, {
     status: 403,
-    headers: { 'Content-Type': 'text/html;charset=UTF-8' },
+    headers: {
+      'Content-Type': 'text/html;charset=UTF-8',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;",
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Cache-Control': 'no-store',
+    },
   });
 }
 
@@ -260,6 +384,7 @@ async function proxyToPagesWithNewSession(
   const pagesUrl = new URL(url.pathname + url.search, env.PAGES_URL);
 
   const headers = new Headers(request.headers);
+  headers.set('X-SLA-Auth-Proxy', env.PROXY_SECRET);
   if (env.CF_ACCESS_CLIENT_ID && env.CF_ACCESS_CLIENT_SECRET) {
     headers.set('CF-Access-Client-Id', env.CF_ACCESS_CLIENT_ID);
     headers.set('CF-Access-Client-Secret', env.CF_ACCESS_CLIENT_SECRET);
@@ -268,13 +393,24 @@ async function proxyToPagesWithNewSession(
   const response = await fetch(pagesUrl.toString(), {
     method: request.method,
     headers: headers,
+    redirect: 'manual',
   });
+
+  // Extract email from the JWT for SLA_SESSION
+  const validation = await validateDescopeJWT(sessionJwt, env.DESCOPE_PROJECT_ID);
+  const email = validation.payload?.email as string | undefined;
 
   const newHeaders = new Headers(response.headers);
   newHeaders.append('Set-Cookie', `${SESSION_COOKIE}=${sessionJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=28800`);
 
   if (refreshJwt) {
     newHeaders.append('Set-Cookie', `${REFRESH_COOKIE}=${refreshJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
+  }
+
+  // Issue SLA_SESSION cookie for extended session
+  if (email) {
+    const slaToken = await createSLASession(email, env);
+    newHeaders.append('Set-Cookie', `${SLA_SESSION_COOKIE}=${encodeURIComponent(slaToken)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SLA_SESSION_TTL}`);
   }
 
   return new Response(response.body, {
@@ -290,16 +426,27 @@ function redirectToLogin(originalUrl: URL): Response {
   return Response.redirect(loginUrl.toString(), 302);
 }
 
-// JWKS endpoint for Descope JWT signature verification
-const DESCOPE_JWKS_URL = 'https://api.descope.com/P3AN0dLWf9ZTyBi3vF6xaDbThO8q/.well-known/jwks.json';
-const JWKS = createRemoteJWKSet(new URL(DESCOPE_JWKS_URL));
+// JWKS cache: keyed by project ID so we create one set per ID
+const JWKS_CACHE = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
+
+function getJWKS(projectId: string): ReturnType<typeof createRemoteJWKSet> {
+  let jwks = JWKS_CACHE.get(projectId);
+  if (!jwks) {
+    const jwksUrl = `https://api.descope.com/${projectId}/.well-known/jwks.json`;
+    jwks = createRemoteJWKSet(new URL(jwksUrl));
+    JWKS_CACHE.set(projectId, jwks);
+  }
+  return jwks;
+}
 
 async function validateDescopeJWT(
-  token: string
+  token: string,
+  projectId: string
 ): Promise<{ valid: boolean; reason?: string; payload?: Record<string, unknown> }> {
   try {
-    const { payload } = await jwtVerify(token, JWKS, {
-      issuer: 'https://api.descope.com/v1/apps/P3AN0dLWf9ZTyBi3vF6xaDbThO8q',
+    const jwks = getJWKS(projectId);
+    const { payload } = await jwtVerify(token, jwks, {
+      issuer: `https://api.descope.com/v1/apps/${projectId}`,
     });
 
     return { valid: true, payload: payload as unknown as Record<string, unknown> };
@@ -313,6 +460,7 @@ async function proxyToPages(request: Request, env: Env, url: URL): Promise<Respo
   const pagesUrl = new URL(url.pathname + url.search, env.PAGES_URL);
 
   const headers = new Headers(request.headers);
+  headers.set('X-SLA-Auth-Proxy', env.PROXY_SECRET);
   if (env.CF_ACCESS_CLIENT_ID && env.CF_ACCESS_CLIENT_SECRET) {
     headers.set('CF-Access-Client-Id', env.CF_ACCESS_CLIENT_ID);
     headers.set('CF-Access-Client-Secret', env.CF_ACCESS_CLIENT_SECRET);
@@ -321,6 +469,7 @@ async function proxyToPages(request: Request, env: Env, url: URL): Promise<Respo
   const response = await fetch(pagesUrl.toString(), {
     method: request.method,
     headers: headers,
+    redirect: 'manual',
   });
 
   return new Response(response.body, {
@@ -333,23 +482,22 @@ async function proxyToPages(request: Request, env: Env, url: URL): Promise<Respo
 function handleLogout(url: URL): Response {
   const loginUrl = new URL(LOGIN_PATH, url.origin);
 
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: loginUrl.toString(),
-      'Set-Cookie': [
-        `${SESSION_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
-        `${REFRESH_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
-      ].join(', '),
-    },
+  const headers = new Headers({
+    'Location': loginUrl.toString(),
   });
+  headers.append('Set-Cookie', `${SESSION_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
+  headers.append('Set-Cookie', `${REFRESH_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
+  headers.append('Set-Cookie', `${PENDING_EMAIL_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
+  headers.append('Set-Cookie', `${SLA_SESSION_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
+
+  return new Response(null, { status: 302, headers });
 }
 
 async function handleSendOTP(request: Request, env: Env, url: URL): Promise<Response> {
   try {
     const formData = await request.formData();
     const email = formData.get('email') as string;
-    const redirect = formData.get('redirect') as string || '/';
+    const redirect = sanitizeRedirect(formData.get('redirect') as string);
 
     if (!email) {
       return redirectToLoginWithError(url, 'Email is required', redirect);
@@ -395,7 +543,7 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
   try {
     const formData = await request.formData();
     const code = formData.get('code') as string;
-    const redirect = formData.get('redirect') as string || '/';
+    const redirect = sanitizeRedirect(formData.get('redirect') as string);
 
     const cookie = request.headers.get('Cookie') || '';
     const emailMatch = cookie.match(new RegExp(`${PENDING_EMAIL_COOKIE}=([^;]+)`));
@@ -407,6 +555,20 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
 
     if (!code || code.length !== 6) {
       return redirectToLoginWithError(url, 'Please enter the 6-digit code from your email.', redirect, 'verify');
+    }
+
+    // Rate limit OTP verification attempts per email
+    if (env.RATE_LIMIT_KV) {
+      const rateCheck = await checkOTPVerifyRateLimit(email, env);
+      if (!rateCheck.allowed) {
+        return redirectToLoginWithError(
+          url,
+          'Too many verification attempts. Please wait 10 minutes and try again.',
+          redirect,
+          'verify'
+        );
+      }
+      await incrementOTPVerifyAttempts(email, env);
     }
 
     const response = await fetch(`https://api.descope.com/v1/auth/otp/verify/email`, {
@@ -425,6 +587,11 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
       return redirectToLoginWithError(url, 'Invalid or expired code. Please try again.', redirect, 'verify');
     }
 
+    // Clear rate limit on successful verification
+    if (env.RATE_LIMIT_KV) {
+      await clearOTPVerifyAttempts(email, env);
+    }
+
     const data = await response.json() as {
       sessionJwt?: string;
       refreshJwt?: string;
@@ -439,7 +606,7 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
     const headers = new Headers();
     headers.set('Location', redirect);
 
-    headers.append('Set-Cookie', `${PENDING_EMAIL_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`);
+    headers.append('Set-Cookie', `${PENDING_EMAIL_COOKIE}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
 
     if (data.sessionJwt) {
       headers.append('Set-Cookie', `${SESSION_COOKIE}=${data.sessionJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=28800`);
@@ -447,6 +614,10 @@ async function handleVerifyOTP(request: Request, env: Env, url: URL): Promise<Re
     if (data.refreshJwt) {
       headers.append('Set-Cookie', `${REFRESH_COOKIE}=${data.refreshJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
     }
+
+    // Issue SLA_SESSION cookie for extended session (8h)
+    const slaToken = await createSLASession(verifiedEmail, env);
+    headers.append('Set-Cookie', `${SLA_SESSION_COOKIE}=${encodeURIComponent(slaToken)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SLA_SESSION_TTL}`);
 
     return new Response(null, { status: 302, headers });
   } catch (error) {
@@ -469,7 +640,7 @@ function redirectToLoginWithError(url: URL, error: string, redirect: string, ste
  * Render the SLA Governance-branded login page with OTP authentication
  */
 function renderLoginPage(env: Env, url: URL, request: Request): Response {
-  const redirect = url.searchParams.get('redirect') || '/';
+  const redirect = sanitizeRedirect(url.searchParams.get('redirect'));
   const error = url.searchParams.get('error') || '';
   const step = url.searchParams.get('step') || 'email';
 
@@ -694,6 +865,11 @@ function renderLoginPage(env: Env, url: URL, request: Request): Response {
     headers: {
       'Content-Type': 'text/html;charset=UTF-8',
       'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.descope.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.descope.com; frame-src https://auth.descope.com; img-src 'self' data:;",
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
     },
   });
 }

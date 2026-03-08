@@ -1,0 +1,246 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_InitialTriage",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Initial Triage Assessment\nReview the submitted request and make a triage decision.",
+      "id": "Field_401"
+    },
+    {
+      "type": "separator",
+      "id": "Field_402"
+    },
+    {
+      "type": "group",
+      "label": "Request Summary",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "businessProblem",
+          "label": "Business Problem",
+          "disabled": true,
+          "id": "Field_403"
+        },
+        {
+          "type": "textfield",
+          "key": "urgencyLevel",
+          "label": "Urgency Level",
+          "disabled": true,
+          "id": "Field_404"
+        },
+        {
+          "type": "textfield",
+          "key": "pathwayPreference",
+          "label": "Pathway Preference",
+          "disabled": true,
+          "id": "Field_405"
+        },
+        {
+          "type": "textfield",
+          "key": "criticality",
+          "label": "Business Criticality",
+          "disabled": true,
+          "id": "Field_406"
+        },
+        {
+          "type": "textfield",
+          "key": "estimatedBudget",
+          "label": "Estimated Budget",
+          "disabled": true,
+          "id": "Field_407"
+        },
+        {
+          "type": "textfield",
+          "key": "hasAI",
+          "label": "AI Involvement",
+          "disabled": true,
+          "id": "Field_408"
+        }
+      ],
+      "id": "Field_409"
+    },
+    {
+      "type": "separator",
+      "id": "Field_410"
+    },
+    {
+      "type": "group",
+      "label": "Triage Assessment",
+      "components": [
+        {
+          "type": "number",
+          "key": "strategicAlignment",
+          "label": "Strategic Alignment Rating (1-5)",
+          "validate": {
+            "required": true,
+            "min": 1,
+            "max": 5
+          },
+          "id": "Field_411"
+        },
+        {
+          "type": "textarea",
+          "key": "duplicateDetectionResults",
+          "label": "Duplicate Detection Results",
+          "description": "Note any existing requests or solutions that overlap with this request.",
+          "id": "Field_412"
+        },
+        {
+          "type": "textarea",
+          "key": "concentrationRiskAssessment",
+          "label": "Concentration Risk Assessment",
+          "description": "Assess vendor concentration risk if this is a Buy pathway.",
+          "id": "Field_413"
+        },
+        {
+          "type": "select",
+          "key": "resourceAvailability",
+          "label": "Resource Availability",
+          "values": [
+            {
+              "label": "Available \u2014 resources can be allocated",
+              "value": "available"
+            },
+            {
+              "label": "Constrained \u2014 limited resources, may delay",
+              "value": "constrained"
+            },
+            {
+              "label": "Unavailable \u2014 no resources until next quarter",
+              "value": "unavailable"
+            }
+          ],
+          "id": "Field_414"
+        },
+        {
+          "type": "textarea",
+          "key": "preliminaryRiskIndicators",
+          "label": "Preliminary Risk Indicators",
+          "description": "Note any early risk signals (regulatory, technical, financial).",
+          "id": "Field_415"
+        },
+        {
+          "type": "select",
+          "key": "requestType",
+          "label": "Request Type",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Defined Need",
+              "value": "defined-need"
+            },
+            {
+              "label": "Forced Update",
+              "value": "forced-update"
+            },
+            {
+              "label": "Speculative",
+              "value": "speculative"
+            }
+          ],
+          "id": "Field_780"
+        },
+        {
+          "type": "textfield",
+          "key": "ndaStatus",
+          "label": "NDA Status",
+          "disabled": true,
+          "description": "NDA execution status (read-only).",
+          "id": "Field_781"
+        },
+        {
+          "type": "textfield",
+          "key": "dealKillerResult",
+          "label": "Deal Killer Result",
+          "disabled": true,
+          "description": "Automated deal killer check result (read-only).",
+          "id": "Field_782"
+        }
+      ],
+      "id": "Field_416"
+    },
+    {
+      "type": "separator",
+      "id": "Field_417"
+    },
+    {
+      "type": "group",
+      "label": "Triage Decision",
+      "components": [
+        {
+          "type": "select",
+          "key": "triageDecision",
+          "label": "Triage Decision",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Approve \u2014 proceed to planning",
+              "value": "approve"
+            },
+            {
+              "label": "Reject \u2014 does not meet criteria",
+              "value": "reject"
+            },
+            {
+              "label": "Return for Information \u2014 additional details needed",
+              "value": "return-for-info"
+            }
+          ],
+          "id": "Field_418"
+        },
+        {
+          "type": "textarea",
+          "key": "triageRationale",
+          "label": "Decision Rationale",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_419"
+        },
+        {
+          "type": "select",
+          "key": "assignedPriority",
+          "label": "Assigned Priority",
+          "values": [
+            {
+              "label": "Critical",
+              "value": "critical"
+            },
+            {
+              "label": "High",
+              "value": "high"
+            },
+            {
+              "label": "Standard",
+              "value": "standard"
+            },
+            {
+              "label": "Low",
+              "value": "low"
+            }
+          ],
+          "id": "Field_420"
+        },
+        {
+          "type": "textfield",
+          "key": "assignedAnalyst",
+          "label": "Assigned Analyst",
+          "id": "Field_421"
+        }
+      ],
+      "id": "Field_422"
+    }
+  ],
+  "type": "default"
+}

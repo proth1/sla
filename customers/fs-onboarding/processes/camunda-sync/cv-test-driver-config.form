@@ -1,0 +1,285 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "cv-test-driver-config",
+  "components": [
+    {
+      "type": "group",
+      "label": "Configuration Mode",
+      "id": "Field_CV_TD_001",
+      "components": [
+        {
+          "type": "select",
+          "key": "configMode",
+          "label": "Configuration mode",
+          "values": [
+            {
+              "label": "DMN Mode",
+              "value": "DMN Mode"
+            },
+            {
+              "label": "Manual Mode",
+              "value": "Manual Mode"
+            }
+          ],
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CV_TD_002"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "DMN Mode Inputs",
+      "id": "Field_CV_TD_003",
+      "components": [
+        {
+          "type": "select",
+          "key": "riskTier",
+          "label": "Risk tier",
+          "values": [
+            {
+              "label": "High",
+              "value": "High"
+            },
+            {
+              "label": "Limited",
+              "value": "Limited"
+            },
+            {
+              "label": "Minimal",
+              "value": "Minimal"
+            }
+          ],
+          "id": "Field_CV_TD_004"
+        },
+        {
+          "type": "select",
+          "key": "governancePhase",
+          "label": "Governance phase",
+          "values": [
+            {
+              "label": "SP3 Evaluation",
+              "value": "SP3_Evaluation"
+            },
+            {
+              "label": "SP5 Final Approval",
+              "value": "SP5_FinalApproval"
+            }
+          ],
+          "id": "Field_CV_TD_005"
+        },
+        {
+          "type": "select",
+          "key": "contractValueBand",
+          "label": "Contract value band",
+          "values": [
+            {
+              "label": "Under $100K",
+              "value": "Under100K"
+            },
+            {
+              "label": "$100K - $500K",
+              "value": "100K_500K"
+            },
+            {
+              "label": "$500K - $1M",
+              "value": "500K_1M"
+            },
+            {
+              "label": "Over $1M",
+              "value": "Over1M"
+            }
+          ],
+          "id": "Field_CV_TD_006"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Manual Mode - Voting Rules",
+      "id": "Field_CV_TD_007",
+      "components": [
+        {
+          "type": "select",
+          "key": "votingMethod",
+          "label": "Voting method",
+          "values": [
+            {
+              "label": "Unanimous",
+              "value": "unanimous"
+            },
+            {
+              "label": "Majority",
+              "value": "majority"
+            },
+            {
+              "label": "Super Majority",
+              "value": "super_majority"
+            },
+            {
+              "label": "Veto",
+              "value": "veto"
+            },
+            {
+              "label": "Weighted",
+              "value": "weighted"
+            },
+            {
+              "label": "Single Reviewer",
+              "value": "single_reviewer"
+            }
+          ],
+          "id": "Field_CV_TD_008"
+        },
+        {
+          "type": "textfield",
+          "key": "committeeMembers",
+          "label": "Committee members (comma-separated candidateGroups)",
+          "id": "Field_CV_TD_009"
+        },
+        {
+          "type": "number",
+          "key": "quorumThreshold",
+          "label": "Quorum threshold",
+          "id": "Field_CV_TD_010"
+        },
+        {
+          "type": "textfield",
+          "key": "vetoCapableMembers",
+          "label": "Veto-capable members (comma-separated)",
+          "id": "Field_CV_TD_011"
+        },
+        {
+          "type": "checkbox",
+          "key": "qaEnabled",
+          "label": "Q&A period enabled",
+          "id": "Field_CV_TD_012"
+        },
+        {
+          "type": "textfield",
+          "key": "qaPeriodDuration",
+          "label": "Q&A period duration (ISO 8601)",
+          "id": "Field_CV_TD_013"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Manual Mode - Timers",
+      "id": "Field_CV_TD_014",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "reminderDuration",
+          "label": "Reminder duration (ISO 8601)",
+          "id": "Field_CV_TD_015"
+        },
+        {
+          "type": "textfield",
+          "key": "escalationDuration",
+          "label": "Escalation duration (ISO 8601)",
+          "id": "Field_CV_TD_016"
+        },
+        {
+          "type": "textfield",
+          "key": "deadlineDuration",
+          "label": "Deadline duration (ISO 8601)",
+          "id": "Field_CV_TD_017"
+        },
+        {
+          "type": "number",
+          "key": "maxRemediationLoops",
+          "label": "Max remediation loops",
+          "defaultValue": 2,
+          "id": "Field_CV_TD_018"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Manual Mode - Authority",
+      "id": "Field_CV_TD_019",
+      "components": [
+        {
+          "type": "select",
+          "key": "authorityMode",
+          "label": "Authority mode",
+          "values": [
+            {
+              "label": "Simple",
+              "value": "Simple"
+            },
+            {
+              "label": "Authority Service",
+              "value": "Authority Service"
+            }
+          ],
+          "id": "Field_CV_TD_020"
+        },
+        {
+          "type": "checkbox",
+          "key": "enforceSeparationOfDuties",
+          "label": "Enforce separation of duties",
+          "id": "Field_CV_TD_021"
+        },
+        {
+          "type": "checkbox",
+          "key": "requireDualApproval",
+          "label": "Require dual approval",
+          "id": "Field_CV_TD_022"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Test Scenario",
+      "id": "Field_CV_TD_023",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "requestSummary",
+          "label": "Request summary",
+          "id": "Field_CV_TD_024"
+        },
+        {
+          "type": "textfield",
+          "key": "requestTrackingNumber",
+          "label": "Request tracking number",
+          "id": "Field_CV_TD_025"
+        },
+        {
+          "type": "select",
+          "key": "pathway",
+          "label": "Pathway",
+          "values": [
+            {
+              "label": "Buy",
+              "value": "Buy"
+            },
+            {
+              "label": "Build",
+              "value": "Build"
+            },
+            {
+              "label": "Hybrid",
+              "value": "Hybrid"
+            },
+            {
+              "label": "Fast-Track",
+              "value": "Fast-Track"
+            }
+          ],
+          "id": "Field_CV_TD_026"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

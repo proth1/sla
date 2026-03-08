@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mini RFP Question Bank Entry",
+  "description": "Schema for individual questions in the Mini RFP vendor questionnaire bank",
+  "type": "object",
+  "required": ["id", "category", "tier", "text", "responseType", "consumers", "required"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^C\\d+\\.\\d+$",
+      "description": "Question ID (e.g., C3.1)"
+    },
+    "category": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Category number (1-10)"
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["basic", "standard", "full", "minimal"],
+      "description": "Minimum tier required to include this question"
+    },
+    "text": {
+      "type": "string",
+      "description": "Question text as displayed to vendor"
+    },
+    "responseType": {
+      "type": "string",
+      "enum": ["scale", "narrative", "boolean", "select", "checklist"],
+      "description": "Type of response expected"
+    },
+    "responseOptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Options for scale/select response types (ordered 1-5 for scale)"
+    },
+    "rubric": {
+      "type": "object",
+      "properties": {
+        "1": { "type": "string" },
+        "2": { "type": "string" },
+        "3": { "type": "string" },
+        "4": { "type": "string" },
+        "5": { "type": "string" }
+      },
+      "description": "1-5 scoring rubric for evaluation"
+    },
+    "evidenceUpload": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether vendor can attach evidence documents"
+    },
+    "evidenceDescription": {
+      "type": "string",
+      "description": "Description of expected evidence (when evidenceUpload=true)"
+    },
+    "consumers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["CYBER", "AUDIT", "COMP", "PRIV", "AI", "EA", "GOV", "OPS", "FIN", "LEG", "PROC", "BUS"]
+      },
+      "description": "Governance consumer codes"
+    },
+    "frameworkMappings": {
+      "type": "object",
+      "properties": {
+        "sig": { "type": "string", "description": "SIG Lite domain reference" },
+        "nist": { "type": "string", "description": "NIST CSF 2.0 control" },
+        "occ": { "type": "string", "description": "OCC 2023-17 section" },
+        "iso27001": { "type": "string", "description": "ISO 27001 control" },
+        "euAiAct": { "type": "string", "description": "EU AI Act article" },
+        "dora": { "type": "string", "description": "DORA article" },
+        "sr117": { "type": "string", "description": "SR 11-7 section" }
+      },
+      "description": "Regulatory framework cross-references"
+    },
+    "fsIsacDomain": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 5,
+      "description": "FS-ISAC GenAI risk domain (Cat 10 only): 1=Model, 2=Data, 3=Operational, 4=Third-Party, 5=Compliance"
+    },
+    "dataProvenance": {
+      "type": "string",
+      "enum": ["vendor-reported", "requester-reported", "concierge-validated", "verified"],
+      "default": "vendor-reported",
+      "description": "Data provenance tag for downstream visibility"
+    },
+    "required": {
+      "type": "boolean",
+      "description": "Whether this question is mandatory within its tier"
+    },
+    "conditionalOn": {
+      "type": ["string", "null"],
+      "description": "Question ID that must be answered affirmatively to show this question"
+    },
+    "weight": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "Relative weight within category for scoring (0-1, default 1 = equal weight)"
+    }
+  }
+}

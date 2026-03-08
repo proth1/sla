@@ -31,3 +31,5 @@ build/
 .pipeline-passed
 .pipeline-report.md
 .cdd-compliance-report.md
+_worker.bundle
+.playwright-mcp/

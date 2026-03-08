@@ -53,7 +53,7 @@ const ELEMENT_SUPPORT = {
   'bpmn:TimerEventDefinition': { supported: true, notes: 'Via Cloud Scheduler' },
   'bpmn:MessageEventDefinition': { supported: true, notes: 'Via Pub/Sub' },
   'bpmn:ErrorEventDefinition': { supported: true, notes: 'Error handling' },
-  'bpmn:SignalEventDefinition': { supported: false, notes: 'Use message events' },
+  'bpmn:SignalEventDefinition': { supported: true, notes: 'Cross-process communication and emergency cessation' },
   'bpmn:EscalationEventDefinition': { supported: false, notes: 'Use message events' },
   'bpmn:CompensateEventDefinition': { supported: false, notes: 'Handle in error boundary' },
   'bpmn:ConditionalEventDefinition': { supported: false, notes: 'Use exclusive gateway' },
@@ -265,11 +265,17 @@ function scanElement(element, filePath, report) {
 
   // Check for configuration requirements
   if (type === 'bpmn:ServiceTask') {
-    const hasConfig = element.extensionElements?.values?.some(
-      ext => ext.$type === 'sla:taskConfig' || ext.$type === 'zeebe:taskDefinition'
-    );
+    const hasConfig =
+      element.$attrs?.['camunda:type'] ||
+      element.$attrs?.['camunda:class'] ||
+      element.$attrs?.['camunda:delegateExpression'] ||
+      element.$attrs?.['camunda:expression'] ||
+      element.$attrs?.['camunda:topic'] ||
+      element.extensionElements?.values?.some(
+        ext => ext.$type === 'camunda:connector'
+      );
     if (!hasConfig) {
-      report.addConfigRequired(element.id, filePath, 'Service endpoint');
+      report.addConfigRequired(element.id, filePath, 'Service endpoint (camunda:type, camunda:class, or camunda:topic)');
     }
   }
 
@@ -299,4 +305,4 @@ const dirPath = args[0];
 scanDirectory(dirPath).then(report => {
   const passed = report.print();
   process.exit(passed ? 0 : 1);
-});
+}).catch(err => { console.error(err.message); process.exit(1); });

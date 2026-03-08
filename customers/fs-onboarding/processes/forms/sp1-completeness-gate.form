@@ -1,0 +1,79 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_CompletenessGate",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Completeness Gate\nValidate that the software request submission meets all minimum requirements before proceeding to triage.",
+      "id": "Field_CG01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_CG02"
+    },
+    {
+      "type": "checkbox",
+      "key": "problemStatementProvided",
+      "label": "Problem statement is clearly articulated",
+      "id": "Field_CG03"
+    },
+    {
+      "type": "checkbox",
+      "key": "businessOwnerIdentified",
+      "label": "Business owner / sponsor identified",
+      "id": "Field_CG04"
+    },
+    {
+      "type": "checkbox",
+      "key": "urgencyRated",
+      "label": "Urgency and priority rated",
+      "id": "Field_CG05"
+    },
+    {
+      "type": "checkbox",
+      "key": "allRequiredFieldsComplete",
+      "label": "All required intake fields populated",
+      "id": "Field_CG06"
+    },
+    {
+      "type": "separator",
+      "id": "Field_CG07"
+    },
+    {
+      "type": "select",
+      "key": "completenessDecision",
+      "label": "Completeness Decision",
+      "validate": {
+        "required": true
+      },
+      "values": [
+        {
+          "label": "Complete \u2014 proceed to triage",
+          "value": "Complete"
+        },
+        {
+          "label": "Incomplete \u2014 return to requester",
+          "value": "Incomplete"
+        }
+      ],
+      "id": "Field_CG08"
+    },
+    {
+      "type": "textarea",
+      "key": "incompleteReason",
+      "label": "Reason for Incompleteness",
+      "description": "If incomplete, describe what is missing or needs revision.",
+      "conditional": {
+        "hide": "=completenessDecision != \"Incomplete\""
+      },
+      "id": "Field_CG09"
+    }
+  ],
+  "type": "default"
+}

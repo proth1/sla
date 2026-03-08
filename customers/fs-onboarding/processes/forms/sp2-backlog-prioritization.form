@@ -1,0 +1,110 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_BacklogPrioritization",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Backlog Prioritization\nAdd this request to the product backlog with appropriate priority and resource allocation.",
+      "id": "Field_601"
+    },
+    {
+      "type": "separator",
+      "id": "Field_602"
+    },
+    {
+      "type": "number",
+      "key": "backlogPriorityRanking",
+      "label": "Backlog Priority Ranking",
+      "validate": {
+        "required": true
+      },
+      "description": "Numeric rank relative to other backlog items (1 = highest priority).",
+      "id": "Field_603"
+    },
+    {
+      "type": "textarea",
+      "key": "priorityJustification",
+      "label": "Priority Justification",
+      "validate": {
+        "required": true
+      },
+      "description": "Explain why this priority ranking was assigned.",
+      "id": "Field_604"
+    },
+    {
+      "type": "select",
+      "key": "estimatedComplexity",
+      "label": "Estimated Complexity",
+      "values": [
+        {
+          "label": "Low",
+          "value": "low"
+        },
+        {
+          "label": "Medium",
+          "value": "medium"
+        },
+        {
+          "label": "High",
+          "value": "high"
+        },
+        {
+          "label": "Very High",
+          "value": "very-high"
+        }
+      ],
+      "id": "Field_605"
+    },
+    {
+      "type": "textarea",
+      "key": "resourceRequirements",
+      "label": "Resource Requirements",
+      "description": "Teams, roles, and estimated effort needed.",
+      "id": "Field_606"
+    },
+    {
+      "type": "textfield",
+      "key": "targetDeliveryQuarter",
+      "label": "Target Delivery Quarter",
+      "description": "e.g., Q3 2026",
+      "id": "Field_607"
+    },
+    {
+      "type": "textarea",
+      "key": "dependencies",
+      "label": "Dependencies on Other Initiatives",
+      "description": "List any upstream or downstream dependencies.",
+      "id": "Field_608"
+    },
+    {
+      "type": "separator",
+      "id": "Field_609"
+    },
+    {
+      "type": "radio",
+      "key": "backlogApproved",
+      "label": "Backlog Entry Approved?",
+      "validate": {
+        "required": true
+      },
+      "values": [
+        {
+          "label": "Yes \u2014 add to backlog and proceed",
+          "value": "yes"
+        },
+        {
+          "label": "No \u2014 defer or cancel",
+          "value": "no"
+        }
+      ],
+      "id": "Field_610"
+    }
+  ],
+  "type": "default"
+}

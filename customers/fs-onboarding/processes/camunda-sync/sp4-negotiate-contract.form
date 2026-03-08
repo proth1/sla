@@ -1,0 +1,332 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_NegotiateContract",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Contract Negotiation",
+      "id": "Field_001"
+    },
+    {
+      "type": "group",
+      "label": "Contract Terms",
+      "id": "Field_002",
+      "components": [
+        {
+          "type": "select",
+          "key": "contractType",
+          "label": "Contract Type",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "MSA",
+              "value": "msa"
+            },
+            {
+              "label": "SOW",
+              "value": "sow"
+            },
+            {
+              "label": "SaaS Agreement",
+              "value": "saas-agreement"
+            },
+            {
+              "label": "License",
+              "value": "license"
+            },
+            {
+              "label": "Other",
+              "value": "other"
+            }
+          ],
+          "id": "Field_003"
+        },
+        {
+          "type": "textfield",
+          "key": "contractTerm",
+          "label": "Contract Term (e.g., 3 years + 2 renewal)",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_004"
+        },
+        {
+          "type": "number",
+          "key": "totalContractValue",
+          "label": "Total Contract Value",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_005"
+        },
+        {
+          "type": "textfield",
+          "key": "paymentTerms",
+          "label": "Payment Terms",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_006"
+        },
+        {
+          "type": "radio",
+          "key": "autoRenewal",
+          "label": "Auto-Renewal?",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_007"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_008"
+    },
+    {
+      "type": "group",
+      "label": "Key Provisions",
+      "id": "Field_009",
+      "components": [
+        {
+          "type": "radio",
+          "key": "slaCommitmentsDefined",
+          "label": "SLA Commitments Defined?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_010"
+        },
+        {
+          "type": "radio",
+          "key": "auditRightsIncluded",
+          "label": "Audit Rights Included?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_011"
+        },
+        {
+          "type": "radio",
+          "key": "dataProtectionProvisions",
+          "label": "Data Protection Provisions?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_012"
+        },
+        {
+          "type": "select",
+          "key": "terminationRights",
+          "label": "Termination Rights",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "For Cause Only",
+              "value": "for-cause-only"
+            },
+            {
+              "label": "For Convenience",
+              "value": "for-convenience"
+            },
+            {
+              "label": "Both",
+              "value": "both"
+            }
+          ],
+          "id": "Field_013"
+        },
+        {
+          "type": "textfield",
+          "key": "liabilityCap",
+          "label": "Liability Cap",
+          "id": "Field_014"
+        },
+        {
+          "type": "radio",
+          "key": "indemnification",
+          "label": "Indemnification?",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_015"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_016"
+    },
+    {
+      "type": "group",
+      "label": "Regulatory Provisions",
+      "id": "Field_017",
+      "components": [
+        {
+          "type": "radio",
+          "key": "occ202317ProvisionsPresent",
+          "label": "OCC 2023-17 Required Provisions Present?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_018"
+        },
+        {
+          "type": "radio",
+          "key": "doraArticle30Provisions",
+          "label": "DORA Article 30 Provisions Present?",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_019"
+        },
+        {
+          "type": "radio",
+          "key": "dpaGdprArticle28Provisions",
+          "label": "DPA/GDPR Article 28 Provisions?",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_020"
+        },
+        {
+          "type": "radio",
+          "key": "subContractingRestrictions",
+          "label": "Sub-contracting Restrictions?",
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_021"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_022"
+    },
+    {
+      "type": "group",
+      "label": "Negotiation Status",
+      "id": "Field_023",
+      "components": [
+        {
+          "type": "number",
+          "key": "negotiationRoundsCompleted",
+          "label": "Negotiation Rounds Completed",
+          "id": "Field_024"
+        },
+        {
+          "type": "textarea",
+          "key": "outstandingIssues",
+          "label": "Outstanding Issues",
+          "id": "Field_025"
+        },
+        {
+          "type": "radio",
+          "key": "contractReady",
+          "label": "Contract Ready for Vendor?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_026"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

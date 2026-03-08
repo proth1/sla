@@ -1,0 +1,27 @@
+{
+  "name": "fs-onboarding-bpmn-tests",
+  "version": "1.0.0",
+  "description": "BDD test suite for Software Onboarding v8 (Camunda 8) BPMN model",
+  "private": true,
+  "scripts": {
+    "test": "cucumber-js",
+    "test:structural": "cucumber-js --tags @structural",
+    "test:expression": "cucumber-js --tags @expression",
+    "test:gateway": "cucumber-js --tags @gateway",
+    "test:message": "cucumber-js --tags @message",
+    "test:form": "cucumber-js --tags @form",
+    "test:subprocess": "cucumber-js --tags @subprocess",
+    "test:happy-path": "cucumber-js --tags @happy-path",
+    "test:rejection": "cucumber-js --tags @rejection",
+    "test:vendor": "cucumber-js --tags @vendor",
+    "test:timer": "cucumber-js --tags @timer",
+    "test:all": "cucumber-js --format summary --format json:reports/test-results.json",
+    "test:report": "npm run test:all 2>&1; echo 'Results written to reports/test-results.json'"
+  },
+  "dependencies": {
+    "@cucumber/cucumber": "^10.3.1",
+    "bpmn-moddle": "^9.0.1",
+    "chai": "^4.4.1",
+    "fast-xml-parser": "^4.3.4"
+  }
+}

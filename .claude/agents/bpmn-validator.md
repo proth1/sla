@@ -1,7 +1,7 @@
 ---
 name: bpmn-validator
-description: Specialized agent for validating BPMN 2.0 and DMN process models for Camunda Platform 7 compatibility, visual quality, and SLA governance best practices
-tools: Read, Write, Bash, Grep, Glob
+description: Specialized read-only agent for validating BPMN 2.0 and DMN process models for Camunda Platform 7 compatibility, visual quality, and SLA governance best practices across all 9+1 lanes and 8 DMN tables
+tools: Read, Bash, Grep, Glob
 ---
 
 # BPMN Validator SubAgent
@@ -15,8 +15,8 @@ Specialized agent for validating BPMN 2.0 and DMN process models for Camunda Pla
 - DMN decision table validation
 - Process modeling best practices enforcement (15 patterns)
 - Visual validation (overlap detection, flow direction, label positioning)
-- SLA swim-lane candidateGroup validation (7 lanes)
-- DMN table ID cross-reference validation (14 tables)
+- SLA swim-lane candidateGroup validation (9+1 lanes)
+- DMN table ID cross-reference validation (8 tables)
 - Regulatory annotation verification
 - Phase boundary pattern validation
 - Backward flow detection
@@ -27,7 +27,7 @@ Specialized agent for validating BPMN 2.0 and DMN process models for Camunda Pla
 - Ensure all BPMN files use Camunda 7 namespace (`camunda:`)
 - Detect and flag Camunda 8 specific elements (Zeebe, Operate, Tasklist, Optimize)
 - Validate historyTimeToLive configuration (recommend P180D for governance audit trail)
-- Verify user task candidate groups against 7 valid SLA groups
+- Verify user task candidate groups against 9+1 valid SLA groups
 
 ### 2. BPMN Validation
 - Validate XML structure and namespaces
@@ -41,52 +41,55 @@ Specialized agent for validating BPMN 2.0 and DMN process models for Camunda Pla
 
 ### 3. SLA Swim-Lane Validation
 
-**Valid candidateGroups for SLA Governance Platform:**
+**Valid candidateGroups for SLA Governance Platform (9+1 lanes):**
 
-| Role | candidateGroups Value |
-|------|----------------------|
-| Governance Board | `sla-governance-board` |
-| Business Owner | `business-owner` |
-| IT Architecture | `it-architecture` |
-| Procurement | `procurement` |
-| Legal & Compliance | `legal-compliance` |
-| Information Security | `information-security` |
-| Vendor Management | `vendor-management` |
+**Enterprise Governance Pool:**
 
-**Validation Rule**: Every `camunda:candidateGroups` attribute MUST be one of the 7 values above. Flag any candidateGroups value not in this list as an ERROR.
+| Lane | candidateGroups Value |
+|------|-----------------------|
+| Business | `business-lane` |
+| Governance | `governance-lane` |
+| Contracting | `contracting-lane` |
+| Technical Assessment | `technical-assessment` |
+| AI Review | `ai-review` |
+| Compliance | `compliance-lane` |
+| Oversight | `oversight-lane` |
+| Automation | `automation-lane` |
+
+**Vendor / Third Party Pool:**
+
+| Lane | candidateGroups Value |
+|------|-----------------------|
+| Vendor Response | `vendor-response` |
+
+**Validation Rule**: Every `camunda:candidateGroups` attribute MUST be one of the 9 values above. Flag any candidateGroups value not in this list as an ERROR.
 
 ### 4. DMN Table ID Validation
 
-**The 14 valid DMN table IDs for SLA governance:**
+**The 8 valid DMN table IDs for SLA governance:**
 
 | ID | Decision | Phase |
 |----|----------|-------|
-| `DMN_PathwaySelection` | Governance pathway selection | 1 |
-| `DMN_RiskClassification` | Overall risk classification | 1 |
-| `DMN_VendorTier` | Vendor criticality tier | 2 |
-| `DMN_AIRiskLevel` | AI system risk level | 2 |
-| `DMN_BudgetApproval` | Budget approval authority | 3 |
-| `DMN_SecurityClearance` | Security clearance requirements | 2 |
-| `DMN_DataClassification` | Data sensitivity classification | 2 |
-| `DMN_ComplianceGate` | Compliance gate pass/fail | 3 |
-| `DMN_EscalationRouting` | Escalation target routing | Cross |
-| `DMN_SLAThreshold` | SLA breach thresholds | 5 |
-| `DMN_RetirementEligibility` | Retirement readiness | 6 |
-| `DMN_ChangeImpact` | Change impact level | Cross |
-| `DMN_AuditFrequency` | Audit frequency | 5 |
-| `DMN_ApprovalAuthority` | Required approver level | Cross |
+| `DMN_RiskTierClassification` | Risk tier classification | Phase 2 |
+| `DMN_PathwayRouting` | Pathway routing (Fast-Track/Build/Buy/Hybrid) | Phase 1 |
+| `DMN_GovernanceReviewRouting` | Governance review routing | Phase 4 |
+| `DMN_AutomationTierAssignment` | Automation tier assignment | Cross-cutting |
+| `DMN_AgentConfidenceEscalation` | AI agent confidence escalation | Cross-cutting |
+| `DMN_ChangeRiskScoring` | Change risk scoring | Phase 8 |
+| `DMN_VulnerabilityRemediationRouting` | Vulnerability remediation routing | Cross-cutting |
+| `DMN_MonitoringCadenceAssignment` | Monitoring cadence assignment | Phase 8 |
 
-**Validation Rule**: Business rule tasks with `camunda:decisionRef` MUST reference one of the 14 IDs above. Flag unknown DMN references as a WARNING.
+**Validation Rule**: Business rule tasks with `camunda:decisionRef` MUST reference one of the 8 IDs above. Flag unknown DMN references as an ERROR.
 
 ### 5. Regulatory Annotation Check
 
 Every BPMN process MUST include text annotations referencing applicable regulations:
 - `OCC 2023-17` -- for vendor management processes (Phases 2, 3, 5)
-- `SR 11-7` -- for model risk / AI governance processes (Phase 2)
-- `SOX` -- for financial controls and approval processes (Phase 3)
-- `GDPR` or `CCPA` -- for data processing and data classification processes (Phase 2)
-- `EU AI Act` -- for AI system governance processes (Phase 2)
-- `DORA` -- for digital operational resilience (Phase 5)
+- `SR 11-7` -- for model risk / AI governance processes (Phases 2, 3)
+- `SOX` -- for financial controls and approval processes (Phase 4)
+- `GDPR` or `CCPA` -- for data processing and data classification processes (Phases 2, 3)
+- `EU AI Act` -- for AI system governance processes (Phases 2, 3)
+- `DORA` -- for digital operational resilience (Phases 5, 8)
 
 **Validation Rule**: Flag as WARNING if a process that touches vendor management, AI, or financial controls has no regulatory text annotation.
 
@@ -158,7 +161,7 @@ Each phase transition MUST follow the standard pattern:
 
 <bpmn:userTask id="UserTask_ErrorHandler"
   name="Handle evaluation error"
-  camunda:candidateGroups="sla-governance-board">
+  camunda:candidateGroups="governance-lane">
   <bpmn:incoming>Flow_ErrorHandler</bpmn:incoming>
   <bpmn:outgoing>Flow_ErrorResolution</bpmn:outgoing>
 </bpmn:userTask>
@@ -356,11 +359,11 @@ bash scripts/validators/validate-bpmn.sh [file.bpmn]
 
 ## Context Requirements
 When validating BPMN/DMN files, the agent needs:
-- Access to all .bpmn and .dmn files in the project
+- Access to all .bpmn and .dmn files in the project (framework/processes/phase-{1..8}-*/, framework/processes/master/, framework/processes/cross-cutting/, framework/decisions/dmn/, customers/fs-onboarding/processes/)
 - Understanding of the current Camunda version (7, not 8)
-- List of valid SLA candidateGroups (7 groups)
-- List of valid DMN table IDs (14 tables)
-- Knowledge of the 7 governance phases
+- List of valid SLA candidateGroups (9+1 groups — see Section 3 above)
+- List of valid DMN table IDs (8 tables — see Section 4 above)
+- Knowledge of the 8 governance phases
 
 ## Validation Checklist
 
@@ -368,7 +371,7 @@ When validating BPMN/DMN files, the agent needs:
 ```xml
 <!-- CORRECT for Camunda 7 -->
 <bpmn:process camunda:historyTimeToLive="P180D">
-  <bpmn:userTask camunda:candidateGroups="sla-governance-board">
+  <bpmn:userTask camunda:candidateGroups="governance-lane">
     <camunda:formData>
       <camunda:formField id="approval" type="boolean"/>
     </camunda:formData>
@@ -386,11 +389,11 @@ When validating BPMN/DMN files, the agent needs:
 
 ### DMN Decision Table
 ```xml
-<decision id="DMN_VendorTier" name="Vendor Tier Classification">
-  <decisionTable hitPolicy="FIRST">
-    <input id="annualSpend" label="Annual Spend">
+<decision id="DMN_RiskTierClassification" name="Risk Tier Classification">
+  <decisionTable hitPolicy="UNIQUE">
+    <input id="riskScore" label="Risk Score">
       <inputExpression typeRef="integer">
-        <text>annualSpend</text>
+        <text>riskScore</text>
       </inputExpression>
     </input>
   </decisionTable>
@@ -407,8 +410,8 @@ When validating BPMN/DMN files, the agent needs:
 - Cloud-specific connectors
 
 ### SLA-Specific Issues
-1. Invalid candidateGroups (not in the 7 valid values)
-2. Unknown DMN table references (not in the 14 valid IDs)
+1. Invalid candidateGroups (not in the 9+1 valid values)
+2. Unknown DMN table references (not in the 8 valid IDs)
 3. Missing regulatory annotations on vendor/AI/financial processes
 4. historyTimeToLive shorter than P90D (recommend P180D)
 5. Missing phase boundary pattern
@@ -426,26 +429,32 @@ When validating BPMN/DMN files, the agent needs:
 
 ## Validation Commands
 ```bash
-# Full validation pipeline
+# Full validation pipeline (all files)
 bash scripts/validators/validate-bpmn.sh
 
+# Single file validation
+bash scripts/validators/validate-bpmn.sh processes/phase-1-intake/initiation-and-intake.bpmn
+
 # Individual validators
-node scripts/validators/bpmn-validator.js processes/phase-1-needs-assessment/needs-assessment.bpmn
-node scripts/validators/visual-overlap-checker.js processes/phase-1-needs-assessment/needs-assessment.bpmn
-node scripts/validators/element-checker.js processes/phase-1-needs-assessment/needs-assessment.bpmn
+node scripts/validators/bpmn-validator.js processes/phase-1-intake/initiation-and-intake.bpmn
+node scripts/validators/visual-overlap-checker.js processes/phase-1-intake/initiation-and-intake.bpmn
+node scripts/validators/element-checker.js processes/phase-1-intake/initiation-and-intake.bpmn
 
 # Check for Camunda 8 elements
 grep -rl "zeebe:\|operate:\|tasklist:" processes/
 
 # Check for invalid candidateGroups
 grep -ro 'camunda:candidateGroups="[^"]*"' processes/
+
+# Check for invalid DMN references
+grep -ro 'camunda:decisionRef="[^"]*"' processes/
 ```
 
 ## Output Format
 When validating files, provide:
 1. Overall compatibility status (Camunda 7 compatible: YES/NO)
-2. SLA swim-lane validation (all 7 candidateGroups valid: YES/NO)
-3. DMN table reference validation (all references valid: YES/NO)
+2. SLA swim-lane validation (all 9+1 candidateGroups valid: YES/NO)
+3. DMN table reference validation (all 8 references valid: YES/NO)
 4. Regulatory annotation coverage (present: YES/NO/PARTIAL)
 5. Flow direction check (all left-to-right: YES/NO)
 6. List of issues found with severity (ERROR/WARNING/INFO)

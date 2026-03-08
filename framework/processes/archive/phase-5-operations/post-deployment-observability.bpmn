@@ -1,0 +1,734 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_PostDeployObs"
+                  targetNamespace="http://sla.governance/processes"
+                  exporter="SLA Governance Platform"
+                  exporterVersion="2025.03.1">
+
+  <bpmn:collaboration id="Collab_PostDeployObs">
+    <bpmn:participant id="Participant_PostDeployObs"
+                      name="Phase 5: Post-Deployment Observability &amp; Operations"
+                      processRef="Process_PostDeployObs" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_PostDeployObs"
+                name="Post-Deployment Observability and Operations"
+                isExecutable="false"
+                camunda:historyTimeToLive="365">
+
+    <bpmn:laneSet id="LaneSet_PostDeployObs">
+      <bpmn:lane id="Lane_GB" name="Governance Board">
+        <bpmn:flowNodeRef>StartEvent_GoLiveSignal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ExecutiveDashboard</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PhaseTransitionP6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_P5Complete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_SLABreachResponse</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_EscalationReview</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BO" name="Business Owner">
+        <bpmn:flowNodeRef>Task_BusinessKPIReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_UserAdoptionTracking</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_BenefitsRealization</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ChangeRequestReview</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ITA" name="IT Architecture">
+        <bpmn:flowNodeRef>Task_ObservabilityConfig</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PerformanceBaselining</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ArchitecturalDriftReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_TechDebtAssessment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>DMN_ObservabilityTier</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Proc" name="Procurement">
+        <bpmn:flowNodeRef>Task_VendorSLAMonitoring</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_InvoiceReconciliation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ContractComplianceCheck</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_LC" name="Legal &amp; Compliance">
+        <bpmn:flowNodeRef>Task_RegulatoryReporting</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_AuditLogReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DataRetentionEnforcement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ComplianceGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_ComplianceHold</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IS" name="Information Security">
+        <bpmn:flowNodeRef>Task_SecurityPosture</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_VulnerabilityScan</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PenTestScheduling</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IncidentResponseReadiness</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_SecurityGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SecurityHold</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_VM" name="Vendor Management">
+        <bpmn:flowNodeRef>Task_VendorScorecard</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ServiceReviewMeeting</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SLAPerformanceReport</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_SLAStatusGateway</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SLABreachEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Timer_SLAMonitorSLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_SLAMonitorSLAEscalated</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_GoLiveSignal" name="Go-Live Signal Received">
+      <bpmn:outgoing>Flow_GoLiveToObsConfig</bpmn:outgoing>
+      <bpmn:signalEventDefinition signalRef="Signal_GoLiveComplete" />
+    </bpmn:startEvent>
+    <bpmn:businessRuleTask id="DMN_ObservabilityTier"
+                           name="Determine Observability Tier"
+                           camunda:decisionRef="DMN_16_ObservabilityTier"
+                           camunda:resultVariable="observabilityTier"
+                           camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_GoLiveToObsConfig</bpmn:incoming>
+      <bpmn:outgoing>Flow_ObsTierToConfig</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:userTask id="Task_ObservabilityConfig"
+                   name="Configure Observability Stack"
+                   camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_ObsTierToConfig</bpmn:incoming>
+      <bpmn:outgoing>Flow_ObsConfigToPerf</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_PerformanceBaselining"
+                   name="Establish Performance Baselines"
+                   camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_ObsConfigToPerf</bpmn:incoming>
+      <bpmn:outgoing>Flow_PerfToSecurity</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_SecurityPosture"
+                   name="Validate Security Posture"
+                   camunda:candidateGroups="information-security">
+      <bpmn:incoming>Flow_PerfToSecurity</bpmn:incoming>
+      <bpmn:outgoing>Flow_SecPostureToVuln</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_VulnerabilityScan"
+                   name="Continuous Vulnerability Scanning"
+                   camunda:candidateGroups="information-security">
+      <bpmn:incoming>Flow_SecPostureToVuln</bpmn:incoming>
+      <bpmn:outgoing>Flow_VulnToSecGate</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_SecurityGate" name="Security Gate">
+      <bpmn:incoming>Flow_VulnToSecGate</bpmn:incoming>
+      <bpmn:outgoing>Flow_SecGatePass</bpmn:outgoing>
+      <bpmn:outgoing>Flow_SecGateFail</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="EndEvent_SecurityHold" name="Security Hold - Remediation Required">
+      <bpmn:incoming>Flow_SecGateFail</bpmn:incoming>
+      <bpmn:errorEventDefinition errorRef="Error_SecurityHold" />
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_PenTestScheduling"
+                   name="Schedule Penetration Testing"
+                   camunda:candidateGroups="information-security">
+      <bpmn:incoming>Flow_SecGatePass</bpmn:incoming>
+      <bpmn:outgoing>Flow_PenTestToIncident</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_IncidentResponseReadiness"
+                   name="Validate Incident Response Readiness"
+                   camunda:candidateGroups="information-security">
+      <bpmn:incoming>Flow_PenTestToIncident</bpmn:incoming>
+      <bpmn:outgoing>Flow_IncidentToRegRep</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_RegulatoryReporting"
+                   name="Regulatory Reporting"
+                   camunda:candidateGroups="legal-compliance">
+      <bpmn:incoming>Flow_IncidentToRegRep</bpmn:incoming>
+      <bpmn:outgoing>Flow_RegRepToAudit</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_AuditLogReview"
+                   name="Audit Log Review"
+                   camunda:candidateGroups="legal-compliance">
+      <bpmn:incoming>Flow_RegRepToAudit</bpmn:incoming>
+      <bpmn:outgoing>Flow_AuditToDataRet</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_DataRetentionEnforcement"
+                   name="Data Retention Policy Enforcement"
+                   camunda:candidateGroups="legal-compliance">
+      <bpmn:incoming>Flow_AuditToDataRet</bpmn:incoming>
+      <bpmn:outgoing>Flow_DataRetToCompGate</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_ComplianceGate" name="Compliance Gate">
+      <bpmn:incoming>Flow_DataRetToCompGate</bpmn:incoming>
+      <bpmn:outgoing>Flow_CompGatePass</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CompGateFail</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="EndEvent_ComplianceHold" name="Compliance Hold">
+      <bpmn:incoming>Flow_CompGateFail</bpmn:incoming>
+      <bpmn:errorEventDefinition errorRef="Error_ComplianceHold" />
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_VendorSLAMonitoring"
+                   name="Monitor Vendor SLA Performance"
+                   camunda:candidateGroups="procurement">
+      <bpmn:incoming>Flow_CompGatePass</bpmn:incoming>
+      <bpmn:outgoing>Flow_VendorSLAToInvoice</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_InvoiceReconciliation"
+                   name="Invoice Reconciliation"
+                   camunda:candidateGroups="procurement">
+      <bpmn:incoming>Flow_VendorSLAToInvoice</bpmn:incoming>
+      <bpmn:outgoing>Flow_InvoiceToContComp</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_ContractComplianceCheck"
+                   name="Contract Compliance Check"
+                   camunda:candidateGroups="procurement">
+      <bpmn:incoming>Flow_InvoiceToContComp</bpmn:incoming>
+      <bpmn:outgoing>Flow_ContCompToScorecard</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_VendorScorecard"
+                   name="Update Vendor Scorecard"
+                   camunda:candidateGroups="vendor-management">
+      <bpmn:incoming>Flow_ContCompToScorecard</bpmn:incoming>
+      <bpmn:outgoing>Flow_ScorecardToSRM</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_ServiceReviewMeeting"
+                   name="Conduct Service Review Meeting"
+                   camunda:candidateGroups="vendor-management">
+      <bpmn:incoming>Flow_ScorecardToSRM</bpmn:incoming>
+      <bpmn:outgoing>Flow_SRMToSLAReport</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_SLAMonitorSLA" attachedToRef="Task_ServiceReviewMeeting" cancelActivity="false">
+      <bpmn:outgoing>Flow_SLAMonitorTimer</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration>P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_SLAMonitorSLAEscalated" name="SRM SLA Escalated">
+      <bpmn:incoming>Flow_SLAMonitorTimer</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_SLAPerformanceReport"
+                   name="Generate SLA Performance Report"
+                   camunda:candidateGroups="vendor-management">
+      <bpmn:incoming>Flow_SRMToSLAReport</bpmn:incoming>
+      <bpmn:outgoing>Flow_SLAReportToGateway</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_SLAStatusGateway" name="SLA Status OK?">
+      <bpmn:incoming>Flow_SLAReportToGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_SLAPass</bpmn:outgoing>
+      <bpmn:outgoing>Flow_SLABreach</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="EndEvent_SLABreachEscalated" name="SLA Breach Escalated to Governance">
+      <bpmn:incoming>Flow_SLABreach</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_SLABreachResponse" name="Breach Response Action">
+      <bpmn:incoming>Flow_SLAPass</bpmn:incoming>
+      <bpmn:outgoing>Flow_BreachToEscReview</bpmn:outgoing>
+      <bpmn:outgoing>Flow_BreachToBOKPI</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_EscalationReview"
+                   name="Governance Escalation Review"
+                   camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_BreachToEscReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_EscReviewToBOKPI</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_BusinessKPIReview"
+                   name="Business KPI Review"
+                   camunda:candidateGroups="business-owner">
+      <bpmn:incoming>Flow_BreachToBOKPI</bpmn:incoming>
+      <bpmn:incoming>Flow_EscReviewToBOKPI</bpmn:incoming>
+      <bpmn:outgoing>Flow_BOKPIToAdoption</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_UserAdoptionTracking"
+                   name="User Adoption Tracking"
+                   camunda:candidateGroups="business-owner">
+      <bpmn:incoming>Flow_BOKPIToAdoption</bpmn:incoming>
+      <bpmn:outgoing>Flow_AdoptionToBenefits</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_BenefitsRealization"
+                   name="Benefits Realization Review"
+                   camunda:candidateGroups="business-owner">
+      <bpmn:incoming>Flow_AdoptionToBenefits</bpmn:incoming>
+      <bpmn:outgoing>Flow_BenefitsToChangeReq</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_ChangeRequestReview"
+                   name="Change Request Review"
+                   camunda:candidateGroups="business-owner">
+      <bpmn:incoming>Flow_BenefitsToChangeReq</bpmn:incoming>
+      <bpmn:outgoing>Flow_ChangeReqToArchDrift</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_ArchitecturalDriftReview"
+                   name="Architectural Drift Review"
+                   camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_ChangeReqToArchDrift</bpmn:incoming>
+      <bpmn:outgoing>Flow_ArchDriftToTechDebt</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_TechDebtAssessment"
+                   name="Technical Debt Assessment"
+                   camunda:candidateGroups="it-architecture">
+      <bpmn:incoming>Flow_ArchDriftToTechDebt</bpmn:incoming>
+      <bpmn:outgoing>Flow_TechDebtToExecDash</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_ExecutiveDashboard"
+                   name="Executive Governance Dashboard Update"
+                   camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_TechDebtToExecDash</bpmn:incoming>
+      <bpmn:outgoing>Flow_ExecDashToPhaseTransition</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_PhaseTransitionP6"
+                   name="Phase 5→6 Transition Quality Gate"
+                   camunda:candidateGroups="sla-governance-board">
+      <bpmn:incoming>Flow_ExecDashToPhaseTransition</bpmn:incoming>
+      <bpmn:outgoing>Flow_PhaseTransToEnd</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="EndEvent_P5Complete" name="Phase 5 Complete - Retirement Review Triggered">
+      <bpmn:incoming>Flow_PhaseTransToEnd</bpmn:incoming>
+      <bpmn:signalEventDefinition signalRef="Signal_P5Complete" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_GoLiveToObsConfig" sourceRef="StartEvent_GoLiveSignal" targetRef="DMN_ObservabilityTier" />
+    <bpmn:sequenceFlow id="Flow_ObsTierToConfig" sourceRef="DMN_ObservabilityTier" targetRef="Task_ObservabilityConfig" />
+    <bpmn:sequenceFlow id="Flow_ObsConfigToPerf" sourceRef="Task_ObservabilityConfig" targetRef="Task_PerformanceBaselining" />
+    <bpmn:sequenceFlow id="Flow_PerfToSecurity" sourceRef="Task_PerformanceBaselining" targetRef="Task_SecurityPosture" />
+    <bpmn:sequenceFlow id="Flow_SecPostureToVuln" sourceRef="Task_SecurityPosture" targetRef="Task_VulnerabilityScan" />
+    <bpmn:sequenceFlow id="Flow_VulnToSecGate" sourceRef="Task_VulnerabilityScan" targetRef="Gateway_SecurityGate" />
+    <bpmn:sequenceFlow id="Flow_SecGatePass" name="Pass" sourceRef="Gateway_SecurityGate" targetRef="Task_PenTestScheduling">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${securityStatus == 'pass'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_SecGateFail" name="Critical Vulnerability" sourceRef="Gateway_SecurityGate" targetRef="EndEvent_SecurityHold">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${securityStatus == 'critical'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_PenTestToIncident" sourceRef="Task_PenTestScheduling" targetRef="Task_IncidentResponseReadiness" />
+    <bpmn:sequenceFlow id="Flow_IncidentToRegRep" sourceRef="Task_IncidentResponseReadiness" targetRef="Task_RegulatoryReporting" />
+    <bpmn:sequenceFlow id="Flow_RegRepToAudit" sourceRef="Task_RegulatoryReporting" targetRef="Task_AuditLogReview" />
+    <bpmn:sequenceFlow id="Flow_AuditToDataRet" sourceRef="Task_AuditLogReview" targetRef="Task_DataRetentionEnforcement" />
+    <bpmn:sequenceFlow id="Flow_DataRetToCompGate" sourceRef="Task_DataRetentionEnforcement" targetRef="Gateway_ComplianceGate" />
+    <bpmn:sequenceFlow id="Flow_CompGatePass" name="Compliant" sourceRef="Gateway_ComplianceGate" targetRef="Task_VendorSLAMonitoring">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${complianceStatus == 'compliant'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_CompGateFail" name="Non-Compliant" sourceRef="Gateway_ComplianceGate" targetRef="EndEvent_ComplianceHold">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${complianceStatus == 'non-compliant'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_VendorSLAToInvoice" sourceRef="Task_VendorSLAMonitoring" targetRef="Task_InvoiceReconciliation" />
+    <bpmn:sequenceFlow id="Flow_InvoiceToContComp" sourceRef="Task_InvoiceReconciliation" targetRef="Task_ContractComplianceCheck" />
+    <bpmn:sequenceFlow id="Flow_ContCompToScorecard" sourceRef="Task_ContractComplianceCheck" targetRef="Task_VendorScorecard" />
+    <bpmn:sequenceFlow id="Flow_ScorecardToSRM" sourceRef="Task_VendorScorecard" targetRef="Task_ServiceReviewMeeting" />
+    <bpmn:sequenceFlow id="Flow_SLAMonitorTimer" sourceRef="Timer_SLAMonitorSLA" targetRef="EndEvent_SLAMonitorSLAEscalated" />
+    <bpmn:sequenceFlow id="Flow_SRMToSLAReport" sourceRef="Task_ServiceReviewMeeting" targetRef="Task_SLAPerformanceReport" />
+    <bpmn:sequenceFlow id="Flow_SLAReportToGateway" sourceRef="Task_SLAPerformanceReport" targetRef="Gateway_SLAStatusGateway" />
+    <bpmn:sequenceFlow id="Flow_SLAPass" name="On Track" sourceRef="Gateway_SLAStatusGateway" targetRef="Gateway_SLABreachResponse">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${slaStatus == 'on-track'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_SLABreach" name="SLA Breach" sourceRef="Gateway_SLAStatusGateway" targetRef="EndEvent_SLABreachEscalated">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${slaStatus == 'breach'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_BreachToEscReview" name="Escalate" sourceRef="Gateway_SLABreachResponse" targetRef="Task_EscalationReview">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${escalationRequired == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_BreachToBOKPI" name="No Escalation" sourceRef="Gateway_SLABreachResponse" targetRef="Task_BusinessKPIReview">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${escalationRequired == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_EscReviewToBOKPI" sourceRef="Task_EscalationReview" targetRef="Task_BusinessKPIReview" />
+    <bpmn:sequenceFlow id="Flow_BOKPIToAdoption" sourceRef="Task_BusinessKPIReview" targetRef="Task_UserAdoptionTracking" />
+    <bpmn:sequenceFlow id="Flow_AdoptionToBenefits" sourceRef="Task_UserAdoptionTracking" targetRef="Task_BenefitsRealization" />
+    <bpmn:sequenceFlow id="Flow_BenefitsToChangeReq" sourceRef="Task_BenefitsRealization" targetRef="Task_ChangeRequestReview" />
+    <bpmn:sequenceFlow id="Flow_ChangeReqToArchDrift" sourceRef="Task_ChangeRequestReview" targetRef="Task_ArchitecturalDriftReview" />
+    <bpmn:sequenceFlow id="Flow_ArchDriftToTechDebt" sourceRef="Task_ArchitecturalDriftReview" targetRef="Task_TechDebtAssessment" />
+    <bpmn:sequenceFlow id="Flow_TechDebtToExecDash" sourceRef="Task_TechDebtAssessment" targetRef="Task_ExecutiveDashboard" />
+    <bpmn:sequenceFlow id="Flow_ExecDashToPhaseTransition" sourceRef="Task_ExecutiveDashboard" targetRef="Task_PhaseTransitionP6" />
+    <bpmn:sequenceFlow id="Flow_PhaseTransToEnd" sourceRef="Task_PhaseTransitionP6" targetRef="EndEvent_P5Complete" />
+    <bpmn:textAnnotation id="Annotation_Regulatory">
+      <bpmn:text>Regulatory: OCC 2023-17 §IV (ongoing monitoring), DORA Art.25-26 (ICT risk monitoring), SOX §404 (internal controls), GDPR Art.32 (security of processing). Annual pen test required. Quarterly compliance attestation.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Regulatory" sourceRef="Task_RegulatoryReporting" targetRef="Annotation_Regulatory" />
+
+    <bpmn:textAnnotation id="Annotation_SLA">
+      <bpmn:text>SLA Governance: Vendor SLA thresholds defined in contract. SLA breach triggers governance escalation within 48 hours. Monthly performance dashboards mandatory. Quarterly governance board review.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_SLA" sourceRef="Task_SLAPerformanceReport" targetRef="Annotation_SLA" />
+
+  </bpmn:process>
+
+  <bpmn:error id="Error_SecurityHold" name="Security Hold" errorCode="SEC_HOLD" />
+  <bpmn:error id="Error_ComplianceHold" name="Compliance Hold" errorCode="COMP_HOLD" />
+  <bpmn:signal id="Signal_GoLiveComplete" name="GoLiveComplete" />
+  <bpmn:signal id="Signal_P5Complete" name="P5Complete" />
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_PostDeployObs">
+    <bpmndi:BPMNPlane id="BPMNPlane_PostDeployObs" bpmnElement="Collab_PostDeployObs">
+      <bpmndi:BPMNShape id="Shape_Participant_PostDeployObs" bpmnElement="Participant_PostDeployObs" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="3700" height="1240" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_GB" bpmnElement="Lane_GB" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="3670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_BO" bpmnElement="Lane_BO" isHorizontal="true">
+        <dc:Bounds x="185" y="207" width="3670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_ITA" bpmnElement="Lane_ITA" isHorizontal="true">
+        <dc:Bounds x="185" y="367" width="3670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_Proc" bpmnElement="Lane_Proc" isHorizontal="true">
+        <dc:Bounds x="185" y="527" width="3670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_LC" bpmnElement="Lane_LC" isHorizontal="true">
+        <dc:Bounds x="185" y="687" width="3670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_IS" bpmnElement="Lane_IS" isHorizontal="true">
+        <dc:Bounds x="185" y="847" width="3670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_VM" bpmnElement="Lane_VM" isHorizontal="true">
+        <dc:Bounds x="185" y="1007" width="3670" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_StartEvent_GoLiveSignal" bpmnElement="StartEvent_GoLiveSignal">
+        <dc:Bounds x="255" y="109" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="229" y="152" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_DMN_ObservabilityTier" bpmnElement="DMN_ObservabilityTier">
+        <dc:Bounds x="355" y="409" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ObservabilityConfig" bpmnElement="Task_ObservabilityConfig">
+        <dc:Bounds x="515" y="409" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PerformanceBaselining" bpmnElement="Task_PerformanceBaselining">
+        <dc:Bounds x="675" y="409" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_SecurityPosture" bpmnElement="Task_SecurityPosture">
+        <dc:Bounds x="835" y="889" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_VulnerabilityScan" bpmnElement="Task_VulnerabilityScan">
+        <dc:Bounds x="995" y="889" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_SecurityGate" bpmnElement="Gateway_SecurityGate" isMarkerVisible="true">
+        <dc:Bounds x="1155" y="904" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1139" y="961" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_SecurityHold" bpmnElement="EndEvent_SecurityHold">
+        <dc:Bounds x="1155" y="987" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1123" y="1030" width="100" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PenTestScheduling" bpmnElement="Task_PenTestScheduling">
+        <dc:Bounds x="1275" y="889" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_IncidentResponseReadiness" bpmnElement="Task_IncidentResponseReadiness">
+        <dc:Bounds x="1435" y="889" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_RegulatoryReporting" bpmnElement="Task_RegulatoryReporting">
+        <dc:Bounds x="1595" y="729" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_AuditLogReview" bpmnElement="Task_AuditLogReview">
+        <dc:Bounds x="1755" y="729" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DataRetentionEnforcement" bpmnElement="Task_DataRetentionEnforcement">
+        <dc:Bounds x="1915" y="729" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_ComplianceGate" bpmnElement="Gateway_ComplianceGate" isMarkerVisible="true">
+        <dc:Bounds x="2075" y="744" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2059" y="801" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_ComplianceHold" bpmnElement="EndEvent_ComplianceHold">
+        <dc:Bounds x="2075" y="827" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2048" y="870" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_VendorSLAMonitoring" bpmnElement="Task_VendorSLAMonitoring">
+        <dc:Bounds x="2195" y="569" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_InvoiceReconciliation" bpmnElement="Task_InvoiceReconciliation">
+        <dc:Bounds x="2355" y="569" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ContractComplianceCheck" bpmnElement="Task_ContractComplianceCheck">
+        <dc:Bounds x="2515" y="569" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_VendorScorecard" bpmnElement="Task_VendorScorecard">
+        <dc:Bounds x="2675" y="1049" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ServiceReviewMeeting" bpmnElement="Task_ServiceReviewMeeting">
+        <dc:Bounds x="2835" y="1049" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Timer_SLAMonitorSLA" bpmnElement="Timer_SLAMonitorSLA">
+        <dc:Bounds x="2867" y="1111" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2896" y="1141" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_SLAMonitorSLAEscalated" bpmnElement="EndEvent_SLAMonitorSLAEscalated">
+        <dc:Bounds x="2995" y="1022" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2969" y="1065" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_SLAPerformanceReport" bpmnElement="Task_SLAPerformanceReport">
+        <dc:Bounds x="3115" y="1049" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_SLAStatusGateway" bpmnElement="Gateway_SLAStatusGateway" isMarkerVisible="true">
+        <dc:Bounds x="3275" y="1064" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3259" y="1121" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_SLABreachEscalated" bpmnElement="EndEvent_SLABreachEscalated">
+        <dc:Bounds x="3195" y="1143" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3165" y="1186" width="96" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_SLABreachResponse" bpmnElement="Gateway_SLABreachResponse" isMarkerVisible="true">
+        <dc:Bounds x="2995" y="109" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2975" y="166" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_EscalationReview" bpmnElement="Task_EscalationReview">
+        <dc:Bounds x="2835" y="109" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_BusinessKPIReview" bpmnElement="Task_BusinessKPIReview">
+        <dc:Bounds x="2675" y="249" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_UserAdoptionTracking" bpmnElement="Task_UserAdoptionTracking">
+        <dc:Bounds x="2835" y="249" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_BenefitsRealization" bpmnElement="Task_BenefitsRealization">
+        <dc:Bounds x="2995" y="249" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ChangeRequestReview" bpmnElement="Task_ChangeRequestReview">
+        <dc:Bounds x="3155" y="249" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ArchitecturalDriftReview" bpmnElement="Task_ArchitecturalDriftReview">
+        <dc:Bounds x="3155" y="409" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_TechDebtAssessment" bpmnElement="Task_TechDebtAssessment">
+        <dc:Bounds x="3315" y="409" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ExecutiveDashboard" bpmnElement="Task_ExecutiveDashboard">
+        <dc:Bounds x="3435" y="109" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PhaseTransitionP6" bpmnElement="Task_PhaseTransitionP6">
+        <dc:Bounds x="3595" y="109" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_P5Complete" bpmnElement="EndEvent_P5Complete">
+        <dc:Bounds x="3755" y="127" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3729" y="170" width="88" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Annotation_Regulatory" bpmnElement="Annotation_Regulatory">
+        <dc:Bounds x="1495" y="1217" width="500" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Annotation_SLA" bpmnElement="Annotation_SLA">
+        <dc:Bounds x="2855" y="1217" width="500" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_GoLiveToObsConfig" bpmnElement="Flow_GoLiveToObsConfig">
+        <di:waypoint x="273" y="127" />
+        <di:waypoint x="273" y="449" />
+        <di:waypoint x="355" y="449" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ObsTierToConfig" bpmnElement="Flow_ObsTierToConfig">
+        <di:waypoint x="495" y="449" />
+        <di:waypoint x="515" y="449" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ObsConfigToPerf" bpmnElement="Flow_ObsConfigToPerf">
+        <di:waypoint x="655" y="449" />
+        <di:waypoint x="675" y="449" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PerfToSecurity" bpmnElement="Flow_PerfToSecurity">
+        <di:waypoint x="745" y="489" />
+        <di:waypoint x="745" y="929" />
+        <di:waypoint x="835" y="929" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SecPostureToVuln" bpmnElement="Flow_SecPostureToVuln">
+        <di:waypoint x="975" y="929" />
+        <di:waypoint x="995" y="929" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_VulnToSecGate" bpmnElement="Flow_VulnToSecGate">
+        <di:waypoint x="1135" y="929" />
+        <di:waypoint x="1155" y="929" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SecGateFail" bpmnElement="Flow_SecGateFail">
+        <di:waypoint x="1180" y="954" />
+        <di:waypoint x="1180" y="987" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SecGatePass" bpmnElement="Flow_SecGatePass">
+        <di:waypoint x="1205" y="929" />
+        <di:waypoint x="1275" y="929" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PenTestToIncident" bpmnElement="Flow_PenTestToIncident">
+        <di:waypoint x="1415" y="929" />
+        <di:waypoint x="1435" y="929" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_IncidentToRegRep" bpmnElement="Flow_IncidentToRegRep">
+        <di:waypoint x="1575" y="929" />
+        <di:waypoint x="1595" y="929" />
+        <di:waypoint x="1595" y="809" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_RegRepToAudit" bpmnElement="Flow_RegRepToAudit">
+        <di:waypoint x="1735" y="769" />
+        <di:waypoint x="1755" y="769" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AuditToDataRet" bpmnElement="Flow_AuditToDataRet">
+        <di:waypoint x="1895" y="769" />
+        <di:waypoint x="1915" y="769" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DataRetToCompGate" bpmnElement="Flow_DataRetToCompGate">
+        <di:waypoint x="2055" y="769" />
+        <di:waypoint x="2075" y="769" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_CompGateFail" bpmnElement="Flow_CompGateFail">
+        <di:waypoint x="2100" y="794" />
+        <di:waypoint x="2100" y="827" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_CompGatePass" bpmnElement="Flow_CompGatePass">
+        <di:waypoint x="2125" y="769" />
+        <di:waypoint x="2195" y="769" />
+        <di:waypoint x="2195" y="649" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_VendorSLAToInvoice" bpmnElement="Flow_VendorSLAToInvoice">
+        <di:waypoint x="2335" y="609" />
+        <di:waypoint x="2355" y="609" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_InvoiceToContComp" bpmnElement="Flow_InvoiceToContComp">
+        <di:waypoint x="2495" y="609" />
+        <di:waypoint x="2515" y="609" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ContCompToScorecard" bpmnElement="Flow_ContCompToScorecard">
+        <di:waypoint x="2655" y="609" />
+        <di:waypoint x="2675" y="609" />
+        <di:waypoint x="2675" y="1049" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ScorecardToSRM" bpmnElement="Flow_ScorecardToSRM">
+        <di:waypoint x="2815" y="1089" />
+        <di:waypoint x="2835" y="1089" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SLAMonitorTimer" bpmnElement="Flow_SLAMonitorTimer">
+        <di:waypoint x="2903" y="1129" />
+        <di:waypoint x="2995" y="1129" />
+        <di:waypoint x="2995" y="1058" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SRMToSLAReport" bpmnElement="Flow_SRMToSLAReport">
+        <di:waypoint x="2975" y="1089" />
+        <di:waypoint x="3115" y="1089" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SLAReportToGateway" bpmnElement="Flow_SLAReportToGateway">
+        <di:waypoint x="3255" y="1089" />
+        <di:waypoint x="3275" y="1089" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SLABreach" bpmnElement="Flow_SLABreach">
+        <di:waypoint x="3300" y="1114" />
+        <di:waypoint x="3300" y="1143" />
+        <di:waypoint x="3231" y="1143" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SLAPass" bpmnElement="Flow_SLAPass">
+        <di:waypoint x="3300" y="1064" />
+        <di:waypoint x="3300" y="134" />
+        <di:waypoint x="3065" y="134" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_BreachToEscReview" bpmnElement="Flow_BreachToEscReview">
+        <di:waypoint x="2995" y="134" />
+        <di:waypoint x="2975" y="134" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_BreachToBOKPI" bpmnElement="Flow_BreachToBOKPI">
+        <di:waypoint x="3020" y="159" />
+        <di:waypoint x="3020" y="289" />
+        <di:waypoint x="2815" y="289" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EscReviewToBOKPI" bpmnElement="Flow_EscReviewToBOKPI">
+        <di:waypoint x="2905" y="189" />
+        <di:waypoint x="2745" y="189" />
+        <di:waypoint x="2745" y="249" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_BOKPIToAdoption" bpmnElement="Flow_BOKPIToAdoption">
+        <di:waypoint x="2815" y="289" />
+        <di:waypoint x="2835" y="289" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AdoptionToBenefits" bpmnElement="Flow_AdoptionToBenefits">
+        <di:waypoint x="2975" y="289" />
+        <di:waypoint x="2995" y="289" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_BenefitsToChangeReq" bpmnElement="Flow_BenefitsToChangeReq">
+        <di:waypoint x="3135" y="289" />
+        <di:waypoint x="3155" y="289" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ChangeReqToArchDrift" bpmnElement="Flow_ChangeReqToArchDrift">
+        <di:waypoint x="3225" y="329" />
+        <di:waypoint x="3225" y="409" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ArchDriftToTechDebt" bpmnElement="Flow_ArchDriftToTechDebt">
+        <di:waypoint x="3295" y="449" />
+        <di:waypoint x="3315" y="449" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_TechDebtToExecDash" bpmnElement="Flow_TechDebtToExecDash">
+        <di:waypoint x="3455" y="449" />
+        <di:waypoint x="3505" y="449" />
+        <di:waypoint x="3505" y="189" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ExecDashToPhaseTransition" bpmnElement="Flow_ExecDashToPhaseTransition">
+        <di:waypoint x="3575" y="149" />
+        <di:waypoint x="3595" y="149" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PhaseTransToEnd" bpmnElement="Flow_PhaseTransToEnd">
+        <di:waypoint x="3735" y="149" />
+        <di:waypoint x="3755" y="145" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Assoc_Regulatory" bpmnElement="Assoc_Regulatory">
+        <di:waypoint x="1665" y="809" />
+        <di:waypoint x="1665" y="1217" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Assoc_SLA" bpmnElement="Assoc_SLA">
+        <di:waypoint x="3185" y="1129" />
+        <di:waypoint x="3185" y="1217" />
+        <di:waypoint x="3105" y="1217" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

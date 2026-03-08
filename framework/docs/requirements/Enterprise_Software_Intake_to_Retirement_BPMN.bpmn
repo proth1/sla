@@ -1,0 +1,1549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+  id="Definitions_1"
+  targetNamespace="http://bpmn.io/schema/bpmn"
+  exporter="Enterprise_Software_Governance_BPMN_Generator"
+  exporterVersion="1.0">
+
+  <!-- ================================================================== -->
+  <!-- COLLABORATION: All Pools and Message Flows                         -->
+  <!-- ================================================================== -->
+  <bpmn:collaboration id="Collaboration_IntakeToRetirement">
+    <bpmn:documentation>Enterprise Software Intake to Retirement Lifecycle - Complete BPMN 2.0 Process Model.
+Process ID: PRC-E2E-001. Owner: Enterprise Architecture Governance Board.
+Target Cycle Time: 29-45 days (Standard) from intake to Phase 3 exit, vs. industry baseline of 90-120 days.
+This model includes all 8 lifecycle phases, 15+ sub-processes, 80+ tasks, 9 DMN decision tables,
+5 cross-cutting event sub-processes, and comprehensive SLA timer boundary events.</bpmn:documentation>
+
+    <bpmn:participant id="Pool_Requestor" name="Requestor Pool (Business Units)" processRef="Process_Requestor" />
+    <bpmn:participant id="Pool_Governance" name="Governance Pool (Enterprise Governance Board)" processRef="Process_Governance" />
+    <bpmn:participant id="Pool_Technical" name="Technical Pool (Architecture / Security / Development)" processRef="Process_Technical" />
+    <bpmn:participant id="Pool_Vendor" name="Vendor Pool (Third-Party Vendors)" processRef="Process_Vendor" />
+    <bpmn:participant id="Pool_Operations" name="Operations Pool (IT Operations / SRE)" processRef="Process_Operations" />
+    <bpmn:participant id="Pool_AI" name="AI Platform Pool (AI Agents &amp; DMN Engine)" processRef="Process_AI" />
+
+    <!-- Message Flows Between Pools -->
+    <bpmn:messageFlow id="MF_001" name="Intake Request Submission" sourceRef="Task_T1111" targetRef="Task_T1121" />
+    <bpmn:messageFlow id="MF_002" name="Validation Rejection Return" sourceRef="Task_T1123" targetRef="Task_T1111" />
+    <bpmn:messageFlow id="MF_003" name="AI Pre-population Results" sourceRef="Task_T1113_AI" targetRef="Task_T1111" />
+    <bpmn:messageFlow id="MF_004" name="Risk Triage Request to AI" sourceRef="Task_T1211" targetRef="Task_T1211_AI" />
+    <bpmn:messageFlow id="MF_005" name="AI Risk Score Response" sourceRef="Task_T1211_AI" targetRef="Task_T1212" />
+    <bpmn:messageFlow id="MF_006" name="Vendor Assessment Request" sourceRef="SP_2_3" targetRef="Pool_Vendor" />
+    <bpmn:messageFlow id="MF_007" name="Vendor Questionnaire Response" sourceRef="Pool_Vendor" targetRef="Task_T2321" />
+    <bpmn:messageFlow id="MF_008" name="Provisioning Instructions" sourceRef="SP_3_1" targetRef="Pool_Operations" />
+    <bpmn:messageFlow id="MF_009" name="Environment Ready Notification" sourceRef="Pool_Operations" targetRef="Task_T3131" />
+    <bpmn:messageFlow id="MF_010" name="Gate Decision Notification" sourceRef="Task_T1331" targetRef="Pool_Requestor" />
+    <bpmn:messageFlow id="MF_011" name="Phase 2 Gate Notification" sourceRef="Task_T2522" targetRef="Pool_Requestor" />
+    <bpmn:messageFlow id="MF_012" name="SLA Breach Escalation" sourceRef="EventSP_SLA_Breach" targetRef="Pool_Governance" />
+  </bpmn:collaboration>
+
+  <!-- ================================================================== -->
+  <!-- PROCESS: Main Orchestration (Governance Pool - Primary Flow)       -->
+  <!-- ================================================================== -->
+  <bpmn:process id="Process_Governance" name="Enterprise Software Intake to Retirement Lifecycle" isExecutable="true">
+
+    <!-- ================================================================ -->
+    <!-- DATA STORES (Knowledge Bases)                                    -->
+    <!-- ================================================================ -->
+    <bpmn:dataStoreReference id="DS_KB001" name="KB-001: Enterprise Data Classification Schema" />
+    <bpmn:dataStoreReference id="DS_KB002" name="KB-002: Technology Radar" />
+    <bpmn:dataStoreReference id="DS_KB003" name="KB-003: Regulatory Requirements Registry" />
+    <bpmn:dataStoreReference id="DS_KB004" name="KB-004: Enterprise Reference Architecture" />
+    <bpmn:dataStoreReference id="DS_KB005" name="KB-005: Vendor Risk Intelligence Database" />
+    <bpmn:dataStoreReference id="DS_KB006" name="KB-006: Security Controls Catalog" />
+    <bpmn:dataStoreReference id="DS_KB007" name="KB-007: Historical Initiative Repository" />
+    <bpmn:dataStoreReference id="DS_KB008" name="KB-008: AI Model Registry" />
+    <bpmn:dataStoreReference id="DS_KB009" name="KB-009: SLA and Performance Baseline Library" />
+    <bpmn:dataStoreReference id="DS_KB010" name="KB-010: Compliance-as-Code Policy Library" />
+
+    <!-- ================================================================ -->
+    <!-- DATA OBJECTS                                                      -->
+    <!-- ================================================================ -->
+    <bpmn:dataObjectReference id="DO_InitiativeRecord" name="Initiative Record (INI-YYYY-NNNN)" dataObjectRef="DataObj_Initiative" />
+    <bpmn:dataObject id="DataObj_Initiative" name="Initiative Record" />
+    <bpmn:dataObjectReference id="DO_RiskAssessment" name="Consolidated Risk Assessment Report" dataObjectRef="DataObj_Risk" />
+    <bpmn:dataObject id="DataObj_Risk" name="Risk Assessment" />
+    <bpmn:dataObjectReference id="DO_OnboardingPlan" name="Onboarding Plan with Resource Allocation" dataObjectRef="DataObj_Onboard" />
+    <bpmn:dataObject id="DataObj_Onboard" name="Onboarding Plan" />
+    <bpmn:dataObjectReference id="DO_ScopeMatrix" name="Assessment Scope Matrix" dataObjectRef="DataObj_Scope" />
+    <bpmn:dataObject id="DataObj_Scope" name="Scope Matrix" />
+
+    <!-- ================================================================ -->
+    <!-- LANES within Governance Process                                   -->
+    <!-- ================================================================ -->
+    <bpmn:laneSet id="LaneSet_Gov">
+      <bpmn:lane id="Lane_IntakeCoord" name="Intake Coordination">
+        <bpmn:flowNodeRef>StartEvent_Intake</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_1_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_1_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_RiskGov" name="Risk &amp; Governance">
+        <bpmn:flowNodeRef>SP_1_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_1_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_1_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_1_3</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Assessment" name="Assessment &amp; Classification">
+        <bpmn:flowNodeRef>SP_2_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_2_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_2_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_2_4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_2_5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_2_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_2_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_2_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_2_4</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Onboarding" name="Onboarding &amp; Provisioning">
+        <bpmn:flowNodeRef>SP_3_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_3_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_3_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_3_4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_3_5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_3_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_3_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_3_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_3_4</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_PostOnboard" name="Post-Onboarding Lifecycle">
+        <bpmn:flowNodeRef>SP_Phase4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_Phase5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_Phase6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_Phase7</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP_Phase8</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Retirement</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- ================================================================ -->
+    <!-- START EVENT                                                       -->
+    <!-- ================================================================ -->
+    <bpmn:startEvent id="StartEvent_Intake" name="New Software Initiative Request Received">
+      <bpmn:documentation>Trigger: New software initiative request submitted via Intake Portal, email, or API.
+Process: PRC-E2E-001 | Enterprise Software Intake to Retirement Lifecycle</bpmn:documentation>
+      <bpmn:outgoing>Flow_Start_SP11</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgEvtDef_Intake" />
+    </bpmn:startEvent>
+
+    <!-- ================================================================ -->
+    <!-- PHASE 1: INITIATION & IDEA INTAKE (PRC-PH1-001)                  -->
+    <!-- Phase SLA: 3-5 days (Standard) | 1-2 days (Low) | 5-7 (Critical) -->
+    <!-- ================================================================ -->
+
+    <!-- ============================================================== -->
+    <!-- SP-1.1: Request Capture & Validation | SLA: 0.5-1 day         -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_1_1" name="SP-1.1: Request Capture &amp; Validation">
+      <bpmn:documentation>Sub-Process ID: SP-1.1 | SLA: 0.5-1 business day
+Lane: Requestor Pool → Governance Pool
+Activities: Submit Initiative Request, Validate Request Completeness, Register Initiative</bpmn:documentation>
+      <bpmn:incoming>Flow_Start_SP11</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP11_GW11</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP11" name="Request Received" />
+
+      <!-- A-1.1.1: Submit Initiative Request -->
+      <bpmn:task id="Task_T1111" name="T-1.1.1.1: Complete Intake Form">
+        <bpmn:documentation>Requestor completes intake form: initiative name, description, business unit, sponsor, estimated budget range, requested timeline.
+Actor: Requestor | SLA: Self-service</bpmn:documentation>
+      </bpmn:task>
+      <bpmn:task id="Task_T1112" name="T-1.1.1.2: Attach Supporting Documents">
+        <bpmn:documentation>Attach supporting documents: business case draft, market analysis, preliminary requirements.
+Actor: Requestor | SLA: Self-service</bpmn:documentation>
+      </bpmn:task>
+      <bpmn:serviceTask id="Task_T1113_AI" name="T-1.1.1.3: AI Auto-Classification &amp; Pre-Population">
+        <bpmn:documentation>AI auto-classification engine pre-populates fields based on historical patterns and NLP analysis of description.
+Actor: AI Intake Agent | SLA: &lt; 30 seconds
+Reads from: KB-007 (Historical Initiative Repository)</bpmn:documentation>
+      </bpmn:serviceTask>
+
+      <!-- A-1.1.2: Validate Request Completeness -->
+      <bpmn:serviceTask id="Task_T1121" name="T-1.1.2.1: Validate Mandatory Fields">
+        <bpmn:documentation>System validates all mandatory fields are completed against intake schema.
+Actor: System (Automated) | SLA: &lt; 5 seconds</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="Task_T1122" name="T-1.1.2.2: AI Duplicate Detection">
+        <bpmn:documentation>AI agent checks for duplicate or similar existing initiatives using semantic similarity scoring.
+Actor: AI Intake Agent | SLA: &lt; 15 seconds
+Reads from: KB-007 (Historical Initiative Repository)</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:task id="Task_T1123" name="T-1.1.2.3: Route Incomplete/Duplicate">
+        <bpmn:documentation>If incomplete: return to requestor with specific field-level guidance.
+If duplicate detected: route to merge/append workflow.
+Actor: System / Requestor | SLA: &lt; 1 hour turnaround</bpmn:documentation>
+      </bpmn:task>
+
+      <!-- A-1.1.3: Register Initiative -->
+      <bpmn:serviceTask id="Task_T1131" name="T-1.1.3.1: Assign Unique Initiative ID">
+        <bpmn:documentation>Assign unique initiative ID (format: INI-YYYY-NNNN).
+Actor: System (Automated) | SLA: Immediate</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="Task_T1132" name="T-1.1.3.2: Create Initiative Record">
+        <bpmn:documentation>Create initiative record in governance repository with audit trail.
+Actor: System (Automated) | SLA: Immediate
+Writes to: Governance Repository (TP-002)</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:sendTask id="Task_T1133" name="T-1.1.3.3: Notify Intake Coordinator">
+        <bpmn:documentation>Notify intake coordinator and assigned governance analyst.
+Actor: System (Automated) | SLA: &lt; 2 minutes
+Uses: Communication &amp; Notification Engine (TP-012)</bpmn:documentation>
+      </bpmn:sendTask>
+
+      <bpmn:endEvent id="End_SP11" name="Request Captured &amp; Registered" />
+
+      <!-- Internal Sequence Flows for SP-1.1 -->
+      <bpmn:sequenceFlow id="Flow_SP11_1" sourceRef="Start_SP11" targetRef="Task_T1111" />
+      <bpmn:sequenceFlow id="Flow_SP11_2" sourceRef="Task_T1111" targetRef="Task_T1112" />
+      <bpmn:sequenceFlow id="Flow_SP11_3" sourceRef="Task_T1112" targetRef="Task_T1113_AI" />
+      <bpmn:sequenceFlow id="Flow_SP11_4" sourceRef="Task_T1113_AI" targetRef="Task_T1121" />
+      <bpmn:sequenceFlow id="Flow_SP11_5" sourceRef="Task_T1121" targetRef="Task_T1122" />
+      <bpmn:sequenceFlow id="Flow_SP11_6" sourceRef="Task_T1122" targetRef="Task_T1123" />
+      <bpmn:sequenceFlow id="Flow_SP11_7" sourceRef="Task_T1123" targetRef="Task_T1131" />
+      <bpmn:sequenceFlow id="Flow_SP11_8" sourceRef="Task_T1131" targetRef="Task_T1132" />
+      <bpmn:sequenceFlow id="Flow_SP11_9" sourceRef="Task_T1132" targetRef="Task_T1133" />
+      <bpmn:sequenceFlow id="Flow_SP11_10" sourceRef="Task_T1133" targetRef="End_SP11" />
+    </bpmn:subProcess>
+
+    <!-- SLA Timer on SP-1.1: 0.5-1 business day -->
+    <bpmn:boundaryEvent id="Timer_SP11_50" name="SLA 50% Warning (4h)" attachedToRef="SP_1_1" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>PT4H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_SP11_75" name="SLA 75% Alert (6h)" attachedToRef="SP_1_1" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>PT6H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_SP11_100" name="SLA Breach (8h)" attachedToRef="SP_1_1" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>PT8H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- GW-1.1: Post-Validation Gateway -->
+    <bpmn:exclusiveGateway id="GW_1_1" name="GW-1.1: Validation Result">
+      <bpmn:documentation>Gateway ID: GW-1.1 | Type: Exclusive (XOR) | Location: After SP-1.1
+Routing: Complete → SP-1.2 | Incomplete → loop back to Requestor | Duplicate → Merge sub-process</bpmn:documentation>
+      <bpmn:incoming>Flow_SP11_GW11</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW11_SP12</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW11_Incomplete</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW11_Duplicate</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- ============================================================== -->
+    <!-- SP-1.2: Initial Risk Triage | SLA: 0.5-1 day                   -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_1_2" name="SP-1.2: Initial Risk Triage">
+      <bpmn:documentation>Sub-Process ID: SP-1.2 | SLA: 0.5-1 business day | Lane: Governance Pool
+Activities: Preliminary Risk Screening, Human Review of AI Triage, Pathway Determination
+DMN Tables Invoked: DMN-DT-001 (Risk Tier), DMN-DT-002 (Pathway Determination)</bpmn:documentation>
+      <bpmn:incoming>Flow_GW11_SP12</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP12_GW12</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP12" name="Validated Request Received" />
+
+      <!-- A-1.2.1: Preliminary Risk Screening -->
+      <bpmn:serviceTask id="Task_T1211" name="T-1.2.1.1: AI 6-Dimension Risk Scoring">
+        <bpmn:documentation>AI Risk Agent scores initiative across 6 dimensions: data sensitivity, regulatory exposure, integration complexity, vendor dependency, business criticality, technology novelty.
+Actor: AI Risk Agent | SLA: &lt; 2 minutes
+Reads from: KB-001 (Data Classification), KB-003 (Regulatory Registry)</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="Task_T1212" name="T-1.2.1.2: Generate Composite Risk Score">
+        <bpmn:documentation>Generate composite risk score (0-100) and preliminary tier assignment (Critical/High/Medium/Low).
+Executes: DMN-DT-001 (Risk Tier Classification) | Hit Policy: Priority
+Actor: AI Risk Agent | SLA: &lt; 1 minute</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="Task_T1213" name="T-1.2.1.3: Flag Regulatory Triggers">
+        <bpmn:documentation>Flag any regulatory triggers: GDPR, HIPAA, PCI-DSS, SOX, AI Act based on data and domain classification.
+Executes: DMN-DT-007 (Regulatory Applicability) | Hit Policy: Collect (C+)
+Actor: AI Compliance Agent | SLA: &lt; 1 minute</bpmn:documentation>
+      </bpmn:serviceTask>
+
+      <!-- A-1.2.2: Human Review of AI Triage -->
+      <bpmn:userTask id="Task_T1221" name="T-1.2.2.1: Review AI Risk Scoring">
+        <bpmn:documentation>Governance analyst reviews AI risk scoring with supporting rationale.
+Actor: Governance Analyst | SLA: 2-4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T1222" name="T-1.2.2.2: Validate/Override AI Tier">
+        <bpmn:documentation>Validate or override AI tier assignment with documented justification.
+Actor: Governance Analyst | SLA: Included in T-1.2.2.1</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T1223" name="T-1.2.2.3: Escalate Low-Confidence Triage">
+        <bpmn:documentation>If AI confidence &lt; 85%: escalate to Senior Governance Lead for second opinion.
+Actor: Sr. Governance Lead | SLA: 4 hours
+BLIND SPOT ADDRESSED: Added confidence threshold check as exclusive gateway</bpmn:documentation>
+      </bpmn:userTask>
+
+      <!-- Confidence Check Gateway (Blind spot: making this explicit) -->
+      <bpmn:exclusiveGateway id="GW_Confidence" name="AI Confidence ≥ 85%?">
+        <bpmn:documentation>BLIND SPOT ADDRESSED: Explicit gateway for AI confidence threshold check.
+If confidence ≥ 85%, proceed directly to pathway determination.
+If confidence &lt; 85%, escalate to Sr. Governance Lead.</bpmn:documentation>
+      </bpmn:exclusiveGateway>
+
+      <!-- A-1.2.3: Pathway Determination -->
+      <bpmn:businessRuleTask id="Task_T1231" name="T-1.2.3.1: Execute DMN-DT-002 (Pathway)">
+        <bpmn:documentation>Execute DMN-DT-002 (Pathway Determination) based on confirmed risk tier, initiative type, and regulatory flags.
+Actor: System (DMN Engine) | SLA: &lt; 5 seconds | Hit Policy: Unique (U)</bpmn:documentation>
+      </bpmn:businessRuleTask>
+      <bpmn:serviceTask id="Task_T1232" name="T-1.2.3.2: Assign Governance Pathway">
+        <bpmn:documentation>Assign governance pathway: Express (Low), Standard, Enhanced (High), Full (Critical).
+Actor: System (DMN Engine) | SLA: &lt; 5 seconds</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="Task_T1233" name="T-1.2.3.3: Generate Phase 2 Scope Matrix">
+        <bpmn:documentation>Generate Phase 2 assessment scope matrix based on pathway.
+Actor: System (Automated) | SLA: &lt; 30 seconds
+Output: Assessment Scope Matrix (data object)</bpmn:documentation>
+      </bpmn:serviceTask>
+
+      <bpmn:endEvent id="End_SP12" name="Risk Tier &amp; Pathway Assigned" />
+
+      <!-- SP-1.2 Internal Flows -->
+      <bpmn:sequenceFlow id="Flow_SP12_1" sourceRef="Start_SP12" targetRef="Task_T1211" />
+      <bpmn:sequenceFlow id="Flow_SP12_2" sourceRef="Task_T1211" targetRef="Task_T1212" />
+      <bpmn:sequenceFlow id="Flow_SP12_3" sourceRef="Task_T1212" targetRef="Task_T1213" />
+      <bpmn:sequenceFlow id="Flow_SP12_4" sourceRef="Task_T1213" targetRef="Task_T1221" />
+      <bpmn:sequenceFlow id="Flow_SP12_5" sourceRef="Task_T1221" targetRef="Task_T1222" />
+      <bpmn:sequenceFlow id="Flow_SP12_6" sourceRef="Task_T1222" targetRef="GW_Confidence" />
+      <bpmn:sequenceFlow id="Flow_SP12_7a" name="Confidence ≥ 85%" sourceRef="GW_Confidence" targetRef="Task_T1231" />
+      <bpmn:sequenceFlow id="Flow_SP12_7b" name="Confidence &lt; 85%" sourceRef="GW_Confidence" targetRef="Task_T1223" />
+      <bpmn:sequenceFlow id="Flow_SP12_7c" sourceRef="Task_T1223" targetRef="Task_T1231" />
+      <bpmn:sequenceFlow id="Flow_SP12_8" sourceRef="Task_T1231" targetRef="Task_T1232" />
+      <bpmn:sequenceFlow id="Flow_SP12_9" sourceRef="Task_T1232" targetRef="Task_T1233" />
+      <bpmn:sequenceFlow id="Flow_SP12_10" sourceRef="Task_T1233" targetRef="End_SP12" />
+    </bpmn:subProcess>
+
+    <!-- SLA Timers on SP-1.2 -->
+    <bpmn:boundaryEvent id="Timer_SP12_50" name="SLA 50% (4h)" attachedToRef="SP_1_2" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>PT4H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_SP12_100" name="SLA Breach (8h)" attachedToRef="SP_1_2" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>PT8H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- GW-1.2: Post-Triage Routing -->
+    <bpmn:exclusiveGateway id="GW_1_2" name="GW-1.2: Risk Tier Pathway Routing">
+      <bpmn:documentation>Gateway ID: GW-1.2 | Type: Exclusive (XOR) | Location: After SP-1.2
+Low Risk → Express pathway (skip detailed business case to Phase 2)
+Medium/High/Critical → proceed to SP-1.3 (Business Case Evaluation)</bpmn:documentation>
+      <bpmn:incoming>Flow_SP12_GW12</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW12_SP13</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW12_Express</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- ============================================================== -->
+    <!-- SP-1.3: Business Case Evaluation | SLA: 1-2 days               -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_1_3" name="SP-1.3: Business Case Evaluation">
+      <bpmn:documentation>Sub-Process ID: SP-1.3 | SLA: 1-2 business days
+Lane: Governance Pool + Requestor Pool
+Activities: Strategic Alignment Review, Financial Viability Assessment, Initiation Gate Decision
+DMN Table: DMN-DT-003 (Governance Gate Decision)</bpmn:documentation>
+      <bpmn:incoming>Flow_GW12_SP13</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP13_GW13</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP13" name="Business Case Review Initiated" />
+
+      <!-- A-1.3.1: Strategic Alignment Review -->
+      <bpmn:userTask id="Task_T1311" name="T-1.3.1.1: Map to Strategic Objectives">
+        <bpmn:documentation>Map initiative to enterprise strategic objectives and portfolio priorities.
+Actor: Portfolio Manager | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T1312" name="T-1.3.1.2: Score Strategic Alignment">
+        <bpmn:documentation>Score strategic alignment (1-5 scale) across 4 dimensions: revenue impact, operational efficiency, risk reduction, innovation.
+Actor: Portfolio Manager | SLA: Included</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T1313" name="T-1.3.1.3: Identify Portfolio Dependencies">
+        <bpmn:documentation>Identify portfolio conflicts, dependencies, and synergies with existing initiatives.
+Actor: Portfolio Manager | SLA: Included</bpmn:documentation>
+      </bpmn:userTask>
+
+      <!-- A-1.3.2: Financial Viability Assessment -->
+      <bpmn:userTask id="Task_T1321" name="T-1.3.2.1: Validate Budget &amp; Funding">
+        <bpmn:documentation>Validate estimated budget against portfolio allocation and funding availability.
+Actor: Finance Analyst | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T1322" name="T-1.3.2.2: Calculate Preliminary ROI">
+        <bpmn:documentation>Calculate preliminary ROI using standard model (NPV, IRR, payback period).
+Actor: Finance Analyst | SLA: Included</bpmn:documentation>
+      </bpmn:userTask>
+
+      <!-- A-1.3.3: Initiation Gate Decision -->
+      <bpmn:businessRuleTask id="Task_T1331" name="T-1.3.3.1: Execute DMN-DT-003 (Gate Decision)">
+        <bpmn:documentation>Execute DMN-DT-003 (Governance Gate Decision): Approve / Conditional Approve / Defer / Reject.
+Hit Policy: Priority (P)
+Actor: DMN Engine + Governance Board | SLA: &lt; 5 sec (engine) + 1 day (board review for Critical)</bpmn:documentation>
+      </bpmn:businessRuleTask>
+      <bpmn:task id="Task_T1332" name="T-1.3.3.2: Generate Phase 2 Work Order">
+        <bpmn:documentation>If approved: generate Phase 2 work order with scope matrix.
+If conditional: return to requestor with conditions.
+If deferred: schedule re-review. If rejected: archive with rationale.
+Actor: System / Governance Board | SLA: Immediate (system) / 1 day (board)</bpmn:documentation>
+      </bpmn:task>
+
+      <bpmn:endEvent id="End_SP13" name="Gate Decision Rendered" />
+
+      <!-- SP-1.3 Internal Flows -->
+      <bpmn:sequenceFlow id="Flow_SP13_1" sourceRef="Start_SP13" targetRef="Task_T1311" />
+      <bpmn:sequenceFlow id="Flow_SP13_2" sourceRef="Task_T1311" targetRef="Task_T1312" />
+      <bpmn:sequenceFlow id="Flow_SP13_3" sourceRef="Task_T1312" targetRef="Task_T1313" />
+      <bpmn:sequenceFlow id="Flow_SP13_4" sourceRef="Task_T1313" targetRef="Task_T1321" />
+      <bpmn:sequenceFlow id="Flow_SP13_5" sourceRef="Task_T1321" targetRef="Task_T1322" />
+      <bpmn:sequenceFlow id="Flow_SP13_6" sourceRef="Task_T1322" targetRef="Task_T1331" />
+      <bpmn:sequenceFlow id="Flow_SP13_7" sourceRef="Task_T1331" targetRef="Task_T1332" />
+      <bpmn:sequenceFlow id="Flow_SP13_8" sourceRef="Task_T1332" targetRef="End_SP13" />
+    </bpmn:subProcess>
+
+    <!-- SLA Timers on SP-1.3 -->
+    <bpmn:boundaryEvent id="Timer_SP13_50" name="SLA 50% (8h)" attachedToRef="SP_1_3" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>PT8H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_SP13_100" name="SLA Breach (16h)" attachedToRef="SP_1_3" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>PT16H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- GW-1.3: Post-Gate Decision -->
+    <bpmn:exclusiveGateway id="GW_1_3" name="GW-1.3: Initiation Gate Decision">
+      <bpmn:documentation>Gateway ID: GW-1.3 | Type: Exclusive (XOR) | Location: After SP-1.3
+Approved → Phase 2 | Conditional → loop to Requestor | Deferred → Backlog | Rejected → Archive</bpmn:documentation>
+      <bpmn:incoming>Flow_SP13_GW13</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW13_Phase2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW13_Conditional</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW13_Deferred</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW13_Rejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Deferred and Rejected End Events -->
+    <bpmn:endEvent id="End_Deferred" name="Initiative Deferred to Backlog">
+      <bpmn:incoming>Flow_GW13_Deferred</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_Rejected" name="Initiative Rejected &amp; Archived">
+      <bpmn:incoming>Flow_GW13_Rejected</bpmn:incoming>
+      <bpmn:incoming>Flow_GW24_Rejected</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- ================================================================ -->
+    <!-- PHASE 2: ASSESSMENT & CLASSIFICATION (PRC-PH2-001)               -->
+    <!-- Phase SLA: 5-10 days (Standard) | 2-3 (Express) | 10-15 (Full)  -->
+    <!-- ================================================================ -->
+
+    <!-- GW-2.1: Parallel Split into Assessment Tracks -->
+    <bpmn:parallelGateway id="GW_2_1" name="GW-2.1: Parallel Assessment Split">
+      <bpmn:documentation>Gateway ID: GW-2.1 | Type: Parallel (AND-split)
+Splits into parallel assessment tracks: SP-2.1 (Technical), SP-2.2 (Security), SP-2.3 (Vendor, conditional), SP-2.4 (Compliance)</bpmn:documentation>
+      <bpmn:incoming>Flow_GW13_Phase2</bpmn:incoming>
+      <bpmn:incoming>Flow_GW12_Express</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW21_SP21</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW21_SP22</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW21_GW22</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW21_SP24</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <!-- ============================================================== -->
+    <!-- SP-2.1: Technical Assessment | SLA: 3-5 days (Standard)        -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_2_1" name="SP-2.1: Technical Assessment">
+      <bpmn:documentation>Sub-Process ID: SP-2.1 | SLA: 3-5 business days (Standard) | 1-2 days (Express)
+Lane: Technical Pool - Architecture Lane
+Activities: Architecture Compatibility Review, Infrastructure Requirements, Technology Stack Validation
+DMN Table: DMN-DT-004 (Technology Approval Decision)</bpmn:documentation>
+      <bpmn:incoming>Flow_GW21_SP21</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP21_GW23</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP21" />
+      <bpmn:userTask id="Task_T2111" name="T-2.1.1.1: Evaluate Architecture Compatibility">
+        <bpmn:documentation>Evaluate proposed solution against enterprise reference architecture patterns and standards.
+Actor: Enterprise Architect | SLA: 1 day | Reads: KB-004</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2112" name="T-2.1.1.2: Identify Integration Touchpoints">
+        <bpmn:documentation>Identify integration touchpoints with existing systems (API contracts, data flows, event streams).
+Actor: Integration Architect | SLA: 1 day | Reads: CMDB (DI-003)</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="Task_T2113" name="T-2.1.1.3: AI Architecture Compatibility Score">
+        <bpmn:documentation>AI Architecture Agent generates compatibility score and flags deviations from standards.
+Actor: AI Architecture Agent | SLA: &lt; 5 minutes</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:userTask id="Task_T2121" name="T-2.1.2.1: Define Infrastructure Requirements">
+        <bpmn:documentation>Define compute, storage, network, and platform requirements.
+Actor: Cloud Engineer | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2122" name="T-2.1.2.2: Capacity Planning &amp; Cost Projection">
+        <bpmn:documentation>Capacity planning and cost projection for target deployment model.
+Actor: FinOps Analyst | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2131" name="T-2.1.3.1: Validate Technology Stack">
+        <bpmn:documentation>Validate proposed technologies against approved technology radar and lifecycle status.
+Actor: Enterprise Architect | SLA: 2 hours | Reads: KB-002</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:businessRuleTask id="Task_T2132" name="T-2.1.3.2: Execute DMN-DT-004 (Tech Approval)">
+        <bpmn:documentation>Execute DMN-DT-004 (Technology Approval Decision) for any non-standard technology requests.
+Hit Policy: Unique (U) | Actor: DMN Engine | SLA: &lt; 5 seconds</bpmn:documentation>
+      </bpmn:businessRuleTask>
+      <bpmn:endEvent id="End_SP21" />
+
+      <bpmn:sequenceFlow id="f_sp21_1" sourceRef="Start_SP21" targetRef="Task_T2111" />
+      <bpmn:sequenceFlow id="f_sp21_2" sourceRef="Task_T2111" targetRef="Task_T2112" />
+      <bpmn:sequenceFlow id="f_sp21_3" sourceRef="Task_T2112" targetRef="Task_T2113" />
+      <bpmn:sequenceFlow id="f_sp21_4" sourceRef="Task_T2113" targetRef="Task_T2121" />
+      <bpmn:sequenceFlow id="f_sp21_5" sourceRef="Task_T2121" targetRef="Task_T2122" />
+      <bpmn:sequenceFlow id="f_sp21_6" sourceRef="Task_T2122" targetRef="Task_T2131" />
+      <bpmn:sequenceFlow id="f_sp21_7" sourceRef="Task_T2131" targetRef="Task_T2132" />
+      <bpmn:sequenceFlow id="f_sp21_8" sourceRef="Task_T2132" targetRef="End_SP21" />
+    </bpmn:subProcess>
+
+    <!-- SLA Timers on SP-2.1 -->
+    <bpmn:boundaryEvent id="Timer_SP21_50" name="SLA 50% (2.5d)" attachedToRef="SP_2_1" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P2DT12H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_SP21_100" name="SLA Breach (5d)" attachedToRef="SP_2_1" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P5D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- ============================================================== -->
+    <!-- SP-2.2: Security Assessment | SLA: 3-7 days (Standard)         -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_2_2" name="SP-2.2: Security Assessment">
+      <bpmn:documentation>Sub-Process ID: SP-2.2 | SLA: 3-7 business days (Standard) | 1-2 days (Express) | 7-10 days (Critical)
+Lane: Technical Pool - Security Lane
+Activities: Threat Modeling, Data Classification &amp; Privacy, Security Controls Mapping
+DMN Table: DMN-DT-005 (Security Controls Mapping)</bpmn:documentation>
+      <bpmn:incoming>Flow_GW21_SP22</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP22_GW23</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP22" />
+      <bpmn:userTask id="Task_T2211" name="T-2.2.1.1: STRIDE Threat Modeling">
+        <bpmn:documentation>Identify threat actors, attack vectors, and attack surfaces using STRIDE methodology.
+Actor: Security Architect | SLA: 1-2 days</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="Task_T2212" name="T-2.2.1.2: AI Threat Model Generation">
+        <bpmn:documentation>AI Threat Agent auto-generates initial threat model based on architecture patterns and data classification.
+Actor: AI Security Agent | SLA: &lt; 10 minutes</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:userTask id="Task_T2213" name="T-2.2.1.3: Human Threat Model Review">
+        <bpmn:documentation>Human review and augmentation of AI-generated threat model.
+Actor: Security Architect | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2221" name="T-2.2.2.1: Data Element Classification">
+        <bpmn:documentation>Classify all data elements per enterprise data classification schema (Public, Internal, Confidential, Restricted).
+Actor: Data Privacy Officer | SLA: 1 day | Reads: KB-001</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2222" name="T-2.2.2.2: DPIA Execution (if PII)">
+        <bpmn:documentation>Execute Data Protection Impact Assessment (DPIA) if personal data is involved.
+Actor: Data Privacy Officer | SLA: 1-2 days</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:businessRuleTask id="Task_T2231" name="T-2.2.3.1: Execute DMN-DT-005 (Controls)">
+        <bpmn:documentation>Map required security controls based on risk tier and data classification using DMN-DT-005.
+Hit Policy: Collect (C+) | Actor: DMN Engine + Security Analyst | SLA: &lt; 1 hour | Reads: KB-006</bpmn:documentation>
+      </bpmn:businessRuleTask>
+      <bpmn:userTask id="Task_T2232" name="T-2.2.3.2: Define Security Requirements">
+        <bpmn:documentation>Define authentication, authorization, encryption, logging, and monitoring requirements.
+Actor: Security Analyst | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:endEvent id="End_SP22" />
+
+      <bpmn:sequenceFlow id="f_sp22_1" sourceRef="Start_SP22" targetRef="Task_T2211" />
+      <bpmn:sequenceFlow id="f_sp22_2" sourceRef="Task_T2211" targetRef="Task_T2212" />
+      <bpmn:sequenceFlow id="f_sp22_3" sourceRef="Task_T2212" targetRef="Task_T2213" />
+      <bpmn:sequenceFlow id="f_sp22_4" sourceRef="Task_T2213" targetRef="Task_T2221" />
+      <bpmn:sequenceFlow id="f_sp22_5" sourceRef="Task_T2221" targetRef="Task_T2222" />
+      <bpmn:sequenceFlow id="f_sp22_6" sourceRef="Task_T2222" targetRef="Task_T2231" />
+      <bpmn:sequenceFlow id="f_sp22_7" sourceRef="Task_T2231" targetRef="Task_T2232" />
+      <bpmn:sequenceFlow id="f_sp22_8" sourceRef="Task_T2232" targetRef="End_SP22" />
+    </bpmn:subProcess>
+
+    <!-- SLA Timers on SP-2.2 -->
+    <bpmn:boundaryEvent id="Timer_SP22_50" name="SLA 50% (3.5d)" attachedToRef="SP_2_2" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P3DT12H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_SP22_100" name="SLA Breach (7d)" attachedToRef="SP_2_2" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P7D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- GW-2.2: Vendor Assessment Conditional Gateway -->
+    <bpmn:inclusiveGateway id="GW_2_2" name="GW-2.2: Vendor Involvement Check">
+      <bpmn:documentation>Gateway ID: GW-2.2 | Type: Inclusive (OR)
+Vendor assessment activated if third-party software/services detected; skipped otherwise.</bpmn:documentation>
+      <bpmn:incoming>Flow_GW21_GW22</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW22_SP23</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW22_Skip</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+
+    <!-- ============================================================== -->
+    <!-- SP-2.3: Vendor Assessment (Conditional) | SLA: 5-10 days       -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_2_3" name="SP-2.3: Vendor Assessment (Conditional)">
+      <bpmn:documentation>Sub-Process ID: SP-2.3 | Condition: Activated only when third-party software/services involved
+SLA: 5-10 business days (Standard) | 10-15 days (Critical Vendor)
+Lane: Vendor Pool + Governance Pool
+DMN Table: DMN-DT-006 (Vendor Risk Classification)</bpmn:documentation>
+      <bpmn:incoming>Flow_GW22_SP23</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP23_GW23</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP23" />
+      <bpmn:businessRuleTask id="Task_T2311" name="T-2.3.1.1: Execute DMN-DT-006 (Vendor Tier)">
+        <bpmn:documentation>Execute four-tier vendor classification: Critical, High, Medium, Low based on DMN-DT-006.
+Hit Policy: Priority (P) | Actor: DMN Engine + TPRM Analyst | SLA: 4 hours | Reads: KB-005</bpmn:documentation>
+      </bpmn:businessRuleTask>
+      <bpmn:userTask id="Task_T2312" name="T-2.3.1.2: Quantitative Risk Scoring (8 Domains)">
+        <bpmn:documentation>Quantitative risk scoring across 8 domains: financial stability, security posture, compliance, operational resilience, geographic risk, concentration risk, technology maturity, reputation.
+Actor: TPRM Analyst + AI Risk Agent | SLA: 1-2 days</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2321" name="T-2.3.2.1: Vendor Security Questionnaire (SIG/CAIQ)">
+        <bpmn:documentation>Collect and validate vendor security questionnaire (SIG/CAIQ).
+Actor: Vendor + TPRM Analyst | SLA: 3-5 days</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2322" name="T-2.3.2.2: Review Compliance Certifications">
+        <bpmn:documentation>Review SOC 2 Type II, ISO 27001, and relevant compliance certifications.
+Actor: TPRM Analyst | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2323" name="T-2.3.2.3: Fourth-Party Risk Assessment">
+        <bpmn:documentation>Fourth-party risk assessment: identify and evaluate vendor's critical sub-processors.
+Actor: TPRM Analyst | SLA: 1 day
+BLIND SPOT ADDRESSED: Added explicit sub-processor data flow tracking</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2331" name="T-2.3.3.1: Contract Terms Review">
+        <bpmn:documentation>Review contract terms against enterprise requirements (data ownership, exit provisions, SLAs, liability).
+Actor: Legal / Procurement | SLA: 2-3 days</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2332" name="T-2.3.3.2: Negotiate &amp; Finalize SLAs">
+        <bpmn:documentation>Negotiate and finalize SLA terms with vendor.
+Actor: Procurement Manager | SLA: Variable</bpmn:documentation>
+      </bpmn:userTask>
+      <!-- BLIND SPOT: Exit Strategy Validation -->
+      <bpmn:userTask id="Task_T2333_BS" name="T-2.3.3.3: Validate Exit Strategy &amp; Data Portability">
+        <bpmn:documentation>BLIND SPOT ADDRESSED: Validate vendor exit strategy, data portability plan, and transition SLAs.
+Ensures data can be extracted in standard formats and services can be transitioned within defined timelines.
+Actor: Enterprise Architect + Legal | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:endEvent id="End_SP23" />
+
+      <bpmn:sequenceFlow id="f_sp23_1" sourceRef="Start_SP23" targetRef="Task_T2311" />
+      <bpmn:sequenceFlow id="f_sp23_2" sourceRef="Task_T2311" targetRef="Task_T2312" />
+      <bpmn:sequenceFlow id="f_sp23_3" sourceRef="Task_T2312" targetRef="Task_T2321" />
+      <bpmn:sequenceFlow id="f_sp23_4" sourceRef="Task_T2321" targetRef="Task_T2322" />
+      <bpmn:sequenceFlow id="f_sp23_5" sourceRef="Task_T2322" targetRef="Task_T2323" />
+      <bpmn:sequenceFlow id="f_sp23_6" sourceRef="Task_T2323" targetRef="Task_T2331" />
+      <bpmn:sequenceFlow id="f_sp23_7" sourceRef="Task_T2331" targetRef="Task_T2332" />
+      <bpmn:sequenceFlow id="f_sp23_8" sourceRef="Task_T2332" targetRef="Task_T2333_BS" />
+      <bpmn:sequenceFlow id="f_sp23_9" sourceRef="Task_T2333_BS" targetRef="End_SP23" />
+    </bpmn:subProcess>
+
+    <!-- SLA Timers on SP-2.3 -->
+    <bpmn:boundaryEvent id="Timer_SP23_50" name="SLA 50% (5d)" attachedToRef="SP_2_3" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P5D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_SP23_100" name="SLA Breach (10d)" attachedToRef="SP_2_3" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P10D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- ============================================================== -->
+    <!-- SP-2.4: Compliance Assessment | SLA: 3-5 days                  -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_2_4" name="SP-2.4: Compliance Assessment">
+      <bpmn:documentation>Sub-Process ID: SP-2.4 | SLA: 3-5 business days | Lane: Governance Pool
+Activities: Regulatory Mapping, Compliance Gap Analysis, AI Governance Assessment
+DMN Table: DMN-DT-007 (Regulatory Applicability Mapping)</bpmn:documentation>
+      <bpmn:incoming>Flow_GW21_SP24</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP24_GW23</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP24" />
+      <bpmn:businessRuleTask id="Task_T2411" name="T-2.4.1.1: Execute DMN-DT-007 (Regulatory Map)">
+        <bpmn:documentation>Identify applicable regulations based on data types, geographies, and industry verticals using DMN-DT-007.
+Hit Policy: Collect (C+) | Actor: DMN Engine + Compliance Analyst | SLA: 4 hours | Reads: KB-003</bpmn:documentation>
+      </bpmn:businessRuleTask>
+      <bpmn:userTask id="Task_T2412" name="T-2.4.1.2: Map Regulatory Control Obligations">
+        <bpmn:documentation>Map regulatory requirements to specific control obligations.
+Actor: Compliance Analyst | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2421" name="T-2.4.2.1: Assess Control Coverage Gaps">
+        <bpmn:documentation>Assess current control coverage against required controls.
+Actor: Compliance Analyst | SLA: 1-2 days</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2422" name="T-2.4.2.2: Generate Remediation Plan">
+        <bpmn:documentation>Generate remediation plan for identified gaps with effort estimates.
+Actor: Compliance Analyst | SLA: Included</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2431" name="T-2.4.3.1: AI Risk Classification (EU AI Act)">
+        <bpmn:documentation>If AI/ML components present: execute AI risk classification per EU AI Act risk tiers (Unacceptable, High, Limited, Minimal).
+Actor: AI Ethics Officer | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2432" name="T-2.4.3.2: Define AI Governance Requirements">
+        <bpmn:documentation>Define model governance requirements: explainability, bias testing, human oversight, monitoring.
+Actor: AI Ethics Officer | SLA: Included | Reads: KB-008</bpmn:documentation>
+      </bpmn:userTask>
+      <!-- BLIND SPOT: Cross-border data transfer assessment -->
+      <bpmn:userTask id="Task_T2433_BS" name="T-2.4.3.3: Cross-Border Data Transfer Assessment">
+        <bpmn:documentation>BLIND SPOT ADDRESSED: Assess cross-border data transfer requirements including adequacy decisions, SCCs, BCRs, and data localization mandates.
+Actor: Data Privacy Officer + Legal | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:endEvent id="End_SP24" />
+
+      <bpmn:sequenceFlow id="f_sp24_1" sourceRef="Start_SP24" targetRef="Task_T2411" />
+      <bpmn:sequenceFlow id="f_sp24_2" sourceRef="Task_T2411" targetRef="Task_T2412" />
+      <bpmn:sequenceFlow id="f_sp24_3" sourceRef="Task_T2412" targetRef="Task_T2421" />
+      <bpmn:sequenceFlow id="f_sp24_4" sourceRef="Task_T2421" targetRef="Task_T2422" />
+      <bpmn:sequenceFlow id="f_sp24_5" sourceRef="Task_T2422" targetRef="Task_T2431" />
+      <bpmn:sequenceFlow id="f_sp24_6" sourceRef="Task_T2431" targetRef="Task_T2432" />
+      <bpmn:sequenceFlow id="f_sp24_7" sourceRef="Task_T2432" targetRef="Task_T2433_BS" />
+      <bpmn:sequenceFlow id="f_sp24_8" sourceRef="Task_T2433_BS" targetRef="End_SP24" />
+    </bpmn:subProcess>
+
+    <!-- SLA Timers on SP-2.4 -->
+    <bpmn:boundaryEvent id="Timer_SP24_50" name="SLA 50% (2.5d)" attachedToRef="SP_2_4" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P2DT12H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_SP24_100" name="SLA Breach (5d)" attachedToRef="SP_2_4" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P5D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- GW-2.3: Parallel Join (All assessments must complete) -->
+    <bpmn:parallelGateway id="GW_2_3" name="GW-2.3: Assessment Convergence (AND-join)">
+      <bpmn:documentation>Gateway ID: GW-2.3 | Type: Parallel (AND-join)
+All active assessment tracks must complete before convergence to SP-2.5.</bpmn:documentation>
+      <bpmn:incoming>Flow_SP21_GW23</bpmn:incoming>
+      <bpmn:incoming>Flow_SP22_GW23</bpmn:incoming>
+      <bpmn:incoming>Flow_SP23_GW23</bpmn:incoming>
+      <bpmn:incoming>Flow_GW22_Skip</bpmn:incoming>
+      <bpmn:incoming>Flow_SP24_GW23</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW23_SP25</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <!-- ============================================================== -->
+    <!-- SP-2.5: Assessment Convergence & Gate Decision | SLA: 1-2 days -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_2_5" name="SP-2.5: Assessment Convergence &amp; Gate Decision">
+      <bpmn:documentation>Sub-Process ID: SP-2.5 | SLA: 1-2 business days | Lane: Governance Pool
+Synthesizes all assessment findings and executes Phase 2 gate decision.
+DMN Table: DMN-DT-003 (Governance Gate Decision)</bpmn:documentation>
+      <bpmn:incoming>Flow_GW23_SP25</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP25_GW24</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP25" />
+      <bpmn:userTask id="Task_T2511" name="T-2.5.1.1: Consolidate Assessment Findings">
+        <bpmn:documentation>Consolidate findings from all assessment tracks into unified risk and readiness report.
+Actor: Governance Analyst | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T2512" name="T-2.5.1.2: Finalize Risk Classification">
+        <bpmn:documentation>Finalize risk classification with composite score incorporating all assessment dimensions.
+Actor: Governance Analyst | SLA: 2 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="Task_T2513" name="T-2.5.1.3: Generate Onboarding Checklist">
+        <bpmn:documentation>Generate onboarding requirements checklist based on assessment outcomes.
+Actor: System (Automated) | SLA: &lt; 5 minutes</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:userTask id="Task_T2521" name="T-2.5.2.1: Present to Governance Board">
+        <bpmn:documentation>Present consolidated assessment to Governance Board (Critical/High risk) or delegated authority (Medium/Low).
+Actor: Governance Board / Delegate | SLA: 1 day (Critical) / 4 hours (Standard)</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:businessRuleTask id="Task_T2522" name="T-2.5.2.2: Execute DMN-DT-003 (Phase 2 Gate)">
+        <bpmn:documentation>Execute DMN-DT-003: Approve to Onboard / Conditional / Remediate / Reject.
+Hit Policy: Priority (P) | Actor: DMN Engine + Governance Board | SLA: &lt; 5 seconds (engine)</bpmn:documentation>
+      </bpmn:businessRuleTask>
+      <bpmn:userTask id="Task_T2523" name="T-2.5.2.3: Generate Phase 3 Onboarding Plan">
+        <bpmn:documentation>Generate Phase 3 onboarding plan with resource allocation, timeline, and provisioning scope.
+Actor: System / Project Manager | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:endEvent id="End_SP25" />
+
+      <bpmn:sequenceFlow id="f_sp25_1" sourceRef="Start_SP25" targetRef="Task_T2511" />
+      <bpmn:sequenceFlow id="f_sp25_2" sourceRef="Task_T2511" targetRef="Task_T2512" />
+      <bpmn:sequenceFlow id="f_sp25_3" sourceRef="Task_T2512" targetRef="Task_T2513" />
+      <bpmn:sequenceFlow id="f_sp25_4" sourceRef="Task_T2513" targetRef="Task_T2521" />
+      <bpmn:sequenceFlow id="f_sp25_5" sourceRef="Task_T2521" targetRef="Task_T2522" />
+      <bpmn:sequenceFlow id="f_sp25_6" sourceRef="Task_T2522" targetRef="Task_T2523" />
+      <bpmn:sequenceFlow id="f_sp25_7" sourceRef="Task_T2523" targetRef="End_SP25" />
+    </bpmn:subProcess>
+
+    <!-- SLA Timers on SP-2.5 -->
+    <bpmn:boundaryEvent id="Timer_SP25_50" name="SLA 50% (1d)" attachedToRef="SP_2_5" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P1D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_SP25_100" name="SLA Breach (2d)" attachedToRef="SP_2_5" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P2D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- GW-2.4: Phase 2 Gate Decision Routing -->
+    <bpmn:exclusiveGateway id="GW_2_4" name="GW-2.4: Phase 2 Gate Decision">
+      <bpmn:documentation>Gateway ID: GW-2.4 | Type: Exclusive (XOR)
+Approved → Phase 3 | Conditional → remediation loop | Remediate → return to specific assessment | Reject → Archive</bpmn:documentation>
+      <bpmn:incoming>Flow_SP25_GW24</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW24_Phase3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW24_Remediate</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW24_Rejected</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW24_Conditional</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- ================================================================ -->
+    <!-- PHASE 3: ONBOARDING & PROVISIONING (PRC-PH3-001)                 -->
+    <!-- Phase SLA: 10-20 days (Standard) | 5-8 (Express) | 15-25 (Crit) -->
+    <!-- ================================================================ -->
+
+    <!-- GW-3.1: Parallel Provisioning Split -->
+    <bpmn:parallelGateway id="GW_3_1" name="GW-3.1: Parallel Provisioning Split">
+      <bpmn:documentation>Gateway ID: GW-3.1 | Type: Parallel (AND-split)
+SP-3.1, SP-3.2, SP-3.3, SP-3.4 execute concurrently.</bpmn:documentation>
+      <bpmn:incoming>Flow_GW24_Phase3</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW31_SP31</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW31_SP32</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW31_SP33</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW31_SP34</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <!-- ============================================================== -->
+    <!-- SP-3.1: Environment Provisioning | SLA: 2-5 days (automated)   -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_3_1" name="SP-3.1: Environment Provisioning">
+      <bpmn:documentation>Sub-Process ID: SP-3.1 | SLA: 2-5 business days (automated) | 5-10 days (complex/hybrid)
+Lane: Operations Pool
+Activities: Infrastructure Provisioning, Security Infrastructure, Environment Validation</bpmn:documentation>
+      <bpmn:incoming>Flow_GW31_SP31</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP31_GW33</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP31" />
+      <bpmn:serviceTask id="Task_T3111" name="T-3.1.1.1: Execute IaC Templates">
+        <bpmn:documentation>Execute Infrastructure-as-Code templates for dev, staging, and production environments.
+Actor: AI Deployment Agent / DevOps | SLA: 1-2 hours (automated) | Uses: TP-006</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:userTask id="Task_T3112" name="T-3.1.1.2: Configure Networking">
+        <bpmn:documentation>Configure networking: VPC, subnets, security groups, load balancers, DNS per architecture blueprint.
+Actor: Cloud Engineer | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="Task_T3113" name="T-3.1.1.3: Provision Container Orchestration">
+        <bpmn:documentation>Provision Kubernetes namespaces, resource quotas, network policies.
+Actor: Platform Engineer | SLA: 2 hours</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:userTask id="Task_T3121" name="T-3.1.2.1: Configure IAM &amp; RBAC">
+        <bpmn:documentation>Configure identity and access management: service accounts, RBAC policies, secrets management.
+Actor: Security Engineer | SLA: 4 hours | Uses: TP-005</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="Task_T3122" name="T-3.1.2.2: Deploy Security Monitoring">
+        <bpmn:documentation>Deploy security monitoring agents: SIEM integration, log forwarding, vulnerability scanning.
+Actor: Security Engineer | SLA: 2 hours | Uses: TP-010</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:userTask id="Task_T3123" name="T-3.1.2.3: Configure Encryption">
+        <bpmn:documentation>Configure encryption: TLS certificates, at-rest encryption, key management per data classification.
+Actor: Security Engineer | SLA: 2 hours | Uses: DI-004</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="Task_T3131" name="T-3.1.3.1: Automated Health Checks">
+        <bpmn:documentation>Execute automated environment health checks and smoke tests.
+Actor: System (Automated) | SLA: 30 minutes</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:userTask id="Task_T3132" name="T-3.1.3.2: Infrastructure Security Validation">
+        <bpmn:documentation>Validate security controls are operational (penetration test of infrastructure layer).
+Actor: Security Engineer | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <!-- BLIND SPOT: Disaster Recovery Validation -->
+      <bpmn:userTask id="Task_T3133_BS" name="T-3.1.3.3: DR/Backup Configuration Validation">
+        <bpmn:documentation>BLIND SPOT ADDRESSED: Validate disaster recovery configuration, backup schedules, RTO/RPO targets, and failover procedures for provisioned environments.
+Actor: SRE / Cloud Engineer | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:endEvent id="End_SP31" />
+
+      <bpmn:sequenceFlow id="f_sp31_1" sourceRef="Start_SP31" targetRef="Task_T3111" />
+      <bpmn:sequenceFlow id="f_sp31_2" sourceRef="Task_T3111" targetRef="Task_T3112" />
+      <bpmn:sequenceFlow id="f_sp31_3" sourceRef="Task_T3112" targetRef="Task_T3113" />
+      <bpmn:sequenceFlow id="f_sp31_4" sourceRef="Task_T3113" targetRef="Task_T3121" />
+      <bpmn:sequenceFlow id="f_sp31_5" sourceRef="Task_T3121" targetRef="Task_T3122" />
+      <bpmn:sequenceFlow id="f_sp31_6" sourceRef="Task_T3122" targetRef="Task_T3123" />
+      <bpmn:sequenceFlow id="f_sp31_7" sourceRef="Task_T3123" targetRef="Task_T3131" />
+      <bpmn:sequenceFlow id="f_sp31_8" sourceRef="Task_T3131" targetRef="Task_T3132" />
+      <bpmn:sequenceFlow id="f_sp31_9" sourceRef="Task_T3132" targetRef="Task_T3133_BS" />
+      <bpmn:sequenceFlow id="f_sp31_10" sourceRef="Task_T3133_BS" targetRef="End_SP31" />
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="Timer_SP31_50" name="SLA 50% (2.5d)" attachedToRef="SP_3_1" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P2DT12H</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Timer_SP31_100" name="SLA Breach (5d)" attachedToRef="SP_3_1" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P5D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- ============================================================== -->
+    <!-- SP-3.2: Toolchain & Pipeline Setup | SLA: 2-3 days             -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_3_2" name="SP-3.2: Toolchain &amp; Pipeline Setup">
+      <bpmn:documentation>Sub-Process ID: SP-3.2 | SLA: 2-3 business days
+Lane: Technical Pool - Development Lane
+Activities: Repository &amp; CI/CD Setup, Observability Setup, AI Agent Configuration
+DMN Table: DMN-DT-008 (AI Agent Automation Level)</bpmn:documentation>
+      <bpmn:incoming>Flow_GW31_SP32</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP32_GW33</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP32" />
+      <bpmn:userTask id="Task_T3211" name="T-3.2.1.1: Create Source Repositories">
+        <bpmn:documentation>Create source code repositories with branch protection, code owners, and PR templates.
+Actor: DevOps Engineer | SLA: 2 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3212" name="T-3.2.1.2: Configure CI/CD Pipelines">
+        <bpmn:documentation>Configure CI/CD pipelines with build, test, security scan, and deployment stages.
+Actor: DevOps Engineer | SLA: 4 hours | Uses: TP-007</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3213" name="T-3.2.1.3: Integrate 7-Stage DevSecOps Pipeline">
+        <bpmn:documentation>Integrate 7-stage DevSecOps security pipeline (pre-commit through production monitoring).
+Actor: Security Engineer / DevOps | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3221" name="T-3.2.2.1: Configure APM &amp; Tracing">
+        <bpmn:documentation>Configure application performance monitoring, distributed tracing, and log aggregation.
+Actor: SRE / DevOps | SLA: 4 hours | Uses: TP-009</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3222" name="T-3.2.2.2: Create Dashboards &amp; SLO/SLI">
+        <bpmn:documentation>Create dashboards, alerts, and SLO/SLI monitoring configurations.
+Actor: SRE | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3231" name="T-3.2.3.1: Configure AI Agents">
+        <bpmn:documentation>Configure applicable AI agents for the initiative (Code Generation, Code Review, Testing, Documentation).
+Actor: AI Platform Team | SLA: 4 hours | Uses: TP-004</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:businessRuleTask id="Task_T3232" name="T-3.2.3.2: Execute DMN-DT-008 (Agent Thresholds)">
+        <bpmn:documentation>Set agent confidence thresholds and human-in-the-loop escalation rules per risk tier using DMN-DT-008.
+Hit Policy: Unique (U) | Actor: DMN Engine / AI Platform | SLA: 1 hour</bpmn:documentation>
+      </bpmn:businessRuleTask>
+      <bpmn:endEvent id="End_SP32" />
+
+      <bpmn:sequenceFlow id="f_sp32_1" sourceRef="Start_SP32" targetRef="Task_T3211" />
+      <bpmn:sequenceFlow id="f_sp32_2" sourceRef="Task_T3211" targetRef="Task_T3212" />
+      <bpmn:sequenceFlow id="f_sp32_3" sourceRef="Task_T3212" targetRef="Task_T3213" />
+      <bpmn:sequenceFlow id="f_sp32_4" sourceRef="Task_T3213" targetRef="Task_T3221" />
+      <bpmn:sequenceFlow id="f_sp32_5" sourceRef="Task_T3221" targetRef="Task_T3222" />
+      <bpmn:sequenceFlow id="f_sp32_6" sourceRef="Task_T3222" targetRef="Task_T3231" />
+      <bpmn:sequenceFlow id="f_sp32_7" sourceRef="Task_T3231" targetRef="Task_T3232" />
+      <bpmn:sequenceFlow id="f_sp32_8" sourceRef="Task_T3232" targetRef="End_SP32" />
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="Timer_SP32_100" name="SLA Breach (3d)" attachedToRef="SP_3_2" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P3D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- ============================================================== -->
+    <!-- SP-3.3: Access & Identity Provisioning | SLA: 1-2 days         -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_3_3" name="SP-3.3: Access &amp; Identity Provisioning">
+      <bpmn:documentation>Sub-Process ID: SP-3.3 | SLA: 1-2 business days
+Lane: Operations Pool + Governance Pool
+Activities: Team Access Provisioning, Vendor Access (Conditional), Access Certification</bpmn:documentation>
+      <bpmn:incoming>Flow_GW31_SP33</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP33_GW33</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP33" />
+      <bpmn:userTask id="Task_T3311" name="T-3.3.1.1: Create Team Groups &amp; RBAC">
+        <bpmn:documentation>Create team groups in identity provider with role-based access control mappings.
+Actor: IAM Administrator | SLA: 2 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3312" name="T-3.3.1.2: Provision Individual Accounts">
+        <bpmn:documentation>Provision individual user accounts with least-privilege access per data classification and role.
+Actor: IAM Administrator | SLA: 2 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3313" name="T-3.3.1.3: Configure MFA &amp; Conditional Access">
+        <bpmn:documentation>Configure multi-factor authentication and conditional access policies.
+Actor: IAM Administrator | SLA: 1 hour</bpmn:documentation>
+      </bpmn:userTask>
+
+      <!-- GW-3.2: Vendor Access Conditional -->
+      <bpmn:inclusiveGateway id="GW_3_2" name="GW-3.2: Vendor Access Required?">
+        <bpmn:documentation>Vendor access provisioning activated only if vendor involvement confirmed in Phase 2.</bpmn:documentation>
+      </bpmn:inclusiveGateway>
+
+      <bpmn:userTask id="Task_T3321" name="T-3.3.2.1: Provision Vendor Access (Time-bound)">
+        <bpmn:documentation>Provision limited-scope accounts with time-bound access and enhanced monitoring.
+Actor: IAM Admin + Security | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3322" name="T-3.3.2.2: Configure Vendor Network Segmentation">
+        <bpmn:documentation>Configure vendor network segmentation and data access restrictions.
+Actor: Network / Security Engineer | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3331" name="T-3.3.3.1: Certify Access Against Matrix">
+        <bpmn:documentation>Validate all provisioned access against approved access matrix; certify with governance sign-off.
+Actor: Governance Analyst | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <!-- BLIND SPOT: Privileged Access Review -->
+      <bpmn:userTask id="Task_T3332_BS" name="T-3.3.3.2: Privileged Access Review &amp; JIT Config">
+        <bpmn:documentation>BLIND SPOT ADDRESSED: Review all privileged/admin access grants. Configure Just-In-Time (JIT) access policies for elevated permissions. Ensure PAM tool integration.
+Actor: IAM Admin + Security Architect | SLA: 2 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:endEvent id="End_SP33" />
+
+      <bpmn:sequenceFlow id="f_sp33_1" sourceRef="Start_SP33" targetRef="Task_T3311" />
+      <bpmn:sequenceFlow id="f_sp33_2" sourceRef="Task_T3311" targetRef="Task_T3312" />
+      <bpmn:sequenceFlow id="f_sp33_3" sourceRef="Task_T3312" targetRef="Task_T3313" />
+      <bpmn:sequenceFlow id="f_sp33_4" sourceRef="Task_T3313" targetRef="GW_3_2" />
+      <bpmn:sequenceFlow id="f_sp33_5a" name="Vendor Required" sourceRef="GW_3_2" targetRef="Task_T3321" />
+      <bpmn:sequenceFlow id="f_sp33_5b" name="No Vendor" sourceRef="GW_3_2" targetRef="Task_T3331" />
+      <bpmn:sequenceFlow id="f_sp33_6" sourceRef="Task_T3321" targetRef="Task_T3322" />
+      <bpmn:sequenceFlow id="f_sp33_7" sourceRef="Task_T3322" targetRef="Task_T3331" />
+      <bpmn:sequenceFlow id="f_sp33_8" sourceRef="Task_T3331" targetRef="Task_T3332_BS" />
+      <bpmn:sequenceFlow id="f_sp33_9" sourceRef="Task_T3332_BS" targetRef="End_SP33" />
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="Timer_SP33_100" name="SLA Breach (2d)" attachedToRef="SP_3_3" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P2D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- ============================================================== -->
+    <!-- SP-3.4: Data & Integration Onboarding | SLA: 3-5 days          -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_3_4" name="SP-3.4: Data &amp; Integration Onboarding">
+      <bpmn:documentation>Sub-Process ID: SP-3.4 | SLA: 3-5 business days
+Lane: Technical Pool + Operations Pool
+Activities: Data Environment Setup, Integration Configuration, Test Data Provisioning</bpmn:documentation>
+      <bpmn:incoming>Flow_GW31_SP34</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP34_GW33</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP34" />
+      <bpmn:userTask id="Task_T3411" name="T-3.4.1.1: Provision Databases &amp; Data Stores">
+        <bpmn:documentation>Provision databases, data stores, and caching layers per architecture specification.
+Actor: Data Engineer | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3412" name="T-3.4.1.2: Configure Data Governance Controls">
+        <bpmn:documentation>Configure data governance controls: masking, encryption, access logging, retention policies.
+Actor: Data Engineer / DPO | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3421" name="T-3.4.2.1: Register APIs in Gateway">
+        <bpmn:documentation>Register APIs in enterprise API gateway with rate limiting, authentication, and versioning.
+Actor: Integration Engineer | SLA: 4 hours | Uses: TP-008</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3422" name="T-3.4.2.2: Configure Event Bus &amp; MQ">
+        <bpmn:documentation>Configure event bus subscriptions and message queue connections.
+Actor: Integration Engineer | SLA: 4 hours | Uses: DI-001</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="Task_T3423" name="T-3.4.2.3: Automated Integration Testing">
+        <bpmn:documentation>Validate integration connectivity with automated integration test suite.
+Actor: System (Automated) | SLA: 1 hour</bpmn:documentation>
+      </bpmn:serviceTask>
+      <bpmn:userTask id="Task_T3431" name="T-3.4.3.1: Generate/Synthesize Test Data">
+        <bpmn:documentation>Generate or synthesize test data sets compliant with data classification requirements (no production PII).
+Actor: Data Engineer / AI Agent | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <!-- BLIND SPOT: Data lineage documentation -->
+      <bpmn:userTask id="Task_T3432_BS" name="T-3.4.3.2: Document Data Lineage &amp; Catalog Registration">
+        <bpmn:documentation>BLIND SPOT ADDRESSED: Register all new data assets in enterprise data catalog with lineage documentation, quality rules, and stewardship assignments.
+Actor: Data Engineer / Data Steward | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:endEvent id="End_SP34" />
+
+      <bpmn:sequenceFlow id="f_sp34_1" sourceRef="Start_SP34" targetRef="Task_T3411" />
+      <bpmn:sequenceFlow id="f_sp34_2" sourceRef="Task_T3411" targetRef="Task_T3412" />
+      <bpmn:sequenceFlow id="f_sp34_3" sourceRef="Task_T3412" targetRef="Task_T3421" />
+      <bpmn:sequenceFlow id="f_sp34_4" sourceRef="Task_T3421" targetRef="Task_T3422" />
+      <bpmn:sequenceFlow id="f_sp34_5" sourceRef="Task_T3422" targetRef="Task_T3423" />
+      <bpmn:sequenceFlow id="f_sp34_6" sourceRef="Task_T3423" targetRef="Task_T3431" />
+      <bpmn:sequenceFlow id="f_sp34_7" sourceRef="Task_T3431" targetRef="Task_T3432_BS" />
+      <bpmn:sequenceFlow id="f_sp34_8" sourceRef="Task_T3432_BS" targetRef="End_SP34" />
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="Timer_SP34_100" name="SLA Breach (5d)" attachedToRef="SP_3_4" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P5D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- GW-3.3: Parallel Join (All provisioning complete) -->
+    <bpmn:parallelGateway id="GW_3_3" name="GW-3.3: Provisioning Convergence (AND-join)">
+      <bpmn:documentation>All provisioning tracks must complete before team onboarding and kickoff.</bpmn:documentation>
+      <bpmn:incoming>Flow_SP31_GW33</bpmn:incoming>
+      <bpmn:incoming>Flow_SP32_GW33</bpmn:incoming>
+      <bpmn:incoming>Flow_SP33_GW33</bpmn:incoming>
+      <bpmn:incoming>Flow_SP34_GW33</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW33_SP35</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <!-- ============================================================== -->
+    <!-- SP-3.5: Team Onboarding & Kickoff | SLA: 2-3 days              -->
+    <!-- ============================================================== -->
+    <bpmn:subProcess id="SP_3_5" name="SP-3.5: Team Onboarding &amp; Kickoff">
+      <bpmn:documentation>Sub-Process ID: SP-3.5 | SLA: 2-3 business days | Lane: All Pools
+Activities: Team Formation, Knowledge Transfer, Initiative Kickoff
+DMN Table: DMN-DT-003 (Phase 3 Exit Gate)</bpmn:documentation>
+      <bpmn:incoming>Flow_GW33_SP35</bpmn:incoming>
+      <bpmn:outgoing>Flow_SP35_GW34</bpmn:outgoing>
+
+      <bpmn:startEvent id="Start_SP35" />
+      <bpmn:userTask id="Task_T3511" name="T-3.5.1.1: Confirm Team Composition">
+        <bpmn:documentation>Confirm team composition: product owner, tech lead, developers, QA, security champion, SRE.
+Actor: Resource Manager | SLA: 1 day</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3512" name="T-3.5.1.2: Assign RACI Matrix">
+        <bpmn:documentation>Assign RACI matrix for all governance, development, and operational responsibilities.
+Actor: Project Manager | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3521" name="T-3.5.2.1: Governance &amp; Compliance Briefing">
+        <bpmn:documentation>Conduct governance and compliance briefing: applicable regulations, required controls, SLAs.
+Actor: Governance Analyst | SLA: 2 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3522" name="T-3.5.2.2: Technical Onboarding">
+        <bpmn:documentation>Conduct technical onboarding: architecture decisions, standards, toolchain walkthrough.
+Actor: Tech Lead / Enterprise Architect | SLA: 4 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3523" name="T-3.5.2.3: AI Agent Training Session">
+        <bpmn:documentation>AI agent training session: how to work with agentic development tools, confidence thresholds, override procedures.
+Actor: AI Platform Team | SLA: 2 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:userTask id="Task_T3531" name="T-3.5.3.1: Formal Kickoff Meeting">
+        <bpmn:documentation>Formal kickoff meeting: scope review, timeline confirmation, risk register walkthrough, escalation procedures.
+Actor: Project Manager + All Stakeholders | SLA: 2 hours</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:businessRuleTask id="Task_T3532" name="T-3.5.3.2: Execute Phase 3 Exit Gate (DMN-DT-003)">
+        <bpmn:documentation>Confirm Phase 4 entry criteria are met; execute Phase 3 exit gate via DMN-DT-003.
+Actor: DMN Engine + PM | SLA: &lt; 5 seconds (engine)</bpmn:documentation>
+      </bpmn:businessRuleTask>
+      <!-- BLIND SPOT: Risk register handoff -->
+      <bpmn:userTask id="Task_T3533_BS" name="T-3.5.3.3: Risk Register Handoff &amp; Acceptance">
+        <bpmn:documentation>BLIND SPOT ADDRESSED: Formal handoff of risk register from governance to project team. Project team acknowledges all open risks, mitigations, and residual risk acceptance.
+Actor: Project Manager + Governance Analyst | SLA: 1 hour</bpmn:documentation>
+      </bpmn:userTask>
+      <bpmn:endEvent id="End_SP35" />
+
+      <bpmn:sequenceFlow id="f_sp35_1" sourceRef="Start_SP35" targetRef="Task_T3511" />
+      <bpmn:sequenceFlow id="f_sp35_2" sourceRef="Task_T3511" targetRef="Task_T3512" />
+      <bpmn:sequenceFlow id="f_sp35_3" sourceRef="Task_T3512" targetRef="Task_T3521" />
+      <bpmn:sequenceFlow id="f_sp35_4" sourceRef="Task_T3521" targetRef="Task_T3522" />
+      <bpmn:sequenceFlow id="f_sp35_5" sourceRef="Task_T3522" targetRef="Task_T3523" />
+      <bpmn:sequenceFlow id="f_sp35_6" sourceRef="Task_T3523" targetRef="Task_T3531" />
+      <bpmn:sequenceFlow id="f_sp35_7" sourceRef="Task_T3531" targetRef="Task_T3532" />
+      <bpmn:sequenceFlow id="f_sp35_8" sourceRef="Task_T3532" targetRef="Task_T3533_BS" />
+      <bpmn:sequenceFlow id="f_sp35_9" sourceRef="Task_T3533_BS" targetRef="End_SP35" />
+    </bpmn:subProcess>
+
+    <bpmn:boundaryEvent id="Timer_SP35_100" name="SLA Breach (3d)" attachedToRef="SP_3_5" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P3D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <!-- GW-3.4: Phase 3 Exit Gate -->
+    <bpmn:exclusiveGateway id="GW_3_4" name="GW-3.4: Phase 3 Exit Gate">
+      <bpmn:documentation>All criteria met → Phase 4 | Outstanding items → remediation loop | Critical block → escalate to Governance Board</bpmn:documentation>
+      <bpmn:incoming>Flow_SP35_GW34</bpmn:incoming>
+      <bpmn:outgoing>Flow_GW34_Phase4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW34_Remediate</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GW34_Escalate</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- ================================================================ -->
+    <!-- PHASES 4-8: Post-Onboarding Lifecycle (Collapsed Sub-Processes)  -->
+    <!-- ================================================================ -->
+
+    <bpmn:subProcess id="SP_Phase4" name="Phase 4: Architecture &amp; Design (PRC-PH4-001)">
+      <bpmn:documentation>Process ID: PRC-PH4-001 | SLA: 10-15 business days
+Sub-processes: Solution Architecture Design (SP-4.1), Integration Architecture (SP-4.2), Security Architecture (SP-4.3), Data Architecture (SP-4.4), Architecture Review Board Gate (SP-4.5).
+ARB gate: Architecture agent generates compliance score; 90% confidence threshold for human validation.</bpmn:documentation>
+      <bpmn:incoming>Flow_GW34_Phase4</bpmn:incoming>
+      <bpmn:outgoing>Flow_Ph4_Ph5</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Timer_Ph4_100" name="SLA Breach (15d)" attachedToRef="SP_Phase4" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P15D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:subProcess id="SP_Phase5" name="Phase 5: Development &amp; Build (PRC-PH5-001)">
+      <bpmn:documentation>Process ID: PRC-PH5-001 | SLA: Variable (Sprint-based)
+Sub-processes: Sprint Planning with AI Agents (SP-5.1), Agentic Development Pipeline (SP-5.2), Code Review with AI Agent (SP-5.3), 7-Stage DevSecOps Pipeline (SP-5.4), 5 Compliance Validation Gates (SP-5.5).
+9 specialized AI agent roles operate as BPMN call activities with confidence-based escalation.</bpmn:documentation>
+      <bpmn:incoming>Flow_Ph4_Ph5</bpmn:incoming>
+      <bpmn:outgoing>Flow_Ph5_Ph6</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <bpmn:subProcess id="SP_Phase6" name="Phase 6: Testing &amp; Validation (PRC-PH6-001)">
+      <bpmn:documentation>Process ID: PRC-PH6-001 | SLA: 5-15 business days
+Sub-processes: AI-Augmented Test Strategy (SP-6.1), Performance/Load Testing (SP-6.2), Security Validation/Pen Test (SP-6.3), UAT (SP-6.4), Compliance Certification (SP-6.5).</bpmn:documentation>
+      <bpmn:incoming>Flow_Ph5_Ph6</bpmn:incoming>
+      <bpmn:outgoing>Flow_Ph6_Ph7</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Timer_Ph6_100" name="SLA Breach (15d)" attachedToRef="SP_Phase6" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P15D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:subProcess id="SP_Phase7" name="Phase 7: Deployment &amp; Release (PRC-PH7-001)">
+      <bpmn:documentation>Process ID: PRC-PH7-001 | SLA: 2-5 business days
+Sub-processes: Release Readiness Verification (SP-7.1), Deployment Execution (SP-7.2), Production Validation (SP-7.3), Go-Live Gate (SP-7.4).
+DMN-DT-009 governs deployment strategy selection based on risk tier, change scope, and production impact.</bpmn:documentation>
+      <bpmn:incoming>Flow_Ph6_Ph7</bpmn:incoming>
+      <bpmn:outgoing>Flow_Ph7_Ph8</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Timer_Ph7_100" name="SLA Breach (5d)" attachedToRef="SP_Phase7" cancelActivity="false">
+      <bpmn:timerEventDefinition><bpmn:timeDuration>P5D</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:subProcess id="SP_Phase8" name="Phase 8: Operations through Retirement (PRC-PH8-001)">
+      <bpmn:documentation>Process ID: PRC-PH8-001 | SLA: Ongoing
+Sub-processes: Monitoring &amp; Incident Response (SP-8.1), Change Management (SP-8.2), Continuous Improvement Cycles (SP-8.3), Lifecycle Review &amp; Health Assessment (SP-8.4), 6-Phase Vendor and Software Retirement (SP-8.5).
+Retirement: Trigger Assessment → Impact Analysis → Migration Planning → Data Archival → Decommissioning → Post-Retirement Validation.</bpmn:documentation>
+      <bpmn:incoming>Flow_Ph7_Ph8</bpmn:incoming>
+      <bpmn:outgoing>Flow_Ph8_End</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <!-- END EVENT -->
+    <bpmn:endEvent id="EndEvent_Retirement" name="Software Asset Fully Decommissioned &amp; Archived">
+      <bpmn:incoming>Flow_Ph8_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- ================================================================ -->
+    <!-- CROSS-CUTTING EVENT SUB-PROCESSES                                 -->
+    <!-- ================================================================ -->
+
+    <!-- 1. SLA Breach Management -->
+    <bpmn:subProcess id="EventSP_SLA_Breach" name="SLA Breach Management" triggeredByEvent="true">
+      <bpmn:documentation>Cross-cutting event sub-process: SLA Breach Management
+Trigger: Timer Boundary (Non-Interrupting) at 50%, 75%, 90%, 100% thresholds
+SLA: Response within 2 hours
+Progressive escalation at each threshold level.</bpmn:documentation>
+      <bpmn:startEvent id="Start_SLA" name="SLA Threshold Reached" isInterrupting="false">
+        <bpmn:timerEventDefinition />
+      </bpmn:startEvent>
+      <bpmn:exclusiveGateway id="GW_SLA_Level" name="SLA Breach Level?" />
+      <bpmn:sendTask id="Task_SLA_50" name="50% Warning: Notify Activity Owner" />
+      <bpmn:sendTask id="Task_SLA_75" name="75% Alert: Escalate to Manager" />
+      <bpmn:sendTask id="Task_SLA_90" name="90% Critical: Escalate to Governance Lead" />
+      <bpmn:task id="Task_SLA_100" name="100% Breach: Formal SLA Breach Record + RCA" />
+      <bpmn:endEvent id="End_SLA" />
+      <bpmn:sequenceFlow id="f_sla_1" sourceRef="Start_SLA" targetRef="GW_SLA_Level" />
+      <bpmn:sequenceFlow id="f_sla_2a" name="50%" sourceRef="GW_SLA_Level" targetRef="Task_SLA_50" />
+      <bpmn:sequenceFlow id="f_sla_2b" name="75%" sourceRef="GW_SLA_Level" targetRef="Task_SLA_75" />
+      <bpmn:sequenceFlow id="f_sla_2c" name="90%" sourceRef="GW_SLA_Level" targetRef="Task_SLA_90" />
+      <bpmn:sequenceFlow id="f_sla_2d" name="100%" sourceRef="GW_SLA_Level" targetRef="Task_SLA_100" />
+      <bpmn:sequenceFlow id="f_sla_3a" sourceRef="Task_SLA_50" targetRef="End_SLA" />
+      <bpmn:sequenceFlow id="f_sla_3b" sourceRef="Task_SLA_75" targetRef="End_SLA" />
+      <bpmn:sequenceFlow id="f_sla_3c" sourceRef="Task_SLA_90" targetRef="End_SLA" />
+      <bpmn:sequenceFlow id="f_sla_3d" sourceRef="Task_SLA_100" targetRef="End_SLA" />
+    </bpmn:subProcess>
+
+    <!-- 2. Vulnerability Remediation -->
+    <bpmn:subProcess id="EventSP_Vuln" name="Vulnerability Remediation" triggeredByEvent="true">
+      <bpmn:documentation>Cross-cutting event sub-process: Vulnerability Remediation
+Trigger: Signal (Interrupting) - critical vulnerability discovery
+SLA: Critical: 4 hours / High: 24 hours
+Suspends current activities pending remediation.</bpmn:documentation>
+      <bpmn:startEvent id="Start_Vuln" name="Critical Vulnerability Discovered" isInterrupting="true">
+        <bpmn:signalEventDefinition />
+      </bpmn:startEvent>
+      <bpmn:task id="Task_Vuln_Assess" name="Assess Vulnerability Impact &amp; Severity" />
+      <bpmn:task id="Task_Vuln_Contain" name="Implement Containment Measures" />
+      <bpmn:task id="Task_Vuln_Remediate" name="Execute Remediation &amp; Patch" />
+      <bpmn:task id="Task_Vuln_Validate" name="Validate Remediation Effectiveness" />
+      <bpmn:endEvent id="End_Vuln" />
+      <bpmn:sequenceFlow id="f_vuln_1" sourceRef="Start_Vuln" targetRef="Task_Vuln_Assess" />
+      <bpmn:sequenceFlow id="f_vuln_2" sourceRef="Task_Vuln_Assess" targetRef="Task_Vuln_Contain" />
+      <bpmn:sequenceFlow id="f_vuln_3" sourceRef="Task_Vuln_Contain" targetRef="Task_Vuln_Remediate" />
+      <bpmn:sequenceFlow id="f_vuln_4" sourceRef="Task_Vuln_Remediate" targetRef="Task_Vuln_Validate" />
+      <bpmn:sequenceFlow id="f_vuln_5" sourceRef="Task_Vuln_Validate" targetRef="End_Vuln" />
+    </bpmn:subProcess>
+
+    <!-- 3. Incident Response -->
+    <bpmn:subProcess id="EventSP_Incident" name="Incident Response" triggeredByEvent="true">
+      <bpmn:documentation>Cross-cutting event sub-process: Incident Response
+Trigger: Signal (Interrupting) - security or operational incident
+SLA: Severity 1: 15 minutes | Severity 2: 1 hour | Severity 3: 4 hours</bpmn:documentation>
+      <bpmn:startEvent id="Start_Incident" name="Security/Operational Incident" isInterrupting="true">
+        <bpmn:signalEventDefinition />
+      </bpmn:startEvent>
+      <bpmn:task id="Task_Inc_Triage" name="Incident Triage &amp; Severity Classification" />
+      <bpmn:task id="Task_Inc_Contain" name="Immediate Containment" />
+      <bpmn:task id="Task_Inc_Investigate" name="Root Cause Investigation" />
+      <bpmn:task id="Task_Inc_Resolve" name="Resolution &amp; Recovery" />
+      <bpmn:task id="Task_Inc_PIR" name="Post-Incident Review &amp; Lessons Learned" />
+      <bpmn:endEvent id="End_Incident" />
+      <bpmn:sequenceFlow id="f_inc_1" sourceRef="Start_Incident" targetRef="Task_Inc_Triage" />
+      <bpmn:sequenceFlow id="f_inc_2" sourceRef="Task_Inc_Triage" targetRef="Task_Inc_Contain" />
+      <bpmn:sequenceFlow id="f_inc_3" sourceRef="Task_Inc_Contain" targetRef="Task_Inc_Investigate" />
+      <bpmn:sequenceFlow id="f_inc_4" sourceRef="Task_Inc_Investigate" targetRef="Task_Inc_Resolve" />
+      <bpmn:sequenceFlow id="f_inc_5" sourceRef="Task_Inc_Resolve" targetRef="Task_Inc_PIR" />
+      <bpmn:sequenceFlow id="f_inc_6" sourceRef="Task_Inc_PIR" targetRef="End_Incident" />
+    </bpmn:subProcess>
+
+    <!-- 4. Regulatory Change -->
+    <bpmn:subProcess id="EventSP_RegChange" name="Regulatory Change Management" triggeredByEvent="true">
+      <bpmn:documentation>Cross-cutting event sub-process: Regulatory Change Management
+Trigger: Message (Non-Interrupting) - regulatory/compliance requirement change
+SLA: Impact assessment within 5 business days</bpmn:documentation>
+      <bpmn:startEvent id="Start_RegChange" name="Regulatory Change Notification" isInterrupting="false">
+        <bpmn:messageEventDefinition />
+      </bpmn:startEvent>
+      <bpmn:task id="Task_Reg_Assess" name="Assess Regulatory Change Impact" />
+      <bpmn:task id="Task_Reg_Update" name="Update KB-003 &amp; DMN Rules" />
+      <bpmn:task id="Task_Reg_Notify" name="Notify Affected Initiatives" />
+      <bpmn:task id="Task_Reg_Implement" name="Implement Required Process Changes" />
+      <bpmn:endEvent id="End_RegChange" />
+      <bpmn:sequenceFlow id="f_reg_1" sourceRef="Start_RegChange" targetRef="Task_Reg_Assess" />
+      <bpmn:sequenceFlow id="f_reg_2" sourceRef="Task_Reg_Assess" targetRef="Task_Reg_Update" />
+      <bpmn:sequenceFlow id="f_reg_3" sourceRef="Task_Reg_Update" targetRef="Task_Reg_Notify" />
+      <bpmn:sequenceFlow id="f_reg_4" sourceRef="Task_Reg_Notify" targetRef="Task_Reg_Implement" />
+      <bpmn:sequenceFlow id="f_reg_5" sourceRef="Task_Reg_Implement" targetRef="End_RegChange" />
+    </bpmn:subProcess>
+
+    <!-- 5. Continuous Improvement -->
+    <bpmn:subProcess id="EventSP_CI" name="Continuous Improvement" triggeredByEvent="true">
+      <bpmn:documentation>Cross-cutting event sub-process: Continuous Improvement
+Trigger: Timer (Non-Interrupting) - 8 parallel improvement cycles
+Cadence: Operational (daily) through Innovation (continuous)</bpmn:documentation>
+      <bpmn:startEvent id="Start_CI" name="Improvement Cycle Trigger" isInterrupting="false">
+        <bpmn:timerEventDefinition><bpmn:timeCycle>R/P1M</bpmn:timeCycle></bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+      <bpmn:task id="Task_CI_Collect" name="Collect Process Metrics &amp; Feedback" />
+      <bpmn:task id="Task_CI_Analyze" name="Analyze Performance Against KPIs" />
+      <bpmn:task id="Task_CI_Identify" name="Identify Improvement Opportunities" />
+      <bpmn:task id="Task_CI_Implement" name="Implement Process Improvements" />
+      <bpmn:task id="Task_CI_Validate" name="Validate Improvement Impact" />
+      <bpmn:endEvent id="End_CI" />
+      <bpmn:sequenceFlow id="f_ci_1" sourceRef="Start_CI" targetRef="Task_CI_Collect" />
+      <bpmn:sequenceFlow id="f_ci_2" sourceRef="Task_CI_Collect" targetRef="Task_CI_Analyze" />
+      <bpmn:sequenceFlow id="f_ci_3" sourceRef="Task_CI_Analyze" targetRef="Task_CI_Identify" />
+      <bpmn:sequenceFlow id="f_ci_4" sourceRef="Task_CI_Identify" targetRef="Task_CI_Implement" />
+      <bpmn:sequenceFlow id="f_ci_5" sourceRef="Task_CI_Implement" targetRef="Task_CI_Validate" />
+      <bpmn:sequenceFlow id="f_ci_6" sourceRef="Task_CI_Validate" targetRef="End_CI" />
+    </bpmn:subProcess>
+
+    <!-- BLIND SPOT: 6. Stakeholder Communication Event Sub-Process -->
+    <bpmn:subProcess id="EventSP_StakeholderComm" name="Stakeholder Communication &amp; Status Reporting" triggeredByEvent="true">
+      <bpmn:documentation>BLIND SPOT ADDRESSED: Cross-cutting event sub-process for automated stakeholder status reporting.
+Trigger: Timer (Non-Interrupting) - Weekly status cadence
+Ensures all stakeholders receive consistent progress updates with SLA status, risk changes, and blockers.</bpmn:documentation>
+      <bpmn:startEvent id="Start_StakeComm" name="Weekly Status Cycle" isInterrupting="false">
+        <bpmn:timerEventDefinition><bpmn:timeCycle>R/P1W</bpmn:timeCycle></bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+      <bpmn:task id="Task_SC_Gather" name="Gather Status from All Active Sub-Processes" />
+      <bpmn:task id="Task_SC_Generate" name="Auto-Generate Status Report with SLA Dashboard" />
+      <bpmn:sendTask id="Task_SC_Distribute" name="Distribute to Stakeholders by Role" />
+      <bpmn:endEvent id="End_StakeComm" />
+      <bpmn:sequenceFlow id="f_sc_1" sourceRef="Start_StakeComm" targetRef="Task_SC_Gather" />
+      <bpmn:sequenceFlow id="f_sc_2" sourceRef="Task_SC_Gather" targetRef="Task_SC_Generate" />
+      <bpmn:sequenceFlow id="f_sc_3" sourceRef="Task_SC_Generate" targetRef="Task_SC_Distribute" />
+      <bpmn:sequenceFlow id="f_sc_4" sourceRef="Task_SC_Distribute" targetRef="End_StakeComm" />
+    </bpmn:subProcess>
+
+    <!-- ================================================================ -->
+    <!-- MAIN SEQUENCE FLOWS                                               -->
+    <!-- ================================================================ -->
+    <bpmn:sequenceFlow id="Flow_Start_SP11" sourceRef="StartEvent_Intake" targetRef="SP_1_1" />
+    <bpmn:sequenceFlow id="Flow_SP11_GW11" sourceRef="SP_1_1" targetRef="GW_1_1" />
+    <bpmn:sequenceFlow id="Flow_GW11_SP12" name="Complete &amp; Unique" sourceRef="GW_1_1" targetRef="SP_1_2" />
+    <bpmn:sequenceFlow id="Flow_GW11_Incomplete" name="Incomplete → Return to Requestor" sourceRef="GW_1_1" targetRef="SP_1_1">
+      <bpmn:documentation>Loop back to requestor with specific field-level guidance for completion.</bpmn:documentation>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_GW11_Duplicate" name="Duplicate → Merge Workflow" sourceRef="GW_1_1" targetRef="End_Rejected">
+      <bpmn:documentation>Route to merge/append workflow for duplicate initiatives.</bpmn:documentation>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_SP12_GW12" sourceRef="SP_1_2" targetRef="GW_1_2" />
+    <bpmn:sequenceFlow id="Flow_GW12_SP13" name="Medium / High / Critical → Business Case" sourceRef="GW_1_2" targetRef="SP_1_3" />
+    <bpmn:sequenceFlow id="Flow_GW12_Express" name="Low Risk → Express to Phase 2" sourceRef="GW_1_2" targetRef="GW_2_1" />
+    <bpmn:sequenceFlow id="Flow_SP13_GW13" sourceRef="SP_1_3" targetRef="GW_1_3" />
+    <bpmn:sequenceFlow id="Flow_GW13_Phase2" name="Approved → Phase 2" sourceRef="GW_1_3" targetRef="GW_2_1" />
+    <bpmn:sequenceFlow id="Flow_GW13_Conditional" name="Conditional → Return to Requestor" sourceRef="GW_1_3" targetRef="SP_1_3" />
+    <bpmn:sequenceFlow id="Flow_GW13_Deferred" name="Deferred → Backlog" sourceRef="GW_1_3" targetRef="End_Deferred" />
+    <bpmn:sequenceFlow id="Flow_GW13_Rejected" name="Rejected → Archive" sourceRef="GW_1_3" targetRef="End_Rejected" />
+
+    <!-- Phase 2 Flows -->
+    <bpmn:sequenceFlow id="Flow_GW21_SP21" sourceRef="GW_2_1" targetRef="SP_2_1" />
+    <bpmn:sequenceFlow id="Flow_GW21_SP22" sourceRef="GW_2_1" targetRef="SP_2_2" />
+    <bpmn:sequenceFlow id="Flow_GW21_GW22" sourceRef="GW_2_1" targetRef="GW_2_2" />
+    <bpmn:sequenceFlow id="Flow_GW21_SP24" sourceRef="GW_2_1" targetRef="SP_2_4" />
+    <bpmn:sequenceFlow id="Flow_GW22_SP23" name="Vendor Involved → Vendor Assessment" sourceRef="GW_2_2" targetRef="SP_2_3" />
+    <bpmn:sequenceFlow id="Flow_GW22_Skip" name="No Vendor → Skip to Join" sourceRef="GW_2_2" targetRef="GW_2_3" />
+    <bpmn:sequenceFlow id="Flow_SP21_GW23" sourceRef="SP_2_1" targetRef="GW_2_3" />
+    <bpmn:sequenceFlow id="Flow_SP22_GW23" sourceRef="SP_2_2" targetRef="GW_2_3" />
+    <bpmn:sequenceFlow id="Flow_SP23_GW23" sourceRef="SP_2_3" targetRef="GW_2_3" />
+    <bpmn:sequenceFlow id="Flow_SP24_GW23" sourceRef="SP_2_4" targetRef="GW_2_3" />
+    <bpmn:sequenceFlow id="Flow_GW23_SP25" sourceRef="GW_2_3" targetRef="SP_2_5" />
+    <bpmn:sequenceFlow id="Flow_SP25_GW24" sourceRef="SP_2_5" targetRef="GW_2_4" />
+    <bpmn:sequenceFlow id="Flow_GW24_Phase3" name="Approved → Phase 3" sourceRef="GW_2_4" targetRef="GW_3_1" />
+    <bpmn:sequenceFlow id="Flow_GW24_Remediate" name="Remediate → Return to Assessment" sourceRef="GW_2_4" targetRef="GW_2_1" />
+    <bpmn:sequenceFlow id="Flow_GW24_Rejected" name="Reject → Archive" sourceRef="GW_2_4" targetRef="End_Rejected" />
+    <bpmn:sequenceFlow id="Flow_GW24_Conditional" name="Conditional → Remediation Plan" sourceRef="GW_2_4" targetRef="SP_2_5" />
+
+    <!-- Phase 3 Flows -->
+    <bpmn:sequenceFlow id="Flow_GW31_SP31" sourceRef="GW_3_1" targetRef="SP_3_1" />
+    <bpmn:sequenceFlow id="Flow_GW31_SP32" sourceRef="GW_3_1" targetRef="SP_3_2" />
+    <bpmn:sequenceFlow id="Flow_GW31_SP33" sourceRef="GW_3_1" targetRef="SP_3_3" />
+    <bpmn:sequenceFlow id="Flow_GW31_SP34" sourceRef="GW_3_1" targetRef="SP_3_4" />
+    <bpmn:sequenceFlow id="Flow_SP31_GW33" sourceRef="SP_3_1" targetRef="GW_3_3" />
+    <bpmn:sequenceFlow id="Flow_SP32_GW33" sourceRef="SP_3_2" targetRef="GW_3_3" />
+    <bpmn:sequenceFlow id="Flow_SP33_GW33" sourceRef="SP_3_3" targetRef="GW_3_3" />
+    <bpmn:sequenceFlow id="Flow_SP34_GW33" sourceRef="SP_3_4" targetRef="GW_3_3" />
+    <bpmn:sequenceFlow id="Flow_GW33_SP35" sourceRef="GW_3_3" targetRef="SP_3_5" />
+    <bpmn:sequenceFlow id="Flow_SP35_GW34" sourceRef="SP_3_5" targetRef="GW_3_4" />
+    <bpmn:sequenceFlow id="Flow_GW34_Phase4" name="All Criteria Met → Phase 4" sourceRef="GW_3_4" targetRef="SP_Phase4" />
+    <bpmn:sequenceFlow id="Flow_GW34_Remediate" name="Outstanding → Remediation Loop" sourceRef="GW_3_4" targetRef="GW_3_1" />
+    <bpmn:sequenceFlow id="Flow_GW34_Escalate" name="Critical Block → Governance Board" sourceRef="GW_3_4" targetRef="SP_2_5" />
+
+    <!-- Phases 4-8 Flows -->
+    <bpmn:sequenceFlow id="Flow_Ph4_Ph5" sourceRef="SP_Phase4" targetRef="SP_Phase5" />
+    <bpmn:sequenceFlow id="Flow_Ph5_Ph6" sourceRef="SP_Phase5" targetRef="SP_Phase6" />
+    <bpmn:sequenceFlow id="Flow_Ph6_Ph7" sourceRef="SP_Phase6" targetRef="SP_Phase7" />
+    <bpmn:sequenceFlow id="Flow_Ph7_Ph8" sourceRef="SP_Phase7" targetRef="SP_Phase8" />
+    <bpmn:sequenceFlow id="Flow_Ph8_End" sourceRef="SP_Phase8" targetRef="EndEvent_Retirement" />
+
+  </bpmn:process>
+
+  <!-- ================================================================== -->
+  <!-- PROCESS: Requestor Pool (simplified)                                -->
+  <!-- ================================================================== -->
+  <bpmn:process id="Process_Requestor" name="Requestor Process" isExecutable="false">
+    <bpmn:documentation>Business Unit / Requestor: Idea submission, business justification, UAT sign-off</bpmn:documentation>
+  </bpmn:process>
+
+  <!-- ================================================================== -->
+  <!-- PROCESS: Technical Pool                                             -->
+  <!-- ================================================================== -->
+  <bpmn:process id="Process_Technical" name="Technical Process" isExecutable="false">
+    <bpmn:documentation>Enterprise Architecture, Security &amp; Compliance, Development Teams / AI Agents:
+Solution design, integration review, standards compliance, threat modeling, security assessment, build, test, deploy</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_Tech">
+      <bpmn:lane id="Lane_Architecture" name="Enterprise Architecture" />
+      <bpmn:lane id="Lane_Security" name="Security &amp; Compliance" />
+      <bpmn:lane id="Lane_Development" name="Development Teams / AI Agents" />
+    </bpmn:laneSet>
+  </bpmn:process>
+
+  <!-- ================================================================== -->
+  <!-- PROCESS: Vendor Pool                                                -->
+  <!-- ================================================================== -->
+  <bpmn:process id="Process_Vendor" name="Vendor Process" isExecutable="false">
+    <bpmn:documentation>Third-Party Vendors: Vendor assessment, contract negotiation, SLA management</bpmn:documentation>
+  </bpmn:process>
+
+  <!-- ================================================================== -->
+  <!-- PROCESS: Operations Pool                                            -->
+  <!-- ================================================================== -->
+  <bpmn:process id="Process_Operations" name="Operations Process" isExecutable="false">
+    <bpmn:documentation>IT Operations / SRE: Provisioning, monitoring, incident response, retirement</bpmn:documentation>
+  </bpmn:process>
+
+  <!-- ================================================================== -->
+  <!-- PROCESS: AI Platform Pool                                           -->
+  <!-- ================================================================== -->
+  <bpmn:process id="Process_AI" name="AI Platform Process" isExecutable="false">
+    <bpmn:documentation>AI Agents &amp; DMN Engine: AI Intake Agent, AI Risk Agent, AI Compliance Agent, AI Architecture Agent, AI Security Agent, AI Code Agent, AI Testing Agent, AI Documentation Agent, AI Deployment Agent. DMN Engine executes all decision tables (DMN-DT-001 through DMN-DT-009).</bpmn:documentation>
+  </bpmn:process>
+
+  <!-- ================================================================== -->
+  <!-- BPMN DIAGRAM (Layout for rendering)                                 -->
+  <!-- ================================================================== -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_IntakeToRetirement">
+
+      <!-- Pool shapes -->
+      <bpmndi:BPMNShape id="Shape_Pool_Requestor" bpmnElement="Pool_Requestor" isHorizontal="true">
+        <dc:Bounds x="120" y="80" width="5600" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Pool_Governance" bpmnElement="Pool_Governance" isHorizontal="true">
+        <dc:Bounds x="120" y="320" width="5600" height="3200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Pool_Technical" bpmnElement="Pool_Technical" isHorizontal="true">
+        <dc:Bounds x="120" y="3560" width="5600" height="400" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Pool_Vendor" bpmnElement="Pool_Vendor" isHorizontal="true">
+        <dc:Bounds x="120" y="4000" width="5600" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Pool_Operations" bpmnElement="Pool_Operations" isHorizontal="true">
+        <dc:Bounds x="120" y="4240" width="5600" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Pool_AI" bpmnElement="Pool_AI" isHorizontal="true">
+        <dc:Bounds x="120" y="4480" width="5600" height="200" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start Event -->
+      <bpmndi:BPMNShape id="Shape_StartEvent" bpmnElement="StartEvent_Intake">
+        <dc:Bounds x="222" y="432" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 1 Sub-Processes -->
+      <bpmndi:BPMNShape id="Shape_SP11" bpmnElement="SP_1_1" isExpanded="false">
+        <dc:Bounds x="320" y="400" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW11" bpmnElement="GW_1_1" isMarkerVisible="true">
+        <dc:Bounds x="575" y="425" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP12" bpmnElement="SP_1_2" isExpanded="false">
+        <dc:Bounds x="680" y="400" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW12" bpmnElement="GW_1_2" isMarkerVisible="true">
+        <dc:Bounds x="935" y="425" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP13" bpmnElement="SP_1_3" isExpanded="false">
+        <dc:Bounds x="1040" y="400" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW13" bpmnElement="GW_1_3" isMarkerVisible="true">
+        <dc:Bounds x="1295" y="425" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 2 Elements -->
+      <bpmndi:BPMNShape id="Shape_GW21" bpmnElement="GW_2_1">
+        <dc:Bounds x="1415" y="625" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP21" bpmnElement="SP_2_1" isExpanded="false">
+        <dc:Bounds x="1540" y="550" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP22" bpmnElement="SP_2_2" isExpanded="false">
+        <dc:Bounds x="1540" y="680" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW22" bpmnElement="GW_2_2" isMarkerVisible="true">
+        <dc:Bounds x="1540" y="820" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP23" bpmnElement="SP_2_3" isExpanded="false">
+        <dc:Bounds x="1640" y="810" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP24" bpmnElement="SP_2_4" isExpanded="false">
+        <dc:Bounds x="1540" y="940" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW23" bpmnElement="GW_2_3">
+        <dc:Bounds x="1915" y="625" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP25" bpmnElement="SP_2_5" isExpanded="false">
+        <dc:Bounds x="2040" y="600" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW24" bpmnElement="GW_2_4" isMarkerVisible="true">
+        <dc:Bounds x="2315" y="625" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 3 Elements -->
+      <bpmndi:BPMNShape id="Shape_GW31" bpmnElement="GW_3_1">
+        <dc:Bounds x="2475" y="1025" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP31" bpmnElement="SP_3_1" isExpanded="false">
+        <dc:Bounds x="2600" y="950" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP32" bpmnElement="SP_3_2" isExpanded="false">
+        <dc:Bounds x="2600" y="1080" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP33" bpmnElement="SP_3_3" isExpanded="false">
+        <dc:Bounds x="2600" y="1210" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP34" bpmnElement="SP_3_4" isExpanded="false">
+        <dc:Bounds x="2600" y="1340" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW33" bpmnElement="GW_3_3">
+        <dc:Bounds x="2975" y="1025" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SP35" bpmnElement="SP_3_5" isExpanded="false">
+        <dc:Bounds x="3100" y="1000" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW34" bpmnElement="GW_3_4" isMarkerVisible="true">
+        <dc:Bounds x="3375" y="1025" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <!-- Phases 4-8 -->
+      <bpmndi:BPMNShape id="Shape_Ph4" bpmnElement="SP_Phase4" isExpanded="false">
+        <dc:Bounds x="3500" y="1600" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Ph5" bpmnElement="SP_Phase5" isExpanded="false">
+        <dc:Bounds x="3750" y="1600" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Ph6" bpmnElement="SP_Phase6" isExpanded="false">
+        <dc:Bounds x="4000" y="1600" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Ph7" bpmnElement="SP_Phase7" isExpanded="false">
+        <dc:Bounds x="4250" y="1600" width="200" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Ph8" bpmnElement="SP_Phase8" isExpanded="false">
+        <dc:Bounds x="4500" y="1600" width="200" height="100" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Events -->
+      <bpmndi:BPMNShape id="Shape_EndRetirement" bpmnElement="EndEvent_Retirement">
+        <dc:Bounds x="4782" y="1632" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndDeferred" bpmnElement="End_Deferred">
+        <dc:Bounds x="1302" y="542" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndRejected" bpmnElement="End_Rejected">
+        <dc:Bounds x="1402" y="542" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

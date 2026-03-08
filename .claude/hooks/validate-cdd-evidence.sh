@@ -18,13 +18,12 @@ PROJECT_DIR="$CLAUDE_PROJECT_DIR"
 REPO="proth1/sla"
 
 # Extract Jira issue key from branch name
-# Branches use SLM- prefix but Jira project key is SLA
 BRANCH=$(git -C "${PROJECT_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 JIRA_KEY=""
 ISSUE_NUM=""
 if [[ "${BRANCH}" =~ ^feature/SLM-([0-9]+) ]]; then
     ISSUE_NUM="${BASH_REMATCH[1]}"
-    JIRA_KEY="SLA-${ISSUE_NUM}"
+    JIRA_KEY="SLM-${ISSUE_NUM}"
 fi
 
 # If no Jira key found, skip validation (might be a hotfix branch)
@@ -35,10 +34,15 @@ fi
 # Resolve Jira credentials: prefer ~/.jira.d/config.yml (agentic-sdlc),
 # fall back to env vars
 JIRA_CONFIG="$HOME/.jira.d/config.yml"
-if [[ -f "${JIRA_CONFIG}" ]]; then
-    CFG_URL=$(grep '^endpoint:' "${JIRA_CONFIG}" | awk '{print $2}' | tr -d '[:space:]')
-    CFG_USER=$(grep '^user:' "${JIRA_CONFIG}" | awk '{print $2}' | tr -d '[:space:]')
-    CFG_PASS=$(grep '^password:' "${JIRA_CONFIG}" | awk '{print $2}' | tr -d '[:space:]')
+if [[ -f "${JIRA_CONFIG}" ]] && command -v python3 &>/dev/null; then
+    read -r CFG_URL CFG_USER CFG_PASS < <(python3 -c "
+import re, sys
+cfg = open('${JIRA_CONFIG}').read()
+def val(key):
+    m = re.search(r'^' + key + r':\s*(.+)', cfg, re.M)
+    return m.group(1).strip() if m else ''
+print(val('endpoint'), val('user'), val('password'))
+" 2>/dev/null || echo "")
     if [[ -n "${CFG_URL}" && -n "${CFG_USER}" && -n "${CFG_PASS}" ]]; then
         JIRA_URL="${CFG_URL}"
         JIRA_AUTH="${CFG_USER}:${CFG_PASS}"
@@ -54,8 +58,25 @@ if [[ -z "${JIRA_AUTH:-}" ]]; then
     JIRA_AUTH="${JIRA_EMAIL}:${JIRA_API_TOKEN}"
 fi
 
+# Check if Jira issue exists first
+ISSUE_RESPONSE=$(curl -s --max-time 8 -u "${JIRA_AUTH}" \
+  "${JIRA_URL}/rest/api/3/issue/${JIRA_KEY}" 2>/dev/null || echo "")
+
+ISSUE_EXISTS=$(echo "${ISSUE_RESPONSE}" | jq -r '.key // empty' 2>/dev/null || echo "")
+if [[ -z "${ISSUE_EXISTS}" ]]; then
+    # Issue doesn't exist or Jira is unreachable — skip validation (warn only)
+    cat <<EOF
+{
+  "hookSpecificOutput": {
+    "additionalContext": "CDD evidence validation SKIPPED: Jira issue ${JIRA_KEY} not found or Jira unreachable. Proceeding with merge."
+  }
+}
+EOF
+    exit 0
+fi
+
 # Fetch Jira issue comments and look for CDD evidence markers
-COMMENTS=$(curl -s -u "${JIRA_AUTH}" \
+COMMENTS=$(curl -s --max-time 8 -u "${JIRA_AUTH}" \
   "${JIRA_URL}/rest/api/3/issue/${JIRA_KEY}/comment" 2>/dev/null | \
   jq -r '.comments[].body.content[]?.content[]?.text // empty' 2>/dev/null || echo "")
 

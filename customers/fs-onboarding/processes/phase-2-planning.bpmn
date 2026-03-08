@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_OB_Phase2Planning"
+                  targetNamespace="http://sla.governance/bpmn/onboarding"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="OB_Collaboration_Phase2Planning">
+    <bpmn:participant id="OB_Participant_EnterpriseGov" name="Enterprise Governance" processRef="Process_OB_Phase2_Planning" />
+    <bpmn:participant id="OB_Participant_VendorThirdParty" name="Vendor / Third Party" processRef="OB_Process_VendorPhase2" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_OB_Phase2_Planning" name="OB Phase 2: Planning and Risk Scoping" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="OB_LaneSet_Phase2Planning">
+      <bpmn:lane id="OB_Lane_Business" name="Business" camunda:candidateGroups="business-lane">
+        <bpmn:flowNodeRef>OB_StartEvent_Phase2Initiated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_2_1_BusinessCaseValidation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_2_5a_ScopeDefinitionBusiness</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_Phase2Complete</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Governance" name="Governance" camunda:candidateGroups="governance-lane">
+        <bpmn:flowNodeRef>OB_EndEvent_Rejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Contracting" name="Contracting" camunda:candidateGroups="contracting-lane">
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Technical" name="Technical Assessment" camunda:candidateGroups="technical-assessment">
+        <bpmn:flowNodeRef>OB_Task_2_5b_ScopeDefinitionTech</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_AIInitiative</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_ParallelSplit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_ParallelJoin</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_AIReview" name="AI Review" camunda:candidateGroups="ai-review">
+        <bpmn:flowNodeRef>OB_Task_2_4_AIRiskClassification</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_AIJoin</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Compliance" name="Compliance" camunda:candidateGroups="compliance-lane">
+        <bpmn:flowNodeRef>OB_Task_2_6_RegulatoryMapping</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Oversight" name="Oversight" camunda:candidateGroups="oversight-lane">
+      </bpmn:lane>
+      <bpmn:lane id="OB_Lane_Automation" name="Automation" camunda:candidateGroups="automation-lane">
+        <bpmn:flowNodeRef>OB_Task_2_2_InherentRiskScoring</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_BoundaryEvent_Phase2SLATimer</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_SLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_2_3_RiskTierAssignment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Gateway_RiskTierDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_Task_2_7_KBPrePopulation</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="OB_StartEvent_Phase2Initiated" name="Phase 2&#10;Initiated">
+      <bpmn:outgoing>OB_Flow_Start_BusinessCase</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="OB_Task_2_1_BusinessCaseValidation" name="2.1 Business Case&#10;Validation" camunda:candidateGroups="business-lane">
+      <bpmn:incoming>OB_Flow_Start_BusinessCase</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_BusinessCase_RiskScoring</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="OB_Task_2_2_InherentRiskScoring" name="2.2 Inherent&#10;Risk Scoring" camunda:type="external" camunda:topic="risk-scoring">
+      <bpmn:incoming>OB_Flow_BusinessCase_RiskScoring</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_RiskScoring_TierAssignment</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:boundaryEvent id="OB_BoundaryEvent_Phase2SLATimer" name="3 Day&#10;SLA" attachedToRef="OB_Task_2_2_InherentRiskScoring" cancelActivity="false">
+      <bpmn:outgoing>OB_Flow_SLATimer_Escalated</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="OB_TimerDef_Phase2SLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_SLAEscalated" name="Phase 2 SLA&#10;Escalated">
+      <bpmn:incoming>OB_Flow_SLATimer_Escalated</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:businessRuleTask id="OB_Task_2_3_RiskTierAssignment" name="2.3 Risk Tier&#10;Assignment" camunda:decisionRef="OB_DMN_RiskTierClassification" camunda:decisionRefBinding="latest" camunda:resultVariable="riskTier" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>OB_Flow_RiskScoring_TierAssignment</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_TierAssignment_RiskDecision</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:exclusiveGateway id="OB_Gateway_RiskTierDecision" name="Unacceptable&#10;Risk?" default="OB_Flow_AcceptableRisk">
+      <bpmn:incoming>OB_Flow_TierAssignment_RiskDecision</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_UnacceptableRisk</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_AcceptableRisk</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="OB_EndEvent_Rejected" name="Rejected&#10;(Unacceptable Risk)">
+      <bpmn:incoming>OB_Flow_UnacceptableRisk</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="OB_TerminateDef_Rejected" />
+    </bpmn:endEvent>
+
+    <bpmn:exclusiveGateway id="OB_Gateway_AIInitiative" name="AI Initiative?" default="OB_Flow_NotAI_Bypass">
+      <bpmn:incoming>OB_Flow_AcceptableRisk</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_YesAI_Classification</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_NotAI_Bypass</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="OB_Task_2_4_AIRiskClassification" name="2.4 AI Risk&#10;Classification" camunda:candidateGroups="ai-review">
+      <bpmn:incoming>OB_Flow_YesAI_Classification</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_AIClassification_Join</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="OB_Gateway_AIJoin">
+      <bpmn:incoming>OB_Flow_AIClassification_Join</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_NotAI_Bypass</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_AIJoin_ParallelSplit</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:parallelGateway id="OB_Gateway_ParallelSplit">
+      <bpmn:incoming>OB_Flow_AIJoin_ParallelSplit</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Split_Task25Bus</bpmn:outgoing>
+      <bpmn:outgoing>OB_Flow_Split_Task25Tech</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="OB_Task_2_5a_ScopeDefinitionBusiness" name="2.5a Scope Definition&#10;(Business)" camunda:candidateGroups="business-lane">
+      <bpmn:incoming>OB_Flow_Split_Task25Bus</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Task25Bus_Join</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="OB_Task_2_5b_ScopeDefinitionTech" name="2.5b Scope Definition&#10;(Technical)" camunda:candidateGroups="technical-assessment">
+      <bpmn:incoming>OB_Flow_Split_Task25Tech</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Task25Tech_Join</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:parallelGateway id="OB_Gateway_ParallelJoin">
+      <bpmn:incoming>OB_Flow_Task25Bus_Join</bpmn:incoming>
+      <bpmn:incoming>OB_Flow_Task25Tech_Join</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_ParallelJoin_RegulatoryMapping</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:serviceTask id="OB_Task_2_6_RegulatoryMapping" name="2.6 Regulatory&#10;Mapping" camunda:type="external" camunda:topic="regulatory-mapping">
+      <bpmn:incoming>OB_Flow_ParallelJoin_RegulatoryMapping</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_RegulatoryMapping_KBPop</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="OB_Task_2_7_KBPrePopulation" name="2.7 KB&#10;Pre-Population" camunda:type="external" camunda:topic="kb-prepopulation">
+      <bpmn:incoming>OB_Flow_RegulatoryMapping_KBPop</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_KBPop_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="OB_EndEvent_Phase2Complete" name="Phase 2 Complete&#10;(Proceed to Phase 3)">
+      <bpmn:incoming>OB_Flow_KBPop_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:textAnnotation id="OB_Annotation_OCC">
+      <bpmn:text>OCC 2023-17: Third-party risk management — inherent risk scoring (2.2) and risk tier assignment (2.3) satisfy mandatory risk classification requirements for vendor onboarding engagement.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_OCC" sourceRef="OB_Task_2_2_InherentRiskScoring" targetRef="OB_Annotation_OCC" />
+
+    <bpmn:textAnnotation id="OB_Annotation_SR117">
+      <bpmn:text>SR 11-7: Model risk management — AI Risk Classification (2.4) applies model risk tier (Tier 1/2/3) per Federal Reserve SR 11-7. Tier 1 AI models require independent validation and Board reporting.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_SR117" sourceRef="OB_Task_2_4_AIRiskClassification" targetRef="OB_Annotation_SR117" />
+
+    <bpmn:textAnnotation id="OB_Annotation_GDPR">
+      <bpmn:text>GDPR/CCPA: Scope Definition (2.5a/b) and Regulatory Mapping (2.6) identify data residency requirements, PII/NPI processing obligations, and cross-border transfer restrictions.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_GDPR" sourceRef="OB_Task_2_6_RegulatoryMapping" targetRef="OB_Annotation_GDPR" />
+
+    <bpmn:textAnnotation id="OB_Annotation_EUAI">
+      <bpmn:text>EU AI Act: AI initiative flag (Gateway: AI Initiative?) triggers mandatory Article 6 risk classification. High-risk AI systems require conformity assessment before onboarding.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_EUAI" sourceRef="OB_Gateway_AIInitiative" targetRef="OB_Annotation_EUAI" />
+
+    <bpmn:textAnnotation id="OB_Annotation_TaskIO">
+      <bpmn:text>Task I/O: 2.1 IN(initiativeId, businessCase, selectedPathway) OUT(businessCaseApproved, strategicPriority) | 2.2 IN(initiativeId, isAIInitiative) OUT(5 risk dimension scores) | 2.3 IN(5 risk scores) OUT(riskTier, onboardingEligible) | 2.4 IN(isAIInitiative, aiComplexityScore) OUT(aiRiskClassification, euAiActCategory) | 2.5 IN/OUT(scope statements) | 2.6 IN(isAIInitiative, category, dataFlows[]) OUT(applicableRegulations[]) | 2.7 IN(scopeStatements, regulations[]) OUT(knowledgeBaseUpdated)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_TaskIO" sourceRef="OB_Task_2_1_BusinessCaseValidation" targetRef="OB_Annotation_TaskIO" />
+
+    <bpmn:sequenceFlow id="OB_Flow_Start_BusinessCase" sourceRef="OB_StartEvent_Phase2Initiated" targetRef="OB_Task_2_1_BusinessCaseValidation" />
+    <bpmn:sequenceFlow id="OB_Flow_BusinessCase_RiskScoring" sourceRef="OB_Task_2_1_BusinessCaseValidation" targetRef="OB_Task_2_2_InherentRiskScoring" />
+    <bpmn:sequenceFlow id="OB_Flow_RiskScoring_TierAssignment" sourceRef="OB_Task_2_2_InherentRiskScoring" targetRef="OB_Task_2_3_RiskTierAssignment" />
+    <bpmn:sequenceFlow id="OB_Flow_TierAssignment_RiskDecision" sourceRef="OB_Task_2_3_RiskTierAssignment" targetRef="OB_Gateway_RiskTierDecision" />
+
+    <bpmn:sequenceFlow id="OB_Flow_UnacceptableRisk" name="Unacceptable" sourceRef="OB_Gateway_RiskTierDecision" targetRef="OB_EndEvent_Rejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${riskTier == 'UNACCEPTABLE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="OB_Flow_AcceptableRisk" name="Acceptable" sourceRef="OB_Gateway_RiskTierDecision" targetRef="OB_Gateway_AIInitiative" />
+
+    <bpmn:sequenceFlow id="OB_Flow_YesAI_Classification" name="Yes" sourceRef="OB_Gateway_AIInitiative" targetRef="OB_Task_2_4_AIRiskClassification">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isAIInitiative == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="OB_Flow_NotAI_Bypass" name="No" sourceRef="OB_Gateway_AIInitiative" targetRef="OB_Gateway_AIJoin" />
+
+    <bpmn:sequenceFlow id="OB_Flow_AIClassification_Join" sourceRef="OB_Task_2_4_AIRiskClassification" targetRef="OB_Gateway_AIJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_AIJoin_ParallelSplit" sourceRef="OB_Gateway_AIJoin" targetRef="OB_Gateway_ParallelSplit" />
+
+    <bpmn:sequenceFlow id="OB_Flow_Split_Task25Bus" sourceRef="OB_Gateway_ParallelSplit" targetRef="OB_Task_2_5a_ScopeDefinitionBusiness" />
+    <bpmn:sequenceFlow id="OB_Flow_Split_Task25Tech" sourceRef="OB_Gateway_ParallelSplit" targetRef="OB_Task_2_5b_ScopeDefinitionTech" />
+
+    <bpmn:sequenceFlow id="OB_Flow_Task25Bus_Join" sourceRef="OB_Task_2_5a_ScopeDefinitionBusiness" targetRef="OB_Gateway_ParallelJoin" />
+    <bpmn:sequenceFlow id="OB_Flow_Task25Tech_Join" sourceRef="OB_Task_2_5b_ScopeDefinitionTech" targetRef="OB_Gateway_ParallelJoin" />
+
+    <bpmn:sequenceFlow id="OB_Flow_ParallelJoin_RegulatoryMapping" sourceRef="OB_Gateway_ParallelJoin" targetRef="OB_Task_2_6_RegulatoryMapping" />
+    <bpmn:sequenceFlow id="OB_Flow_RegulatoryMapping_KBPop" sourceRef="OB_Task_2_6_RegulatoryMapping" targetRef="OB_Task_2_7_KBPrePopulation" />
+    <bpmn:sequenceFlow id="OB_Flow_KBPop_End" sourceRef="OB_Task_2_7_KBPrePopulation" targetRef="OB_EndEvent_Phase2Complete" />
+
+    <bpmn:sequenceFlow id="OB_Flow_SLATimer_Escalated" sourceRef="OB_BoundaryEvent_Phase2SLATimer" targetRef="OB_EndEvent_SLAEscalated" />
+
+  </bpmn:process>
+
+  <bpmn:process id="OB_Process_VendorPhase2" name="Vendor / Third Party — OB Phase 2" isExecutable="false" camunda:historyTimeToLive="180">
+    <bpmn:laneSet id="OB_LaneSet_Vendor">
+      <bpmn:lane id="OB_Lane_VendorResponse" name="Vendor Response" camunda:candidateGroups="vendor-response">
+        <bpmn:flowNodeRef>OB_StartEvent_VendorPhase2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_VendorPhase2</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="OB_StartEvent_VendorPhase2" name="Vendor Notified&#10;Phase 2 Open">
+      <bpmn:outgoing>OB_Flow_Vendor_Start_End</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:endEvent id="OB_EndEvent_VendorPhase2" name="Vendor Awaiting&#10;Phase 3">
+      <bpmn:incoming>OB_Flow_Vendor_Start_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="OB_Flow_Vendor_Start_End" sourceRef="OB_StartEvent_VendorPhase2" targetRef="OB_EndEvent_VendorPhase2" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_OB_Phase2Planning">
+    <bpmndi:BPMNPlane id="BPMNPlane_OB_Phase2Planning" bpmnElement="OB_Collaboration_Phase2Planning">
+
+      <bpmndi:BPMNShape id="OB_Participant_EnterpriseGov_di" bpmnElement="OB_Participant_EnterpriseGov" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="1900" height="1000" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Lane_Business_di" bpmnElement="OB_Lane_Business" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="1870" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Governance_di" bpmnElement="OB_Lane_Governance" isHorizontal="true">
+        <dc:Bounds x="185" y="172" width="1870" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Contracting_di" bpmnElement="OB_Lane_Contracting" isHorizontal="true">
+        <dc:Bounds x="185" y="297" width="1870" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Technical_di" bpmnElement="OB_Lane_Technical" isHorizontal="true">
+        <dc:Bounds x="185" y="422" width="1870" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_AIReview_di" bpmnElement="OB_Lane_AIReview" isHorizontal="true">
+        <dc:Bounds x="185" y="547" width="1870" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Compliance_di" bpmnElement="OB_Lane_Compliance" isHorizontal="true">
+        <dc:Bounds x="185" y="672" width="1870" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Oversight_di" bpmnElement="OB_Lane_Oversight" isHorizontal="true">
+        <dc:Bounds x="185" y="797" width="1870" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_Automation_di" bpmnElement="OB_Lane_Automation" isHorizontal="true">
+        <dc:Bounds x="185" y="922" width="1870" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_StartEvent_Phase2Initiated_di" bpmnElement="OB_StartEvent_Phase2Initiated">
+        <dc:Bounds x="247" y="91" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="232" y="134" width="66" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_2_1_BusinessCaseValidation_di" bpmnElement="OB_Task_2_1_BusinessCaseValidation">
+        <dc:Bounds x="330" y="69" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_2_5a_ScopeDefinitionBusiness_di" bpmnElement="OB_Task_2_5a_ScopeDefinitionBusiness">
+        <dc:Bounds x="1260" y="69" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_Phase2Complete_di" bpmnElement="OB_EndEvent_Phase2Complete">
+        <dc:Bounds x="1842" y="91" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1822" y="134" width="76" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_Rejected_di" bpmnElement="OB_EndEvent_Rejected">
+        <dc:Bounds x="1842" y="216" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1822" y="259" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_2_5b_ScopeDefinitionTech_di" bpmnElement="OB_Task_2_5b_ScopeDefinitionTech">
+        <dc:Bounds x="1260" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_AIInitiative_di" bpmnElement="OB_Gateway_AIInitiative" isMarkerVisible="true">
+        <dc:Bounds x="910" y="459" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="895" y="516" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_ParallelSplit_di" bpmnElement="OB_Gateway_ParallelSplit">
+        <dc:Bounds x="1140" y="459" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_ParallelJoin_di" bpmnElement="OB_Gateway_ParallelJoin">
+        <dc:Bounds x="1420" y="459" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_2_4_AIRiskClassification_di" bpmnElement="OB_Task_2_4_AIRiskClassification">
+        <dc:Bounds x="970" y="569" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_AIJoin_di" bpmnElement="OB_Gateway_AIJoin" isMarkerVisible="true">
+        <dc:Bounds x="1120" y="584" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_2_6_RegulatoryMapping_di" bpmnElement="OB_Task_2_6_RegulatoryMapping">
+        <dc:Bounds x="1530" y="694" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_2_2_InherentRiskScoring_di" bpmnElement="OB_Task_2_2_InherentRiskScoring">
+        <dc:Bounds x="500" y="944" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_BoundaryEvent_Phase2SLATimer_di" bpmnElement="OB_BoundaryEvent_Phase2SLATimer">
+        <dc:Bounds x="532" y="1006" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="576" y="1010" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_SLAEscalated_di" bpmnElement="OB_EndEvent_SLAEscalated">
+        <dc:Bounds x="630" y="1006" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="606" y="979" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_2_3_RiskTierAssignment_di" bpmnElement="OB_Task_2_3_RiskTierAssignment">
+        <dc:Bounds x="700" y="944" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Gateway_RiskTierDecision_di" bpmnElement="OB_Gateway_RiskTierDecision" isMarkerVisible="true">
+        <dc:Bounds x="860" y="959" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="843" y="1016" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Task_2_7_KBPrePopulation_di" bpmnElement="OB_Task_2_7_KBPrePopulation">
+        <dc:Bounds x="1700" y="944" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Annotation_OCC_di" bpmnElement="OB_Annotation_OCC">
+        <dc:Bounds x="200" y="1200" width="420" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Annotation_SR117_di" bpmnElement="OB_Annotation_SR117">
+        <dc:Bounds x="640" y="1200" width="420" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Annotation_GDPR_di" bpmnElement="OB_Annotation_GDPR">
+        <dc:Bounds x="1080" y="1200" width="420" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Annotation_EUAI_di" bpmnElement="OB_Annotation_EUAI">
+        <dc:Bounds x="1520" y="1200" width="420" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Annotation_TaskIO_di" bpmnElement="OB_Annotation_TaskIO">
+        <dc:Bounds x="200" y="1270" width="1740" height="70" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Start_BusinessCase_di" bpmnElement="OB_Flow_Start_BusinessCase">
+        <di:waypoint x="283" y="109" />
+        <di:waypoint x="330" y="109" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_BusinessCase_RiskScoring_di" bpmnElement="OB_Flow_BusinessCase_RiskScoring">
+        <di:waypoint x="430" y="109" />
+        <di:waypoint x="465" y="109" />
+        <di:waypoint x="465" y="984" />
+        <di:waypoint x="500" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_RiskScoring_TierAssignment_di" bpmnElement="OB_Flow_RiskScoring_TierAssignment">
+        <di:waypoint x="600" y="984" />
+        <di:waypoint x="700" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_TierAssignment_RiskDecision_di" bpmnElement="OB_Flow_TierAssignment_RiskDecision">
+        <di:waypoint x="800" y="984" />
+        <di:waypoint x="860" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_UnacceptableRisk_di" bpmnElement="OB_Flow_UnacceptableRisk">
+        <di:waypoint x="885" y="959" />
+        <di:waypoint x="885" y="234" />
+        <di:waypoint x="1842" y="234" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="888" y="590" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_AcceptableRisk_di" bpmnElement="OB_Flow_AcceptableRisk">
+        <di:waypoint x="910" y="984" />
+        <di:waypoint x="935" y="984" />
+        <di:waypoint x="935" y="484" />
+        <di:waypoint x="910" y="484" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="938" y="727" width="54" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_YesAI_Classification_di" bpmnElement="OB_Flow_YesAI_Classification">
+        <di:waypoint x="935" y="509" />
+        <di:waypoint x="935" y="609" />
+        <di:waypoint x="970" y="609" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="940" y="555" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_NotAI_Bypass_di" bpmnElement="OB_Flow_NotAI_Bypass">
+        <di:waypoint x="960" y="484" />
+        <di:waypoint x="1090" y="484" />
+        <di:waypoint x="1090" y="609" />
+        <di:waypoint x="1120" y="609" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="970" y="466" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_AIClassification_Join_di" bpmnElement="OB_Flow_AIClassification_Join">
+        <di:waypoint x="1070" y="609" />
+        <di:waypoint x="1120" y="609" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_AIJoin_ParallelSplit_di" bpmnElement="OB_Flow_AIJoin_ParallelSplit">
+        <di:waypoint x="1170" y="609" />
+        <di:waypoint x="1220" y="609" />
+        <di:waypoint x="1165" y="484" />
+        <di:waypoint x="1140" y="484" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Split_Task25Bus_di" bpmnElement="OB_Flow_Split_Task25Bus">
+        <di:waypoint x="1165" y="459" />
+        <di:waypoint x="1165" y="109" />
+        <di:waypoint x="1260" y="109" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Split_Task25Tech_di" bpmnElement="OB_Flow_Split_Task25Tech">
+        <di:waypoint x="1190" y="484" />
+        <di:waypoint x="1260" y="484" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Task25Bus_Join_di" bpmnElement="OB_Flow_Task25Bus_Join">
+        <di:waypoint x="1360" y="109" />
+        <di:waypoint x="1445" y="109" />
+        <di:waypoint x="1445" y="459" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Task25Tech_Join_di" bpmnElement="OB_Flow_Task25Tech_Join">
+        <di:waypoint x="1360" y="484" />
+        <di:waypoint x="1420" y="484" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_ParallelJoin_RegulatoryMapping_di" bpmnElement="OB_Flow_ParallelJoin_RegulatoryMapping">
+        <di:waypoint x="1470" y="484" />
+        <di:waypoint x="1505" y="484" />
+        <di:waypoint x="1505" y="734" />
+        <di:waypoint x="1530" y="734" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_RegulatoryMapping_KBPop_di" bpmnElement="OB_Flow_RegulatoryMapping_KBPop">
+        <di:waypoint x="1630" y="734" />
+        <di:waypoint x="1665" y="734" />
+        <di:waypoint x="1665" y="984" />
+        <di:waypoint x="1700" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_KBPop_End_di" bpmnElement="OB_Flow_KBPop_End">
+        <di:waypoint x="1800" y="984" />
+        <di:waypoint x="1830" y="984" />
+        <di:waypoint x="1830" y="109" />
+        <di:waypoint x="1842" y="109" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_SLATimer_Escalated_di" bpmnElement="OB_Flow_SLATimer_Escalated">
+        <di:waypoint x="568" y="1024" />
+        <di:waypoint x="630" y="1024" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Assoc_OCC_di" bpmnElement="OB_Assoc_OCC">
+        <di:waypoint x="550" y="1024" />
+        <di:waypoint x="410" y="1200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="OB_Assoc_SR117_di" bpmnElement="OB_Assoc_SR117">
+        <di:waypoint x="1020" y="649" />
+        <di:waypoint x="850" y="1200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="OB_Assoc_GDPR_di" bpmnElement="OB_Assoc_GDPR">
+        <di:waypoint x="1580" y="774" />
+        <di:waypoint x="1290" y="1200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="OB_Assoc_EUAI_di" bpmnElement="OB_Assoc_EUAI">
+        <di:waypoint x="935" y="509" />
+        <di:waypoint x="1730" y="1200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="OB_Assoc_TaskIO_di" bpmnElement="OB_Assoc_TaskIO">
+        <di:waypoint x="380" y="149" />
+        <di:waypoint x="380" y="1270" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNShape id="OB_Participant_VendorThirdParty_di" bpmnElement="OB_Participant_VendorThirdParty" isHorizontal="true">
+        <dc:Bounds x="155" y="1077" width="1900" height="130" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_Lane_VendorResponse_di" bpmnElement="OB_Lane_VendorResponse" isHorizontal="true">
+        <dc:Bounds x="185" y="1077" width="1870" height="130" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_StartEvent_VendorPhase2_di" bpmnElement="OB_StartEvent_VendorPhase2">
+        <dc:Bounds x="247" y="1124" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="225" y="1167" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_EndEvent_VendorPhase2_di" bpmnElement="OB_EndEvent_VendorPhase2">
+        <dc:Bounds x="352" y="1124" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="330" y="1167" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="OB_Flow_Vendor_Start_End_di" bpmnElement="OB_Flow_Vendor_Start_End">
+        <di:waypoint x="283" y="1142" />
+        <di:waypoint x="352" y="1142" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

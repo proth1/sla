@@ -22,9 +22,9 @@ Generates BPMN 2.0 process models for Third-Party Risk Management workflows alig
 When invoked, this skill:
 1. Reads relevant requirements from `docs/requirements/Financial Services Third-Party Risk Management*.docx`
 2. Identifies the TPRM stage to model
-3. Generates BPMN XML with proper swim lanes (Vendor Management, Procurement, Legal, InfoSec)
+3. Generates BPMN XML with proper swim lanes (9+1 SLA governance lanes)
 4. Adds OCC 2023-17 regulatory annotations
-5. Includes DMN references (DMN_VendorTier, DMN_RiskClassification)
+5. Includes DMN references (DMN_RiskTierClassification, DMN_PathwayRouting, etc.)
 6. Saves to `processes/phase-{N}/`
 7. Runs bpmn-validator
 

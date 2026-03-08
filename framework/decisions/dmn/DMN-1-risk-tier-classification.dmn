@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN1-RiskTierClassification-definitions"
+             name="DMN-1: Risk Tier Classification"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_RiskTierClassification"
+            name="Risk Tier Classification"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-04 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: OCC 2023-17, NIST CSF 2.0, ISO 27001, DORA, EU AI Act, SR 11-7, GDPR/CCPA</description>
+    <decisionTable id="DMN_RiskTierClassification-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-1: Risk Tier Classification
+        Phase: 2 (Planning and Inherent Risk Scoping) — Task 2.3
+        Hit Policy: FIRST (most specific rule wins — evaluated top to bottom)
+        Regulatory: NIST CSF 2.0, ISO 27001, DORA, EU AI Act, SR 11-7, GDPR/CCPA
+        Description: Classifies initiative inherent risk tier from Unacceptable / High / Limited / Minimal
+                     based on five weighted risk dimension scores (each 1-10).
+                     Any single score >= 9 triggers Unacceptable tier.
+                     Weighted composite >= 7.0 triggers High; >= 4.0 triggers Limited; else Minimal.
+        Weighted scoring:
+          Data Sensitivity:           weight varies by tier (highest weight factor)
+          Regulatory Exposure:        significant weight
+          Operational Criticality:    significant weight
+          AI Complexity:              moderate weight
+          Third-Party Dependency:     moderate weight
+        FIRST hit policy: rules ordered from most restrictive (Unacceptable) to least
+        restrictive (Minimal), with a catch-all default at the end. First matching rule fires.
+      -->
+
+      <input id="input-dataSensitivity" label="Data Sensitivity Score (1-10)">
+        <inputExpression id="inputExpr-dataSensitivity" typeRef="integer">
+          <text>dataSensitivityScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-regulatoryExposure" label="Regulatory Exposure Score (1-10)">
+        <inputExpression id="inputExpr-regulatoryExposure" typeRef="integer">
+          <text>regulatoryExposureScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-operationalCriticality" label="Operational Criticality Score (1-10)">
+        <inputExpression id="inputExpr-operationalCriticality" typeRef="integer">
+          <text>operationalCriticalityScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-aiComplexity" label="AI Complexity Score (1-10)">
+        <inputExpression id="inputExpr-aiComplexity" typeRef="integer">
+          <text>aiComplexityScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-thirdPartyDepth" label="Third-Party Dependency Depth Score (1-10)">
+        <inputExpression id="inputExpr-thirdPartyDepth" typeRef="integer">
+          <text>thirdPartyDependencyDepthScore</text>
+        </inputExpression>
+      </input>
+
+      <output id="output-riskTier"
+              label="Risk Tier"
+              name="riskTier"
+              typeRef="string" />
+
+      <!--
+        RULE GROUP 1: UNACCEPTABLE — Any single score >= 9
+        Any individual dimension at 9 or 10 represents an extreme exposure that
+        immediately classifies the initiative as Unacceptable risk regardless of
+        other scores. Five rules, one per dimension.
+      -->
+
+      <rule id="rule-1">
+        <description>Data Sensitivity >= 9: Unacceptable risk — extreme data exposure</description>
+        <inputEntry id="ie-1-1"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"Unacceptable"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-2">
+        <description>Regulatory Exposure >= 9: Unacceptable risk — extreme regulatory burden</description>
+        <inputEntry id="ie-2-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"Unacceptable"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-3">
+        <description>Operational Criticality >= 9: Unacceptable risk — extreme operational dependency</description>
+        <inputEntry id="ie-3-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-3-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Unacceptable"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-4">
+        <description>AI Complexity >= 9: Unacceptable risk — extreme AI/model risk per SR 11-7</description>
+        <inputEntry id="ie-4-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-4-4"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-4-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Unacceptable"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-5">
+        <description>Third-Party Dependency Depth >= 9: Unacceptable risk — extreme concentration/dependency</description>
+        <inputEntry id="ie-5-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-5-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-5-5"><text>&gt;= 9</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"Unacceptable"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 2: HIGH — Weighted average >= 7.0 (all individual scores [1..8])
+        High-high: at least 3 scores >= 7 with at least one of Data or Regulatory >= 7
+        Pattern: data >= 7, regulatory >= 7, operational >= 7 (worst case remaining in group)
+      -->
+
+      <rule id="rule-6">
+        <description>High risk: Data >= 7, Regulatory >= 7, Operational >= 7 — weighted composite >= 7</description>
+        <inputEntry id="ie-6-1"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-6-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"High"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-7">
+        <description>High risk: Data >= 7, Regulatory >= 7, AI >= 7 — composite driven by three critical dimensions</description>
+        <inputEntry id="ie-7-1"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ie-7-4"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-7-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"High"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8">
+        <description>High risk: Data >= 7, Regulatory >= 7, Third-Party >= 7 — multi-dimension elevation</description>
+        <inputEntry id="ie-8-1"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ie-8-4"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ie-8-5"><text>[7..8]</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"High"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-9">
+        <description>High risk: Data >= 8 alone — extreme data sensitivity drives composite above 7 threshold</description>
+        <inputEntry id="ie-9-1"><text>8</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-9-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-9-5"><text>[1..8]</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"High"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-10">
+        <description>High risk: Operational >= 8, Data >= 5, Regulatory >= 5 — critical system with significant exposure</description>
+        <inputEntry id="ie-10-1"><text>[5..7]</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-10-3"><text>8</text></inputEntry>
+        <inputEntry id="ie-10-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-10-5"><text>[1..8]</text></inputEntry>
+        <outputEntry id="oe-10-1"><text>"High"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 3: LIMITED — Weighted average >= 4.0 (moderate risk profile)
+        All scores [1..8], but composite insufficient for High.
+        Captures mid-range profiles: moderate data + moderate regulatory, etc.
+      -->
+
+      <rule id="rule-11">
+        <description>Limited risk: Data >= 4, Regulatory >= 4, Operational >= 4 — moderate composite score</description>
+        <inputEntry id="ie-11-1"><text>[4..7]</text></inputEntry>
+        <inputEntry id="ie-11-2"><text>[4..8]</text></inputEntry>
+        <inputEntry id="ie-11-3"><text>[4..8]</text></inputEntry>
+        <inputEntry id="ie-11-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-11-5"><text>[1..8]</text></inputEntry>
+        <outputEntry id="oe-11-1"><text>"Limited"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-12">
+        <description>Limited risk: Data >= 4, Regulatory >= 4, AI >= 5 — moderate profile with AI component</description>
+        <inputEntry id="ie-12-1"><text>[4..7]</text></inputEntry>
+        <inputEntry id="ie-12-2"><text>[4..8]</text></inputEntry>
+        <inputEntry id="ie-12-3"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-12-4"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-12-5"><text>[1..8]</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>"Limited"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-13">
+        <description>Limited risk: High third-party depth with moderate other scores</description>
+        <inputEntry id="ie-13-1"><text>[4..7]</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>[4..8]</text></inputEntry>
+        <inputEntry id="ie-13-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-13-5"><text>[6..8]</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"Limited"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-14">
+        <description>Limited risk: Low data but high regulatory and operational — regulatory-driven moderate risk</description>
+        <inputEntry id="ie-14-1"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-14-2"><text>[6..8]</text></inputEntry>
+        <inputEntry id="ie-14-3"><text>[6..8]</text></inputEntry>
+        <inputEntry id="ie-14-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-14-5"><text>[1..8]</text></inputEntry>
+        <outputEntry id="oe-14-1"><text>"Limited"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 4: MINIMAL — Default for all remaining low-scoring combinations
+        All individual scores [1..8], composite < 4.0
+        Low-risk profile: low data sensitivity, low regulatory, low operational impact
+      -->
+
+      <rule id="rule-15">
+        <description>Minimal risk: Low scores across all dimensions — composite well below 4.0 threshold</description>
+        <inputEntry id="ie-15-1"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-15-2"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ie-15-3"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ie-15-4"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ie-15-5"><text>[1..5]</text></inputEntry>
+        <outputEntry id="oe-15-1"><text>"Minimal"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-16">
+        <description>Minimal risk: Low data, low regulatory, low AI, moderate third-party — composite below 4.0</description>
+        <inputEntry id="ie-16-1"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-16-2"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-16-3"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-16-4"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-16-5"><text>[1..5]</text></inputEntry>
+        <outputEntry id="oe-16-1"><text>"Minimal"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 17: CATCH-ALL DEFAULT — Limited (conservative)
+        Catches any input combination not matched by rules 1-16.
+        Assigns "Limited" as a conservative default requiring manual review.
+        Under FIRST hit policy, this only fires if no earlier rule matched.
+      -->
+      <rule id="rule-17">
+        <description>Default catch-all: Unclassified input combination — assigned Limited risk tier pending manual review by risk analyst</description>
+        <inputEntry id="ie-17-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-17-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-17-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-17-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-17-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-17-1"><text>"Limited"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN1-diagram">
+      <dmndi:DMNShape id="DMN1-shape" dmnElementRef="DMN_RiskTierClassification">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="OB-DMN2-PathwayRouting-definitions"
+             name="OB-DMN-2: Pathway Routing (Onboarding)"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="OB_DMN_PathwayRouting"
+            name="Pathway Routing (Onboarding)"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="OB_DMN_PathwayRouting-table" hitPolicy="UNIQUE">
+
+      <!--
+        OB-DMN-2: Pathway Routing (Onboarding Variant)
+        Phase: 1 (Initiation and Intake) — Task 1.6 Routing Assignment
+        Hit Policy: UNIQUE
+        Derived from: DMN_PathwayRouting (shared)
+        Changes (v7):
+          - Added 7th input: requestType (Defined Need/Forced Update/Speculative)
+          - Added 8th input: isVendorPartnership (boolean)
+          - Added "Enable" pathway output for vendor partnership engagements
+          - 2 new Enable rules; all original rules get "-" wildcard for new inputs
+      -->
+
+      <input id="ob2-input-capabilityReuse" label="Capability Reuse Score (1-10)">
+        <inputExpression id="ob2-inputExpr-capabilityReuse" typeRef="integer">
+          <text>capabilityReuseScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob2-input-buildVsBuy" label="Build vs Buy Analysis">
+        <inputExpression id="ob2-inputExpr-buildVsBuy" typeRef="string">
+          <text>buildVsBuyAnalysis</text>
+        </inputExpression>
+        <inputValues id="ob2-inputVals-buildVsBuy">
+          <text>"Build","Buy","Hybrid"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob2-input-orgCapacity" label="Organizational Capacity (1-10)">
+        <inputExpression id="ob2-inputExpr-orgCapacity" typeRef="integer">
+          <text>organizationalCapacity</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob2-input-strategicAlignment" label="Strategic Alignment (1-10)">
+        <inputExpression id="ob2-inputExpr-strategicAlignment" typeRef="integer">
+          <text>strategicAlignment</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob2-input-timeToValue" label="Time-to-Value Score (1-10)">
+        <inputExpression id="ob2-inputExpr-timeToValue" typeRef="integer">
+          <text>timeToValueScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob2-input-existingVendor" label="Existing Vendor Relationship">
+        <inputExpression id="ob2-inputExpr-existingVendor" typeRef="boolean">
+          <text>isExistingVendorRelationship</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob2-input-requestType" label="Request Type">
+        <inputExpression id="ob2-inputExpr-requestType" typeRef="string">
+          <text>requestType</text>
+        </inputExpression>
+        <inputValues id="ob2-inputVals-requestType">
+          <text>"Defined Need","Forced Update","Speculative"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob2-input-vendorPartnership" label="Vendor Partnership">
+        <inputExpression id="ob2-inputExpr-vendorPartnership" typeRef="boolean">
+          <text>isVendorPartnership</text>
+        </inputExpression>
+      </input>
+
+      <output id="ob2-output-pathway"
+              label="Governance Pathway"
+              name="pathway"
+              typeRef="string" />
+
+      <!-- NEW v7: Enable pathway rules for vendor partnerships -->
+
+      <rule id="ob2-rule-1">
+        <description>Enable: Vendor partnership + Buy analysis — vendor provides capacity, enabling streamlined onboarding</description>
+        <inputEntry id="ob2-ie-1-1"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-1-2"><text>"Buy"</text></inputEntry>
+        <inputEntry id="ob2-ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-1-5"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-1-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-1-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-1-8"><text>true</text></inputEntry>
+        <outputEntry id="ob2-oe-1-1"><text>"Enable"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-2">
+        <description>Enable: Vendor partnership + moderate reuse >= 5 — partnership leverages existing capabilities</description>
+        <inputEntry id="ob2-ie-2-1"><text>&gt;= 5</text></inputEntry>
+        <inputEntry id="ob2-ie-2-2"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-2-3"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-2-4"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-2-5"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-2-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-2-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-2-8"><text>true</text></inputEntry>
+        <outputEntry id="ob2-oe-2-1"><text>"Enable"</text></outputEntry>
+      </rule>
+
+      <!-- Existing rules with requestType and isVendorPartnership = "-" (wildcard) -->
+
+      <rule id="ob2-rule-3">
+        <description>Fast-Track: Existing vendor + reuse >= 7 + Buy/Hybrid — accelerated onboarding for known vendors</description>
+        <inputEntry id="ob2-ie-3-1"><text>&gt;= 7</text></inputEntry>
+        <inputEntry id="ob2-ie-3-2"><text>"Hybrid","Buy"</text></inputEntry>
+        <inputEntry id="ob2-ie-3-3"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-3-4"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-3-5"><text>&gt;= 6</text></inputEntry>
+        <inputEntry id="ob2-ie-3-6"><text>true</text></inputEntry>
+        <inputEntry id="ob2-ie-3-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-3-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-3-1"><text>"Fast-Track"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-4">
+        <description>Fast-Track: High capability reuse >= 8, Hybrid/Buy analysis, time-to-value >= 7</description>
+        <inputEntry id="ob2-ie-4-1"><text>&gt;= 8</text></inputEntry>
+        <inputEntry id="ob2-ie-4-2"><text>"Hybrid","Buy"</text></inputEntry>
+        <inputEntry id="ob2-ie-4-3"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-4-4"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-4-5"><text>&gt;= 7</text></inputEntry>
+        <inputEntry id="ob2-ie-4-6"><text>false</text></inputEntry>
+        <inputEntry id="ob2-ie-4-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-4-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-4-1"><text>"Fast-Track"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-5">
+        <description>Fast-Track: Maximum reuse score >= 9 regardless of analysis type</description>
+        <inputEntry id="ob2-ie-5-1"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ob2-ie-5-2"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-5-4"><text>&gt;= 6</text></inputEntry>
+        <inputEntry id="ob2-ie-5-5"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-5-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-5-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-5-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-5-1"><text>"Fast-Track"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-6">
+        <description>Build: Build analysis selected, capacity >= 6, strategic alignment >= 4</description>
+        <inputEntry id="ob2-ie-6-1"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob2-ie-6-2"><text>"Build"</text></inputEntry>
+        <inputEntry id="ob2-ie-6-3"><text>&gt;= 6</text></inputEntry>
+        <inputEntry id="ob2-ie-6-4"><text>&gt;= 4</text></inputEntry>
+        <inputEntry id="ob2-ie-6-5"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-6-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-6-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-6-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-6-1"><text>"Build"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-7">
+        <description>Build: Build analysis, high capacity >= 8 — capacity compensates for moderate alignment</description>
+        <inputEntry id="ob2-ie-7-1"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob2-ie-7-2"><text>"Build"</text></inputEntry>
+        <inputEntry id="ob2-ie-7-3"><text>&gt;= 8</text></inputEntry>
+        <inputEntry id="ob2-ie-7-4"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ob2-ie-7-5"><text>&gt;= 5</text></inputEntry>
+        <inputEntry id="ob2-ie-7-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-7-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-7-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-7-1"><text>"Build"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-8">
+        <description>Buy: Buy analysis selected, reuse score low, strategic alignment >= 5</description>
+        <inputEntry id="ob2-ie-8-1"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ob2-ie-8-2"><text>"Buy"</text></inputEntry>
+        <inputEntry id="ob2-ie-8-3"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-8-4"><text>&gt;= 5</text></inputEntry>
+        <inputEntry id="ob2-ie-8-5"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-8-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-8-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-8-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-8-1"><text>"Buy"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-9">
+        <description>Buy: Buy analysis, moderate reuse, high time-to-value pressure >= 7</description>
+        <inputEntry id="ob2-ie-9-1"><text>[6..7]</text></inputEntry>
+        <inputEntry id="ob2-ie-9-2"><text>"Buy"</text></inputEntry>
+        <inputEntry id="ob2-ie-9-3"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-9-4"><text>[5..10]</text></inputEntry>
+        <inputEntry id="ob2-ie-9-5"><text>&gt;= 7</text></inputEntry>
+        <inputEntry id="ob2-ie-9-6"><text>false</text></inputEntry>
+        <inputEntry id="ob2-ie-9-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-9-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-9-1"><text>"Buy"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-10">
+        <description>Buy: Buy analysis, high time-to-value >= 8 — urgent need drives procurement</description>
+        <inputEntry id="ob2-ie-10-1"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob2-ie-10-2"><text>"Buy"</text></inputEntry>
+        <inputEntry id="ob2-ie-10-3"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ob2-ie-10-4"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ob2-ie-10-5"><text>&gt;= 8</text></inputEntry>
+        <inputEntry id="ob2-ie-10-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-10-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-10-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-10-1"><text>"Buy"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-11">
+        <description>Hybrid: Hybrid analysis selected — mixed build and buy approach</description>
+        <inputEntry id="ob2-ie-11-1"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob2-ie-11-2"><text>"Hybrid"</text></inputEntry>
+        <inputEntry id="ob2-ie-11-3"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-11-4"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-11-5"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ob2-ie-11-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-11-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-11-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-11-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-12">
+        <description>Hybrid: Build analysis but low organizational capacity — supplement with vendor</description>
+        <inputEntry id="ob2-ie-12-1"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob2-ie-12-2"><text>"Build"</text></inputEntry>
+        <inputEntry id="ob2-ie-12-3"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ob2-ie-12-4"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-12-5"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-12-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-12-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-12-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-12-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-13">
+        <description>Hybrid: Build analysis, low strategic alignment, low time-to-value</description>
+        <inputEntry id="ob2-ie-13-1"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob2-ie-13-2"><text>"Build"</text></inputEntry>
+        <inputEntry id="ob2-ie-13-3"><text>&gt;= 6</text></inputEntry>
+        <inputEntry id="ob2-ie-13-4"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ob2-ie-13-5"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ob2-ie-13-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-13-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-13-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-13-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-14">
+        <description>Hybrid: Buy analysis but very low time-to-value and alignment</description>
+        <inputEntry id="ob2-ie-14-1"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob2-ie-14-2"><text>"Buy"</text></inputEntry>
+        <inputEntry id="ob2-ie-14-3"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-14-4"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ob2-ie-14-5"><text>[1..6]</text></inputEntry>
+        <inputEntry id="ob2-ie-14-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-14-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-14-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-14-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+      <rule id="ob2-rule-15">
+        <description>Hybrid: Moderate reuse, Hybrid analysis — partial reuse with gap-fill</description>
+        <inputEntry id="ob2-ie-15-1"><text>[6..7]</text></inputEntry>
+        <inputEntry id="ob2-ie-15-2"><text>"Hybrid"</text></inputEntry>
+        <inputEntry id="ob2-ie-15-3"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-15-4"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-15-5"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-15-6"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-15-7"><text>-</text></inputEntry>
+        <inputEntry id="ob2-ie-15-8"><text>false</text></inputEntry>
+        <outputEntry id="ob2-oe-15-1"><text>"Hybrid"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="OB-DMN2-diagram">
+      <dmndi:DMNShape id="OB-DMN2-shape" dmnElementRef="OB_DMN_PathwayRouting">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

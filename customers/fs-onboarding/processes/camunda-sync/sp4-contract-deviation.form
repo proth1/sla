@@ -1,0 +1,87 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_ContractDeviation",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Contract Deviation Review\nDocument and review any deviations from standard contract terms.",
+      "id": "Field_720"
+    },
+    {
+      "type": "separator",
+      "id": "Field_721"
+    },
+    {
+      "type": "group",
+      "label": "Deviation Details",
+      "components": [
+        {
+          "type": "select",
+          "key": "deviationType",
+          "label": "Deviation Type",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Standard Terms",
+              "value": "standard-terms"
+            },
+            {
+              "label": "Custom Terms",
+              "value": "custom-terms"
+            },
+            {
+              "label": "Exception",
+              "value": "exception"
+            }
+          ],
+          "id": "Field_722"
+        },
+        {
+          "type": "textarea",
+          "key": "deviationDescription",
+          "label": "Deviation Description",
+          "validate": {
+            "required": true
+          },
+          "description": "Describe the specific deviations from standard contract terms.",
+          "id": "Field_723"
+        }
+      ],
+      "id": "Field_724"
+    },
+    {
+      "type": "separator",
+      "id": "Field_725"
+    },
+    {
+      "type": "group",
+      "label": "Risk Acceptance",
+      "components": [
+        {
+          "type": "checkbox",
+          "key": "riskAccepted",
+          "label": "Risk Accepted",
+          "description": "Confirm that the risk associated with this deviation has been reviewed and accepted.",
+          "id": "Field_726"
+        },
+        {
+          "type": "textarea",
+          "key": "riskAcceptanceRationale",
+          "label": "Risk Acceptance Rationale",
+          "description": "Provide justification for accepting the deviation risk.",
+          "id": "Field_727"
+        }
+      ],
+      "id": "Field_728"
+    }
+  ],
+  "type": "default"
+}

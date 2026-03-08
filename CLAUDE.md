@@ -10,11 +10,21 @@ SLA (Software Lifecycle Automation) is an **Enterprise Software Governance** fra
 
 ## Repository Layout
 
-- `processes/phase-{0..6}-*/` — BPMN models organized by 7 governance phases (Idea Inception → Retirement)
-- `processes/reference/` — Reference BPMN models from upstream sources
-- `decisions/phase-{1..6}/`, `decisions/cross-cutting/` — DMN decision tables
-- `docs/requirements/` — Source .docx/.pptx requirement documents
-- `docs/presentations/index.html` — Master HTML presentation (template with `{{PLACEHOLDER}}` tokens)
+### Strategic Framework (IP)
+- `framework/processes/master/` — Level 0 master orchestrator BPMN
+- `framework/processes/phase-{1..8}-*/` — BPMN models by governance phase
+- `framework/processes/cross-cutting/` — 5 cross-cutting event sub-processes
+- `framework/decisions/dmn/` — 8 DMN 1.3 decision tables (DMN-1 through DMN-8)
+- `framework/docs/` — PRD, requirements, knowledge base, archived strategic presentation
+
+### Customer Implementations
+- `customers/fs-onboarding/` — Financial services vendor onboarding (5-phase)
+  - `processes/` — Active BPMN models, DMN tables, Camunda forms
+  - `docs/` — Governance topic mapping, audit findings, vendor tasks
+  - `scripts/` — Customer-specific transformation scripts
+
+### Shared Infrastructure
+- `docs/presentations/index.html` — Live onboarding presentation (Cloudflare Pages deploy target)
 - `scripts/validators/` — JavaScript BPMN validators
 - `infrastructure/cloudflare-workers/sla-presentation-auth/` — Cloudflare Worker for OTP-protected presentation
 
@@ -25,8 +35,11 @@ SLA (Software Lifecycle Automation) is an **Enterprise Software Governance** fra
 # All files
 bash scripts/validators/validate-bpmn.sh
 
-# Single file
-bash scripts/validators/validate-bpmn.sh processes/phase-1-needs-assessment/some-process.bpmn
+# Single file (customer model)
+bash scripts/validators/validate-bpmn.sh customers/fs-onboarding/processes/onboarding-to-be-ideal-state-v5.bpmn
+
+# Framework model
+bash scripts/validators/validate-bpmn.sh framework/processes/master/sla-governance-master.bpmn
 
 # Individual validators (require npm install in scripts/validators/ first)
 node scripts/validators/bpmn-validator.js <file.bpmn>
@@ -52,12 +65,18 @@ npx wrangler deploy
 
 ## BPMN Modeling Constraints
 
-- **Target engine**: Camunda Platform 7 (use `camunda:` namespace, `candidateGroups`, `historyTimeToLive`)
-- **7 swim lanes**: Governance Board, Business Owner, IT Architecture, Procurement, Legal & Compliance, Information Security, Vendor Management
-- **4 pathways**: Fast-Track (green), Standard (blue), Enhanced (gold), Emergency (red)
+- **Target engine**: Camunda 8 / Zeebe (use `zeebe:` namespace, `zeebe:assignmentDefinition`, `zeebe:formDefinition`)
+- **Legacy engine**: Camunda Platform 7 models exist in v5 and earlier (use `camunda:` namespace)
+- **Process ID**: `ESG-E2E-Master-v4.0` (Enterprise Software Governance)
+- **2 pools**: Enterprise Governance (8 lanes) + Vendor/Third Party (1 lane)
+- **9+1 lanes**: Business, Governance, Contracting, Technical Assessment, AI Review, Compliance, Oversight, Automation + Vendor Response
+- **8 phases**: Intake → Planning → Due Diligence → Governance Review → Contracting → SDLC → Deployment → Operations
+- **4 pathways**: Fast-Track, Build, Buy, Hybrid
+- **3 end events**: End_Retired, End_Terminated, End_Rejected
 - **DMN-first**: Every XOR gateway with business logic must reference a DMN table, not embed conditions
-- **14 DMN tables**: PathwaySelection, RiskClassification, VendorTier, AIRiskLevel, BudgetApproval, SecurityClearance, DataClassification, ComplianceGate, EscalationRouting, SLAThreshold, RetirementEligibility, ChangeImpact, AuditFrequency, ApprovalAuthority
-- **Regulatory annotations required**: OCC 2023-17, SR 11-7, SOX, GDPR/CCPA, EU AI Act, DORA as applicable
+- **8 DMN tables**: RiskTierClassification, PathwayRouting, GovernanceReviewRouting, AutomationTierAssignment, AgentConfidenceEscalation, ChangeRiskScoring, VulnerabilityRemediationRouting, MonitoringCadenceAssignment
+- **5 cross-cutting sub-processes**: SLA Monitoring, Vulnerability Remediation, Incident Response, Regulatory Change, Continuous Improvement
+- **Regulatory annotations**: OCC 2023-17, SR 11-7, SOX, GDPR/CCPA, EU AI Act, DORA, NIST CSF 2.0, ISO 27001
 - **SLA timers**: ISO 8601 boundary timer events on review/approval tasks
 - **Phase transitions**: Must pass through completion gateway → quality gate → approval task → phase transition event
 

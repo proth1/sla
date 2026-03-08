@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  id="Definitions_OB_PostOnboarding"
+                  targetNamespace="http://sla.governance/bpmn/onboarding"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="Collaboration_OB_PostOnboarding">
+    <bpmn:participant id="Participant_EnterpriseGovernance" name="Enterprise Governance — Post-Onboarding Summary" processRef="Process_OB_PostOnboarding" />
+    <bpmn:participant id="Participant_VendorThirdParty" name="Vendor / Third Party" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_OB_PostOnboarding" name="Post-Onboarding: Phases 6-8 Summary" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_PostOnboarding">
+      <bpmn:lane id="Lane_Business" name="Business" />
+      <bpmn:lane id="Lane_Governance" name="Governance" />
+      <bpmn:lane id="Lane_Contracting" name="Contracting" />
+      <bpmn:lane id="Lane_TechnicalAssessment" name="Technical Assessment">
+        <bpmn:flowNodeRef>OB_SP_Phase6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_SP_Phase7</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_AIReview" name="AI Review" />
+      <bpmn:lane id="Lane_Compliance" name="Compliance" />
+      <bpmn:lane id="Lane_Oversight" name="Oversight" />
+      <bpmn:lane id="Lane_Automation" name="Automation">
+        <bpmn:flowNodeRef>OB_StartEvent_PostOnboarding</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_SP_Phase8</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OB_EndEvent_Lifecycle</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="OB_StartEvent_PostOnboarding" name="Onboarding&#10;Complete">
+      <bpmn:outgoing>OB_Flow_Start_Phase6</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:subProcess id="OB_SP_Phase6" name="Phase 6:&#10;SDLC Development">
+      <bpmn:incoming>OB_Flow_Start_Phase6</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Phase6_Phase7</bpmn:outgoing>
+
+      <bpmn:startEvent id="OB_SP6_Start" name="Start">
+        <bpmn:outgoing>OB_Flow_SP6_S_T</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:userTask id="OB_SP6_Task" name="SDLC Execution&#10;(if applicable)" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>OB_Flow_SP6_S_T</bpmn:incoming>
+        <bpmn:outgoing>OB_Flow_SP6_T_E</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:endEvent id="OB_SP6_End" name="End">
+        <bpmn:incoming>OB_Flow_SP6_T_E</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="OB_Flow_SP6_S_T" sourceRef="OB_SP6_Start" targetRef="OB_SP6_Task" />
+      <bpmn:sequenceFlow id="OB_Flow_SP6_T_E" sourceRef="OB_SP6_Task" targetRef="OB_SP6_End" />
+    </bpmn:subProcess>
+
+    <bpmn:subProcess id="OB_SP_Phase7" name="Phase 7:&#10;Deployment &amp; Go-Live">
+      <bpmn:incoming>OB_Flow_Phase6_Phase7</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Phase7_Phase8</bpmn:outgoing>
+
+      <bpmn:startEvent id="OB_SP7_Start" name="Start">
+        <bpmn:outgoing>OB_Flow_SP7_S_T</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:userTask id="OB_SP7_Task" name="Deployment&#10;Execution" camunda:candidateGroups="technical-assessment">
+        <bpmn:incoming>OB_Flow_SP7_S_T</bpmn:incoming>
+        <bpmn:outgoing>OB_Flow_SP7_T_E</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:endEvent id="OB_SP7_End" name="End">
+        <bpmn:incoming>OB_Flow_SP7_T_E</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="OB_Flow_SP7_S_T" sourceRef="OB_SP7_Start" targetRef="OB_SP7_Task" />
+      <bpmn:sequenceFlow id="OB_Flow_SP7_T_E" sourceRef="OB_SP7_Task" targetRef="OB_SP7_End" />
+    </bpmn:subProcess>
+
+    <bpmn:subProcess id="OB_SP_Phase8" name="Phase 8:&#10;Operations &amp; Retirement">
+      <bpmn:incoming>OB_Flow_Phase7_Phase8</bpmn:incoming>
+      <bpmn:outgoing>OB_Flow_Phase8_End</bpmn:outgoing>
+
+      <bpmn:startEvent id="OB_SP8_Start" name="Start">
+        <bpmn:outgoing>OB_Flow_SP8_S_T</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:userTask id="OB_SP8_Task" name="Ongoing Monitoring&#10;&amp; Lifecycle Mgmt" camunda:candidateGroups="automation-lane">
+        <bpmn:incoming>OB_Flow_SP8_S_T</bpmn:incoming>
+        <bpmn:outgoing>OB_Flow_SP8_T_E</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:endEvent id="OB_SP8_End" name="End">
+        <bpmn:incoming>OB_Flow_SP8_T_E</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="OB_Flow_SP8_S_T" sourceRef="OB_SP8_Start" targetRef="OB_SP8_Task" />
+      <bpmn:sequenceFlow id="OB_Flow_SP8_T_E" sourceRef="OB_SP8_Task" targetRef="OB_SP8_End" />
+    </bpmn:subProcess>
+
+    <bpmn:endEvent id="OB_EndEvent_Lifecycle" name="Lifecycle&#10;Complete">
+      <bpmn:incoming>OB_Flow_Phase8_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="OB_Flow_Start_Phase6" sourceRef="OB_StartEvent_PostOnboarding" targetRef="OB_SP_Phase6" />
+    <bpmn:sequenceFlow id="OB_Flow_Phase6_Phase7" sourceRef="OB_SP_Phase6" targetRef="OB_SP_Phase7" />
+    <bpmn:sequenceFlow id="OB_Flow_Phase7_Phase8" sourceRef="OB_SP_Phase7" targetRef="OB_SP_Phase8" />
+    <bpmn:sequenceFlow id="OB_Flow_Phase8_End" sourceRef="OB_SP_Phase8" targetRef="OB_EndEvent_Lifecycle" />
+
+    <bpmn:textAnnotation id="OB_Annotation_PostOnboarding">
+      <bpmn:text>Post-Onboarding Summary: Phases 6-8 are out of scope for the onboarding acceleration engagement. This model provides a lightweight placeholder showing where the full SLA governance lifecycle continues after vendor onboarding is complete.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="OB_Assoc_PostOnboarding" sourceRef="OB_SP_Phase6" targetRef="OB_Annotation_PostOnboarding" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_PostOnboarding">
+    <bpmndi:BPMNPlane id="BPMNPlane_PostOnboarding" bpmnElement="Collaboration_OB_PostOnboarding">
+
+      <bpmndi:BPMNShape id="Participant_EnterpriseGovernance_di" bpmnElement="Participant_EnterpriseGovernance" isHorizontal="true">
+        <dc:Bounds x="155" y="47" width="1200" height="1210" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
+        <dc:Bounds x="185" y="47" width="1170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
+        <dc:Bounds x="185" y="172" width="1170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Contracting_di" bpmnElement="Lane_Contracting" isHorizontal="true">
+        <dc:Bounds x="185" y="297" width="1170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_TechnicalAssessment_di" bpmnElement="Lane_TechnicalAssessment" isHorizontal="true">
+        <dc:Bounds x="185" y="422" width="1170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_AIReview_di" bpmnElement="Lane_AIReview" isHorizontal="true">
+        <dc:Bounds x="185" y="547" width="1170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
+        <dc:Bounds x="185" y="672" width="1170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
+        <dc:Bounds x="185" y="797" width="1170" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
+        <dc:Bounds x="185" y="922" width="1170" height="125" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_StartEvent_PostOnboarding_di" bpmnElement="OB_StartEvent_PostOnboarding">
+        <dc:Bounds x="248" y="966" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="233" y="1009" width="66" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_SP_Phase6_di" bpmnElement="OB_SP_Phase6" isExpanded="false">
+        <dc:Bounds x="370" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_SP_Phase7_di" bpmnElement="OB_SP_Phase7" isExpanded="false">
+        <dc:Bounds x="570" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_SP_Phase8_di" bpmnElement="OB_SP_Phase8" isExpanded="false">
+        <dc:Bounds x="770" y="944" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_EndEvent_Lifecycle_di" bpmnElement="OB_EndEvent_Lifecycle">
+        <dc:Bounds x="952" y="966" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="941" y="1009" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="OB_Annotation_PostOnboarding_di" bpmnElement="OB_Annotation_PostOnboarding">
+        <dc:Bounds x="230" y="1060" width="700" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Start_Phase6_di" bpmnElement="OB_Flow_Start_Phase6">
+        <di:waypoint x="284" y="984" />
+        <di:waypoint x="327" y="984" />
+        <di:waypoint x="327" y="484" />
+        <di:waypoint x="370" y="484" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Phase6_Phase7_di" bpmnElement="OB_Flow_Phase6_Phase7">
+        <di:waypoint x="470" y="484" />
+        <di:waypoint x="570" y="484" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Phase7_Phase8_di" bpmnElement="OB_Flow_Phase7_Phase8">
+        <di:waypoint x="670" y="484" />
+        <di:waypoint x="720" y="484" />
+        <di:waypoint x="720" y="984" />
+        <di:waypoint x="770" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Flow_Phase8_End_di" bpmnElement="OB_Flow_Phase8_End">
+        <di:waypoint x="870" y="984" />
+        <di:waypoint x="952" y="984" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="OB_Assoc_PostOnboarding_di" bpmnElement="OB_Assoc_PostOnboarding">
+        <di:waypoint x="420" y="524" />
+        <di:waypoint x="420" y="1060" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNShape id="Participant_VendorThirdParty_di" bpmnElement="Participant_VendorThirdParty" isHorizontal="true">
+        <dc:Bounds x="155" y="1300" width="1200" height="125" />
+      </bpmndi:BPMNShape>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SP6">
+    <bpmndi:BPMNPlane bpmnElement="OB_SP_Phase6">
+      <bpmndi:BPMNShape id="OB_SP6_Start_di" bpmnElement="OB_SP6_Start">
+        <dc:Bounds x="180" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_SP6_Task_di" bpmnElement="OB_SP6_Task">
+        <dc:Bounds x="270" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_SP6_End_di" bpmnElement="OB_SP6_End">
+        <dc:Bounds x="432" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="OB_Flow_SP6_S_T_di" bpmnElement="OB_Flow_SP6_S_T">
+        <di:waypoint x="216" y="100" />
+        <di:waypoint x="270" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="OB_Flow_SP6_T_E_di" bpmnElement="OB_Flow_SP6_T_E">
+        <di:waypoint x="370" y="100" />
+        <di:waypoint x="432" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SP7">
+    <bpmndi:BPMNPlane bpmnElement="OB_SP_Phase7">
+      <bpmndi:BPMNShape id="OB_SP7_Start_di" bpmnElement="OB_SP7_Start">
+        <dc:Bounds x="180" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_SP7_Task_di" bpmnElement="OB_SP7_Task">
+        <dc:Bounds x="270" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_SP7_End_di" bpmnElement="OB_SP7_End">
+        <dc:Bounds x="432" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="OB_Flow_SP7_S_T_di" bpmnElement="OB_Flow_SP7_S_T">
+        <di:waypoint x="216" y="100" />
+        <di:waypoint x="270" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="OB_Flow_SP7_T_E_di" bpmnElement="OB_Flow_SP7_T_E">
+        <di:waypoint x="370" y="100" />
+        <di:waypoint x="432" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SP8">
+    <bpmndi:BPMNPlane bpmnElement="OB_SP_Phase8">
+      <bpmndi:BPMNShape id="OB_SP8_Start_di" bpmnElement="OB_SP8_Start">
+        <dc:Bounds x="180" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_SP8_Task_di" bpmnElement="OB_SP8_Task">
+        <dc:Bounds x="270" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OB_SP8_End_di" bpmnElement="OB_SP8_End">
+        <dc:Bounds x="432" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="OB_Flow_SP8_S_T_di" bpmnElement="OB_Flow_SP8_S_T">
+        <di:waypoint x="216" y="100" />
+        <di:waypoint x="270" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="OB_Flow_SP8_T_E_di" bpmnElement="OB_Flow_SP8_T_E">
+        <di:waypoint x="370" y="100" />
+        <di:waypoint x="432" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

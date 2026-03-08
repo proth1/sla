@@ -1,11 +1,23 @@
 #!/bin/bash
 # Pre-edit validation - blocks edits on main, checks branch naming
-# PM Tool: Jira (SLM-XXX format)
+# PM Tool: Jira (SLA-XXX format)
+set -euo pipefail
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
+
+# Unconditional branch check — runs regardless of arguments
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+
+if [[ "$BRANCH" == "main" || "$BRANCH" == "master" ]]; then
+    echo -e "${RED}BLOCKED: Cannot edit files on $BRANCH branch${NC}"
+    echo -e "${YELLOW}Create a feature branch first:${NC}"
+    echo "  1. Create Jira Issue (SLA-XXX) at https://agentic-sdlc.atlassian.net"
+    echo "  2. git checkout -b feature/SLA-{id}-description"
+    exit 1
+fi
 
 check_branch_merged() {
     local current_branch=$1
@@ -31,27 +43,17 @@ validate_sdlc_compliance() {
     local file_path=$1
     local operation=$2
 
-    BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-
-    # Block any edits on main/master
-    if [[ "$BRANCH" == "main" || "$BRANCH" == "master" ]]; then
-        echo -e "${RED}BLOCKED: Cannot $operation files on main/master branch${NC}"
-        echo -e "${YELLOW}Create a feature branch first:${NC}"
-        echo "  1. Create Jira Issue (SLM-XXX)"
-        echo "  2. git checkout -b feature/SLM-{id}-description"
-        return 1
-    fi
-
-    # Validate feature branch naming (Jira: feature/SLM-XXX-description)
-    if [[ ! "$BRANCH" =~ ^feature/SLM-[0-9]+-.*$ ]]; then
+    # Branch already checked above — validate naming convention
+    # Accept both SLA-XXX and SLM-XXX for backward compatibility
+    if [[ ! "$BRANCH" =~ ^feature/SL[AM]-[0-9]+-.*$ ]]; then
         echo -e "${RED}BLOCKED: Invalid branch name for $operation${NC}"
         echo -e "${RED}Current: $BRANCH${NC}"
-        echo -e "${RED}Required: feature/SLM-<number>-description${NC}"
+        echo -e "${RED}Required: feature/SLA-<number>-description${NC}"
         echo ""
         echo "To fix:"
-        echo "  1. Create Jira Issue (SLM-XXX) at https://agentic-sdlc.atlassian.net"
+        echo "  1. Create Jira Issue (SLA-XXX) at https://agentic-sdlc.atlassian.net"
         echo "  2. git checkout main && git pull"
-        echo "  3. git checkout -b feature/SLM-{id}-description"
+        echo "  3. git checkout -b feature/SLA-{id}-description"
         return 1
     fi
 
