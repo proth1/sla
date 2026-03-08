@@ -313,6 +313,167 @@ app.get('/api/process/:key/variables', async (req, res) => {
   }
 });
 
+// ========================
+// Mini RFP API Routes
+// ========================
+
+const MINI_RFP_PROCESS_ID = 'Process_MiniRFP';
+
+// Basic input validation for path parameters
+function isValidKey(key) {
+  return /^\d{1,19}$/.test(key);
+}
+
+// Start a new Mini RFP process instance
+app.post('/api/mini-rfp/start', async (req, res) => {
+  try {
+    const variables = req.body.variables || {};
+    const result = await zeebeApi('POST', '/v2/process-instances', {
+      processDefinitionId: MINI_RFP_PROCESS_ID,
+      variables,
+    });
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Get Mini RFP instance status with current step info
+app.get('/api/mini-rfp/:key/status', async (req, res) => {
+  if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
+  try {
+    const [instance, tasks] = await Promise.all([
+      zeebeApi('GET', `/v2/process-instances/${req.params.key}`),
+      tasklistApi('POST', '/v1/tasks/search', {
+        processInstanceKey: req.params.key,
+        state: 'CREATED',
+      }),
+    ]);
+    const currentTask = Array.isArray(tasks) && tasks.length > 0 ? tasks[0] : null;
+    res.json({
+      ...instance,
+      currentTask: currentTask ? {
+        id: currentTask.id,
+        name: currentTask.name,
+        taskDefinitionId: currentTask.taskDefinitionId,
+        candidateGroups: currentTask.candidateGroups,
+      } : null,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// List active Mini RFP instances (for concierge dashboard)
+app.get('/api/mini-rfp/active', async (req, res) => {
+  try {
+    const result = await zeebeApi('POST', '/v2/process-instances/search', {
+      filter: { processDefinitionId: MINI_RFP_PROCESS_ID, state: 'ACTIVE' },
+    });
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Generate a vendor portal token for a Mini RFP instance
+app.post('/api/mini-rfp/:key/vendor-token', async (req, res) => {
+  if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
+  try {
+    const { randomBytes } = require('crypto');
+    const vendorToken = `vrfp-${req.params.key}-${randomBytes(12).toString('hex')}`;
+    // Set the token as a process variable via a task update or direct variable set
+    // For the showcase, we store the token and return it
+    res.json({ vendorToken, portalUrl: `/vendor-portal.html?token=${vendorToken}&instance=${req.params.key}` });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Correlate a vendor response message to resume the receive task
+app.post('/api/mini-rfp/:key/vendor-response', async (req, res) => {
+  if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
+  try {
+    const { vendorToken, responseData } = req.body;
+    const correlationKey = vendorToken || req.params.key;
+    const result = await zeebeApi('POST', '/v2/messages/publication', {
+      messageName: 'MiniRFPResponseMessage',
+      correlationKey: correlationKey,
+      variables: responseData || {},
+    });
+    res.json({ correlated: true, ...result });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Transfer SP0 data to SP1 — reads Mini RFP variables and optionally starts onboarding
+app.post('/api/mini-rfp/:key/transfer', async (req, res) => {
+  if (!isValidKey(req.params.key)) return res.status(400).json({ error: 'Invalid process key' });
+  try {
+    // Get variables from Mini RFP instance via any available task
+    let vars = [];
+    try {
+      const tasks = await tasklistApi('POST', '/v1/tasks/search', {
+        processInstanceKey: req.params.key,
+      });
+      if (Array.isArray(tasks) && tasks.length > 0) {
+        vars = await tasklistApi('POST', `/v1/tasks/${tasks[0].id}/variables/search`, {});
+      }
+    } catch (e) { /* may have no tasks if completed */ }
+
+    // Map Mini RFP variables to onboarding intake variables
+    const varMap = {};
+    vars.forEach(v => {
+      try { varMap[v.name] = JSON.parse(v.value); } catch { varMap[v.name] = v.value; }
+    });
+
+    const onboardingVars = {
+      softwareName: varMap.vendorName ? `${varMap.vendorName} - ${varMap.technologyType || 'Software'}` : 'Mini RFP Transfer',
+      vendorName: varMap.vendorName || '',
+      requesterName: varMap.requesterName || '',
+      department: varMap.department || '',
+      requesterEmail: varMap.requesterEmail || '',
+      estimatedCost: varMap.budgetRange === 'over_500k' ? 500000 : varMap.budgetRange === '100k_500k' ? 250000 : varMap.budgetRange === '25k_100k' ? 50000 : 25000,
+      requestType: 'defined-need',
+      riskCategory: varMap.dataClassification === 'restricted' ? 'Critical' : varMap.dataClassification === 'confidential' ? 'High' : 'Standard',
+      miniRfpInstanceKey: req.params.key,
+      miniRfpTransferred: true,
+      miniRfpTransferDate: new Date().toISOString(),
+      // Pass-through governance routing variables
+      hasAI: varMap.hasAI === 'yes',
+      dataClassification: varMap.dataClassification || '',
+      regulatoryScope: varMap.regulatoryScope || '',
+      technologyType: varMap.technologyType || '',
+      businessCriticality: varMap.businessCriticality || '',
+      // Default gateway variables for demo flow
+      approved: true,
+      buildPathway: false,
+      needsAssessment: true,
+      bypassProcess: false,
+      vendorSelected: true,
+      evalApproved: true,
+      vendorQualified: true,
+      selectedPathway: 'buy',
+      testsPassed: true,
+      finalApproved: true,
+      isVendorPartnership: false,
+    };
+
+    if (req.body.startOnboarding) {
+      const result = await zeebeApi('POST', '/v2/process-instances', {
+        processDefinitionId: CONFIG.processId,
+        variables: onboardingVars,
+      });
+      res.json({ transferred: true, onboardingInstanceKey: result.processInstanceKey, mappedVariables: onboardingVars });
+    } else {
+      res.json({ transferred: false, mappedVariables: onboardingVars });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // Deploy BPMN + forms to cluster
 app.post('/api/deploy', async (req, res) => {
   try {

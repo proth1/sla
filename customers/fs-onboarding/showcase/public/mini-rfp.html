@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini RFP Pre-Screen | SLA Governance Showcase</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1e293b;--surface3:#283548;
+  --border:#334155;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#3b82f6;--accent2:#6366f1;--accent3:#8b5cf6;
+  --success:#22c55e;--warn:#f59e0b;--danger:#ef4444;
+  --glow:rgba(99,102,241,0.15);
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+.header{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+.header-left{display:flex;align-items:center;gap:16px}
+.logo{width:44px;height:44px;background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;box-shadow:0 0 30px rgba(245,158,11,0.3)}
+.header h1{font-size:22px;font-weight:600;background:linear-gradient(135deg,#e2e8f0,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-sub{font-size:13px;color:var(--text3);font-weight:400}
+.header-right{display:flex;gap:12px;align-items:center}
+.header-nav{text-decoration:none;color:var(--text2);font-size:13px;padding:6px 14px;border:1px solid var(--border);border-radius:8px;transition:all .2s;display:flex;align-items:center;gap:6px}
+.header-nav:hover{color:var(--text);border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.cluster-badge{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.cluster-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px rgba(34,197,94,0.5);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.demo-badge{background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:1px}
+
+/* Step Progress Bar */
+.step-container{padding:24px 40px;background:linear-gradient(180deg,rgba(30,27,75,0.3) 0%,transparent 100%)}
+.step-bar{display:flex;align-items:center;justify-content:center;gap:2px}
+.step-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:default;transition:all .3s;min-width:70px}
+.step-node{width:40px;height:40px;border-radius:10px;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;transition:all .4s;position:relative}
+.step-node.active{border-color:var(--accent);background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(99,102,241,0.15));box-shadow:0 0 20px rgba(59,130,246,0.25);animation:nodeGlow 2s ease-in-out infinite}
+.step-node.completed{border-color:var(--success);background:rgba(34,197,94,0.1);color:var(--success)}
+.step-node.blocked{border-color:var(--danger);background:rgba(239,68,68,0.1);color:var(--danger)}
+@keyframes nodeGlow{0%,100%{box-shadow:0 0 20px rgba(59,130,246,0.25)}50%{box-shadow:0 0 35px rgba(59,130,246,0.4)}}
+.step-label{font-size:10px;color:var(--text3);text-align:center;max-width:75px;line-height:1.2;font-weight:500;transition:color .3s}
+.step-item.active .step-label{color:var(--accent)}
+.step-item.completed .step-label{color:var(--success)}
+.step-connector{width:20px;height:2px;background:var(--border);margin-bottom:22px}
+.step-connector.completed{background:var(--success)}
+.step-connector.active{background:linear-gradient(90deg,var(--success),var(--accent));animation:flowPulse 1.5s infinite}
+@keyframes flowPulse{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
+
+/* Main Content */
+.main-content{max-width:800px;margin:0 auto;padding:32px 40px}
+
+/* Start Screen */
+.start-screen{text-align:center;padding:60px 0}
+.start-screen h2{font-size:32px;font-weight:700;margin-bottom:12px;background:linear-gradient(135deg,#e2e8f0,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.start-screen p{color:var(--text3);font-size:15px;line-height:1.7;margin-bottom:32px;max-width:600px;margin-left:auto;margin-right:auto}
+.value-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:36px}
+.value-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+.value-card .val{font-size:24px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.value-card .lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.start-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:left;margin-bottom:24px}
+.start-card h3{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--text)}
+.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.start-field{display:flex;flex-direction:column;gap:4px}
+.start-field.full{grid-column:1/-1}
+
+/* Form Rendering */
+.form-container{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:24px;position:relative}
+.form-group{margin-bottom:24px}
+.form-group:last-child{margin-bottom:0}
+.form-label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.form-input,.form-textarea,.form-select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:14px;font-family:inherit;transition:all .2s;outline:none}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+.form-textarea{min-height:100px;resize:vertical}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.form-select option{background:var(--surface2);color:var(--text)}
+.form-radio-group{display:flex;gap:12px;flex-wrap:wrap}
+.form-radio{display:flex;align-items:center;gap:8px;padding:10px 18px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.form-radio:hover{border-color:var(--accent)}
+.form-radio input{accent-color:var(--accent)}
+.form-radio.selected{border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.form-text{padding:16px 20px;background:linear-gradient(135deg,rgba(99,102,241,0.05),rgba(139,92,246,0.05));border:1px solid rgba(99,102,241,0.15);border-radius:12px;color:var(--text2);font-size:14px;line-height:1.7}
+.form-text h2,.form-text h3{color:var(--text);margin-bottom:8px;font-size:16px}
+.form-separator{border:none;border-top:1px solid var(--border);margin:20px 0}
+.form-checklist{display:flex;flex-wrap:wrap;gap:8px}
+.form-check-item{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;background:var(--surface2);font-size:13px}
+.form-check-item:hover{border-color:var(--accent)}
+.form-check-item.selected{border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.form-check-item input{accent-color:var(--accent)}
+
+/* Buttons */
+.btn{padding:12px 28px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 15px rgba(59,130,246,0.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 25px rgba(59,130,246,0.4)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--surface3)}
+.btn-success{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 15px rgba(34,197,94,0.3)}
+.btn-danger{background:var(--surface2);color:var(--danger);border:1px solid rgba(239,68,68,0.3)}
+.btn-warn{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}
+.form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
+
+/* Alert Panels */
+.alert{padding:20px 24px;border-radius:12px;margin-bottom:20px;display:flex;align-items:flex-start;gap:14px}
+.alert-success{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);color:#86efac}
+.alert-danger{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);color:#fca5a5}
+.alert-warn{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);color:#fcd34d}
+.alert-info{background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);color:#93c5fd}
+.alert-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.alert-content h4{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--text)}
+.alert-content p{font-size:13px;line-height:1.6}
+
+/* Vendor Wait */
+.vendor-wait{text-align:center;padding:40px 0}
+.vendor-wait h3{font-size:20px;font-weight:600;margin-bottom:8px}
+.vendor-wait p{color:var(--text3);margin-bottom:28px}
+.timeline{display:flex;flex-direction:column;gap:0;max-width:400px;margin:0 auto 28px}
+.timeline-item{display:flex;align-items:flex-start;gap:16px;padding:12px 0;position:relative}
+.timeline-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);background:var(--surface);flex-shrink:0;margin-top:4px;z-index:1}
+.timeline-dot.sent{border-color:var(--success);background:var(--success)}
+.timeline-dot.pending{border-color:var(--warn);background:transparent}
+.timeline-line{position:absolute;left:5px;top:16px;width:2px;height:calc(100% - 4px);background:var(--border)}
+.timeline-item:last-child .timeline-line{display:none}
+.timeline-text{font-size:13px;color:var(--text2)}
+.timeline-text strong{color:var(--text);font-weight:500}
+.portal-link{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);cursor:pointer;transition:all .2s;word-break:break-all}
+.portal-link:hover{border-color:var(--accent)}
+
+/* Transfer Preview */
+.transfer-table{width:100%;border-collapse:collapse;font-size:13px}
+.transfer-table th{text-align:left;padding:10px 12px;color:var(--text3);font-weight:500;text-transform:uppercase;font-size:11px;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.transfer-table td{padding:10px 12px;border-bottom:1px solid rgba(51,65,85,0.3);color:var(--text2)}
+.transfer-table td:first-child{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px}
+.transfer-table td:nth-child(2){color:var(--accent)}
+
+/* Scoring */
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.score-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;justify-content:space-between;align-items:center}
+.score-card .cat-name{font-size:13px;font-weight:500}
+.score-card .cat-weight{font-size:11px;color:var(--text3)}
+.score-input{width:60px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-size:16px;font-weight:600;text-align:center;font-family:inherit}
+.score-input:focus{border-color:var(--accent);outline:none}
+.weighted-total{font-size:28px;font-weight:700;color:var(--accent);text-align:center;padding:20px;background:var(--surface2);border-radius:12px;border:1px solid var(--border)}
+
+/* Completion */
+.completion-screen{text-align:center;padding:60px 0;animation:fadeIn .5s ease}
+.completion-icon{font-size:72px;margin-bottom:20px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.completion-stats{display:flex;gap:20px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;min-width:120px}
+.stat-value{font-size:24px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+
+/* Toast */
+.toast-container{position:fixed;top:20px;right:20px;z-index:1000;display:flex;flex-direction:column;gap:8px}
+.toast{padding:14px 20px;border-radius:10px;font-size:13px;font-weight:500;animation:toastIn .3s ease;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,0.3)}
+.toast-success{background:linear-gradient(135deg,#065f46,#064e3b);border:1px solid rgba(34,197,94,0.3);color:#6ee7b7}
+.toast-error{background:linear-gradient(135deg,#7f1d1d,#991b1b);border:1px solid rgba(239,68,68,0.3);color:#fca5a5}
+.toast-info{background:linear-gradient(135deg,#1e3a5f,#1e40af);border:1px solid rgba(59,130,246,0.3);color:#93c5fd}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Variables Panel */
+.vars-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-top:20px}
+.vars-panel h3{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text2);display:flex;align-items:center;gap:8px;cursor:pointer}
+.vars-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.var-item{display:flex;flex-direction:column;gap:2px;padding:8px 12px;background:var(--surface2);border-radius:8px;font-size:12px}
+.var-name{color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:11px}
+.var-value{color:var(--text);font-family:'JetBrains Mono',monospace;font-weight:500;word-break:break-all}
+
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">RFP</div>
+    <div>
+      <h1>Mini RFP Pre-Screen</h1>
+      <div class="header-sub">Self-Service Vendor Evaluation | SP0</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="demo-badge">Showcase</span>
+    <a href="index.html" class="header-nav">&#8592; Task Worker</a>
+    <a href="dashboard.html" class="header-nav">Dashboard</a>
+    <div class="cluster-badge">
+      <span class="dot"></span>
+      sla-onboarding-dev
+    </div>
+  </div>
+</div>
+
+<div class="step-container" id="stepContainer">
+  <div class="step-bar" id="stepBar"></div>
+</div>
+
+<div class="main-content" id="mainContent">
+  <div id="startScreen">
+    <div class="start-screen">
+      <h2>Self-Service Mini RFP</h2>
+      <p>Evaluate vendors before formal intake. Collect structured vendor data, screen for deal-killers, and arrive at onboarding with 90%+ of fields pre-populated.</p>
+      <div class="value-grid">
+        <div class="value-card"><div class="val">30-90d</div><div class="lbl">Target Cycle</div></div>
+        <div class="value-card"><div class="val">90%+</div><div class="lbl">Pre-populated</div></div>
+        <div class="value-card"><div class="val">30%</div><div class="lbl">Fail-Fast Rate</div></div>
+      </div>
+      <div class="start-card">
+        <h3>Start Mini RFP</h3>
+        <div class="start-grid">
+          <div class="start-field">
+            <label class="form-label">Requester Name</label>
+            <input class="form-input" id="startRequester" value="Paul Roth">
+          </div>
+          <div class="start-field">
+            <label class="form-label">Department</label>
+            <input class="form-input" id="startDepartment" value="Global Markets Technology">
+          </div>
+          <div class="start-field full">
+            <label class="form-label">Requester Email</label>
+            <input class="form-input" type="email" id="startEmail" value="proth1@gmail.com">
+          </div>
+        </div>
+        <div class="form-actions" style="border:none;padding-top:16px">
+          <button class="btn btn-primary" onclick="startMiniRFP()" id="startBtn">Begin Mini RFP &#8594;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="wizardContent" style="display:none"></div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script src="defaults-mini-rfp.js"></script>
+<script>
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+const STEPS = [
+  { id: 'Task_Step1_UnderstandNeed', name: 'Understand\nthe Need', short: '1', formId: 'rfp-step1-understand-need', phase: 'prep' },
+  { id: 'Task_Step2_VendorContext', name: 'Vendor\nContext', short: '2', formId: 'rfp-step2-vendor-context', phase: 'prep' },
+  { id: 'Task_Step2b_ClassificationCheck', name: 'Classification\nCheck', short: '2.5', formId: 'rfp-step2b-classification-validation', phase: 'prep' },
+  { id: 'BRT_DealKiller', name: 'Deal-Killer\nScreen', short: '3a', auto: true, phase: 'prep' },
+  { id: 'Task_Step3_DealKillerResults', name: 'Deal-Killer\nResults', short: '3', formId: 'rfp-step3-deal-killer', phase: 'prep' },
+  { id: 'BRT_QuestionSelection', name: 'Question\nSelection', short: '4a', auto: true, phase: 'prep' },
+  { id: 'Task_Step4_QuestionPreview', name: 'Question\nPreview', short: '4', formId: 'rfp-step4-preview', phase: 'prep' },
+  { id: 'Task_Step5_SendVendor', name: 'Send to\nVendor', short: '5', formId: 'rfp-step5-send-vendor', phase: 'prep' },
+  { id: 'Receive_VendorResponse', name: 'Await\nResponse', short: '&#9202;', wait: true, phase: 'collect' },
+  { id: 'Task_Step6_CollectResponses', name: 'Collect\nResponses', short: '6', formId: 'rfp-step6-collect-responses', phase: 'collect' },
+  { id: 'Task_Step7_ReviewScore', name: 'Review &\nScore', short: '7', formId: 'rfp-step7-review-score', phase: 'eval' },
+];
+
+// Display steps (user-visible, excludes auto BRT steps)
+const DISPLAY_STEPS = STEPS.filter(s => !s.auto);
+
+let state = {
+  processKey: null,
+  processDefKey: null,
+  currentStepIndex: -1,
+  selectedTask: null,
+  completedTasks: [],
+  pollTimer: null,
+  vendorToken: null,
+  dealKillerPassed: null,
+};
+
+function renderStepBar() {
+  const bar = document.getElementById('stepBar');
+  bar.innerHTML = '';
+  DISPLAY_STEPS.forEach((step, i) => {
+    const isCompleted = i < state.currentStepIndex;
+    const isActive = i === state.currentStepIndex;
+    const isBlocked = step.id === 'Task_Step3_DealKillerResults' && state.dealKillerPassed === false;
+    const div = document.createElement('div');
+    div.className = `step-item ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`;
+    div.innerHTML = `
+      <div class="step-node ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''} ${isBlocked ? 'blocked' : ''}">
+        ${isCompleted ? '<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.485 3.515a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-3.5-3.5a1 1 0 011.414-1.414L5.75 9.793l6.293-6.278a1 1 0 011.414 0z"/></svg>' : step.short}
+      </div>
+      <div class="step-label">${step.name.replace('\n',' ')}</div>
+    `;
+    bar.appendChild(div);
+    if (i < DISPLAY_STEPS.length - 1) {
+      const conn = document.createElement('div');
+      conn.className = `step-connector ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`;
+      bar.appendChild(conn);
+    }
+  });
+}
+
+function toast(message, type = 'info') {
+  const container = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  const icons = { success: '\u2713', error: '\u2717', info: '\u2139' };
+  el.innerHTML = `<span>${icons[type] || ''}</span> ${escapeHtml(message)}`;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+async function startMiniRFP() {
+  const btn = document.getElementById('startBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Starting...';
+  try {
+    const vars = {
+      requesterName: document.getElementById('startRequester').value,
+      department: document.getElementById('startDepartment').value,
+      requesterEmail: document.getElementById('startEmail').value,
+      miniRfpStarted: new Date().toISOString(),
+    };
+    const res = await fetch('/api/mini-rfp/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variables: vars }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    state.processKey = data.processInstanceKey;
+    state.processDefKey = data.processDefinitionKey;
+    state.currentStepIndex = 0;
+    toast(`Mini RFP started: ${state.processKey}`, 'success');
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('wizardContent').style.display = 'block';
+    renderStepBar();
+    pollTasks();
+  } catch (e) {
+    toast(`Failed to start: ${e.message}`, 'error');
+    btn.disabled = false;
+    btn.innerHTML = 'Begin Mini RFP &#8594;';
+  }
+}
+
+async function pollTasks() {
+  try {
+    const url = state.processKey ? `/api/tasks?processInstanceKey=${state.processKey}` : '/api/tasks';
+    const res = await fetch(url);
+    const tasks = await res.json();
+    if (Array.isArray(tasks) && tasks.length > 0) {
+      const task = tasks[0];
+      state.selectedTask = task;
+
+      // Detect current step
+      const stepIdx = DISPLAY_STEPS.findIndex(s => s.id === task.taskDefinitionId);
+      if (stepIdx >= 0 && stepIdx !== state.currentStepIndex) {
+        state.currentStepIndex = stepIdx;
+        renderStepBar();
+      }
+
+      // Check for deal-killer end state
+      if (task.taskDefinitionId === 'Task_Step3_DealKillerResults') {
+        await loadDealKillerStep(task);
+        return;
+      }
+
+      // Check for receive task (vendor wait)
+      const stepDef = DISPLAY_STEPS.find(s => s.id === task.taskDefinitionId);
+      if (stepDef && stepDef.wait) {
+        renderVendorWait(task);
+        return;
+      }
+
+      await loadTaskForm(task);
+    } else if (state.processKey) {
+      // Check if process completed or deal-killer terminated
+      try {
+        const pRes = await fetch(`/api/process/${state.processKey}`);
+        const pData = await pRes.json();
+        if (pData.state === 'COMPLETED') {
+          showCompletion();
+          return;
+        }
+        if (pData.state === 'TERMINATED' || pData.state === 'CANCELED') {
+          showDealKillerTerminated();
+          return;
+        }
+      } catch (e) { /* keep polling */ }
+    }
+  } catch (e) {
+    console.error('Poll error:', e);
+  }
+  state.pollTimer = setTimeout(pollTasks, 2500);
+}
+
+async function loadTaskForm(task) {
+  const wiz = document.getElementById('wizardContent');
+  wiz.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px"><span class="spinner"></span></div>';
+
+  try {
+    let formSchema = null;
+    let varsData = [];
+    try {
+      varsData = await fetch(`/api/tasks/${task.id}/variables`).then(r => r.json());
+    } catch (e) { /* ignore */ }
+
+    if (task.formId) {
+      try {
+        const formRes = await fetch(`/api/forms/${task.formId}?processDefinitionKey=${task.processDefinitionKey || ''}`);
+        const formData = await formRes.json();
+        if (formData.schema) formSchema = JSON.parse(formData.schema);
+      } catch (e) { console.warn('Form fetch failed:', e); }
+    }
+
+    renderWizardStep(task, formSchema, varsData);
+  } catch (e) {
+    wiz.innerHTML = `<div style="text-align:center;padding:40px"><h3>Error loading task</h3><p style="color:var(--text3)">${escapeHtml(e.message)}</p></div>`;
+  }
+}
+
+function renderWizardStep(task, formSchema, variables) {
+  const wiz = document.getElementById('wizardContent');
+  const name = (task.name || 'Unnamed').replace(/\n/g, ' ');
+  const stepDef = DISPLAY_STEPS.find(s => s.id === task.taskDefinitionId);
+
+  let formHtml = '';
+  if (formSchema && formSchema.components) {
+    formHtml = renderFormComponents(formSchema.components);
+  } else {
+    formHtml = `<div class="form-text"><h3>${name}</h3><p>Complete this step to continue.</p></div>`;
+  }
+
+  let varsHtml = '';
+  if (variables && variables.length) {
+    const items = variables.map(v => {
+      let val = v.value;
+      try { val = JSON.parse(val); val = typeof val === 'string' ? `"${val}"` : String(val); } catch(e) { val = String(v.value); }
+      return `<div class="var-item"><span class="var-name">${escapeHtml(v.name)}</span><span class="var-value">${escapeHtml(val)}</span></div>`;
+    }).join('');
+    varsHtml = `<div class="vars-panel"><h3 onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'grid':'none'">Process Variables (${variables.length})</h3><div class="vars-grid" style="display:none">${items}</div></div>`;
+  }
+
+  wiz.innerHTML = `
+    <div style="animation:fadeIn .3s ease">
+      <div style="margin-bottom:20px">
+        <h2 style="font-size:24px;font-weight:600;margin-bottom:6px">${name}</h2>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span style="font-size:12px;color:var(--text3);background:var(--surface2);padding:4px 12px;border-radius:6px;border:1px solid var(--border)">
+            ${task.candidateGroups ? task.candidateGroups.join(', ') : ''}
+          </span>
+          <span style="font-size:12px;color:var(--text3)">${task.formId || ''}</span>
+        </div>
+      </div>
+      <div class="form-container" id="formContainer">
+        ${formHtml}
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="skipTask('${task.id}')">Skip (Auto-fill)</button>
+          <button class="btn btn-primary" onclick="completeTask('${task.id}')" id="completeBtn">Complete &amp; Continue &#8594;</button>
+        </div>
+      </div>
+      ${varsHtml}
+    </div>
+  `;
+}
+
+async function loadDealKillerStep(task) {
+  const wiz = document.getElementById('wizardContent');
+  let varsData = [];
+  try {
+    varsData = await fetch(`/api/tasks/${task.id}/variables`).then(r => r.json());
+  } catch (e) { /* ignore */ }
+
+  // Check deal-killer result from variables
+  let passed = true;
+  const dkVar = varsData.find(v => v.name === 'dealKillerResult');
+  if (dkVar) {
+    try {
+      const dkResult = JSON.parse(dkVar.value);
+      passed = dkResult.pass === true || dkResult === true;
+    } catch (e) { /* assume passed */ }
+  }
+  state.dealKillerPassed = passed;
+  renderStepBar();
+
+  let formSchema = null;
+  if (task.formId) {
+    try {
+      const formRes = await fetch(`/api/forms/${task.formId}?processDefinitionKey=${task.processDefinitionKey || ''}`);
+      const formData = await formRes.json();
+      if (formData.schema) formSchema = JSON.parse(formData.schema);
+    } catch (e) { /* ignore */ }
+  }
+
+  const alertHtml = passed
+    ? `<div class="alert alert-success"><span class="alert-icon">&#10003;</span><div class="alert-content"><h4>All Clear — No Deal Killers Found</h4><p>No sanctions matches, budget freeze conditions, concentration risk thresholds, or OFAC screening flags were triggered. The vendor evaluation can proceed.</p></div></div>`
+    : `<div class="alert alert-danger"><span class="alert-icon">&#9888;</span><div class="alert-content"><h4>Deal Killer Triggered</h4><p>One or more pre-screening conditions have been triggered. Review the details below. This request cannot proceed to vendor questionnaire dispatch.</p></div></div>`;
+
+  let formHtml = '';
+  if (formSchema && formSchema.components) {
+    formHtml = renderFormComponents(formSchema.components);
+  }
+
+  wiz.innerHTML = `
+    <div style="animation:fadeIn .3s ease">
+      <div style="margin-bottom:20px">
+        <h2 style="font-size:24px;font-weight:600;margin-bottom:6px">Deal-Killer Pre-Screen Results</h2>
+        <span style="font-size:12px;color:var(--text3);background:var(--surface2);padding:4px 12px;border-radius:6px;border:1px solid var(--border)">OB-DMN-7</span>
+      </div>
+      ${alertHtml}
+      <div class="form-container" id="formContainer">
+        ${formHtml}
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="skipTask('${task.id}')">Skip (Auto-fill)</button>
+          <button class="btn btn-primary" onclick="completeTask('${task.id}')" id="completeBtn">${passed ? 'Continue &#8594;' : 'Acknowledge &amp; Close'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderVendorWait(task) {
+  const wiz = document.getElementById('wizardContent');
+  const portalUrl = state.vendorToken
+    ? `${location.origin}/vendor-portal.html?token=${state.vendorToken}&instance=${state.processKey}`
+    : '(Generate token after sending to vendor)';
+
+  wiz.innerHTML = `
+    <div class="vendor-wait" style="animation:fadeIn .3s ease">
+      <div style="font-size:48px;margin-bottom:16px">&#128232;</div>
+      <h3>Awaiting Vendor Response</h3>
+      <p>The questionnaire has been sent to the vendor. Automated reminders will fire at Day 3, Day 7, and Day 11.</p>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot sent"></div>
+          <div class="timeline-line"></div>
+          <div class="timeline-text"><strong>Questionnaire Sent</strong><br>Sent to vendor contact</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot pending"></div>
+          <div class="timeline-line"></div>
+          <div class="timeline-text"><strong>Day 3 — Receipt Confirmation</strong><br>Automated reminder to confirm receipt</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot pending"></div>
+          <div class="timeline-line"></div>
+          <div class="timeline-text"><strong>Day 7 — Mid-Point Reminder</strong><br>Progress check and deadline reminder</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot pending"></div>
+          <div class="timeline-line"></div>
+          <div class="timeline-text"><strong>Day 11 — Final Reminder</strong><br>Deadline approaching — 3 days remaining</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot pending"></div>
+          <div class="timeline-text"><strong>Day 14 — Response Due</strong><br>Vendor questionnaire deadline</div>
+        </div>
+      </div>
+
+      <div style="max-width:500px;margin:0 auto">
+        <div class="alert alert-info">
+          <span class="alert-icon">&#128279;</span>
+          <div class="alert-content">
+            <h4>Vendor Portal Link</h4>
+            <p style="margin-bottom:8px">Share this link with the vendor to complete the questionnaire:</p>
+            <div class="portal-link" onclick="copyPortalLink()" id="portalLink">${portalUrl}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:12px;justify-content:center">
+        <button class="btn btn-secondary" onclick="simulateVendorResponse()">Simulate Vendor Response</button>
+        <button class="btn btn-warn" onclick="generateVendorToken()">Generate Token</button>
+      </div>
+    </div>
+  `;
+}
+
+function copyPortalLink() {
+  const link = document.getElementById('portalLink');
+  navigator.clipboard.writeText(link.textContent).then(() => toast('Link copied to clipboard', 'success'));
+}
+
+async function generateVendorToken() {
+  if (!state.processKey) return;
+  try {
+    const res = await fetch(`/api/mini-rfp/${state.processKey}/vendor-token`, { method: 'POST' });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    state.vendorToken = data.vendorToken;
+    toast('Vendor token generated', 'success');
+    renderVendorWait(state.selectedTask);
+  } catch (e) {
+    toast(`Token error: ${e.message}`, 'error');
+  }
+}
+
+async function simulateVendorResponse() {
+  if (!state.processKey) return;
+  try {
+    toast('Simulating vendor response...', 'info');
+    const res = await fetch(`/api/mini-rfp/${state.processKey}/vendor-response`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        vendorToken: state.vendorToken || state.processKey,
+        responseData: {
+          vendorResponseDate: new Date().toISOString(),
+          vendorResponseStatus: 'complete',
+          securityScore: 4, productScore: 4, pricingScore: 3,
+          tprmScore: 4, privacyScore: 3, integrationScore: 4,
+          aiScore: 5, companyScore: 4, implementationScore: 3, resilienceScore: 4,
+        },
+      }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    toast('Vendor response correlated — continuing process', 'success');
+    clearTimeout(state.pollTimer);
+    await new Promise(r => setTimeout(r, 1500));
+    pollTasks();
+  } catch (e) {
+    toast(`Simulation error: ${e.message}`, 'error');
+  }
+}
+
+function renderFormComponents(components) {
+  return components.map(comp => {
+    const label = escapeHtml(comp.label || comp.key);
+    const key = escapeHtml(comp.key);
+    switch (comp.type) {
+      case 'text':
+        const md = escapeHtml(comp.text || '').replace(/## (.*)/g, '<h3>$1</h3>').replace(/\\n/g, '<br>');
+        return `<div class="form-group"><div class="form-text">${md}</div></div>`;
+      case 'textfield':
+        return `<div class="form-group"><label class="form-label">${label}</label><input class="form-input" data-key="${key}" placeholder="Enter ${label}..." ${comp.validate?.required ? 'required' : ''}></div>`;
+      case 'textarea':
+        return `<div class="form-group"><label class="form-label">${label}</label><textarea class="form-textarea" data-key="${key}" placeholder="Enter ${label}..." ${comp.validate?.required ? 'required' : ''}></textarea></div>`;
+      case 'number':
+        return `<div class="form-group"><label class="form-label">${label}</label><input class="form-input" type="number" data-key="${key}" ${comp.validate?.required ? 'required' : ''}></div>`;
+      case 'select':
+        const opts = (comp.values || []).map(v => `<option value="${escapeHtml(v.value)}">${escapeHtml(v.label)}</option>`).join('');
+        return `<div class="form-group"><label class="form-label">${label}</label><select class="form-select" data-key="${key}" ${comp.validate?.required ? 'required' : ''}><option value="">Select...</option>${opts}</select></div>`;
+      case 'radio':
+        const radios = (comp.values || []).map(v =>
+          `<label class="form-radio" onclick="this.parentElement.querySelectorAll('.form-radio').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')"><input type="radio" name="${key}" data-key="${key}" value="${escapeHtml(v.value)}"> ${escapeHtml(v.label)}</label>`
+        ).join('');
+        return `<div class="form-group"><label class="form-label">${label}</label><div class="form-radio-group">${radios}</div></div>`;
+      case 'checkbox':
+        return `<div class="form-group"><label class="form-radio" onclick="this.classList.toggle('selected')"><input type="checkbox" data-key="${key}"> ${label}</label></div>`;
+      case 'checklist':
+        const checks = (comp.values || []).map(v =>
+          `<label class="form-check-item" onclick="this.classList.toggle('selected')"><input type="checkbox" data-key="${key}" value="${escapeHtml(v.value)}"> ${escapeHtml(v.label)}</label>`
+        ).join('');
+        return `<div class="form-group"><label class="form-label">${label}</label><div class="form-checklist">${checks}</div></div>`;
+      case 'separator':
+        return '<hr class="form-separator">';
+      case 'group':
+        const inner = comp.components ? renderFormComponents(comp.components) : '';
+        return `<div class="form-group" style="border:1px solid var(--border);border-radius:12px;padding:20px;background:rgba(30,41,59,0.3)"><label class="form-label" style="font-size:14px;margin-bottom:16px;color:var(--text)">${escapeHtml(comp.label || '')}</label>${inner}</div>`;
+      default:
+        return '';
+    }
+  }).join('');
+}
+
+function gatherFormValues() {
+  const vars = [];
+  const seen = new Set();
+  document.querySelectorAll('#formContainer [data-key]').forEach(el => {
+    const key = el.dataset.key;
+    let value;
+    if (el.type === 'radio') {
+      if (el.checked) value = el.value;
+      else return;
+    } else if (el.type === 'checkbox') {
+      // Handle checklist (multiple checkboxes with same key)
+      if (seen.has(key)) return;
+      const allChecks = document.querySelectorAll(`#formContainer [data-key="${key}"]`);
+      if (allChecks.length > 1) {
+        // Checklist — gather all checked values
+        seen.add(key);
+        const checked = [...allChecks].filter(c => c.checked).map(c => c.value);
+        if (checked.length > 0) {
+          vars.push({ name: key, value: JSON.stringify(checked.join(',')) });
+        }
+        return;
+      }
+      value = el.checked;
+    } else if (el.type === 'number') {
+      value = el.value ? Number(el.value) : 0;
+    } else {
+      value = el.value;
+    }
+    if (value !== undefined && value !== '') {
+      vars.push({ name: key, value: JSON.stringify(value) });
+    }
+  });
+  return vars;
+}
+
+function autoFillForm() {
+  const filled = new Set();
+  document.querySelectorAll('#formContainer [data-key]').forEach(el => {
+    const key = el.dataset.key;
+    const def = DEFAULTS_MINI_RFP[key];
+    if (el.type === 'radio') {
+      if (filled.has(key)) return;
+      filled.add(key);
+      const radios = [...document.querySelectorAll(`[name="${el.name}"]`)];
+      if (!document.querySelector(`[name="${el.name}"]:checked`)) {
+        const match = def ? radios.find(r => r.value === String(def)) : null;
+        const target = match || radios[0];
+        if (target) { target.checked = true; target.closest('.form-radio')?.classList.add('selected'); }
+      }
+    } else if (el.tagName === 'SELECT') {
+      if (!el.value) {
+        if (def) { const opt = [...el.options].find(o => o.value === String(def)); if (opt) { el.value = opt.value; return; } }
+        if (el.options.length > 1) el.selectedIndex = 1;
+      }
+    } else if (el.tagName === 'TEXTAREA') {
+      if (!el.value) el.value = def != null ? String(def) : '';
+    } else if (el.type === 'checkbox') {
+      if (def != null) {
+        const defStr = String(def);
+        if (el.value && defStr.includes(el.value)) { el.checked = true; el.closest('.form-check-item')?.classList.add('selected'); }
+        else el.checked = !!def;
+      } else { el.checked = true; el.closest('.form-check-item')?.classList.add('selected'); }
+    } else if (el.type === 'number') {
+      if (!el.value) el.value = def != null ? def : 0;
+    } else {
+      if (!el.value) el.value = def != null ? String(def) : '';
+    }
+  });
+}
+
+async function skipTask(taskId) {
+  autoFillForm();
+  await completeTask(taskId);
+}
+
+async function completeTask(taskId) {
+  const btn = document.getElementById('completeBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Completing...'; }
+  try {
+    await fetch(`/api/tasks/${taskId}/assign`, { method: 'POST' });
+    const vars = gatherFormValues();
+    const res = await fetch(`/api/tasks/${taskId}/complete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variables: vars }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    state.completedTasks.push(state.selectedTask);
+    state.selectedTask = null;
+    const stepName = DISPLAY_STEPS[state.currentStepIndex]?.name?.replace(/\n/g, ' ') || '';
+    toast(`Completed: ${stepName}`, 'success');
+    await new Promise(r => setTimeout(r, 1200));
+    clearTimeout(state.pollTimer);
+    await pollTasks();
+  } catch (e) {
+    toast(`Error: ${e.message}`, 'error');
+    if (btn) { btn.disabled = false; btn.innerHTML = 'Complete &amp; Continue &#8594;'; }
+  }
+}
+
+function showCompletion() {
+  clearTimeout(state.pollTimer);
+  state.currentStepIndex = DISPLAY_STEPS.length;
+  renderStepBar();
+  const wiz = document.getElementById('wizardContent');
+  wiz.innerHTML = `
+    <div class="completion-screen">
+      <div class="completion-icon">&#127881;</div>
+      <h2 style="font-size:28px;font-weight:700;background:linear-gradient(135deg,#4ade80,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Mini RFP Complete!</h2>
+      <p style="color:var(--text2);font-size:15px;margin-top:8px;max-width:500px;margin-left:auto;margin-right:auto">The vendor pre-screen is finished. All data has been collected and scored. You can now transfer this data to start the full onboarding process.</p>
+      <div class="completion-stats">
+        <div class="stat-card"><div class="stat-value">${state.completedTasks.length}</div><div class="stat-label">Steps Completed</div></div>
+        <div class="stat-card"><div class="stat-value">SP0</div><div class="stat-label">Phase</div></div>
+        <div class="stat-card"><div class="stat-value" style="font-size:16px">${state.processKey}</div><div class="stat-label">Instance Key</div></div>
+      </div>
+      <div style="margin-top:36px;display:flex;gap:12px;justify-content:center">
+        <button class="btn btn-success" onclick="transferToOnboarding()">Transfer to Onboarding (SP1) &#8594;</button>
+        <button class="btn btn-secondary" onclick="location.reload()">Start New Mini RFP</button>
+      </div>
+    </div>
+  `;
+}
+
+function showDealKillerTerminated() {
+  clearTimeout(state.pollTimer);
+  state.dealKillerPassed = false;
+  renderStepBar();
+  const wiz = document.getElementById('wizardContent');
+  wiz.innerHTML = `
+    <div class="completion-screen">
+      <div class="completion-icon">&#128683;</div>
+      <h2 style="font-size:28px;font-weight:700;color:var(--danger)">Request Blocked</h2>
+      <p style="color:var(--text2);font-size:15px;margin-top:8px;max-width:500px;margin-left:auto;margin-right:auto">The deal-killer pre-screen identified blocking conditions. This request cannot proceed to vendor questionnaire dispatch.</p>
+      <div style="margin-top:36px">
+        <button class="btn btn-secondary" onclick="location.reload()">Start New Mini RFP</button>
+      </div>
+    </div>
+  `;
+}
+
+async function transferToOnboarding() {
+  try {
+    toast('Transferring data to onboarding...', 'info');
+    const res = await fetch(`/api/mini-rfp/${state.processKey}/transfer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ startOnboarding: true }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    toast('Onboarding process started with pre-populated data!', 'success');
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 2000);
+  } catch (e) {
+    toast(`Transfer error: ${e.message}`, 'error');
+  }
+}
+
+// Initialize
+renderStepBar();
+</script>
+</body>
+</html>
