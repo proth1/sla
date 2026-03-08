@@ -1,0 +1,20 @@
+name = "sla-showcase-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+account_id = "9cf2c4bac542fc51cda0343dc1485db1"
+
+# SLA Showcase API Worker
+# Proxies requests to Camunda 8 Cloud (Zeebe + Tasklist)
+# Protected by PROXY_SECRET header validation
+
+[vars]
+CAMUNDA_CLUSTER_ID = "425f10fa-c898-4b4b-b303-eac095286716"
+CAMUNDA_REGION = "ric-1"
+CAMUNDA_AUTH_URL = "https://login.cloud.camunda.io/oauth/token"
+PROCESS_ID = "Process_Onboarding_v8"
+MINI_RFP_PROCESS_ID = "Process_MiniRFP"
+
+# Secrets (set via `wrangler secret put`):
+# - CAMUNDA_CLIENT_ID
+# - CAMUNDA_CLIENT_SECRET
+# - PROXY_SECRET

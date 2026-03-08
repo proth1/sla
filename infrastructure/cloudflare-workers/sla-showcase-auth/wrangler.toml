@@ -1,0 +1,32 @@
+name = "sla-showcase-auth"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+account_id = "9cf2c4bac542fc51cda0343dc1485db1"
+
+# Protected URL: https://showcase.agentic-innovations.com
+#
+# This worker protects the SLA Showcase with:
+# - Descope OTP authentication
+# - SLA_SESSION cookie (8h HMAC-signed)
+# - Split routing: /api/* → API Worker, /* → Pages
+# - Email restrictions: proth1@gmail.com, @agentic-innovations.com, @kpmg.com
+
+[vars]
+DESCOPE_PROJECT_ID = "P3AN0dLWf9ZTyBi3vF6xaDbThO8q"
+PAGES_URL = "https://sla-showcase.pages.dev"
+WORKER_DOMAIN = "https://showcase.agentic-innovations.com"
+
+# Set after deploying sla-showcase-api worker:
+# API_WORKER_URL = "https://sla-showcase-api.<account-subdomain>.workers.dev"
+# For now, set via wrangler secret or update after first API worker deploy
+
+# Secrets (set via `wrangler secret put`):
+# - PROXY_SECRET (same value shared with API Worker + Pages _worker.js)
+# - SESSION_SECRET (HMAC key for SLA_SESSION; falls back to DESCOPE_PROJECT_ID)
+# - API_WORKER_URL (URL of deployed sla-showcase-api worker)
+
+# KV namespace for OTP verify rate limiting (per-email brute-force prevention)
+# KV namespace disabled until created — worker gracefully degrades (rate limiting skipped)
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "TODO-create-kv-namespace-and-paste-id-here"
