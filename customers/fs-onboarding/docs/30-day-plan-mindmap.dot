@@ -1,0 +1,342 @@
+digraph mindmap {
+    // Wide horizontal layout
+    graph [
+        rankdir=TB
+        bgcolor="#0F172A"
+        pad=0.6
+        nodesep=0.25
+        ranksep=0.7
+        fontname="Helvetica Neue"
+        dpi=200
+        size="24,14!"
+        ratio=compress
+        splines=curved
+    ];
+    node [
+        shape=box
+        style="filled,rounded"
+        fontname="Helvetica Neue"
+        fontsize=11
+        margin="0.2,0.12"
+        penwidth=1.5
+    ];
+    edge [
+        penwidth=2.0
+        arrowhead=none
+    ];
+
+    // ============================================================
+    // RANK 0: CENTER
+    // ============================================================
+    center [
+        label="30-Day Process\nImprovement Plan"
+        shape=ellipse
+        fillcolor="#1E3A5F"
+        fontcolor="#E2E8F0"
+        fontsize=20
+        fontname="Helvetica Neue Bold"
+        penwidth=3
+        color="#3B82F6"
+        width=2.8
+        height=1.2
+        fixedsize=true
+    ];
+
+    // ============================================================
+    // RANK 1: THREE PHASES
+    // ============================================================
+    week12 [
+        label="WEEK 1-2  |  Stop the Bleeding"
+        fillcolor="#3B1010"
+        fontcolor="#F87171"
+        fontsize=14
+        fontname="Helvetica Neue Bold"
+        color="#EF4444"
+        penwidth=2.5
+    ];
+    week23 [
+        label="WEEK 2-3  |  Create Rhythm"
+        fillcolor="#3B2A0A"
+        fontcolor="#FBBF24"
+        fontsize=14
+        fontname="Helvetica Neue Bold"
+        color="#F59E0B"
+        penwidth=2.5
+    ];
+    week34 [
+        label="WEEK 3-4  |  Measure & Adjust"
+        fillcolor="#0A3B1A"
+        fontcolor="#4ADE80"
+        fontsize=14
+        fontname="Helvetica Neue Bold"
+        color="#22C55E"
+        penwidth=2.5
+    ];
+
+    {rank=same; week12; week23; week34}
+
+    center -> week12 [color="#EF4444" penwidth=3];
+    center -> week23 [color="#F59E0B" penwidth=3];
+    center -> week34 [color="#22C55E" penwidth=3];
+
+    // ============================================================
+    // RANK 2: SEVEN ITEMS
+    // ============================================================
+    item1 [
+        label="#1\nAppoint Onboarding\nQuarterbacks (Day 1)"
+        fillcolor="#1E293B"
+        fontcolor="#F87171"
+        fontsize=12
+        fontname="Helvetica Neue Bold"
+        color="#EF4444"
+    ];
+    item2 [
+        label="#2\nKill Sequential Reviews\nRun Parallel (Day 3)"
+        fillcolor="#1E293B"
+        fontcolor="#F87171"
+        fontsize=12
+        fontname="Helvetica Neue Bold"
+        color="#EF4444"
+    ];
+    item3 [
+        label="#3\nPaper Pre-Screen\n(Mini RFP on Paper)"
+        fillcolor="#1E293B"
+        fontcolor="#F87171"
+        fontsize=12
+        fontname="Helvetica Neue Bold"
+        color="#EF4444"
+    ];
+    item4 [
+        label="#4\nTiered Review\n3 Risk Tiers"
+        fillcolor="#1E293B"
+        fontcolor="#FBBF24"
+        fontsize=12
+        fontname="Helvetica Neue Bold"
+        color="#F59E0B"
+    ];
+    item5 [
+        label="#5\nWeekly Prioritization\nCommittee (30 min)"
+        fillcolor="#1E293B"
+        fontcolor="#FBBF24"
+        fontsize=12
+        fontname="Helvetica Neue Bold"
+        color="#F59E0B"
+    ];
+    item6 [
+        label="#6\nVisible Kanban\nBoard"
+        fillcolor="#1E293B"
+        fontcolor="#4ADE80"
+        fontsize=12
+        fontname="Helvetica Neue Bold"
+        color="#22C55E"
+    ];
+    item7 [
+        label="#7\nSLA Deadlines\nwith Escalation"
+        fillcolor="#1E293B"
+        fontcolor="#4ADE80"
+        fontsize=12
+        fontname="Helvetica Neue Bold"
+        color="#22C55E"
+    ];
+
+    {rank=same; item1; item2; item3; item4; item5; item6; item7}
+
+    week12 -> item1 [color="#EF4444"];
+    week12 -> item2 [color="#EF4444"];
+    week12 -> item3 [color="#EF4444"];
+    week23 -> item4 [color="#F59E0B"];
+    week23 -> item5 [color="#F59E0B"];
+    week34 -> item6 [color="#22C55E"];
+    week34 -> item7 [color="#22C55E"];
+
+    // ============================================================
+    // RANK 3: DETAILS
+    // ============================================================
+
+    // -- Item 1 details --
+    i1a [label="Assign 2-3 dedicated\nfacilitators" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i1b [label="Own each request\nend-to-end" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i1c [label="Chase non-responsive\nreviewers" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i1d [label="Escalate stalls\nafter 48 hours" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i1e [label="Weekly leadership\ncycle time report" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+
+    item1 -> i1a [color="#5A2020"];
+    item1 -> i1b [color="#5A2020"];
+    item1 -> i1c [color="#5A2020"];
+    item1 -> i1d [color="#5A2020"];
+    item1 -> i1e [color="#5A2020"];
+
+    // -- Item 2 details --
+    i2a [label="Send to ALL reviewers\nsame day" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i2b [label="Shared deadline\n(5 business days)" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i2c [label="No reviewer waits\nfor another" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+
+    item2 -> i2a [color="#5A2020"];
+    item2 -> i2b [color="#5A2020"];
+    item2 -> i2c [color="#5A2020"];
+
+    // -- Item 3 details --
+    i3a [label="Budget\napproval?" fillcolor="#2A0D0D" fontcolor="#F87171" color="#7F1D1D" fontsize=9];
+    i3b [label="Executive\nsponsor?" fillcolor="#2A0D0D" fontcolor="#F87171" color="#7F1D1D" fontsize=9];
+    i3c [label="Regulated\ndata?" fillcolor="#2A0D0D" fontcolor="#F87171" color="#7F1D1D" fontsize=9];
+    i3d [label="Existing\ncontract?" fillcolor="#2A0D0D" fontcolor="#F87171" color="#7F1D1D" fontsize=9];
+    i3e [label="Target\ngo-live?" fillcolor="#2A0D0D" fontcolor="#F87171" color="#7F1D1D" fontsize=9];
+
+    item3 -> i3a [color="#7F1D1D"];
+    item3 -> i3b [color="#7F1D1D"];
+    item3 -> i3c [color="#7F1D1D"];
+    item3 -> i3d [color="#7F1D1D"];
+    item3 -> i3e [color="#7F1D1D"];
+
+    // -- Item 4 details --
+    tier_fast [
+        label="FAST-TRACK\n6-8 pts | 5 days\nQuarterback + 1 reviewer"
+        fillcolor="#0A3B1A"
+        fontcolor="#4ADE80"
+        fontsize=9
+        color="#22C55E"
+    ];
+    tier_std [
+        label="STANDARD\n9-13 pts | 15 days\n4 reviewers parallel"
+        fillcolor="#3B2A0A"
+        fontcolor="#FBBF24"
+        fontsize=9
+        color="#F59E0B"
+    ];
+    tier_enh [
+        label="ENHANCED\n14-18 pts | 25 days\nAll 9 + exec briefing"
+        fillcolor="#3B1010"
+        fontcolor="#F87171"
+        fontsize=9
+        color="#EF4444"
+    ];
+    i4_dims [
+        label="Score 6 Dimensions\n1-3 each"
+        fillcolor="#111827"
+        fontcolor="#94A3B8"
+        color="#334155"
+        fontsize=9
+    ];
+
+    item4 -> tier_fast [color="#22C55E"];
+    item4 -> tier_std [color="#F59E0B"];
+    item4 -> tier_enh [color="#EF4444"];
+    item4 -> i4_dims [color="#5A4A10"];
+
+    // -- Item 5 details --
+    i5a [label="Pipeline Summary\n2 min" fillcolor="#111827" fontcolor="#60A5FA" color="#334155" fontsize=9];
+    i5b [label="SLA Breaches\n10 min" fillcolor="#111827" fontcolor="#F87171" color="#334155" fontsize=9];
+    i5c [label="At-Risk Requests\n8 min" fillcolor="#111827" fontcolor="#FBBF24" color="#334155" fontsize=9];
+    i5d [label="New Intake\n5 min" fillcolor="#111827" fontcolor="#4ADE80" color="#334155" fontsize=9];
+    i5e [label="Decisions Needed\n5 min" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+
+    item5 -> i5a [color="#5A4A10"];
+    item5 -> i5b [color="#5A4A10"];
+    item5 -> i5c [color="#5A4A10"];
+    item5 -> i5d [color="#5A4A10"];
+    item5 -> i5e [color="#5A4A10"];
+
+    // -- Item 6 details --
+    i6a [label="Intake" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i6b [label="Due Diligence" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i6c [label="Gov. Review" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i6d [label="Contracting" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i6e [label="Go-Live" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    i6f [label="Color by age\nGreen | Yellow | Red" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+
+    item6 -> i6a [color="#1A5A2A"];
+    item6 -> i6b [color="#1A5A2A"];
+    item6 -> i6c [color="#1A5A2A"];
+    item6 -> i6d [color="#1A5A2A"];
+    item6 -> i6e [color="#1A5A2A"];
+    item6 -> i6f [color="#1A5A2A"];
+
+    // -- Item 7 details --
+    i7_sla [
+        label="Phase SLAs"
+        fillcolor="#1E293B"
+        fontcolor="#4ADE80"
+        fontsize=10
+        fontname="Helvetica Neue Bold"
+        color="#22C55E"
+    ];
+    s1 [label="Triage: 2d" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    s2 [label="Planning: 5d" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    s3 [label="Due Diligence: 10d" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    s4 [label="Gov. Review: 5d" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    s5 [label="Contracting: 7d" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+    s6 [label="Go-Live: 5d" fillcolor="#111827" fontcolor="#94A3B8" color="#334155" fontsize=9];
+
+    i7_esc [
+        label="Escalation\nLadder"
+        fillcolor="#1E293B"
+        fontcolor="#F87171"
+        fontsize=10
+        fontname="Helvetica Neue Bold"
+        color="#EF4444"
+    ];
+    e0 [label="50-70%\nFriendly reminder" fillcolor="#111827" fontcolor="#4ADE80" color="#334155" fontsize=9];
+    e1 [label="100%\nReviewer's manager" fillcolor="#111827" fontcolor="#FBBF24" color="#334155" fontsize=9];
+    e2 [label="140%\nCISO / CRO / CFO" fillcolor="#111827" fontcolor="#F87171" color="#334155" fontsize=9];
+
+    item7 -> i7_sla [color="#1A5A2A"];
+    item7 -> i7_esc [color="#EF4444"];
+    i7_sla -> s1 [color="#1A5A2A"];
+    i7_sla -> s2 [color="#1A5A2A"];
+    i7_sla -> s3 [color="#1A5A2A"];
+    i7_sla -> s4 [color="#1A5A2A"];
+    i7_sla -> s5 [color="#1A5A2A"];
+    i7_sla -> s6 [color="#1A5A2A"];
+    i7_esc -> e0 [color="#5A2020"];
+    i7_esc -> e1 [color="#5A2020"];
+    i7_esc -> e2 [color="#5A2020"];
+
+    // ============================================================
+    // RANK 4: IMPACT BADGES (bottom row)
+    // ============================================================
+    imp1 [
+        label="IMPACT: Visibility\nalone cuts delays"
+        fillcolor="#1A2E1A" fontcolor="#4ADE80" fontsize=9
+        fontname="Helvetica Neue Bold" color="#22C55E" style="filled,rounded,dashed"
+    ];
+    imp2 [
+        label="IMPACT: 8-12 wks \u2192 2-3 wks\nWorth 2-3 months"
+        fillcolor="#1A2E1A" fontcolor="#4ADE80" fontsize=9
+        fontname="Helvetica Neue Bold" color="#22C55E" style="filled,rounded,dashed"
+    ];
+    imp3 [
+        label="IMPACT: Filters\n20-30% at intake"
+        fillcolor="#1A2E1A" fontcolor="#4ADE80" fontsize=9
+        fontname="Helvetica Neue Bold" color="#22C55E" style="filled,rounded,dashed"
+    ];
+    imp4 [
+        label="IMPACT: 40-50%\nmove to Fast-Track"
+        fillcolor="#1A2E1A" fontcolor="#4ADE80" fontsize=9
+        fontname="Helvetica Neue Bold" color="#22C55E" style="filled,rounded,dashed"
+    ];
+    imp5 [
+        label="IMPACT: Decisions\nin <5 days vs 2-4 wks"
+        fillcolor="#1A2E1A" fontcolor="#4ADE80" fontsize=9
+        fontname="Helvetica Neue Bold" color="#22C55E" style="filled,rounded,dashed"
+    ];
+    imp6 [
+        label="IMPACT: Social\npressure + visibility"
+        fillcolor="#1A2E1A" fontcolor="#4ADE80" fontsize=9
+        fontname="Helvetica Neue Bold" color="#22C55E" style="filled,rounded,dashed"
+    ];
+    imp7 [
+        label="IMPACT: Accountability\nwhere none exists"
+        fillcolor="#1A2E1A" fontcolor="#4ADE80" fontsize=9
+        fontname="Helvetica Neue Bold" color="#22C55E" style="filled,rounded,dashed"
+    ];
+
+    {rank=same; imp1; imp2; imp3; imp4; imp5; imp6; imp7}
+
+    i1e -> imp1 [color="#22C55E" style=dashed penwidth=1.5];
+    i2c -> imp2 [color="#22C55E" style=dashed penwidth=1.5];
+    i3e -> imp3 [color="#22C55E" style=dashed penwidth=1.5];
+    i4_dims -> imp4 [color="#22C55E" style=dashed penwidth=1.5];
+    i5e -> imp5 [color="#22C55E" style=dashed penwidth=1.5];
+    i6f -> imp6 [color="#22C55E" style=dashed penwidth=1.5];
+    e2 -> imp7 [color="#22C55E" style=dashed penwidth=1.5];
+}
