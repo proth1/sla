@@ -1,5 +1,20 @@
 # Changelog
 
+## [2026.03.57] - 2026-03-07
+
+### Added
+- Mini RFP Launcher wizard UI (`mini-rfp.html`) — standalone 9-step requester wizard for self-service vendor pre-screening (SP0) with Camunda 8 JSON form rendering, deal-killer alerts, vendor waiting screen, scoring, and SP0-to-SP1 data transfer
+- Mini RFP auto-fill defaults (`defaults-mini-rfp.js`) — synthetic demo data for all wizard form fields
+- 6 Mini RFP API endpoints in `server.js`: start, status, active list, vendor-token, vendor-response (message correlation), and SP0-to-SP1 transfer with variable mapping
+
+### Changed
+- Task Worker UI (`index.html`): added navigation links to Mini RFP launcher and Dashboard in header
+
+### Security
+- XSS protection: `escapeHtml()` applied to all dynamic content (toast messages, form labels, variable display, error messages)
+- Input validation: `isValidKey()` on all Mini RFP API path parameters
+- Vendor token generation uses `crypto.randomBytes()` instead of predictable timestamps
+
 ## [2026.03.56] - 2026-03-07
 
 ### Changed

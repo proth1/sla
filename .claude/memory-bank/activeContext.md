@@ -4,12 +4,13 @@
 
 **Date**: 2026-03-07
 **Branch**: main
-**Release Version**: 2026.03.56
+**Release Version**: 2026.03.57
 
-### v10 Modeler Edits
-- SLA-55: v10 Buy/Build labels + coding-loop merge gateway — MERGED (PR #70)
-- Renamed SP4 pathway flows from Yes/No to Buy/Build (3-way gateway)
-- Added Gateway_0m1ca2l separating coding-loop merge from pathway merge
+### Mini RFP Launcher UI (Phase A)
+- SLA-54: Mini RFP Launcher wizard UI with server API routes — MERGED (PR #73)
+- 9-step wizard (mini-rfp.html), auto-fill defaults, 6 API endpoints, nav links
+- XSS fixes and input validation applied per PR review
+- Phase B (Concierge Dashboard) and Phase C (Vendor Portal) remain for future PRs
 
 ### In Progress — Mini RFP Implementation (SLA-6 through SLA-13)
 
