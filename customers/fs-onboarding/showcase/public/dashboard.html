@@ -234,6 +234,11 @@ tbody td{padding:10px 16px;vertical-align:middle}
     </div>
   </div>
   <div class="header-right">
+    <div id="personaBadge" onclick="showPersonaModal()" style="display:none;cursor:pointer;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;border:1px solid var(--border);transition:all .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+      <span id="personaAvatar" style="width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700"></span>
+      <span id="personaName" style="color:var(--text)"></span>
+      <span style="color:var(--text2);font-size:10px">Switch</span>
+    </div>
     <a href="/" class="back-link">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       Showcase
@@ -380,9 +385,19 @@ tbody td{padding:10px 16px;vertical-align:middle}
   </div>
 </div>
 
+<!-- Persona Modal -->
+<div id="personaModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:640px;width:90%">
+    <h2 style="margin:0 0 8px;color:var(--text);font-size:20px">Select Your Persona</h2>
+    <p style="margin:0 0 20px;color:var(--text2);font-size:13px">Choose a role to filter tasks by candidate group</p>
+    <div id="personaGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px"></div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<script src="personas.js"></script>
 <script>
 // --- CONFIGURATION ---
 const REFRESH_INTERVAL = 10000;
@@ -1067,7 +1082,70 @@ function showToast(msg, type) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+// --- Persona Support ---
+const _origFetch = window.fetch;
+window.fetch = function(url, opts = {}) {
+  if (typeof url === 'string' && url.startsWith('/api/')) {
+    const persona = localStorage.getItem('sla-persona');
+    if (persona) {
+      opts.headers = Object.assign({}, opts.headers || {}, { 'X-SLA-Persona': persona });
+    }
+  }
+  return _origFetch.call(this, url, opts);
+};
+
+function showPersonaModal() {
+  const modal = document.getElementById('personaModal');
+  const grid = document.getElementById('personaGrid');
+  grid.innerHTML = '';
+  const allPersonas = typeof PERSONAS !== 'undefined' ? PERSONAS : [];
+  const all = [{ id: 'all', name: 'All Tasks', title: 'See everything', initials: 'ALL', color: '#6b7280', groups: [] }, ...allPersonas];
+  all.forEach(p => {
+    const card = document.createElement('div');
+    card.style.cssText = 'padding:14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;text-align:center';
+    card.onmouseover = () => { card.style.borderColor = p.color; card.style.background = 'rgba(255,255,255,0.03)'; };
+    card.onmouseout = () => { card.style.borderColor = 'var(--border)'; card.style.background = 'transparent'; };
+    card.onclick = () => selectPersona(p);
+    card.innerHTML = `<div style="width:36px;height:36px;border-radius:50%;background:${p.color};color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 8px">${p.initials}</div><div style="font-weight:600;font-size:13px;color:var(--text)">${p.name}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${p.title}</div>`;
+    grid.appendChild(card);
+  });
+  modal.style.display = 'flex';
+}
+
+function selectPersona(p) {
+  if (p.id === 'all') {
+    localStorage.removeItem('sla-persona');
+  } else {
+    localStorage.setItem('sla-persona', p.id);
+  }
+  updatePersonaBadge(p);
+  document.getElementById('personaModal').style.display = 'none';
+  fetchDashboardData();
+}
+
+function updatePersonaBadge(p) {
+  const badge = document.getElementById('personaBadge');
+  const avatar = document.getElementById('personaAvatar');
+  const name = document.getElementById('personaName');
+  badge.style.display = 'flex';
+  avatar.style.background = p.color;
+  avatar.textContent = p.initials;
+  name.textContent = p.name;
+}
+
+function initPersona() {
+  const saved = localStorage.getItem('sla-persona');
+  if (saved && typeof PERSONAS !== 'undefined') {
+    const p = PERSONAS.find(x => x.id === saved);
+    if (p) { updatePersonaBadge(p); return; }
+  }
+  if (!saved) {
+    updatePersonaBadge({ id: 'all', name: 'All Tasks', initials: 'ALL', color: '#6b7280' });
+  }
+}
+
 // --- INIT ---
+initPersona();
 fetchDashboardData();
 startAutoRefresh();
 </script>
