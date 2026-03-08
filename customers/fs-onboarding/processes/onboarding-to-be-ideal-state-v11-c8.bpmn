@@ -2193,6 +2193,11 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <di:waypoint x="188" y="590" />
         <di:waypoint x="225" y="590" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP3_P1_di" bpmnElement="Flow_SP3_P1">
+        <di:waypoint x="744" y="565" />
+        <di:waypoint x="744" y="324" />
+        <di:waypoint x="830" y="324" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP3_P2_di" bpmnElement="Flow_SP3_P2">
         <di:waypoint x="744" y="565" />
         <di:waypoint x="744" y="220" />
