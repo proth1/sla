@@ -76,14 +76,10 @@
         <bpmn:flowNodeRef>Task_CMDBDecommission</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-
-    <!-- Start Event -->
     <bpmn:startEvent id="StartEvent_RetirementTriggered" name="Retirement Trigger Received">
       <bpmn:outgoing>Flow_StartToImpactAssess</bpmn:outgoing>
       <bpmn:signalEventDefinition signalRef="Signal_P5Complete" />
     </bpmn:startEvent>
-
-    <!-- Business Owner: Impact Assessment and DMN Eligibility -->
     <bpmn:userTask id="Task_RetirementImpactAssessment"
                    name="Retirement Impact Assessment"
                    camunda:candidateGroups="business-owner">
@@ -109,8 +105,6 @@
     <bpmn:endEvent id="EndEvent_NotEligible" name="Not Eligible - Return to Operations">
       <bpmn:incoming>Flow_EligibilityNo</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- IT Architecture: Dependency Mapping & Decommission Plan -->
     <bpmn:userTask id="Task_DependencyMapping"
                    name="Dependency and Integration Mapping"
                    camunda:candidateGroups="it-architecture">
@@ -131,8 +125,6 @@
       <bpmn:incoming>Flow_DecomPlanToDataMig</bpmn:incoming>
       <bpmn:outgoing>Flow_DataMigToLegal</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Legal & Compliance: Legal Obligations -->
     <bpmn:userTask id="Task_LegalObligationReview"
                    name="Legal Obligation Review"
                    camunda:candidateGroups="legal-compliance">
@@ -157,8 +149,6 @@
       <bpmn:incoming>Flow_LegalClearFail</bpmn:incoming>
       <bpmn:errorEventDefinition errorRef="Error_LegalHold" />
     </bpmn:endEvent>
-
-    <!-- IS: Data Purge Planning -->
     <bpmn:userTask id="Task_DataPurgePlan"
                    name="Data Purge Plan Development"
                    camunda:candidateGroups="information-security">
@@ -176,8 +166,6 @@
     <bpmn:endEvent id="EndEvent_DataPurgeSLAEscalated" name="Data Purge SLA Escalated">
       <bpmn:incoming>Flow_DataPurgeTimer</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- Governance Board: Retirement Approval -->
     <bpmn:userTask id="Task_RetirementBoardApproval"
                    name="Retirement Board Approval"
                    camunda:candidateGroups="sla-governance-board">
@@ -205,8 +193,6 @@
     <bpmn:endEvent id="EndEvent_RetirementRejected" name="Retirement Rejected - Asset Continues">
       <bpmn:incoming>Flow_ApprovedNo</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- Business Owner: Comms and Migration -->
     <bpmn:userTask id="Task_StakeholderCommsPlanning"
                    name="Stakeholder Communications Planning"
                    camunda:candidateGroups="business-owner">
@@ -220,8 +206,6 @@
       <bpmn:incoming>Flow_CommsToUserMig</bpmn:incoming>
       <bpmn:outgoing>Flow_UserMigToContractTerm</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Procurement: Contract and License -->
     <bpmn:userTask id="Task_ContractTermination"
                    name="Contract Termination Processing"
                    camunda:candidateGroups="procurement">
@@ -249,8 +233,6 @@
       <bpmn:incoming>Flow_VendorOffToCostRec</bpmn:incoming>
       <bpmn:outgoing>Flow_CostRecToSLATerm</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Vendor Management: SLA Termination and Final Reports -->
     <bpmn:userTask id="Task_SLATermination"
                    name="SLA Agreement Termination"
                    camunda:candidateGroups="vendor-management">
@@ -278,8 +260,6 @@
       <bpmn:incoming>Flow_ScorecardToCMDB</bpmn:incoming>
       <bpmn:outgoing>Flow_CMDBToAccessRevoke</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- IS: Access Revocation and Data Destruction -->
     <bpmn:userTask id="Task_AccessRevocation"
                    name="Access Revocation and Credential Purge"
                    camunda:candidateGroups="information-security">
@@ -300,8 +280,6 @@
       <bpmn:incoming>Flow_DataDestructToSecCert</bpmn:incoming>
       <bpmn:outgoing>Flow_SecCertToRegNotif</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Legal & Compliance: Regulatory Notification and Closure -->
     <bpmn:userTask id="Task_RegulatoryNotification"
                    name="Regulatory Retirement Notification"
                    camunda:candidateGroups="legal-compliance">
@@ -315,8 +293,6 @@
       <bpmn:incoming>Flow_RegNotifToCompClosure</bpmn:incoming>
       <bpmn:outgoing>Flow_CompClosureToArchClean</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- IT Architecture: Architecture Cleanup -->
     <bpmn:userTask id="Task_ArchitectureCleanup"
                    name="Architecture Repository Cleanup"
                    camunda:candidateGroups="it-architecture">
@@ -330,8 +306,6 @@
       <bpmn:incoming>Flow_ArchCleanToTechDebt</bpmn:incoming>
       <bpmn:outgoing>Flow_TechDebtToFinalSignOff</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- Governance Board: Final Sign-Off -->
     <bpmn:userTask id="Task_FinalGovernanceSignOff"
                    name="Final Governance Sign-Off"
                    camunda:candidateGroups="sla-governance-board">
@@ -343,8 +317,6 @@
       <bpmn:incoming>Flow_FinalSignOffToEnd</bpmn:incoming>
       <bpmn:terminateEventDefinition />
     </bpmn:endEvent>
-
-    <!-- Sequence Flows -->
     <bpmn:sequenceFlow id="Flow_StartToImpactAssess" sourceRef="StartEvent_RetirementTriggered" targetRef="Task_RetirementImpactAssessment" />
     <bpmn:sequenceFlow id="Flow_ImpactToEligibility" sourceRef="Task_RetirementImpactAssessment" targetRef="DMN_RetirementEligibility" />
     <bpmn:sequenceFlow id="Flow_EligibilityToGateway" sourceRef="DMN_RetirementEligibility" targetRef="Gateway_EligibilityGateway" />
@@ -393,8 +365,6 @@
     <bpmn:sequenceFlow id="Flow_ArchCleanToTechDebt" sourceRef="Task_ArchitectureCleanup" targetRef="Task_TechDebtClosure" />
     <bpmn:sequenceFlow id="Flow_TechDebtToFinalSignOff" sourceRef="Task_TechDebtClosure" targetRef="Task_FinalGovernanceSignOff" />
     <bpmn:sequenceFlow id="Flow_FinalSignOffToEnd" sourceRef="Task_FinalGovernanceSignOff" targetRef="EndEvent_AssetRetired" />
-
-    <!-- Text Annotations -->
     <bpmn:textAnnotation id="Annotation_Regulatory">
       <bpmn:text>Regulatory: OCC 2023-17 §V (exit planning), GDPR Art.17 (right to erasure), NIST 800-88 (media sanitization), SOX §802 (records destruction), DORA Art.28 (exit strategies). Board approval required before decommission.</bpmn:text>
     </bpmn:textAnnotation>
@@ -412,589 +382,384 @@
 
   <bpmndi:BPMNDiagram id="BPMNDiagram_RetirementMgmt">
     <bpmndi:BPMNPlane id="BPMNPlane_RetirementMgmt" bpmnElement="Collab_RetirementMgmt">
-
-      <!-- Participant (width=3500, height=1120) -->
       <bpmndi:BPMNShape id="Shape_Participant_RetirementMgmt" bpmnElement="Participant_RetirementMgmt" isHorizontal="true">
-        <dc:Bounds x="0" y="0" width="3500" height="1120" />
+        <dc:Bounds x="155" y="47" width="3540" height="1240" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Governance Board (y=0, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_GB" bpmnElement="Lane_GB" isHorizontal="true">
-        <dc:Bounds x="30" y="0" width="3470" height="160" />
+        <dc:Bounds x="185" y="47" width="3510" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Business Owner (y=160, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_BO" bpmnElement="Lane_BO" isHorizontal="true">
-        <dc:Bounds x="30" y="160" width="3470" height="160" />
+        <dc:Bounds x="185" y="207" width="3510" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: IT Architecture (y=320, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_ITA" bpmnElement="Lane_ITA" isHorizontal="true">
-        <dc:Bounds x="30" y="320" width="3470" height="160" />
+        <dc:Bounds x="185" y="367" width="3510" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Procurement (y=480, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_Proc" bpmnElement="Lane_Proc" isHorizontal="true">
-        <dc:Bounds x="30" y="480" width="3470" height="160" />
+        <dc:Bounds x="185" y="527" width="3510" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Legal & Compliance (y=640, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_LC" bpmnElement="Lane_LC" isHorizontal="true">
-        <dc:Bounds x="30" y="640" width="3470" height="160" />
+        <dc:Bounds x="185" y="687" width="3510" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Information Security (y=800, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_IS" bpmnElement="Lane_IS" isHorizontal="true">
-        <dc:Bounds x="30" y="800" width="3470" height="160" />
+        <dc:Bounds x="185" y="847" width="3510" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- Lane: Vendor Management (y=960, h=160) -->
       <bpmndi:BPMNShape id="Shape_Lane_VM" bpmnElement="Lane_VM" isHorizontal="true">
-        <dc:Bounds x="30" y="960" width="3470" height="160" />
+        <dc:Bounds x="185" y="1007" width="3510" height="160" />
       </bpmndi:BPMNShape>
-
-      <!-- =================== SHAPES =================== -->
-
-      <!-- GB Lane: Start Event at x=100, y=62 -->
       <bpmndi:BPMNShape id="Shape_StartEvent_RetirementTriggered" bpmnElement="StartEvent_RetirementTriggered">
-        <dc:Bounds x="100" y="62" width="36" height="36" />
+        <dc:Bounds x="255" y="109" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="73" y="105" width="90" height="27" />
+          <dc:Bounds x="228" y="152" width="90" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- BO Lane: Retirement Impact Assessment at x=200, y=202 -->
       <bpmndi:BPMNShape id="Shape_Task_RetirementImpactAssessment" bpmnElement="Task_RetirementImpactAssessment">
-        <dc:Bounds x="200" y="202" width="100" height="80" />
+        <dc:Bounds x="355" y="249" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- BO Lane: DMN Retirement Eligibility at x=360, y=202 -->
       <bpmndi:BPMNShape id="Shape_DMN_RetirementEligibility" bpmnElement="DMN_RetirementEligibility">
-        <dc:Bounds x="360" y="202" width="100" height="80" />
+        <dc:Bounds x="515" y="249" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- BO Lane: Eligibility Gateway at x=520, y=217 -->
       <bpmndi:BPMNShape id="Shape_Gateway_EligibilityGateway" bpmnElement="Gateway_EligibilityGateway" isMarkerVisible="true">
-        <dc:Bounds x="520" y="217" width="50" height="50" />
+        <dc:Bounds x="675" y="264" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="500" y="274" width="90" height="27" />
+          <dc:Bounds x="655" y="321" width="90" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- BO Lane: Not Eligible End at x=520, y=280 — need to place below gateway but within BO lane (y=160-320) -->
-      <!-- Gateway is at y=217 (h=50, so bottom=267). EndEvent at x=520, y=295 — but 295+36=331 > 320 (lane bottom). -->
-      <!-- Place EndEvent at x=620, y=221 (to the right) -->
       <bpmndi:BPMNShape id="Shape_EndEvent_NotEligible" bpmnElement="EndEvent_NotEligible">
-        <dc:Bounds x="640" y="221" width="36" height="36" />
+        <dc:Bounds x="795" y="268" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="614" y="264" width="88" height="27" />
+          <dc:Bounds x="769" y="311" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- ITA Lane: Dependency Mapping at x=660, y=362 -->
       <bpmndi:BPMNShape id="Shape_Task_DependencyMapping" bpmnElement="Task_DependencyMapping">
-        <dc:Bounds x="660" y="362" width="100" height="80" />
+        <dc:Bounds x="815" y="409" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- ITA Lane: Decommission Plan at x=820, y=362 -->
       <bpmndi:BPMNShape id="Shape_Task_DecommissionPlan" bpmnElement="Task_DecommissionPlan">
-        <dc:Bounds x="820" y="362" width="100" height="80" />
+        <dc:Bounds x="975" y="409" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- ITA Lane: Data Migration Design at x=980, y=362 -->
       <bpmndi:BPMNShape id="Shape_Task_DataMigrationDesign" bpmnElement="Task_DataMigrationDesign">
-        <dc:Bounds x="980" y="362" width="100" height="80" />
+        <dc:Bounds x="1135" y="409" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Legal Obligation Review at x=1140, y=682 -->
       <bpmndi:BPMNShape id="Shape_Task_LegalObligationReview" bpmnElement="Task_LegalObligationReview">
-        <dc:Bounds x="1140" y="682" width="100" height="80" />
+        <dc:Bounds x="1295" y="729" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Data Retention Compliance at x=1300, y=682 -->
       <bpmndi:BPMNShape id="Shape_Task_DataRetentionCompliance" bpmnElement="Task_DataRetentionCompliance">
-        <dc:Bounds x="1300" y="682" width="100" height="80" />
+        <dc:Bounds x="1455" y="729" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Legal Clearance Gate at x=1460, y=697 -->
       <bpmndi:BPMNShape id="Shape_Gateway_LegalClearanceGate" bpmnElement="Gateway_LegalClearanceGate" isMarkerVisible="true">
-        <dc:Bounds x="1460" y="697" width="50" height="50" />
+        <dc:Bounds x="1615" y="744" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1440" y="754" width="90" height="27" />
+          <dc:Bounds x="1595" y="801" width="90" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Legal Hold End at x=1460, y=763 — within LC lane (y=640 to 800), so y=763 (763+36=799, within) -->
       <bpmndi:BPMNShape id="Shape_EndEvent_LegalHold" bpmnElement="EndEvent_LegalHold">
-        <dc:Bounds x="1460" y="763" width="36" height="36" />
+        <dc:Bounds x="1615" y="810" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1434" y="806" width="88" height="27" />
+          <dc:Bounds x="1589" y="853" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Data Purge Plan at x=1580, y=842 -->
       <bpmndi:BPMNShape id="Shape_Task_DataPurgePlan" bpmnElement="Task_DataPurgePlan">
-        <dc:Bounds x="1580" y="842" width="100" height="80" />
+        <dc:Bounds x="1735" y="889" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Timer boundary on DataPurgePlan at x=1630, y=920 -->
       <bpmndi:BPMNShape id="Shape_Timer_DataPurgeSLA" bpmnElement="Timer_DataPurgeSLA">
-        <dc:Bounds x="1630" y="904" width="36" height="36" />
+        <dc:Bounds x="1785" y="951" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1659" y="934" width="68" height="27" />
+          <dc:Bounds x="1814" y="981" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: DataPurgeSLA Escalated End at x=1740, y=923 — within IS lane (y=800-960): 923+36=959 ok -->
       <bpmndi:BPMNShape id="Shape_EndEvent_DataPurgeSLAEscalated" bpmnElement="EndEvent_DataPurgeSLAEscalated">
-        <dc:Bounds x="1740" y="906" width="36" height="36" />
+        <dc:Bounds x="1895" y="953" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1714" y="949" width="88" height="27" />
+          <dc:Bounds x="1869" y="996" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: Retirement Board Approval at x=1740, y=62 -->
       <bpmndi:BPMNShape id="Shape_Task_RetirementBoardApproval" bpmnElement="Task_RetirementBoardApproval">
-        <dc:Bounds x="1740" y="62" width="100" height="80" />
+        <dc:Bounds x="1895" y="109" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: Timer on BoardApproval at x=1790, y=124 — but 124+36=160 which is lane edge -->
-      <!-- Place timer at x=1790, y=126 (outside but clipped to 160). Better: x=1840, y=62 is outside task -->
-      <!-- Board approval task: x=1740, w=100 → right edge at 1840. Timer at x=1808, y=126 -->
       <bpmndi:BPMNShape id="Shape_Timer_BoardApprovalSLA" bpmnElement="Timer_BoardApprovalSLA">
-        <dc:Bounds x="1808" y="124" width="36" height="36" />
+        <dc:Bounds x="1963" y="171" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1837" y="154" width="68" height="27" />
+          <dc:Bounds x="1992" y="201" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: BoardApprovalSLA Escalated End - need to be within GB lane (y=0 to 160) -->
-      <!-- 1808+36=1844 for timer. End event at x=1860, y=78 -->
       <bpmndi:BPMNShape id="Shape_EndEvent_BoardApprovalSLAEscalated" bpmnElement="EndEvent_BoardApprovalSLAEscalated">
-        <dc:Bounds x="1870" y="78" width="36" height="36" />
+        <dc:Bounds x="2065" y="125" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1844" y="121" width="88" height="40" />
+          <dc:Bounds x="2039" y="168" width="88" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: Retirement Approved Gateway at x=1960, y=62 -->
-      <!-- Timer end is at 1870+36=1906. Gateway at 1960 to avoid overlap -->
       <bpmndi:BPMNShape id="Shape_Gateway_RetirementApproved" bpmnElement="Gateway_RetirementApproved" isMarkerVisible="true">
-        <dc:Bounds x="1960" y="62" width="50" height="50" />
+        <dc:Bounds x="2115" y="109" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1940" y="119" width="90" height="27" />
+          <dc:Bounds x="2095" y="166" width="90" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: Retirement Rejected End at x=2030, y=62 — but gateway right edge is 2010 -->
-      <!-- Actually rejected goes down. Place at x=1985, y=13 — GB lane top is y=0, so 13 is ok -->
-      <!-- Or go right: x=2060, y=78 -->
       <bpmndi:BPMNShape id="Shape_EndEvent_RetirementRejected" bpmnElement="EndEvent_RetirementRejected">
-        <dc:Bounds x="2060" y="78" width="36" height="36" />
+        <dc:Bounds x="2215" y="125" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2034" y="121" width="88" height="40" />
+          <dc:Bounds x="2189" y="168" width="88" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- BO Lane: Stakeholder Comms Planning at x=2120, y=202 -->
       <bpmndi:BPMNShape id="Shape_Task_StakeholderCommsPlanning" bpmnElement="Task_StakeholderCommsPlanning">
-        <dc:Bounds x="2120" y="202" width="100" height="80" />
+        <dc:Bounds x="2275" y="249" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- BO Lane: User Migration Plan at x=2280, y=202 -->
       <bpmndi:BPMNShape id="Shape_Task_UserMigrationPlan" bpmnElement="Task_UserMigrationPlan">
-        <dc:Bounds x="2280" y="202" width="100" height="80" />
+        <dc:Bounds x="2435" y="249" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- Proc Lane: Contract Termination at x=2440, y=522 -->
       <bpmndi:BPMNShape id="Shape_Task_ContractTermination" bpmnElement="Task_ContractTermination">
-        <dc:Bounds x="2440" y="522" width="100" height="80" />
+        <dc:Bounds x="2595" y="569" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- Proc Lane: License Reclamation at x=2600, y=522 -->
       <bpmndi:BPMNShape id="Shape_Task_LicenseReclamation" bpmnElement="Task_LicenseReclamation">
-        <dc:Bounds x="2600" y="522" width="100" height="80" />
+        <dc:Bounds x="2755" y="569" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- Proc Lane: Vendor Offboarding at x=2760, y=522 -->
       <bpmndi:BPMNShape id="Shape_Task_VendorOffboarding" bpmnElement="Task_VendorOffboarding">
-        <dc:Bounds x="2760" y="522" width="100" height="80" />
+        <dc:Bounds x="2915" y="569" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- Proc Lane: Cost Recovery at x=2920, y=522 -->
       <bpmndi:BPMNShape id="Shape_Task_CostRecovery" bpmnElement="Task_CostRecovery">
-        <dc:Bounds x="2920" y="522" width="100" height="80" />
+        <dc:Bounds x="3075" y="569" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: SLA Termination at x=2440, y=1002 -->
       <bpmndi:BPMNShape id="Shape_Task_SLATermination" bpmnElement="Task_SLATermination">
-        <dc:Bounds x="2440" y="1002" width="100" height="80" />
+        <dc:Bounds x="2595" y="1049" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: Final Performance Report at x=2600, y=1002 -->
       <bpmndi:BPMNShape id="Shape_Task_FinalPerformanceReport" bpmnElement="Task_FinalPerformanceReport">
-        <dc:Bounds x="2600" y="1002" width="100" height="80" />
+        <dc:Bounds x="2755" y="1049" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: Final Vendor Scorecard at x=2760, y=1002 -->
       <bpmndi:BPMNShape id="Shape_Task_VendorScoreCardFinal" bpmnElement="Task_VendorScoreCardFinal">
-        <dc:Bounds x="2760" y="1002" width="100" height="80" />
+        <dc:Bounds x="2915" y="1049" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- VM Lane: CMDB Decommission at x=2920, y=1002 -->
       <bpmndi:BPMNShape id="Shape_Task_CMDBDecommission" bpmnElement="Task_CMDBDecommission">
-        <dc:Bounds x="2920" y="1002" width="100" height="80" />
+        <dc:Bounds x="3075" y="1049" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Access Revocation at x=3080, y=842 -->
       <bpmndi:BPMNShape id="Shape_Task_AccessRevocation" bpmnElement="Task_AccessRevocation">
-        <dc:Bounds x="3080" y="842" width="100" height="80" />
+        <dc:Bounds x="3235" y="889" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Secure Data Destruction at x=3080, y=842 — this overlaps AccessRevocation! -->
-      <!-- AccessRevocation: x=3080, w=100 → right=3180. SecureDataDestruction at x=3240, y=842 -->
       <bpmndi:BPMNShape id="Shape_Task_SecureDataDestruction" bpmnElement="Task_SecureDataDestruction">
-        <dc:Bounds x="3240" y="842" width="100" height="80" />
+        <dc:Bounds x="3395" y="889" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- IS Lane: Security Certification at x=3400, y=842 — 3240+100=3340, so 3400 ok. Participant=3500 ok -->
       <bpmndi:BPMNShape id="Shape_Task_SecurityCertification" bpmnElement="Task_SecurityCertification">
-        <dc:Bounds x="3400" y="842" width="100" height="80" />
+        <dc:Bounds x="3555" y="889" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Regulatory Notification at x=3080, y=682 -->
-      <!-- But SecCert is at x=3400 → LC comes after. Regulatory Notification at x=3080, y=682 -->
-      <!-- No: flow goes IS→LC→ITA→GB which means regulatory notification should be after security cert -->
-      <!-- Actually flow is: AccessRevoke(IS) → SecureDestruct(IS) → SecCert(IS) → RegNotif(LC) → CompClosure(LC) → ArchClean(ITA) → TechDebt(ITA) → FinalSignOff(GB) → End -->
-      <!-- So need LC tasks after x=3500. But participant is 3500. Extend to 3800. -->
-      <!-- Actually: let me place them sequentially using a tighter layout. Use x spacing of 140. -->
-      <!-- Start IS tasks earlier: AccessRevoke at x=3000, SecDestruct at x=3140, SecCert at x=3280 -->
-      <!-- LC: RegNotif at x=3000, CompClosure at x=3140 (same x as SecDestruct but diff lane - ok) -->
-      <!-- ITA: ArchClean at x=3000, TechDebt at x=3140 (different lanes - no overlap) -->
-      <!-- GB: FinalSignOff at x=3280, End at x=3440 -->
-
-      <!-- Re-set LC, ITA, GB end tasks: already committed above for IS, let me check: -->
-      <!-- IS: 3080(AccessRevoke), 3240(SecureDestruct), 3400(SecurityCert) -->
-      <!-- LC: RegNotif after SecCert. Place at x=3080, y=682 (LC lane). But flow goes IS→LC cross-lane, ok -->
-      <!-- Wait, the FLOW goes sequentially: AccessRevoke → SecureDestruct → SecurityCert → RegNotif(LC) -->
-      <!-- RegNotif can be at any x position to the right. Use x=3080 for RegNotif (different lane from IS tasks) -->
-      <!-- LC: x=3080, y=682 (no overlap with IS tasks at same x, different lane y=640-800) - ok -->
-
-      <!-- LC Lane: Regulatory Notification at x=3080, y=682 -->
       <bpmndi:BPMNShape id="Shape_Task_RegulatoryNotification" bpmnElement="Task_RegulatoryNotification">
-        <dc:Bounds x="3080" y="682" width="100" height="80" />
+        <dc:Bounds x="3235" y="729" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- LC Lane: Compliance Closure at x=3240, y=682 -->
       <bpmndi:BPMNShape id="Shape_Task_ComplianceClosure" bpmnElement="Task_ComplianceClosure">
-        <dc:Bounds x="3240" y="682" width="100" height="80" />
+        <dc:Bounds x="3395" y="729" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- ITA Lane: Architecture Cleanup at x=3080, y=362 -->
       <bpmndi:BPMNShape id="Shape_Task_ArchitectureCleanup" bpmnElement="Task_ArchitectureCleanup">
-        <dc:Bounds x="3080" y="362" width="100" height="80" />
+        <dc:Bounds x="3235" y="409" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- ITA Lane: Tech Debt Closure at x=3240, y=362 -->
       <bpmndi:BPMNShape id="Shape_Task_TechDebtClosure" bpmnElement="Task_TechDebtClosure">
-        <dc:Bounds x="3240" y="362" width="100" height="80" />
+        <dc:Bounds x="3395" y="409" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: Final Governance Sign-Off at x=3300, y=62 -->
       <bpmndi:BPMNShape id="Shape_Task_FinalGovernanceSignOff" bpmnElement="Task_FinalGovernanceSignOff">
-        <dc:Bounds x="3300" y="62" width="100" height="80" />
+        <dc:Bounds x="3455" y="109" width="140" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- GB Lane: Asset Retired End at x=3440, y=80 (3440+36=3476, within participant=3500) -->
       <bpmndi:BPMNShape id="Shape_EndEvent_AssetRetired" bpmnElement="EndEvent_AssetRetired">
-        <dc:Bounds x="3440" y="80" width="36" height="36" />
+        <dc:Bounds x="3595" y="127" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3414" y="123" width="88" height="27" />
+          <dc:Bounds x="3569" y="170" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Text Annotations (below participant, y=1170) -->
       <bpmndi:BPMNShape id="Shape_Annotation_Regulatory" bpmnElement="Annotation_Regulatory">
-        <dc:Bounds x="1600" y="1170" width="500" height="80" />
+        <dc:Bounds x="1755" y="1217" width="500" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Shape_Annotation_Security" bpmnElement="Annotation_Security">
-        <dc:Bounds x="3000" y="1170" width="450" height="80" />
+        <dc:Bounds x="3155" y="1217" width="450" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- =================== EDGES =================== -->
-
-      <!-- Start → RetirementImpactAssessment (GB→BO cross-lane) -->
       <bpmndi:BPMNEdge id="Edge_Flow_StartToImpactAssess" bpmnElement="Flow_StartToImpactAssess">
-        <di:waypoint x="118" y="80" />
-        <di:waypoint x="118" y="242" />
-        <di:waypoint x="200" y="242" />
+        <di:waypoint x="273" y="127" />
+        <di:waypoint x="273" y="289" />
+        <di:waypoint x="355" y="289" />
       </bpmndi:BPMNEdge>
-
-      <!-- RetirementImpactAssessment → DMN_RetirementEligibility -->
       <bpmndi:BPMNEdge id="Edge_Flow_ImpactToEligibility" bpmnElement="Flow_ImpactToEligibility">
-        <di:waypoint x="300" y="242" />
-        <di:waypoint x="360" y="242" />
+        <di:waypoint x="495" y="289" />
+        <di:waypoint x="515" y="289" />
       </bpmndi:BPMNEdge>
-
-      <!-- DMN → EligibilityGateway -->
       <bpmndi:BPMNEdge id="Edge_Flow_EligibilityToGateway" bpmnElement="Flow_EligibilityToGateway">
-        <di:waypoint x="460" y="242" />
-        <di:waypoint x="520" y="242" />
+        <di:waypoint x="655" y="289" />
+        <di:waypoint x="675" y="289" />
       </bpmndi:BPMNEdge>
-
-      <!-- EligibilityGateway → EndEvent_NotEligible (right) -->
       <bpmndi:BPMNEdge id="Edge_Flow_EligibilityNo" bpmnElement="Flow_EligibilityNo">
-        <di:waypoint x="570" y="242" />
-        <di:waypoint x="640" y="239" />
+        <di:waypoint x="725" y="289" />
+        <di:waypoint x="795" y="286" />
       </bpmndi:BPMNEdge>
-
-      <!-- EligibilityGateway → DependencyMapping (cross-lane BO→ITA, down) -->
       <bpmndi:BPMNEdge id="Edge_Flow_EligibilityYes" bpmnElement="Flow_EligibilityYes">
-        <di:waypoint x="545" y="267" />
-        <di:waypoint x="545" y="402" />
-        <di:waypoint x="660" y="402" />
+        <di:waypoint x="700" y="314" />
+        <di:waypoint x="700" y="449" />
+        <di:waypoint x="815" y="449" />
       </bpmndi:BPMNEdge>
-
-      <!-- DependencyMapping → DecommissionPlan -->
       <bpmndi:BPMNEdge id="Edge_Flow_DepMapToDecomPlan" bpmnElement="Flow_DepMapToDecomPlan">
-        <di:waypoint x="760" y="402" />
-        <di:waypoint x="820" y="402" />
+        <di:waypoint x="955" y="449" />
+        <di:waypoint x="975" y="449" />
       </bpmndi:BPMNEdge>
-
-      <!-- DecommissionPlan → DataMigrationDesign -->
       <bpmndi:BPMNEdge id="Edge_Flow_DecomPlanToDataMig" bpmnElement="Flow_DecomPlanToDataMig">
-        <di:waypoint x="920" y="402" />
-        <di:waypoint x="980" y="402" />
+        <di:waypoint x="1115" y="449" />
+        <di:waypoint x="1135" y="449" />
       </bpmndi:BPMNEdge>
-
-      <!-- DataMigrationDesign → LegalObligationReview (cross-lane ITA→LC, down) -->
       <bpmndi:BPMNEdge id="Edge_Flow_DataMigToLegal" bpmnElement="Flow_DataMigToLegal">
-        <di:waypoint x="1030" y="442" />
-        <di:waypoint x="1030" y="722" />
-        <di:waypoint x="1140" y="722" />
+        <di:waypoint x="1205" y="489" />
+        <di:waypoint x="1205" y="769" />
+        <di:waypoint x="1295" y="769" />
       </bpmndi:BPMNEdge>
-
-      <!-- LegalObligationReview → DataRetentionCompliance -->
       <bpmndi:BPMNEdge id="Edge_Flow_LegalObToDataRet" bpmnElement="Flow_LegalObToDataRet">
-        <di:waypoint x="1240" y="722" />
-        <di:waypoint x="1300" y="722" />
+        <di:waypoint x="1435" y="769" />
+        <di:waypoint x="1455" y="769" />
       </bpmndi:BPMNEdge>
-
-      <!-- DataRetentionCompliance → LegalClearanceGate -->
       <bpmndi:BPMNEdge id="Edge_Flow_DataRetToLegalGate" bpmnElement="Flow_DataRetToLegalGate">
-        <di:waypoint x="1400" y="722" />
-        <di:waypoint x="1460" y="722" />
+        <di:waypoint x="1595" y="769" />
+        <di:waypoint x="1615" y="769" />
       </bpmndi:BPMNEdge>
-
-      <!-- LegalClearanceGate → LegalHold (down) -->
       <bpmndi:BPMNEdge id="Edge_Flow_LegalClearFail" bpmnElement="Flow_LegalClearFail">
-        <di:waypoint x="1485" y="747" />
-        <di:waypoint x="1485" y="763" />
-        <di:waypoint x="1478" y="763" />
+        <di:waypoint x="1640" y="794" />
+        <di:waypoint x="1640" y="810" />
+        <di:waypoint x="1633" y="810" />
       </bpmndi:BPMNEdge>
-
-      <!-- LegalClearanceGate → DataPurgePlan (cross-lane LC→IS) -->
       <bpmndi:BPMNEdge id="Edge_Flow_LegalClearPass" bpmnElement="Flow_LegalClearPass">
-        <di:waypoint x="1510" y="722" />
-        <di:waypoint x="1580" y="722" />
-        <di:waypoint x="1580" y="882" />
+        <di:waypoint x="1665" y="769" />
+        <di:waypoint x="1735" y="769" />
+        <di:waypoint x="1735" y="929" />
       </bpmndi:BPMNEdge>
-
-      <!-- Timer_DataPurgeSLA → DataPurgeSLAEscalated -->
       <bpmndi:BPMNEdge id="Edge_Flow_DataPurgeTimer" bpmnElement="Flow_DataPurgeTimer">
-        <di:waypoint x="1666" y="922" />
-        <di:waypoint x="1740" y="924" />
+        <di:waypoint x="1821" y="969" />
+        <di:waypoint x="1895" y="971" />
       </bpmndi:BPMNEdge>
-
-      <!-- DataPurgePlan → RetirementBoardApproval (cross-lane IS→GB, up) -->
       <bpmndi:BPMNEdge id="Edge_Flow_DataPurgeToBoardApproval" bpmnElement="Flow_DataPurgeToBoardApproval">
-        <di:waypoint x="1630" y="842" />
-        <di:waypoint x="1630" y="102" />
-        <di:waypoint x="1740" y="102" />
+        <di:waypoint x="1805" y="889" />
+        <di:waypoint x="1805" y="149" />
+        <di:waypoint x="1895" y="149" />
       </bpmndi:BPMNEdge>
-
-      <!-- Timer_BoardApprovalSLA → BoardApprovalSLAEscalated -->
       <bpmndi:BPMNEdge id="Edge_Flow_BoardApprovalTimer" bpmnElement="Flow_BoardApprovalTimer">
-        <di:waypoint x="1844" y="142" />
-        <di:waypoint x="1888" y="142" />
-        <di:waypoint x="1888" y="114" />
+        <di:waypoint x="1999" y="189" />
+        <di:waypoint x="2083" y="189" />
+        <di:waypoint x="2083" y="161" />
       </bpmndi:BPMNEdge>
-
-      <!-- RetirementBoardApproval → RetirementApproved Gateway -->
       <bpmndi:BPMNEdge id="Edge_Flow_BoardApprovalToGateway" bpmnElement="Flow_BoardApprovalToGateway">
-        <di:waypoint x="1840" y="102" />
-        <di:waypoint x="1960" y="87" />
+        <di:waypoint x="2035" y="149" />
+        <di:waypoint x="2115" y="134" />
       </bpmndi:BPMNEdge>
-
-      <!-- RetirementApproved Gateway → RetirementRejected End (right) -->
       <bpmndi:BPMNEdge id="Edge_Flow_ApprovedNo" bpmnElement="Flow_ApprovedNo">
-        <di:waypoint x="2010" y="87" />
-        <di:waypoint x="2060" y="96" />
+        <di:waypoint x="2165" y="134" />
+        <di:waypoint x="2215" y="143" />
       </bpmndi:BPMNEdge>
-
-      <!-- RetirementApproved Gateway → StakeholderCommsPlanning (cross-lane GB→BO, down) -->
       <bpmndi:BPMNEdge id="Edge_Flow_ApprovedYes" bpmnElement="Flow_ApprovedYes">
-        <di:waypoint x="1985" y="112" />
-        <di:waypoint x="1985" y="242" />
-        <di:waypoint x="2120" y="242" />
+        <di:waypoint x="2140" y="159" />
+        <di:waypoint x="2140" y="289" />
+        <di:waypoint x="2275" y="289" />
       </bpmndi:BPMNEdge>
-
-      <!-- StakeholderCommsPlanning → UserMigrationPlan -->
       <bpmndi:BPMNEdge id="Edge_Flow_CommsToUserMig" bpmnElement="Flow_CommsToUserMig">
-        <di:waypoint x="2220" y="242" />
-        <di:waypoint x="2280" y="242" />
+        <di:waypoint x="2415" y="289" />
+        <di:waypoint x="2435" y="289" />
       </bpmndi:BPMNEdge>
-
-      <!-- UserMigrationPlan → ContractTermination (cross-lane BO→Proc, down) -->
       <bpmndi:BPMNEdge id="Edge_Flow_UserMigToContractTerm" bpmnElement="Flow_UserMigToContractTerm">
-        <di:waypoint x="2380" y="242" />
-        <di:waypoint x="2440" y="242" />
-        <di:waypoint x="2440" y="522" />
+        <di:waypoint x="2575" y="289" />
+        <di:waypoint x="2595" y="289" />
+        <di:waypoint x="2595" y="569" />
       </bpmndi:BPMNEdge>
-
-      <!-- ContractTermination → LicenseReclamation -->
       <bpmndi:BPMNEdge id="Edge_Flow_ContractToLicense" bpmnElement="Flow_ContractToLicense">
-        <di:waypoint x="2540" y="562" />
-        <di:waypoint x="2600" y="562" />
+        <di:waypoint x="2735" y="609" />
+        <di:waypoint x="2755" y="609" />
       </bpmndi:BPMNEdge>
-
-      <!-- LicenseReclamation → VendorOffboarding -->
       <bpmndi:BPMNEdge id="Edge_Flow_LicenseToVendorOff" bpmnElement="Flow_LicenseToVendorOff">
-        <di:waypoint x="2700" y="562" />
-        <di:waypoint x="2760" y="562" />
+        <di:waypoint x="2895" y="609" />
+        <di:waypoint x="2915" y="609" />
       </bpmndi:BPMNEdge>
-
-      <!-- VendorOffboarding → CostRecovery -->
       <bpmndi:BPMNEdge id="Edge_Flow_VendorOffToCostRec" bpmnElement="Flow_VendorOffToCostRec">
-        <di:waypoint x="2860" y="562" />
-        <di:waypoint x="2920" y="562" />
+        <di:waypoint x="3055" y="609" />
+        <di:waypoint x="3075" y="609" />
       </bpmndi:BPMNEdge>
-
-      <!-- CostRecovery → SLATermination (cross-lane Proc→VM, down) -->
       <bpmndi:BPMNEdge id="Edge_Flow_CostRecToSLATerm" bpmnElement="Flow_CostRecToSLATerm">
-        <di:waypoint x="2970" y="602" />
-        <di:waypoint x="2970" y="1002" />
-        <di:waypoint x="2540" y="1042" />
+        <di:waypoint x="3145" y="649" />
+        <di:waypoint x="3145" y="1049" />
+        <di:waypoint x="2735" y="1089" />
       </bpmndi:BPMNEdge>
-
-      <!-- SLATermination → FinalPerformanceReport -->
       <bpmndi:BPMNEdge id="Edge_Flow_SLATermToFinalRep" bpmnElement="Flow_SLATermToFinalRep">
-        <di:waypoint x="2540" y="1042" />
-        <di:waypoint x="2600" y="1042" />
+        <di:waypoint x="2735" y="1089" />
+        <di:waypoint x="2755" y="1089" />
       </bpmndi:BPMNEdge>
-
-      <!-- FinalPerformanceReport → VendorScoreCardFinal -->
       <bpmndi:BPMNEdge id="Edge_Flow_FinalRepToScorecard" bpmnElement="Flow_FinalRepToScorecard">
-        <di:waypoint x="2700" y="1042" />
-        <di:waypoint x="2760" y="1042" />
+        <di:waypoint x="2895" y="1089" />
+        <di:waypoint x="2915" y="1089" />
       </bpmndi:BPMNEdge>
-
-      <!-- VendorScoreCardFinal → CMDBDecommission -->
       <bpmndi:BPMNEdge id="Edge_Flow_ScorecardToCMDB" bpmnElement="Flow_ScorecardToCMDB">
-        <di:waypoint x="2860" y="1042" />
-        <di:waypoint x="2920" y="1042" />
+        <di:waypoint x="3055" y="1089" />
+        <di:waypoint x="3075" y="1089" />
       </bpmndi:BPMNEdge>
-
-      <!-- CMDBDecommission → AccessRevocation (cross-lane VM→IS, up) -->
       <bpmndi:BPMNEdge id="Edge_Flow_CMDBToAccessRevoke" bpmnElement="Flow_CMDBToAccessRevoke">
-        <di:waypoint x="3020" y="1042" />
-        <di:waypoint x="3080" y="1042" />
-        <di:waypoint x="3080" y="922" />
+        <di:waypoint x="3215" y="1089" />
+        <di:waypoint x="3235" y="1089" />
+        <di:waypoint x="3235" y="969" />
       </bpmndi:BPMNEdge>
-
-      <!-- AccessRevocation → SecureDataDestruction -->
       <bpmndi:BPMNEdge id="Edge_Flow_AccessToDataDestruct" bpmnElement="Flow_AccessToDataDestruct">
-        <di:waypoint x="3180" y="882" />
-        <di:waypoint x="3240" y="882" />
+        <di:waypoint x="3375" y="929" />
+        <di:waypoint x="3395" y="929" />
       </bpmndi:BPMNEdge>
-
-      <!-- SecureDataDestruction → SecurityCertification -->
       <bpmndi:BPMNEdge id="Edge_Flow_DataDestructToSecCert" bpmnElement="Flow_DataDestructToSecCert">
-        <di:waypoint x="3340" y="882" />
-        <di:waypoint x="3400" y="882" />
+        <di:waypoint x="3535" y="929" />
+        <di:waypoint x="3595" y="929" />
       </bpmndi:BPMNEdge>
-
-      <!-- SecurityCertification → RegulatoryNotification (cross-lane IS→LC, up) -->
-      <!-- RegNotif is at x=3080 which is LEFT of SecurityCert at x=3400. Need to route backward. -->
-      <!-- Actually, to avoid backflow confusion, place RegNotif after SecurityCert. Use x=3080 is wrong. -->
-      <!-- Fix: move RegNotif to x=3080 LC lane is different lane — since it's cross-lane it can go left-ward. -->
-      <!-- For visual clarity, let's use RegNotif at x=3080 same column but LC lane. The edge goes up-left. -->
       <bpmndi:BPMNEdge id="Edge_Flow_SecCertToRegNotif" bpmnElement="Flow_SecCertToRegNotif">
-        <di:waypoint x="3450" y="842" />
-        <di:waypoint x="3450" y="722" />
-        <di:waypoint x="3180" y="722" />
+        <di:waypoint x="3625" y="889" />
+        <di:waypoint x="3625" y="769" />
+        <di:waypoint x="3375" y="769" />
       </bpmndi:BPMNEdge>
-
-      <!-- RegulatoryNotification → ComplianceClosure -->
       <bpmndi:BPMNEdge id="Edge_Flow_RegNotifToCompClosure" bpmnElement="Flow_RegNotifToCompClosure">
-        <di:waypoint x="3180" y="722" />
-        <di:waypoint x="3240" y="722" />
+        <di:waypoint x="3375" y="769" />
+        <di:waypoint x="3395" y="769" />
       </bpmndi:BPMNEdge>
-
-      <!-- ComplianceClosure → ArchitectureCleanup (cross-lane LC→ITA, up) -->
       <bpmndi:BPMNEdge id="Edge_Flow_CompClosureToArchClean" bpmnElement="Flow_CompClosureToArchClean">
-        <di:waypoint x="3290" y="682" />
-        <di:waypoint x="3290" y="442" />
-        <di:waypoint x="3130" y="442" />
-        <di:waypoint x="3130" y="402" />
+        <di:waypoint x="3465" y="729" />
+        <di:waypoint x="3465" y="489" />
+        <di:waypoint x="3305" y="489" />
+        <di:waypoint x="3305" y="449" />
       </bpmndi:BPMNEdge>
-
-      <!-- ArchitectureCleanup → TechDebtClosure -->
       <bpmndi:BPMNEdge id="Edge_Flow_ArchCleanToTechDebt" bpmnElement="Flow_ArchCleanToTechDebt">
-        <di:waypoint x="3180" y="402" />
-        <di:waypoint x="3240" y="402" />
+        <di:waypoint x="3375" y="449" />
+        <di:waypoint x="3395" y="449" />
       </bpmndi:BPMNEdge>
-
-      <!-- TechDebtClosure → FinalGovernanceSignOff (cross-lane ITA→GB, up) -->
       <bpmndi:BPMNEdge id="Edge_Flow_TechDebtToFinalSignOff" bpmnElement="Flow_TechDebtToFinalSignOff">
-        <di:waypoint x="3340" y="362" />
-        <di:waypoint x="3350" y="362" />
-        <di:waypoint x="3350" y="102" />
+        <di:waypoint x="3535" y="409" />
+        <di:waypoint x="3525" y="409" />
+        <di:waypoint x="3525" y="149" />
       </bpmndi:BPMNEdge>
-
-      <!-- FinalGovernanceSignOff → AssetRetired End (FinalSignOff: x=3300, right edge=3400; End at x=3440) -->
       <bpmndi:BPMNEdge id="Edge_Flow_FinalSignOffToEnd" bpmnElement="Flow_FinalSignOffToEnd">
-        <di:waypoint x="3400" y="102" />
-        <di:waypoint x="3440" y="98" />
+        <di:waypoint x="3595" y="149" />
+        <di:waypoint x="3595" y="145" />
       </bpmndi:BPMNEdge>
-
-      <!-- Associations -->
       <bpmndi:BPMNEdge id="Edge_Assoc_Regulatory" bpmnElement="Assoc_Regulatory">
-        <di:waypoint x="1790" y="142" />
-        <di:waypoint x="1790" y="1170" />
+        <di:waypoint x="1965" y="189" />
+        <di:waypoint x="1965" y="1217" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Edge_Assoc_Security" bpmnElement="Assoc_Security">
-        <di:waypoint x="3290" y="922" />
-        <di:waypoint x="3290" y="1170" />
+        <di:waypoint x="3465" y="969" />
+        <di:waypoint x="3465" y="1217" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>

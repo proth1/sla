@@ -166,16 +166,16 @@ When analyzing BPMN files for backward flows:
 | Element Type | Width | Height |
 |-------------|-------|--------|
 | Start/End Events | 36 | 36 |
-| User/Service Tasks | 100 | 80 |
+| User/Service Tasks | 140 | 80 |
 | Gateways | 50 | 50 |
-| Collapsed Subprocesses | 100 | 80 |
+| Collapsed Subprocesses | 140 | 80 |
 | Expanded Subprocesses | 350+ | 200+ |
 
 ### Spacing Standards
 
 | Relationship | Minimum Spacing |
 |-------------|----------------|
-| Task to Task | 60px |
+| Task to Task | 20px |
 | Task to Gateway | 65px |
 | Gateway to Task | 65px |
 | Start Event to First Task | 64px |

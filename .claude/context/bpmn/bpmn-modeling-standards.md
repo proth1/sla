@@ -428,6 +428,43 @@ Before saving any BPMN file, verify:
 - [ ] `camunda:decisionRefBinding="latest"` on all BusinessRuleTask elements
 - [ ] `camunda:historyTimeToLive="180"` on process definition
 
+| Element Type | Width | Height |
+|--------------|-------|--------|
+| Task (User, Service, Business Rule) | 140 | 80 |
+| Collapsed Sub-Process | 140 | 80 |
+| Gateway | 50 | 50 |
+| Event (Start, End, Intermediate) | 36 | 36 |
+
+### Rule: Swim Lane Height Sizing
+
+| Lane Content Density | Lane Height |
+|---------------------|-------------|
+| Single task row | 160 |
+| Two task rows | 230 |
+| Three task rows with timers | 300 |
+
+### Rule: Timer Label Positioning
+
+Timer boundary event labels MUST be positioned to the **RIGHT** of the boundary event.
+
+**Formula**: Label x = Boundary event x + 44, Label y = Boundary event y + 4
+
+### Rule: Parallel Branch Vertical Spacing
+
+Maintain **170-180px vertical spacing** between parallel branches for label clarity and timer event room.
+
+### Rule: Escalation Event Positioning
+
+Position escalation end events **50-60px below** the boundary event, **~58px right** of boundary event center-x.
+
+### Rule: All Sequence Flows MUST Go Left-to-Right
+
+NEVER create backwards (right-to-left) sequence flows within a lane row.
+
+### Rule: Sequence Flow Waypoints
+
+Waypoints MUST connect to element edges (right edge of source, left edge of target at center-y).
+
 **XML Formatting**
 - [ ] No comments in BPMN or DI sections
 - [ ] No default attribute values

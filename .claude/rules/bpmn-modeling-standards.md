@@ -300,8 +300,8 @@ y=below        [Exception End] (rejections go below)
 
 | Element | Width | Height |
 |---------|-------|--------|
-| Task | 100 | 80 |
-| Collapsed Sub-Process | 100 | 80 |
+| Task | 140 | 80 |
+| Collapsed Sub-Process | 140 | 80 |
 | Gateway | 50 | 50 |
 | Event | 36 | 36 |
 
@@ -322,7 +322,7 @@ Every collapsed subprocess MUST have its own `BPMNDiagram` element with complete
 
 ```xml
 <bpmndi:BPMNShape id="SubProcess_di" bpmnElement="SubProcess" isExpanded="false">
-  <dc:Bounds x="240" y="178" width="100" height="80" />
+  <dc:Bounds x="240" y="178" width="140" height="80" />
 </bpmndi:BPMNShape>
 
 <!-- Separate diagram for internals -->
@@ -548,7 +548,7 @@ This keeps regulatory traceability without adding 9+ text annotations and associ
 
 - [ ] All flows left-to-right within lanes (no backward flows)
 - [ ] Cross-lane flows use vertical routing
-- [ ] Task dimensions 100x80, parallel spacing 170-180px
+- [ ] Task dimensions 140x80, parallel spacing 170-180px
 - [ ] Timer labels to the RIGHT of boundary events
 
 **Process Logic**
