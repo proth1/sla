@@ -308,7 +308,7 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
       const id = segments[2];
       if (!isValidId(id)) return errorResponse('Invalid task ID', 400);
       const processDefinitionKey = url.searchParams.get('processDefinitionKey') || '';
-      const form = await tasklistApi('GET', `/v1/forms/${id}?processDefinitionKey=${processDefinitionKey}`, env);
+      const form = await tasklistApi('GET', `/v1/forms/${id}?processDefinitionKey=${encodeURIComponent(processDefinitionKey)}`, env);
       return jsonResponse(form);
     }
 
@@ -371,7 +371,7 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
       const formId = segments[2];
       if (!isValidId(formId)) return errorResponse('Invalid form ID', 400);
       const processDefinitionKey = url.searchParams.get('processDefinitionKey') || '';
-      const form = await tasklistApi('GET', `/v1/forms/${formId}?processDefinitionKey=${processDefinitionKey}`, env);
+      const form = await tasklistApi('GET', `/v1/forms/${formId}?processDefinitionKey=${encodeURIComponent(processDefinitionKey)}`, env);
       return jsonResponse(form);
     }
 
