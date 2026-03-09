@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026.03.79] - 2026-03-08
+
+### Added
+- DMN-10: Incident Severity Classification for SP-Cross-3 incident response — 20 rules, FIRST hit policy, DORA Article 19 compliance (PR #96)
+- DMN-11: Jurisdictional Routing for Phase 1 intake — 16 rules covering EU/UK/US/APAC cross-border data flows, GDPR Articles 44-49 (PR #98)
+- DMN-12: Contract Renewal Routing for Phase 8 operations — 20 rules for AutoRenew/NegotiateTerms/CompetitiveBid/Terminate decisions, OCC 2023-17 (PR #99)
+- DMN-14: Data Residency Routing for Phase 2/3 — 16 rules covering Restricted/Confidential/Internal/Public data across jurisdictions (PR #100)
+
+### Changed
+- DMN-7: Enhanced with `exploitInTheWild` boolean input (CISA KEV catalog) — 16 new exploit-true rules with 50% compressed SLAs, hit policy changed UNIQUE→FIRST (PR #95)
+- DMN-8: Enhanced with `annualContractValue` double input — 5 new high-value vendor override rules for OCC 2023-17 proportional monitoring, hit policy changed UNIQUE→FIRST (PR #97)
+
 ## [2026.03.73] - 2026-03-08
 
 ### Fixed
