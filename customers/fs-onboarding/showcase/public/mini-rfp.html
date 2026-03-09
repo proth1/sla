@@ -247,15 +247,15 @@ function escapeHtml(str) {
 const STEPS = [
   { id: 'Task_Step1_UnderstandNeed', name: 'Understand\nthe Need', short: '1', formId: 'rfp-step1-understand-need', phase: 'prep' },
   { id: 'Task_Step2_VendorContext', name: 'Vendor\nContext', short: '2', formId: 'rfp-step2-vendor-context', phase: 'prep' },
-  { id: 'Task_Step2b_ClassificationCheck', name: 'Classification\nCheck', short: '2.5', formId: 'rfp-step2b-classification-validation', phase: 'prep' },
-  { id: 'BRT_DealKiller', name: 'Deal-Killer\nScreen', short: '3a', auto: true, phase: 'prep' },
-  { id: 'Task_Step3_DealKillerResults', name: 'Deal-Killer\nResults', short: '3', formId: 'rfp-step3-deal-killer', phase: 'prep' },
-  { id: 'BRT_QuestionSelection', name: 'Question\nSelection', short: '4a', auto: true, phase: 'prep' },
-  { id: 'Task_Step4_QuestionPreview', name: 'Question\nPreview', short: '4', formId: 'rfp-step4-preview', phase: 'prep' },
-  { id: 'Task_Step5_SendVendor', name: 'Send to\nVendor', short: '5', formId: 'rfp-step5-send-vendor', phase: 'prep' },
+  { id: 'Task_Step2b_ClassificationCheck', name: 'Classification\nCheck', short: '3', formId: 'rfp-step2b-classification-validation', phase: 'prep' },
+  { id: 'BRT_DealKiller', name: 'Deal-Killer\nScreen', short: '4a', auto: true, phase: 'prep' },
+  { id: 'Task_Step3_DealKillerResults', name: 'Deal-Killer\nResults', short: '4', formId: 'rfp-step3-deal-killer', phase: 'prep' },
+  { id: 'BRT_QuestionSelection', name: 'Question\nSelection', short: '5a', auto: true, phase: 'prep' },
+  { id: 'Task_Step4_QuestionPreview', name: 'Question\nPreview', short: '5', formId: 'rfp-step4-preview', phase: 'prep' },
+  { id: 'Task_Step5_SendVendor', name: 'Send to\nVendor', short: '6', formId: 'rfp-step5-send-vendor', phase: 'prep' },
   { id: 'Receive_VendorResponse', name: 'Await\nResponse', short: '&#9202;', wait: true, phase: 'collect' },
-  { id: 'Task_Step6_CollectResponses', name: 'Collect\nResponses', short: '6', formId: 'rfp-step6-collect-responses', phase: 'collect' },
-  { id: 'Task_Step7_ReviewScore', name: 'Review &\nScore', short: '7', formId: 'rfp-step7-review-score', phase: 'eval' },
+  { id: 'Task_Step6_CollectResponses', name: 'Collect\nResponses', short: '7', formId: 'rfp-step6-collect-responses', phase: 'collect' },
+  { id: 'Task_Step7_ReviewScore', name: 'Review &\nScore', short: '8', formId: 'rfp-step7-review-score', phase: 'eval' },
 ];
 
 // Display steps (user-visible, excludes auto BRT steps)
@@ -266,6 +266,7 @@ let state = {
   processDefKey: null,
   currentStepIndex: -1,
   selectedTask: null,
+  renderedTaskId: null,
   completedTasks: [],
   pollTimer: null,
   vendorToken: null,
@@ -355,20 +356,21 @@ async function pollTasks() {
         renderStepBar();
       }
 
-      // Check for deal-killer end state
-      if (task.taskDefinitionId === 'Task_Step3_DealKillerResults') {
+      // Skip re-render if same task is already displayed (prevents flashing)
+      if (task.id === state.renderedTaskId) {
+        // Same task — no re-render needed
+      } else if (task.taskDefinitionId === 'Task_Step3_DealKillerResults') {
         await loadDealKillerStep(task);
-        return;
+        state.renderedTaskId = task.id;
+      } else {
+        const stepDef = DISPLAY_STEPS.find(s => s.id === task.taskDefinitionId);
+        if (stepDef && stepDef.wait) {
+          renderVendorWait(task);
+          state.renderedTaskId = task.id;
+        } else {
+          await loadTaskForm(task);
+        }
       }
-
-      // Check for receive task (vendor wait)
-      const stepDef = DISPLAY_STEPS.find(s => s.id === task.taskDefinitionId);
-      if (stepDef && stepDef.wait) {
-        renderVendorWait(task);
-        return;
-      }
-
-      await loadTaskForm(task);
     } else if (state.processKey) {
       // Check if process completed or deal-killer terminated
       try {
@@ -410,6 +412,7 @@ async function loadTaskForm(task) {
     }
 
     renderWizardStep(task, formSchema, varsData);
+    state.renderedTaskId = task.id;
   } catch (e) {
     wiz.innerHTML = `<div style="text-align:center;padding:40px"><h3>Error loading task</h3><p style="color:var(--text3)">${escapeHtml(e.message)}</p></div>`;
   }
@@ -751,6 +754,7 @@ async function completeTask(taskId) {
     if (data.error) throw new Error(data.error);
     state.completedTasks.push(state.selectedTask);
     state.selectedTask = null;
+    state.renderedTaskId = null;
     const stepName = DISPLAY_STEPS[state.currentStepIndex]?.name?.replace(/\n/g, ' ') || '';
     toast(`Completed: ${stepName}`, 'success');
     await new Promise(r => setTimeout(r, 1200));
