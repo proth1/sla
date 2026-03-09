@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN6-VendorRiskTierAssignment-definitions"
+             name="DMN-6: Vendor Risk Tier Assignment"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_VendorRiskTierAssignment"
+            name="Vendor Risk Tier Assignment"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-08 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: OCC 2023-17, DORA Article 28, GLBA Safeguards Rule</description>
+    <decisionTable id="DMN_VendorRiskTierAssignment-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-6: Vendor Risk Tier Assignment
+        Purpose: Classify vendors into Tier 1-4 based on vendor-specific attributes,
+                 SEPARATE from initiative risk (DMN-1). OCC 2023-17 requires formal,
+                 documented vendor risk tiering criteria.
+        Hit Policy: FIRST (most restrictive rule wins — evaluated top to bottom)
+        Regulatory:
+          - OCC 2023-17: Risk-based vendor tiering and proportionate due diligence
+          - DORA Article 28: ICT third-party risk management principles
+          - GLBA Safeguards Rule: Vendor data access controls
+        Input Dimensions (each 1-10):
+          serviceCriticality:   How critical is the vendor's service? (10 = critical activity per OCC)
+          dataSensitivity:      Sensitivity of data vendor accesses (10 = NPI/PII/CHD)
+          concentrationRisk:    Degree of dependency on this vendor (10 = sole source for critical function)
+          financialStability:   Vendor financial health risk (10 = distressed/startup)
+          regulatoryExposure:   Regulatory scrutiny vendor's services attract (10 = SOX-scoped/PCI/BSA)
+        FIRST hit policy: rules ordered from most restrictive (Tier1) to least
+        restrictive (Tier4), with a catch-all default at the end.
+      -->
+
+      <!-- INPUTS -->
+
+      <input id="input-serviceCriticality" label="Service Criticality (1-10)">
+        <inputExpression id="inputExpr-serviceCriticality" typeRef="integer">
+          <text>serviceCriticality</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-dataSensitivity" label="Data Sensitivity (1-10)">
+        <inputExpression id="inputExpr-dataSensitivity" typeRef="integer">
+          <text>dataSensitivity</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-concentrationRisk" label="Concentration Risk (1-10)">
+        <inputExpression id="inputExpr-concentrationRisk" typeRef="integer">
+          <text>concentrationRisk</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-financialStability" label="Financial Stability Risk (1-10)">
+        <inputExpression id="inputExpr-financialStability" typeRef="integer">
+          <text>financialStability</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-regulatoryExposure" label="Regulatory Exposure (1-10)">
+        <inputExpression id="inputExpr-regulatoryExposure" typeRef="integer">
+          <text>regulatoryExposure</text>
+        </inputExpression>
+      </input>
+
+      <!-- OUTPUTS -->
+
+      <output id="output-vendorTier"
+              label="Vendor Tier"
+              name="vendorTier"
+              typeRef="string" />
+
+      <output id="output-dueDiligenceDepth"
+              label="Due Diligence Depth"
+              name="dueDiligenceDepth"
+              typeRef="string" />
+
+      <output id="output-monitoringRequirements"
+              label="Monitoring Requirements"
+              name="monitoringRequirements"
+              typeRef="string" />
+
+      <output id="output-contractualProvisions"
+              label="Contractual Provisions"
+              name="contractualProvisions"
+              typeRef="string" />
+
+      <!--
+        RULE GROUP 1: TIER 1 — CRITICAL
+        Any single extreme score or high-risk combinations trigger Tier1.
+        Rules 1-4 cover the Tier1 classification scenarios.
+      -->
+
+      <!-- Rule 1: Any single input >= 9 (serviceCriticality) -->
+      <rule id="rule-1">
+        <description>Any single input &gt;= 9: Tier1-Critical — extreme exposure in any dimension triggers comprehensive DD</description>
+        <inputEntry id="ie-1-1"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"Comprehensive DD: on-site assessment, SOC 1/2 review, financial analysis, BCP/DR testing, fourth-party assessment"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>"Quarterly review, annual on-site, continuous monitoring"</text></outputEntry>
+        <outputEntry id="oe-1-4"><text>"Full OCC 2023-17 + DORA Article 30 provisions, exit plan, sub-contractor notification rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 1b: Any single input >= 9 (dataSensitivity) -->
+      <rule id="rule-1b">
+        <description>Any single input &gt;= 9: Tier1-Critical — extreme data sensitivity</description>
+        <inputEntry id="ie-1b-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1b-2"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-1b-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-1b-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1b-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1b-1"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="oe-1b-2"><text>"Comprehensive DD: on-site assessment, SOC 1/2 review, financial analysis, BCP/DR testing, fourth-party assessment"</text></outputEntry>
+        <outputEntry id="oe-1b-3"><text>"Quarterly review, annual on-site, continuous monitoring"</text></outputEntry>
+        <outputEntry id="oe-1b-4"><text>"Full OCC 2023-17 + DORA Article 30 provisions, exit plan, sub-contractor notification rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 1c: Any single input >= 9 (concentrationRisk) -->
+      <rule id="rule-1c">
+        <description>Any single input &gt;= 9: Tier1-Critical — extreme concentration risk</description>
+        <inputEntry id="ie-1c-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1c-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1c-3"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-1c-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1c-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1c-1"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="oe-1c-2"><text>"Comprehensive DD: on-site assessment, SOC 1/2 review, financial analysis, BCP/DR testing, fourth-party assessment"</text></outputEntry>
+        <outputEntry id="oe-1c-3"><text>"Quarterly review, annual on-site, continuous monitoring"</text></outputEntry>
+        <outputEntry id="oe-1c-4"><text>"Full OCC 2023-17 + DORA Article 30 provisions, exit plan, sub-contractor notification rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 1d: Any single input >= 9 (financialStability) -->
+      <rule id="rule-1d">
+        <description>Any single input &gt;= 9: Tier1-Critical — extreme financial instability</description>
+        <inputEntry id="ie-1d-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1d-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1d-3"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1d-4"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-1d-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1d-1"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="oe-1d-2"><text>"Comprehensive DD: on-site assessment, SOC 1/2 review, financial analysis, BCP/DR testing, fourth-party assessment"</text></outputEntry>
+        <outputEntry id="oe-1d-3"><text>"Quarterly review, annual on-site, continuous monitoring"</text></outputEntry>
+        <outputEntry id="oe-1d-4"><text>"Full OCC 2023-17 + DORA Article 30 provisions, exit plan, sub-contractor notification rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 1e: Any single input >= 9 (regulatoryExposure) -->
+      <rule id="rule-1e">
+        <description>Any single input &gt;= 9: Tier1-Critical — extreme regulatory exposure</description>
+        <inputEntry id="ie-1e-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1e-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1e-3"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1e-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1e-5"><text>&gt;= 9</text></inputEntry>
+        <outputEntry id="oe-1e-1"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="oe-1e-2"><text>"Comprehensive DD: on-site assessment, SOC 1/2 review, financial analysis, BCP/DR testing, fourth-party assessment"</text></outputEntry>
+        <outputEntry id="oe-1e-3"><text>"Quarterly review, annual on-site, continuous monitoring"</text></outputEntry>
+        <outputEntry id="oe-1e-4"><text>"Full OCC 2023-17 + DORA Article 30 provisions, exit plan, sub-contractor notification rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: serviceCriticality >= 7 AND concentrationRisk >= 7 -->
+      <rule id="rule-2">
+        <description>Service criticality &gt;= 7 AND concentration risk &gt;= 7: Tier1-Critical — critical service with high dependency</description>
+        <inputEntry id="ie-2-1"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-2-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"Enhanced DD: SOC review, financial stability, concentration analysis, exit planning"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"Quarterly review, semi-annual on-site"</text></outputEntry>
+        <outputEntry id="oe-2-4"><text>"OCC critical activity provisions, DORA ICT register, exit plan"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: serviceCriticality >= 7 AND dataSensitivity >= 7 -->
+      <rule id="rule-3">
+        <description>Service criticality &gt;= 7 AND data sensitivity &gt;= 7: Tier1-Critical — critical service handling sensitive data</description>
+        <inputEntry id="ie-3-1"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"Enhanced DD: data handling assessment, SOC 2 review, privacy impact"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"Quarterly review with data handling audit"</text></outputEntry>
+        <outputEntry id="oe-3-4"><text>"DPA required, cross-border transfer terms, breach notification SLAs"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4a: regulatoryExposure >= 8 AND serviceCriticality >= 5 -->
+      <rule id="rule-4a">
+        <description>Regulatory exposure &gt;= 8 AND service criticality &gt;= 5: Tier1-Critical — high regulatory scrutiny on critical service</description>
+        <inputEntry id="ie-4a-1"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-4a-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-4a-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-4a-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-4a-5"><text>8</text></inputEntry>
+        <outputEntry id="oe-4a-1"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="oe-4a-2"><text>"Regulatory-focused DD: compliance attestation, regulatory examination history"</text></outputEntry>
+        <outputEntry id="oe-4a-3"><text>"Quarterly compliance review"</text></outputEntry>
+        <outputEntry id="oe-4a-4"><text>"Regulatory compliance warranties, examination cooperation clause"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4b: regulatoryExposure >= 8 AND dataSensitivity >= 5 -->
+      <rule id="rule-4b">
+        <description>Regulatory exposure &gt;= 8 AND data sensitivity &gt;= 5: Tier1-Critical — high regulatory scrutiny on sensitive data</description>
+        <inputEntry id="ie-4b-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-4b-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-4b-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-4b-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-4b-5"><text>8</text></inputEntry>
+        <outputEntry id="oe-4b-1"><text>"Tier1-Critical"</text></outputEntry>
+        <outputEntry id="oe-4b-2"><text>"Regulatory-focused DD: compliance attestation, regulatory examination history"</text></outputEntry>
+        <outputEntry id="oe-4b-3"><text>"Quarterly compliance review"</text></outputEntry>
+        <outputEntry id="oe-4b-4"><text>"Regulatory compliance warranties, examination cooperation clause"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 2: TIER 2 — SIGNIFICANT
+        Moderate-to-high scores in key dimensions. Rules 5-7.
+      -->
+
+      <!-- Rule 5: serviceCriticality >= 5 AND dataSensitivity >= 5 -->
+      <rule id="rule-5">
+        <description>Service criticality &gt;= 5 AND data sensitivity &gt;= 5: Tier2-Significant — material service with sensitive data</description>
+        <inputEntry id="ie-5-1"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"Tier2-Significant"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"Standard DD: SOC 2 review, security questionnaire, financial overview, reference checks"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>"Semi-annual review, annual security assessment"</text></outputEntry>
+        <outputEntry id="oe-5-4"><text>"Standard terms with SLA, breach notification, audit rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: concentrationRisk >= 6 AND financialStability >= 6 -->
+      <rule id="rule-6">
+        <description>Concentration risk &gt;= 6 AND financial stability risk &gt;= 6: Tier2-Significant — dependency on financially uncertain vendor</description>
+        <inputEntry id="ie-6-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>[6..8]</text></inputEntry>
+        <inputEntry id="ie-6-4"><text>[6..8]</text></inputEntry>
+        <inputEntry id="ie-6-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"Tier2-Significant"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"Financial-focused DD: financial statements, credit analysis, BCP review"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>"Semi-annual financial review"</text></outputEntry>
+        <outputEntry id="oe-6-4"><text>"Financial covenants, early termination rights, escrow provisions"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 7a: Any two inputs >= 5 — serviceCriticality + concentrationRisk -->
+      <rule id="rule-7a">
+        <description>Any two inputs &gt;= 5: Tier2-Significant — service criticality and concentration risk elevated</description>
+        <inputEntry id="ie-7a-1"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7a-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-7a-3"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7a-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-7a-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-7a-1"><text>"Tier2-Significant"</text></outputEntry>
+        <outputEntry id="oe-7a-2"><text>"Standard DD: security questionnaire, reference checks"</text></outputEntry>
+        <outputEntry id="oe-7a-3"><text>"Semi-annual review"</text></outputEntry>
+        <outputEntry id="oe-7a-4"><text>"Standard terms with SLA and audit rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 7b: Any two inputs >= 5 — serviceCriticality + financialStability -->
+      <rule id="rule-7b">
+        <description>Any two inputs &gt;= 5: Tier2-Significant — service criticality and financial instability elevated</description>
+        <inputEntry id="ie-7b-1"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7b-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-7b-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-7b-4"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7b-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-7b-1"><text>"Tier2-Significant"</text></outputEntry>
+        <outputEntry id="oe-7b-2"><text>"Standard DD: security questionnaire, reference checks"</text></outputEntry>
+        <outputEntry id="oe-7b-3"><text>"Semi-annual review"</text></outputEntry>
+        <outputEntry id="oe-7b-4"><text>"Standard terms with SLA and audit rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 7c: Any two inputs >= 5 — serviceCriticality + regulatoryExposure -->
+      <rule id="rule-7c">
+        <description>Any two inputs &gt;= 5: Tier2-Significant — service criticality and regulatory exposure elevated</description>
+        <inputEntry id="ie-7c-1"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7c-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-7c-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-7c-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-7c-5"><text>[5..7]</text></inputEntry>
+        <outputEntry id="oe-7c-1"><text>"Tier2-Significant"</text></outputEntry>
+        <outputEntry id="oe-7c-2"><text>"Standard DD: security questionnaire, reference checks"</text></outputEntry>
+        <outputEntry id="oe-7c-3"><text>"Semi-annual review"</text></outputEntry>
+        <outputEntry id="oe-7c-4"><text>"Standard terms with SLA and audit rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 7d: Any two inputs >= 5 — dataSensitivity + concentrationRisk -->
+      <rule id="rule-7d">
+        <description>Any two inputs &gt;= 5: Tier2-Significant — data sensitivity and concentration risk elevated</description>
+        <inputEntry id="ie-7d-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-7d-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7d-3"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7d-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-7d-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-7d-1"><text>"Tier2-Significant"</text></outputEntry>
+        <outputEntry id="oe-7d-2"><text>"Standard DD: security questionnaire, reference checks"</text></outputEntry>
+        <outputEntry id="oe-7d-3"><text>"Semi-annual review"</text></outputEntry>
+        <outputEntry id="oe-7d-4"><text>"Standard terms with SLA and audit rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 7e: Any two inputs >= 5 — dataSensitivity + financialStability -->
+      <rule id="rule-7e">
+        <description>Any two inputs &gt;= 5: Tier2-Significant — data sensitivity and financial instability elevated</description>
+        <inputEntry id="ie-7e-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-7e-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7e-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-7e-4"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7e-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-7e-1"><text>"Tier2-Significant"</text></outputEntry>
+        <outputEntry id="oe-7e-2"><text>"Standard DD: security questionnaire, reference checks"</text></outputEntry>
+        <outputEntry id="oe-7e-3"><text>"Semi-annual review"</text></outputEntry>
+        <outputEntry id="oe-7e-4"><text>"Standard terms with SLA and audit rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 7f: Any two inputs >= 5 — dataSensitivity + regulatoryExposure -->
+      <rule id="rule-7f">
+        <description>Any two inputs &gt;= 5: Tier2-Significant — data sensitivity and regulatory exposure elevated</description>
+        <inputEntry id="ie-7f-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-7f-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7f-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-7f-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-7f-5"><text>[5..7]</text></inputEntry>
+        <outputEntry id="oe-7f-1"><text>"Tier2-Significant"</text></outputEntry>
+        <outputEntry id="oe-7f-2"><text>"Standard DD: security questionnaire, reference checks"</text></outputEntry>
+        <outputEntry id="oe-7f-3"><text>"Semi-annual review"</text></outputEntry>
+        <outputEntry id="oe-7f-4"><text>"Standard terms with SLA and audit rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 7g: Any two inputs >= 5 — concentrationRisk + regulatoryExposure -->
+      <rule id="rule-7g">
+        <description>Any two inputs &gt;= 5: Tier2-Significant — concentration risk and regulatory exposure elevated</description>
+        <inputEntry id="ie-7g-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-7g-2"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-7g-3"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7g-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-7g-5"><text>[5..7]</text></inputEntry>
+        <outputEntry id="oe-7g-1"><text>"Tier2-Significant"</text></outputEntry>
+        <outputEntry id="oe-7g-2"><text>"Standard DD: security questionnaire, reference checks"</text></outputEntry>
+        <outputEntry id="oe-7g-3"><text>"Semi-annual review"</text></outputEntry>
+        <outputEntry id="oe-7g-4"><text>"Standard terms with SLA and audit rights"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 7h: Any two inputs >= 5 — financialStability + regulatoryExposure -->
+      <rule id="rule-7h">
+        <description>Any two inputs &gt;= 5: Tier2-Significant — financial instability and regulatory exposure elevated</description>
+        <inputEntry id="ie-7h-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-7h-2"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-7h-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-7h-4"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-7h-5"><text>[5..7]</text></inputEntry>
+        <outputEntry id="oe-7h-1"><text>"Tier2-Significant"</text></outputEntry>
+        <outputEntry id="oe-7h-2"><text>"Standard DD: security questionnaire, reference checks"</text></outputEntry>
+        <outputEntry id="oe-7h-3"><text>"Semi-annual review"</text></outputEntry>
+        <outputEntry id="oe-7h-4"><text>"Standard terms with SLA and audit rights"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 3: TIER 3 — MODERATE
+        Any single input >= 5, not already captured by Tier1/Tier2 rules.
+      -->
+
+      <!-- Rule 8: Any single input >= 5 -->
+      <rule id="rule-8">
+        <description>Any single input &gt;= 5: Tier3-Moderate — at least one dimension warrants attention</description>
+        <inputEntry id="ie-8-1"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"Tier3-Moderate"</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"Abbreviated DD: security questionnaire, standard reference check"</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>"Annual review"</text></outputEntry>
+        <outputEntry id="oe-8-4"><text>"Standard commercial terms with SLA"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8b">
+        <description>Any single input &gt;= 5: Tier3-Moderate — data sensitivity elevated</description>
+        <inputEntry id="ie-8b-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8b-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-8b-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-8b-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-8b-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-8b-1"><text>"Tier3-Moderate"</text></outputEntry>
+        <outputEntry id="oe-8b-2"><text>"Abbreviated DD: security questionnaire, standard reference check"</text></outputEntry>
+        <outputEntry id="oe-8b-3"><text>"Annual review"</text></outputEntry>
+        <outputEntry id="oe-8b-4"><text>"Standard commercial terms with SLA"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8c">
+        <description>Any single input &gt;= 5: Tier3-Moderate — concentration risk elevated</description>
+        <inputEntry id="ie-8c-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8c-2"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8c-3"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-8c-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-8c-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-8c-1"><text>"Tier3-Moderate"</text></outputEntry>
+        <outputEntry id="oe-8c-2"><text>"Abbreviated DD: security questionnaire, standard reference check"</text></outputEntry>
+        <outputEntry id="oe-8c-3"><text>"Annual review"</text></outputEntry>
+        <outputEntry id="oe-8c-4"><text>"Standard commercial terms with SLA"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8d">
+        <description>Any single input &gt;= 5: Tier3-Moderate — financial stability risk elevated</description>
+        <inputEntry id="ie-8d-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8d-2"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8d-3"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8d-4"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-8d-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-8d-1"><text>"Tier3-Moderate"</text></outputEntry>
+        <outputEntry id="oe-8d-2"><text>"Abbreviated DD: security questionnaire, standard reference check"</text></outputEntry>
+        <outputEntry id="oe-8d-3"><text>"Annual review"</text></outputEntry>
+        <outputEntry id="oe-8d-4"><text>"Standard commercial terms with SLA"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8e">
+        <description>Any single input &gt;= 5: Tier3-Moderate — regulatory exposure elevated</description>
+        <inputEntry id="ie-8e-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8e-2"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8e-3"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8e-4"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8e-5"><text>[5..7]</text></inputEntry>
+        <outputEntry id="oe-8e-1"><text>"Tier3-Moderate"</text></outputEntry>
+        <outputEntry id="oe-8e-2"><text>"Abbreviated DD: security questionnaire, standard reference check"</text></outputEntry>
+        <outputEntry id="oe-8e-3"><text>"Annual review"</text></outputEntry>
+        <outputEntry id="oe-8e-4"><text>"Standard commercial terms with SLA"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 4: TIER 4 — LOW (Default)
+        All scores below 5. Catch-all for low-risk vendors.
+      -->
+
+      <rule id="rule-9">
+        <description>Default: Tier4-Low — all dimensions below threshold, minimal vendor risk</description>
+        <inputEntry id="ie-9-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"Tier4-Low"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"Minimal DD: vendor registration and basic due diligence"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>"Biennial review"</text></outputEntry>
+        <outputEntry id="oe-9-4"><text>"Standard procurement terms"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN6-VendorRiskTier-diagram">
+      <dmndi:DMNShape id="DMN6-VendorRiskTier-shape" dmnElementRef="DMN_VendorRiskTierAssignment">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
