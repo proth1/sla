@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN17-DPIATriggerAssessment-definitions"
+             name="DMN-17: DPIA Trigger Assessment"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_DPIATriggerAssessment"
+            name="DPIA Trigger Assessment"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-08 | Approving Authority: Data Protection Officer | Review Cycle: Annual | Regulatory Basis: GDPR Art 35-36, EU AI Act, DORA, ISO 27701</description>
+    <decisionTable id="DMN_DPIATriggerAssessment-table" hitPolicy="FIRST">
+
+      <input id="input-dataProcessingType" label="Data Processing Type">
+        <inputExpression id="inputExpr-dataProcessingType" typeRef="string">
+          <text>dataProcessingType</text>
+        </inputExpression>
+        <inputValues id="inputValues-dataProcessingType">
+          <text>"Profiling","AutomatedDecision","SystematicMonitoring","LargeScaleProcessing","SensitiveData","DataMatching","VulnerableSubjects","InnovativeUse","PreventingRights","Standard"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-dataSubjectScale" label="Data Subject Scale">
+        <inputExpression id="inputExpr-dataSubjectScale" typeRef="string">
+          <text>dataSubjectScale</text>
+        </inputExpression>
+        <inputValues id="inputValues-dataSubjectScale">
+          <text>"Individual","SmallGroup","LargeGroup","Population"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-automatedDecisionMaking" label="Automated Decision Making">
+        <inputExpression id="inputExpr-automatedDecisionMaking" typeRef="boolean">
+          <text>automatedDecisionMaking</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-sensitiveDataProcessed" label="Sensitive Data Processed">
+        <inputExpression id="inputExpr-sensitiveDataProcessed" typeRef="boolean">
+          <text>sensitiveDataProcessed</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-crossBorderTransfer" label="Cross-Border Transfer">
+        <inputExpression id="inputExpr-crossBorderTransfer" typeRef="boolean">
+          <text>crossBorderTransfer</text>
+        </inputExpression>
+      </input>
+
+      <output id="output-dpiaRequired"
+              label="DPIA Required"
+              name="dpiaRequired"
+              typeRef="boolean" />
+
+      <output id="output-dpiaUrgency"
+              label="DPIA Urgency"
+              name="dpiaUrgency"
+              typeRef="string" />
+
+      <output id="output-supervisoryConsultation"
+              label="Supervisory Consultation"
+              name="supervisoryConsultation"
+              typeRef="boolean" />
+
+      <output id="output-templateId"
+              label="Template ID"
+              name="templateId"
+              typeRef="string" />
+
+      <rule id="rule-1">
+        <description>Profiling at large scale: DPIA mandatory per GDPR Art 35(3)(a) — systematic profiling with significant effects</description>
+        <inputEntry id="ie-1-1"><text>"Profiling"</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>"LargeGroup","Population"</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"Immediate"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-1-4"><text>"DPIA-PROFILING-FULL"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-2">
+        <description>Automated decision-making with legal/significant effects: DPIA mandatory per GDPR Art 35(3)(a), Art 22 — prior DPA consultation required</description>
+        <inputEntry id="ie-2-1"><text>"AutomatedDecision"</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>true</text></inputEntry>
+        <inputEntry id="ie-2-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"Immediate"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>true</text></outputEntry>
+        <outputEntry id="oe-2-4"><text>"DPIA-AUTOMATED-DECISION"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-3">
+        <description>Systematic monitoring: DPIA mandatory per GDPR Art 35(3)(c) — systematic monitoring of publicly accessible area</description>
+        <inputEntry id="ie-3-1"><text>"SystematicMonitoring"</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"Immediate"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-3-4"><text>"DPIA-MONITORING-FULL"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-4">
+        <description>Population-scale sensitive data: DPIA mandatory per GDPR Art 35(3)(b) — large scale processing of Art 9/10 data, DPA consultation required</description>
+        <inputEntry id="ie-4-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>"Population"</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-4"><text>true</text></inputEntry>
+        <inputEntry id="ie-4-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"Immediate"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>true</text></outputEntry>
+        <outputEntry id="oe-4-4"><text>"DPIA-LARGE-SCALE-SENSITIVE"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-5">
+        <description>Large-scale sensitive data processing: DPIA mandatory per GDPR Art 35(3)(b) — special category data at scale, DPA consultation required</description>
+        <inputEntry id="ie-5-1"><text>"SensitiveData"</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>"LargeGroup","Population"</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-4"><text>true</text></inputEntry>
+        <inputEntry id="ie-5-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"Immediate"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>true</text></outputEntry>
+        <outputEntry id="oe-5-4"><text>"DPIA-SENSITIVE-FULL"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-6">
+        <description>Data matching at scale: DPIA required — combining datasets from different processing operations at large scale</description>
+        <inputEntry id="ie-6-1"><text>"DataMatching"</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>"LargeGroup","Population"</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"Standard"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-6-4"><text>"DPIA-DATA-MATCHING"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-7">
+        <description>Vulnerable data subjects: DPIA required — processing data of children, employees, mentally ill, asylum seekers, elderly, patients</description>
+        <inputEntry id="ie-7-1"><text>"VulnerableSubjects"</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-7-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-7-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"Standard"</text></outputEntry>
+        <outputEntry id="oe-7-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-7-4"><text>"DPIA-VULNERABLE-SUBJECTS"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8">
+        <description>Innovative use with cross-border transfer: DPIA required — novel technology or application combined with international data flows</description>
+        <inputEntry id="ie-8-1"><text>"InnovativeUse"</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-5"><text>true</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"Standard"</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-8-4"><text>"DPIA-INNOVATIVE-CROSS-BORDER"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-9">
+        <description>Large-scale processing with cross-border transfer: DPIA required — significant volume with international data flows increases risk</description>
+        <inputEntry id="ie-9-1"><text>"LargeScaleProcessing"</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>"LargeGroup"</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>false</text></inputEntry>
+        <inputEntry id="ie-9-4"><text>false</text></inputEntry>
+        <inputEntry id="ie-9-5"><text>true</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"Standard"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-9-4"><text>"DPIA-STANDARD"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-10">
+        <description>Processing preventing exercise of rights: DPIA required — processing that prevents data subjects from exercising a right or using a service/contract</description>
+        <inputEntry id="ie-10-1"><text>"PreventingRights"</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-10-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-10-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-10-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-10-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-10-2"><text>"Standard"</text></outputEntry>
+        <outputEntry id="oe-10-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-10-4"><text>"DPIA-RIGHTS-RESTRICTION"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-11">
+        <description>Automated decision-making at large scale without sensitive data: DPIA required — automated processing affecting large groups</description>
+        <inputEntry id="ie-11-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-11-2"><text>"LargeGroup"</text></inputEntry>
+        <inputEntry id="ie-11-3"><text>true</text></inputEntry>
+        <inputEntry id="ie-11-4"><text>false</text></inputEntry>
+        <inputEntry id="ie-11-5"><text>false</text></inputEntry>
+        <outputEntry id="oe-11-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-11-2"><text>"Standard"</text></outputEntry>
+        <outputEntry id="oe-11-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-11-4"><text>"DPIA-AUTOMATED-LARGE"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-12">
+        <description>Sensitive data with cross-border transfer at small scale: DPIA required — Art 9/10 data crossing jurisdictions even at limited scale</description>
+        <inputEntry id="ie-12-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-12-2"><text>"SmallGroup"</text></inputEntry>
+        <inputEntry id="ie-12-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-12-4"><text>true</text></inputEntry>
+        <inputEntry id="ie-12-5"><text>true</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-12-2"><text>"Standard"</text></outputEntry>
+        <outputEntry id="oe-12-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-12-4"><text>"DPIA-SENSITIVE-CROSS-BORDER"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-13">
+        <description>Large-scale processing without other risk factors: DPIA likely required — volume alone warrants advisory assessment</description>
+        <inputEntry id="ie-13-1"><text>"LargeScaleProcessing"</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>"LargeGroup"</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>false</text></inputEntry>
+        <inputEntry id="ie-13-4"><text>false</text></inputEntry>
+        <inputEntry id="ie-13-5"><text>false</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-13-2"><text>"Advisory"</text></outputEntry>
+        <outputEntry id="oe-13-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-13-4"><text>"DPIA-STANDARD"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-14">
+        <description>Innovative use without cross-border transfer: DPIA likely required — novel technology warrants assessment even domestically</description>
+        <inputEntry id="ie-14-1"><text>"InnovativeUse"</text></inputEntry>
+        <inputEntry id="ie-14-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-14-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-14-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-14-5"><text>false</text></inputEntry>
+        <outputEntry id="oe-14-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-14-2"><text>"Advisory"</text></outputEntry>
+        <outputEntry id="oe-14-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-14-4"><text>"DPIA-INNOVATIVE"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-15">
+        <description>Standard processing, individual scope, no risk factors: DPIA not required — minimal data protection risk</description>
+        <inputEntry id="ie-15-1"><text>"Standard"</text></inputEntry>
+        <inputEntry id="ie-15-2"><text>"Individual"</text></inputEntry>
+        <inputEntry id="ie-15-3"><text>false</text></inputEntry>
+        <inputEntry id="ie-15-4"><text>false</text></inputEntry>
+        <inputEntry id="ie-15-5"><text>false</text></inputEntry>
+        <outputEntry id="oe-15-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-15-2"><text>"Advisory"</text></outputEntry>
+        <outputEntry id="oe-15-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-15-4"><text>"DPIA-NOT-REQUIRED"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-16">
+        <description>Standard processing, small group, no risk factors: DPIA not required — low volume standard processing</description>
+        <inputEntry id="ie-16-1"><text>"Standard"</text></inputEntry>
+        <inputEntry id="ie-16-2"><text>"SmallGroup"</text></inputEntry>
+        <inputEntry id="ie-16-3"><text>false</text></inputEntry>
+        <inputEntry id="ie-16-4"><text>false</text></inputEntry>
+        <inputEntry id="ie-16-5"><text>false</text></inputEntry>
+        <outputEntry id="oe-16-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-16-2"><text>"Advisory"</text></outputEntry>
+        <outputEntry id="oe-16-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-16-4"><text>"DPIA-NOT-REQUIRED"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-17">
+        <description>Large-scale processing, individual scope, no risk factors: DPIA not required — individual-level processing despite system scale</description>
+        <inputEntry id="ie-17-1"><text>"LargeScaleProcessing"</text></inputEntry>
+        <inputEntry id="ie-17-2"><text>"Individual"</text></inputEntry>
+        <inputEntry id="ie-17-3"><text>false</text></inputEntry>
+        <inputEntry id="ie-17-4"><text>false</text></inputEntry>
+        <inputEntry id="ie-17-5"><text>false</text></inputEntry>
+        <outputEntry id="oe-17-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-17-2"><text>"Advisory"</text></outputEntry>
+        <outputEntry id="oe-17-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-17-4"><text>"DPIA-NOT-REQUIRED"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-18">
+        <description>Standard processing, small group, cross-border only: DPIA not required — cross-border transfer alone insufficient for DPIA trigger</description>
+        <inputEntry id="ie-18-1"><text>"Standard"</text></inputEntry>
+        <inputEntry id="ie-18-2"><text>"SmallGroup"</text></inputEntry>
+        <inputEntry id="ie-18-3"><text>false</text></inputEntry>
+        <inputEntry id="ie-18-4"><text>false</text></inputEntry>
+        <inputEntry id="ie-18-5"><text>true</text></inputEntry>
+        <outputEntry id="oe-18-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-18-2"><text>"Advisory"</text></outputEntry>
+        <outputEntry id="oe-18-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-18-4"><text>"DPIA-CROSS-BORDER-ONLY"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-19">
+        <description>Standard processing, individual, sensitive data only: DPIA not required — individual-level sensitive data without other risk factors</description>
+        <inputEntry id="ie-19-1"><text>"Standard"</text></inputEntry>
+        <inputEntry id="ie-19-2"><text>"Individual"</text></inputEntry>
+        <inputEntry id="ie-19-3"><text>false</text></inputEntry>
+        <inputEntry id="ie-19-4"><text>true</text></inputEntry>
+        <inputEntry id="ie-19-5"><text>false</text></inputEntry>
+        <outputEntry id="oe-19-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-19-2"><text>"Advisory"</text></outputEntry>
+        <outputEntry id="oe-19-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-19-4"><text>"DPIA-SENSITIVE-MINIMAL"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-20">
+        <description>Default catch-all: Conservative default — DPIA required with standard urgency for any unmatched combination</description>
+        <inputEntry id="ie-20-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-20-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-20-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-20-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-20-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-20-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-20-2"><text>"Standard"</text></outputEntry>
+        <outputEntry id="oe-20-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-20-4"><text>"DPIA-STANDARD"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN17-diagram">
+      <dmndi:DMNShape id="DMN17-shape" dmnElementRef="DMN_DPIATriggerAssessment">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

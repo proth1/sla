@@ -1,0 +1,222 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "dpia-assessment",
+  "components": [
+    {
+      "type": "group",
+      "label": "Processing Activity Description",
+      "id": "Field_DPIA_G1",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "processingActivityName",
+          "label": "Name of processing activity",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_DPIA_001"
+        },
+        {
+          "type": "textarea",
+          "key": "processingPurpose",
+          "label": "Purpose and legal basis for processing",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_DPIA_002"
+        },
+        {
+          "type": "textfield",
+          "key": "dataControllerName",
+          "label": "Data controller identity",
+          "id": "Field_DPIA_003"
+        },
+        {
+          "type": "textfield",
+          "key": "dataProcessorName",
+          "label": "Data processor identity (if applicable)",
+          "id": "Field_DPIA_004"
+        },
+        {
+          "type": "checkbox",
+          "key": "dpoConsulted",
+          "label": "DPO was consulted",
+          "id": "Field_DPIA_005"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Data Subject and Data Categories",
+      "id": "Field_DPIA_G2",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "dataSubjectCategories",
+          "label": "Categories of data subjects (e.g., customers, employees)",
+          "id": "Field_DPIA_006"
+        },
+        {
+          "type": "textarea",
+          "key": "personalDataCategories",
+          "label": "Categories of personal data processed",
+          "id": "Field_DPIA_007"
+        },
+        {
+          "type": "textarea",
+          "key": "sensitiveDataCategories",
+          "label": "Special category data (Art 9) if any",
+          "id": "Field_DPIA_008"
+        },
+        {
+          "type": "textfield",
+          "key": "dataRetentionPeriod",
+          "label": "How long data is retained",
+          "id": "Field_DPIA_009"
+        },
+        {
+          "type": "textfield",
+          "key": "estimatedDataSubjects",
+          "label": "Estimated number of data subjects",
+          "id": "Field_DPIA_010"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Necessity and Proportionality",
+      "id": "Field_DPIA_G3",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "necessityAssessment",
+          "label": "Why is this processing necessary?",
+          "id": "Field_DPIA_011"
+        },
+        {
+          "type": "textarea",
+          "key": "proportionalityAssessment",
+          "label": "Is processing proportionate to the purpose?",
+          "id": "Field_DPIA_012"
+        },
+        {
+          "type": "textarea",
+          "key": "dataMinimization",
+          "label": "How is data minimization achieved?",
+          "id": "Field_DPIA_013"
+        },
+        {
+          "type": "textarea",
+          "key": "alternativesConsidered",
+          "label": "Were less intrusive alternatives considered?",
+          "id": "Field_DPIA_014"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Risk Assessment",
+      "id": "Field_DPIA_G4",
+      "components": [
+        {
+          "type": "select",
+          "key": "riskToIndividuals",
+          "label": "Risk to data subjects' rights and freedoms",
+          "valuesExpression": "=[{\"label\": \"Low\", \"value\": \"Low\"},{\"label\": \"Medium\", \"value\": \"Medium\"},{\"label\": \"High\", \"value\": \"High\"},{\"label\": \"Critical\", \"value\": \"Critical\"}]",
+          "id": "Field_DPIA_015"
+        },
+        {
+          "type": "select",
+          "key": "likelihoodOfHarm",
+          "label": "Likelihood of identified risks",
+          "valuesExpression": "=[{\"label\": \"Remote\", \"value\": \"Remote\"},{\"label\": \"Possible\", \"value\": \"Possible\"},{\"label\": \"Likely\", \"value\": \"Likely\"},{\"label\": \"Almost Certain\", \"value\": \"AlmostCertain\"}]",
+          "id": "Field_DPIA_016"
+        },
+        {
+          "type": "textarea",
+          "key": "riskMitigationMeasures",
+          "label": "Technical and organizational measures to mitigate risks",
+          "id": "Field_DPIA_017"
+        },
+        {
+          "type": "select",
+          "key": "residualRiskLevel",
+          "label": "Risk level after mitigation",
+          "valuesExpression": "=[{\"label\": \"Low\", \"value\": \"Low\"},{\"label\": \"Medium\", \"value\": \"Medium\"},{\"label\": \"High\", \"value\": \"High\"}]",
+          "id": "Field_DPIA_018"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Cross-Border Transfer Assessment",
+      "id": "Field_DPIA_G5",
+      "components": [
+        {
+          "type": "checkbox",
+          "key": "crossBorderTransfer",
+          "label": "Processing involves cross-border transfer",
+          "id": "Field_DPIA_019"
+        },
+        {
+          "type": "textarea",
+          "key": "transferDestinations",
+          "label": "Countries data is transferred to",
+          "id": "Field_DPIA_020"
+        },
+        {
+          "type": "select",
+          "key": "transferMechanism",
+          "label": "Legal transfer mechanism",
+          "valuesExpression": "=[{\"label\": \"Adequacy Decision\", \"value\": \"Adequacy\"},{\"label\": \"Standard Contractual Clauses (SCCs)\", \"value\": \"SCCs\"},{\"label\": \"Binding Corporate Rules (BCRs)\", \"value\": \"BCRs\"},{\"label\": \"Data Privacy Framework (DPF)\", \"value\": \"DPF\"},{\"label\": \"Derogation (Art 49)\", \"value\": \"Derogation\"},{\"label\": \"None\", \"value\": \"None\"}]",
+          "id": "Field_DPIA_021"
+        },
+        {
+          "type": "textarea",
+          "key": "supplementaryMeasures",
+          "label": "Additional safeguards for transfer",
+          "id": "Field_DPIA_022"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Decision and Sign-Off",
+      "id": "Field_DPIA_G6",
+      "components": [
+        {
+          "type": "select",
+          "key": "dpiaOutcome",
+          "label": "DPIA conclusion",
+          "valuesExpression": "=[{\"label\": \"Proceed\", \"value\": \"Proceed\"},{\"label\": \"Proceed with Measures\", \"value\": \"ProceedWithMeasures\"},{\"label\": \"Consult Supervisory Authority\", \"value\": \"Consult\"},{\"label\": \"Do Not Proceed\", \"value\": \"DoNotProceed\"}]",
+          "id": "Field_DPIA_023"
+        },
+        {
+          "type": "checkbox",
+          "key": "supervisoryConsultationRequired",
+          "label": "Art 36 supervisory consultation required",
+          "id": "Field_DPIA_024"
+        },
+        {
+          "type": "textfield",
+          "key": "dpoSignOff",
+          "label": "DPO name and date",
+          "id": "Field_DPIA_025"
+        },
+        {
+          "type": "textfield",
+          "key": "controllerSignOff",
+          "label": "Controller representative name and date",
+          "id": "Field_DPIA_026"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}
