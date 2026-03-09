@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026.03.103] - 2026-03-09
+
+### Added
+- Onboarding v15: Fix Build path dead end (merge gateway replaces dead-end event), wire committee voting at governance gate (CA_GovernanceVoting) and final approval (SP5 call activity), replace placeholder =true conditions with domain-meaningful FEEL expressions (PR #117)
+
 ## [2026.03.102] - 2026-03-09
 
 ### Added
