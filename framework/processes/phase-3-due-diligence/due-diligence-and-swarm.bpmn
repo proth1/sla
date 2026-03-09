@@ -28,7 +28,10 @@
       </bpmn:lane>
 
       <bpmn:lane id="Lane_Governance" name="Governance">
-        <bpmn:flowNodeRef>Task_PhaseQualityGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Phase3_Complete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Phase3_QualityGate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Phase3_Approval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_Phase3Transition</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Phase3Complete</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_QGSLAEscalated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_ConcentrationRisk</bpmn:flowNodeRef>
@@ -297,12 +300,27 @@
       <bpmn:outgoing>Flow_Contracting_QualityGate</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_PhaseQualityGate" name="Phase 3 Quality Gate&#10;+ Approval Sign-Off" camunda:candidateGroups="governance-lane">
+    <bpmn:exclusiveGateway id="Gateway_Phase3_Complete" name="Phase 3&#10;Complete?">
       <bpmn:incoming>Flow_Contracting_QualityGate</bpmn:incoming>
-      <bpmn:outgoing>Flow_QualityGate_End</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Phase3Complete_QualityGate</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:businessRuleTask id="Task_Phase3_QualityGate" name="Phase 3&#10;Quality Gate" camunda:decisionRef="DMN_AutomationTierAssignment" camunda:decisionRefBinding="latest" camunda:resultVariable="qualityGateResult" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_Phase3Complete_QualityGate</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase3QualityGate_Approval</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:userTask id="Task_Phase3_Approval" name="Phase 3&#10;Approval" camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_Phase3QualityGate_Approval</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase3Approval_Transition</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:boundaryEvent id="Timer_QualityGateSLA" name="2 Day&#10;SLA" attachedToRef="Task_PhaseQualityGate" cancelActivity="false">
+    <bpmn:intermediateThrowEvent id="Event_Phase3Transition" name="Phase 3&#10;Complete">
+      <bpmn:incoming>Flow_Phase3Approval_Transition</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase3Transition_End</bpmn:outgoing>
+    </bpmn:intermediateThrowEvent>
+
+    <bpmn:boundaryEvent id="Timer_QualityGateSLA" name="2 Day&#10;SLA" attachedToRef="Task_Phase3_Approval" cancelActivity="false">
       <bpmn:outgoing>Flow_QGSLAEscalate</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerDef_QualityGate">
         <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
@@ -310,7 +328,7 @@
     </bpmn:boundaryEvent>
 
     <bpmn:endEvent id="EndEvent_Phase3Complete" name="Phase 3 Complete&#10;(Due Diligence Approved)">
-      <bpmn:incoming>Flow_QualityGate_End</bpmn:incoming>
+      <bpmn:incoming>Flow_Phase3Transition_End</bpmn:incoming>
       <bpmn:signalEventDefinition id="SignalDef_P3Complete" signalRef="Signal_Phase3Complete" />
     </bpmn:endEvent>
 
@@ -406,8 +424,13 @@
     <bpmn:sequenceFlow id="Flow_310_OversightMerge" sourceRef="Task_310_TPRMBuildMapping" targetRef="Gateway_PathwayMerge" />
     <bpmn:sequenceFlow id="Flow_PathwayMerge_Oversight" sourceRef="Gateway_PathwayMerge" targetRef="Task_OversightReview" />
     <bpmn:sequenceFlow id="Flow_Oversight_Contracting" sourceRef="Task_OversightReview" targetRef="Task_ContractingReview" />
-    <bpmn:sequenceFlow id="Flow_Contracting_QualityGate" sourceRef="Task_ContractingReview" targetRef="Task_PhaseQualityGate" />
-    <bpmn:sequenceFlow id="Flow_QualityGate_End" sourceRef="Task_PhaseQualityGate" targetRef="EndEvent_Phase3Complete" />
+    <bpmn:sequenceFlow id="Flow_Contracting_QualityGate" sourceRef="Task_ContractingReview" targetRef="Gateway_Phase3_Complete" />
+    <bpmn:sequenceFlow id="Flow_Phase3Complete_QualityGate" name="Yes" sourceRef="Gateway_Phase3_Complete" targetRef="Task_Phase3_QualityGate">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseComplete == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Phase3QualityGate_Approval" sourceRef="Task_Phase3_QualityGate" targetRef="Task_Phase3_Approval" />
+    <bpmn:sequenceFlow id="Flow_Phase3Approval_Transition" sourceRef="Task_Phase3_Approval" targetRef="Event_Phase3Transition" />
+    <bpmn:sequenceFlow id="Flow_Phase3Transition_End" sourceRef="Event_Phase3Transition" targetRef="EndEvent_Phase3Complete" />
     <bpmn:sequenceFlow id="Flow_ProcessSLAEscalate" sourceRef="Timer_ProcessSLA" targetRef="EndEvent_ProcessSLAEscalated" />
     <bpmn:sequenceFlow id="Flow_36SLAEscalate" sourceRef="Timer_36_SLA" targetRef="EndEvent_36SLAEscalated" />
     <bpmn:sequenceFlow id="Flow_33SLAEscalate" sourceRef="Timer_33_SLA" targetRef="EndEvent_33SLAEscalated" />
@@ -460,39 +483,39 @@
     <bpmndi:BPMNPlane id="BPMNPlane_Phase3DD" bpmnElement="Collaboration_Phase3DD">
 
       <bpmndi:BPMNShape id="Participant_EnterpriseGov_di" bpmnElement="Participant_EnterpriseGov" isHorizontal="true">
-        <dc:Bounds x="155" y="47" width="2900" height="1050" />
+        <dc:Bounds x="155" y="47" width="3300" height="1050" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
-        <dc:Bounds x="185" y="47" width="2870" height="125" />
+        <dc:Bounds x="185" y="47" width="3270" height="125" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
-        <dc:Bounds x="185" y="172" width="2870" height="125" />
+        <dc:Bounds x="185" y="172" width="3270" height="125" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Contracting_di" bpmnElement="Lane_Contracting" isHorizontal="true">
-        <dc:Bounds x="185" y="297" width="2870" height="125" />
+        <dc:Bounds x="185" y="297" width="3270" height="125" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_TechnicalAssessment_di" bpmnElement="Lane_TechnicalAssessment" isHorizontal="true">
-        <dc:Bounds x="185" y="422" width="2870" height="125" />
+        <dc:Bounds x="185" y="422" width="3270" height="125" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_AIReview_di" bpmnElement="Lane_AIReview" isHorizontal="true">
-        <dc:Bounds x="185" y="547" width="2870" height="125" />
+        <dc:Bounds x="185" y="547" width="3270" height="125" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
-        <dc:Bounds x="185" y="672" width="2870" height="125" />
+        <dc:Bounds x="185" y="672" width="3270" height="125" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
-        <dc:Bounds x="185" y="797" width="2870" height="125" />
+        <dc:Bounds x="185" y="797" width="3270" height="125" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
-        <dc:Bounds x="185" y="922" width="2870" height="175" />
+        <dc:Bounds x="185" y="922" width="3270" height="175" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_Phase3Initiated_di" bpmnElement="StartEvent_Phase3Initiated">
@@ -718,28 +741,46 @@
         <dc:Bounds x="2060" y="319" width="100" height="80" />
       </bpmndi:BPMNShape>
 
-      <bpmndi:BPMNShape id="Task_PhaseQualityGate_di" bpmnElement="Task_PhaseQualityGate">
-        <dc:Bounds x="2210" y="194" width="100" height="80" />
+      <bpmndi:BPMNShape id="Gateway_Phase3_Complete_di" bpmnElement="Gateway_Phase3_Complete" isMarkerVisible="true">
+        <dc:Bounds x="2210" y="209" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2195" y="266" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Phase3_QualityGate_di" bpmnElement="Task_Phase3_QualityGate">
+        <dc:Bounds x="2310" y="194" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Phase3_Approval_di" bpmnElement="Task_Phase3_Approval">
+        <dc:Bounds x="2510" y="194" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Event_Phase3Transition_di" bpmnElement="Event_Phase3Transition">
+        <dc:Bounds x="2700" y="216" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2678" y="259" width="80" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Timer_QualityGateSLA_di" bpmnElement="Timer_QualityGateSLA">
-        <dc:Bounds x="2264" y="256" width="36" height="36" />
+        <dc:Bounds x="2614" y="256" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2308" y="260" width="46" height="27" />
+          <dc:Bounds x="2658" y="260" width="46" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_QGSLAEscalated_di" bpmnElement="EndEvent_QGSLAEscalated">
-        <dc:Bounds x="2364" y="142" width="36" height="36" />
+        <dc:Bounds x="2790" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2340" y="115" width="84" height="27" />
+          <dc:Bounds x="2766" y="115" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Phase3Complete_di" bpmnElement="EndEvent_Phase3Complete">
-        <dc:Bounds x="2364" y="216" width="36" height="36" />
+        <dc:Bounds x="2790" y="216" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2340" y="259" width="84" height="27" />
+          <dc:Bounds x="2766" y="259" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -986,19 +1027,34 @@
 
       <bpmndi:BPMNEdge id="Flow_Contracting_QualityGate_di" bpmnElement="Flow_Contracting_QualityGate">
         <di:waypoint x="2160" y="359" />
-        <di:waypoint x="2260" y="359" />
-        <di:waypoint x="2260" y="274" />
+        <di:waypoint x="2235" y="359" />
+        <di:waypoint x="2235" y="259" />
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_QualityGate_End_di" bpmnElement="Flow_QualityGate_End">
+      <bpmndi:BPMNEdge id="Flow_Phase3Complete_QualityGate_di" bpmnElement="Flow_Phase3Complete_QualityGate">
+        <di:waypoint x="2260" y="234" />
         <di:waypoint x="2310" y="234" />
-        <di:waypoint x="2364" y="234" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase3QualityGate_Approval_di" bpmnElement="Flow_Phase3QualityGate_Approval">
+        <di:waypoint x="2450" y="234" />
+        <di:waypoint x="2510" y="234" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase3Approval_Transition_di" bpmnElement="Flow_Phase3Approval_Transition">
+        <di:waypoint x="2650" y="234" />
+        <di:waypoint x="2700" y="234" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase3Transition_End_di" bpmnElement="Flow_Phase3Transition_End">
+        <di:waypoint x="2736" y="234" />
+        <di:waypoint x="2790" y="234" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QGSLAEscalate_di" bpmnElement="Flow_QGSLAEscalate">
-        <di:waypoint x="2282" y="256" />
-        <di:waypoint x="2282" y="160" />
-        <di:waypoint x="2364" y="160" />
+        <di:waypoint x="2632" y="256" />
+        <di:waypoint x="2632" y="160" />
+        <di:waypoint x="2790" y="160" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_OCC_di" bpmnElement="Assoc_OCC">
@@ -1027,11 +1083,11 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNShape id="Participant_VendorThirdParty_di" bpmnElement="Participant_VendorThirdParty" isHorizontal="true">
-        <dc:Bounds x="155" y="1117" width="2900" height="130" />
+        <dc:Bounds x="155" y="1117" width="3300" height="130" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_VendorResponse_di" bpmnElement="Lane_VendorResponse" isHorizontal="true">
-        <dc:Bounds x="185" y="1117" width="2870" height="130" />
+        <dc:Bounds x="185" y="1117" width="3270" height="130" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_VendorEngagement_di" bpmnElement="StartEvent_VendorEngagement">
