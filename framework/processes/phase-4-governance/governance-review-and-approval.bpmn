@@ -87,7 +87,7 @@
       <bpmn:outgoing>Flow_AuthGateway_Advisory</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_FastPathReview" name="4.3a Fast Path&#10;Review" camunda:candidateGroups="business-lane">
+    <bpmn:userTask id="Task_FastPathReview" name="4.3a Fast Path&#10;Review" camunda:candidateGroups="governance-lane">
       <bpmn:incoming>Flow_AuthGateway_FastPath</bpmn:incoming>
       <bpmn:outgoing>Flow_FastPath_Merge</bpmn:outgoing>
     </bpmn:userTask>
@@ -99,7 +99,7 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
 
-    <bpmn:userTask id="Task_GovernanceCommitteeReview" name="4.3b Committee&#10;Review" camunda:candidateGroups="compliance-lane">
+    <bpmn:userTask id="Task_GovernanceCommitteeReview" name="4.3b Committee&#10;Review" camunda:candidateGroups="governance-lane">
       <bpmn:incoming>Flow_AuthGateway_Committee</bpmn:incoming>
       <bpmn:outgoing>Flow_Committee_Merge</bpmn:outgoing>
     </bpmn:userTask>
