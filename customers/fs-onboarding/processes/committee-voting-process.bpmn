@@ -59,6 +59,7 @@
       <bpmn:userTask id="Task_SubmitQuestion" name="Submit&#10;Question">
         <bpmn:extensionElements>
           <zeebe:formDefinition formId="cv-submit-question" />
+          <zeebe:assignmentDefinition candidateUsers="=lockedRosterEmails" />
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_SPQA_Start_Submit</bpmn:incoming>
         <bpmn:incoming>Flow_SPQA_MoreYes</bpmn:incoming>
