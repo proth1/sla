@@ -542,6 +542,122 @@ This keeps regulatory traceability without adding 9+ text annotations and associ
 
 **Exception**: For master-level governance models (e.g., ESG-E2E-Master), text annotations are acceptable because they serve an educational/documentation purpose.
 
+## Multi-Outcome Gateway Conditions (CRITICAL)
+
+**Rule: Every outgoing flow from a multi-outcome gateway MUST use domain-meaningful FEEL expressions**
+
+When an XOR gateway has 3+ outcomes, define a single process variable with string enum values. Each outgoing flow tests against a specific value. Never use `=true` as a placeholder.
+
+```xml
+<!-- CORRECT: Domain-meaningful enum on a single variable -->
+<bpmn:exclusiveGateway id="GW_BypassProcess" name="Existing&#10;Solution ?">
+  ...
+</bpmn:exclusiveGateway>
+<bpmn:sequenceFlow name="Yes" sourceRef="GW_BypassProcess" targetRef="Task_Leverage">
+  <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=existingSolutionDisposition = "FullMatch"</bpmn:conditionExpression>
+</bpmn:sequenceFlow>
+<bpmn:sequenceFlow name="Partial&#10;Match" sourceRef="GW_BypassProcess" targetRef="Task_Exception">
+  <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=existingSolutionDisposition = "Partial"</bpmn:conditionExpression>
+</bpmn:sequenceFlow>
+<bpmn:sequenceFlow name="No" sourceRef="GW_BypassProcess" targetRef="GW_Merge">
+  <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=existingSolutionDisposition = "NoMatch"</bpmn:conditionExpression>
+</bpmn:sequenceFlow>
+
+<!-- WRONG: Placeholder conditions -->
+<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+```
+
+**Naming convention**: Variable names use camelCase describing the decision domain (e.g., `existingSolutionDisposition`, `pursueRequest`, `triageDecision`). Values use PascalCase enum strings.
+
+## Guidance-Then-Decision Pattern (Exit Ramp)
+
+**Rule: After advisory/coaching tasks, provide a decision gateway that allows graceful exit**
+
+When a process offers guidance or coaching (e.g., Quarterback Assistance), follow with a binary decision gateway that lets the participant proceed or withdraw.
+
+```xml
+<bpmn:userTask id="Task_Guidance" name="Quarterback&#10;Assistance">
+  <bpmn:extensionElements>
+    <zeebe:assignmentDefinition candidateGroups="business-lane" />
+  </bpmn:extensionElements>
+</bpmn:userTask>
+<bpmn:exclusiveGateway id="GW_Pursue" name="Pursue it?" />
+<bpmn:sequenceFlow name="Yes" sourceRef="GW_Pursue" targetRef="GW_Merge">
+  <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=pursueRequest = true</bpmn:conditionExpression>
+</bpmn:sequenceFlow>
+<bpmn:sequenceFlow name="No" sourceRef="GW_Pursue" targetRef="End_Withdrawn">
+  <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=pursueRequest = false</bpmn:conditionExpression>
+</bpmn:sequenceFlow>
+<bpmn:endEvent id="End_Withdrawn" name="Request&#10;Withdrawn" />
+```
+
+## Task Type Requirements
+
+**Rule: Never commit generic `<bpmn:task>` elements — promote to specific types**
+
+During Camunda Modeler brainstorming, generic `<bpmn:task>` elements are acceptable. Before committing, promote them:
+
+| Element Type | When to Use |
+|-------------|-------------|
+| `bpmn:userTask` | Human judgment, review, approval |
+| `bpmn:serviceTask` | Automated processing (with `zeebe:taskDefinition`) |
+| `bpmn:businessRuleTask` | DMN decision (with `zeebe:calledDecision`) |
+| `bpmn:sendTask` | Notifications (with `zeebe:taskDefinition`) |
+
+Every `userTask` MUST have:
+- `zeebe:assignmentDefinition candidateGroups="..."` (one of the 9+1 lane groups)
+- `zeebe:properties` with at minimum `topics` and `raci_r`/`raci_a`
+
+## End Event Naming Convention
+
+**Rule: End event names describe outcomes, not actions**
+
+| CORRECT | WRONG |
+|---------|-------|
+| `Request Withdrawn` | `Kill it` |
+| `Deal Killed` | `Deal Killer Blocked` |
+| `Deal Killed` | `Deal Killer Triggered` |
+| `Software Onboarded` | `Process Complete` |
+| `Evaluation Failed` | `Eval Rejected` |
+
+Use past tense or state descriptions. Keep names to 2-3 words with `&#10;` line break for display.
+
+## Redundant Gateway Elimination
+
+**Rule: Remove gateways with 1 incoming and 1 outgoing flow**
+
+A gateway that doesn't branch or merge is structural noise. Connect the flows directly.
+
+```xml
+<!-- WRONG: Pass-through gateway -->
+Start → Gateway_0zxd1ql → Task_ReviewExisting
+
+<!-- CORRECT: Direct connection -->
+Start → Task_ReviewExisting
+```
+
+## Orphaned Element Detection
+
+**Rule: After any flow rerouting, check for orphaned elements**
+
+After rerouting sequence flows, verify:
+1. Every element (except start events) has at least one `<bpmn:incoming>`
+2. Every element (except end events) has at least one `<bpmn:outgoing>`
+3. Every end event has at least one incoming flow
+4. Remove orphaned elements from BOTH the process section AND the DI section
+
+## Text Annotation Hygiene
+
+**Rule: Remove informal brainstorming annotations before committing**
+
+| Keep | Remove |
+|------|--------|
+| Regulatory references (OCC, DORA, etc.) | "Accept or Not and annotate" |
+| Structured documentation | "Yes but I want my solution" |
+| `zeebe:property name="comments"` | "The Requester" |
+
+Informal thinking notes from Modeler sessions should be captured as `zeebe:properties` comments on the relevant task, or removed entirely.
+
 ## Validation Checklist
 
 **Visual Layout**
@@ -559,6 +675,12 @@ This keeps regulatory traceability without adding 9+ text annotations and associ
 - [ ] Multiple flows to task go through merge gateway
 - [ ] Conditional flows have Yes/No labels with BPMNLabel
 - [ ] DMN-first: Business logic in DMN tables, not gateway conditions
+- [ ] No generic `<bpmn:task>` elements — all promoted to userTask/serviceTask/etc.
+- [ ] Multi-outcome gateways use domain-meaningful FEEL conditions (not `=true`)
+- [ ] No single-in/single-out pass-through gateways
+- [ ] No orphaned elements (0 incoming except starts, 0 outgoing except ends)
+- [ ] End events named as outcomes, not actions
+- [ ] All userTasks have candidateGroups and RACI properties
 
 **Governance**
 
@@ -576,5 +698,5 @@ This keeps regulatory traceability without adding 9+ text annotations and associ
 
 ---
 
-**Version**: 1.1.0 | **Created**: 2026-03-02 | **Updated**: 2026-03-05
+**Version**: 1.2.0 | **Created**: 2026-03-02 | **Updated**: 2026-03-09
 **Source**: Consolidated from SLA governance standards and ACMOS modeling best practices
