@@ -53,6 +53,8 @@
         <bpmn:flowNodeRef>Task_AIReviewRouting</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_AICheck</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_AIMerge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Phase4_Complete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Phase4_QualityGate</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_DecisionDocumentation</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_GovernanceDecision</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_ProcessSLAEscalated</bpmn:flowNodeRef>
@@ -163,8 +165,18 @@
       <bpmn:outgoing>Flow_AIMerge_DecisionDoc</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:serviceTask id="Task_DecisionDocumentation" name="4.5 Decision Documentation&#10;(BPM State Update — 1 Hour)" camunda:type="external" camunda:topic="bpm-state-update">
+    <bpmn:exclusiveGateway id="Gateway_Phase4_Complete" name="Phase 4&#10;Complete?">
       <bpmn:incoming>Flow_AIMerge_DecisionDoc</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase4Complete_Yes</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:businessRuleTask id="Task_Phase4_QualityGate" name="Phase 4&#10;Quality Gate" camunda:decisionRef="DMN_AutomationTierAssignment" camunda:decisionRefBinding="latest" camunda:resultVariable="qualityGateResult" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_Phase4Complete_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase4QG_DecisionDoc</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:serviceTask id="Task_DecisionDocumentation" name="4.5 Decision Documentation&#10;(BPM State Update — 1 Hour)" camunda:type="external" camunda:topic="bpm-state-update">
+      <bpmn:incoming>Flow_Phase4QG_DecisionDoc</bpmn:incoming>
       <bpmn:outgoing>Flow_DecisionDoc_GovernanceGateway</bpmn:outgoing>
     </bpmn:serviceTask>
 
@@ -250,7 +262,11 @@
     <bpmn:sequenceFlow id="Flow_AICheck_Skip" name="No" sourceRef="Gateway_AICheck" targetRef="Gateway_AIMerge" />
 
     <bpmn:sequenceFlow id="Flow_Ethics_AIMerge" sourceRef="Task_EthicalImpactAssessment" targetRef="Gateway_AIMerge" />
-    <bpmn:sequenceFlow id="Flow_AIMerge_DecisionDoc" sourceRef="Gateway_AIMerge" targetRef="Task_DecisionDocumentation" />
+    <bpmn:sequenceFlow id="Flow_AIMerge_DecisionDoc" sourceRef="Gateway_AIMerge" targetRef="Gateway_Phase4_Complete" />
+    <bpmn:sequenceFlow id="Flow_Phase4Complete_Yes" name="Yes" sourceRef="Gateway_Phase4_Complete" targetRef="Task_Phase4_QualityGate">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phase4TasksComplete == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Phase4QG_DecisionDoc" sourceRef="Task_Phase4_QualityGate" targetRef="Task_DecisionDocumentation" />
     <bpmn:sequenceFlow id="Flow_DecisionDoc_GovernanceGateway" sourceRef="Task_DecisionDocumentation" targetRef="Gateway_GovernanceDecision" />
 
     <bpmn:sequenceFlow id="Flow_Decision_Approved" name="Approved" sourceRef="Gateway_GovernanceDecision" targetRef="EndEvent_Phase5Approved">
@@ -302,7 +318,7 @@
     <bpmndi:BPMNPlane id="BPMNPlane_Phase4" bpmnElement="Collaboration_Phase4">
 
       <bpmndi:BPMNShape id="Participant_EnterpriseGov_di" bpmnElement="Participant_EnterpriseGov" isHorizontal="true">
-        <dc:Bounds x="155" y="47" width="2200" height="1290" />
+        <dc:Bounds x="155" y="47" width="2500" height="1290" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
@@ -465,35 +481,46 @@
         <dc:Bounds x="1255" y="1222" width="50" height="50" />
       </bpmndi:BPMNShape>
 
+      <bpmndi:BPMNShape id="Gateway_Phase4_Complete_di" bpmnElement="Gateway_Phase4_Complete" isMarkerVisible="true">
+        <dc:Bounds x="1340" y="1222" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1328" y="1279" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Phase4_QualityGate_di" bpmnElement="Task_Phase4_QualityGate">
+        <dc:Bounds x="1420" y="1207" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="Task_DecisionDocumentation_di" bpmnElement="Task_DecisionDocumentation">
-        <dc:Bounds x="1360" y="1207" width="100" height="80" />
+        <dc:Bounds x="1560" y="1207" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_GovernanceDecision_di" bpmnElement="Gateway_GovernanceDecision" isMarkerVisible="true">
-        <dc:Bounds x="1520" y="1222" width="50" height="50" />
+        <dc:Bounds x="1720" y="1222" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1502" y="1279" width="86" height="27" />
+          <dc:Bounds x="1702" y="1279" width="86" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Phase5Approved_di" bpmnElement="EndEvent_Phase5Approved">
-        <dc:Bounds x="1792" y="109" width="36" height="36" />
+        <dc:Bounds x="1992" y="109" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1768" y="152" width="84" height="27" />
+          <dc:Bounds x="1968" y="152" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Phase5ApprovedConditions_di" bpmnElement="EndEvent_Phase5ApprovedConditions">
-        <dc:Bounds x="1992" y="109" width="36" height="36" />
+        <dc:Bounds x="2192" y="109" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1968" y="152" width="84" height="40" />
+          <dc:Bounds x="2168" y="152" width="84" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Rejected_di" bpmnElement="EndEvent_Rejected">
-        <dc:Bounds x="1992" y="909" width="36" height="36" />
+        <dc:Bounds x="2192" y="909" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1968" y="952" width="84" height="27" />
+          <dc:Bounds x="2168" y="952" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -622,39 +649,52 @@
 
       <bpmndi:BPMNEdge id="Flow_AIMerge_DecisionDoc_di" bpmnElement="Flow_AIMerge_DecisionDoc">
         <di:waypoint x="1305" y="1247" />
-        <di:waypoint x="1360" y="1247" />
+        <di:waypoint x="1340" y="1247" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase4Complete_Yes_di" bpmnElement="Flow_Phase4Complete_Yes">
+        <di:waypoint x="1390" y="1247" />
+        <di:waypoint x="1420" y="1247" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1398" y="1229" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase4QG_DecisionDoc_di" bpmnElement="Flow_Phase4QG_DecisionDoc">
+        <di:waypoint x="1520" y="1247" />
+        <di:waypoint x="1560" y="1247" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_DecisionDoc_GovernanceGateway_di" bpmnElement="Flow_DecisionDoc_GovernanceGateway">
-        <di:waypoint x="1460" y="1247" />
-        <di:waypoint x="1520" y="1247" />
+        <di:waypoint x="1660" y="1247" />
+        <di:waypoint x="1720" y="1247" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Decision_Approved_di" bpmnElement="Flow_Decision_Approved">
-        <di:waypoint x="1545" y="1222" />
-        <di:waypoint x="1545" y="127" />
-        <di:waypoint x="1792" y="127" />
+        <di:waypoint x="1745" y="1222" />
+        <di:waypoint x="1745" y="127" />
+        <di:waypoint x="1992" y="127" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1553" y="667" width="50" height="14" />
+          <dc:Bounds x="1753" y="667" width="50" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Decision_ApprovedConditions_di" bpmnElement="Flow_Decision_ApprovedConditions">
-        <di:waypoint x="1570" y="1247" />
-        <di:waypoint x="1790" y="1247" />
-        <di:waypoint x="1790" y="127" />
-        <di:waypoint x="1992" y="127" />
+        <di:waypoint x="1770" y="1247" />
+        <di:waypoint x="1990" y="1247" />
+        <di:waypoint x="1990" y="127" />
+        <di:waypoint x="2192" y="127" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1668" y="1229" width="54" height="40" />
+          <dc:Bounds x="1868" y="1229" width="54" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Decision_Rejected_di" bpmnElement="Flow_Decision_Rejected">
-        <di:waypoint x="1545" y="1272" />
-        <di:waypoint x="1545" y="927" />
-        <di:waypoint x="1992" y="927" />
+        <di:waypoint x="1745" y="1272" />
+        <di:waypoint x="1745" y="927" />
+        <di:waypoint x="2192" y="927" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1553" y="1097" width="40" height="14" />
+          <dc:Bounds x="1753" y="1097" width="40" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
