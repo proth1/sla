@@ -57,6 +57,8 @@
         <bpmn:flowNodeRef>Gateway_AICheck</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_AIMerge</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_DecisionDocumentation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Phase4_Complete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Phase4_QualityGate</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_OversightValidationSplit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_GovernanceDecision</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_ProcessSLAEscalated</bpmn:flowNodeRef>
@@ -169,11 +171,21 @@
 
     <bpmn:serviceTask id="Task_DecisionDocumentation" name="4.5 Decision Documentation&#10;(BPM State Update — 1 Hour)" camunda:type="external" camunda:topic="bpm-state-update">
       <bpmn:incoming>Flow_AIMerge_DecisionDoc</bpmn:incoming>
-      <bpmn:outgoing>Flow_DecisionDoc_OversightSplit</bpmn:outgoing>
+      <bpmn:outgoing>Flow_DecisionDoc_Complete</bpmn:outgoing>
     </bpmn:serviceTask>
 
+    <bpmn:exclusiveGateway id="Gateway_Phase4_Complete" name="Phase 4&#10;Complete?">
+      <bpmn:incoming>Flow_DecisionDoc_Complete</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase4Complete_QualityGate</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:businessRuleTask id="Task_Phase4_QualityGate" name="Phase 4&#10;Quality Gate" camunda:decisionRef="DMN_AutomationTierAssignment" camunda:decisionRefBinding="latest" camunda:resultVariable="qualityGateResult" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_Phase4Complete_QualityGate</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase4QualityGate_OversightSplit</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
     <bpmn:parallelGateway id="Gateway_OversightValidationSplit">
-      <bpmn:incoming>Flow_DecisionDoc_OversightSplit</bpmn:incoming>
+      <bpmn:incoming>Flow_Phase4QualityGate_OversightSplit</bpmn:incoming>
       <bpmn:outgoing>Flow_OversightSplit_GovernanceDecision</bpmn:outgoing>
       <bpmn:outgoing>Flow_OversightSplit_Validation</bpmn:outgoing>
     </bpmn:parallelGateway>
@@ -286,7 +298,11 @@
 
     <bpmn:sequenceFlow id="Flow_Ethics_AIMerge" sourceRef="Task_EthicalImpactAssessment" targetRef="Gateway_AIMerge" />
     <bpmn:sequenceFlow id="Flow_AIMerge_DecisionDoc" sourceRef="Gateway_AIMerge" targetRef="Task_DecisionDocumentation" />
-    <bpmn:sequenceFlow id="Flow_DecisionDoc_OversightSplit" sourceRef="Task_DecisionDocumentation" targetRef="Gateway_OversightValidationSplit" />
+    <bpmn:sequenceFlow id="Flow_DecisionDoc_Complete" sourceRef="Task_DecisionDocumentation" targetRef="Gateway_Phase4_Complete" />
+    <bpmn:sequenceFlow id="Flow_Phase4Complete_QualityGate" name="Yes" sourceRef="Gateway_Phase4_Complete" targetRef="Task_Phase4_QualityGate">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${phaseComplete == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Phase4QualityGate_OversightSplit" sourceRef="Task_Phase4_QualityGate" targetRef="Gateway_OversightValidationSplit" />
     <bpmn:sequenceFlow id="Flow_OversightSplit_GovernanceDecision" sourceRef="Gateway_OversightValidationSplit" targetRef="Gateway_GovernanceDecision" />
     <bpmn:sequenceFlow id="Flow_OversightSplit_Validation" sourceRef="Gateway_OversightValidationSplit" targetRef="Task_Phase4_OversightValidation" />
     <bpmn:sequenceFlow id="Flow_Phase4_OversightEnd" sourceRef="Task_Phase4_OversightValidation" targetRef="EndEvent_Phase4_OversightComplete" />
@@ -345,28 +361,28 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
-        <dc:Bounds x="185" y="47" width="2170" height="160" />
+        <dc:Bounds x="185" y="47" width="2570" height="160" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
-        <dc:Bounds x="185" y="207" width="2170" height="160" />
+        <dc:Bounds x="185" y="207" width="2570" height="160" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Contracting_di" bpmnElement="Lane_Contracting" isHorizontal="true">
-        <dc:Bounds x="185" y="367" width="2170" height="160" />
+        <dc:Bounds x="185" y="367" width="2570" height="160" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_TechnicalAssessment_di" bpmnElement="Lane_TechnicalAssessment" isHorizontal="true">
-        <dc:Bounds x="185" y="527" width="2170" height="160" />
+        <dc:Bounds x="185" y="527" width="2570" height="160" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_AIReview_di" bpmnElement="Lane_AIReview" isHorizontal="true">
-        <dc:Bounds x="185" y="687" width="2170" height="160" />
+        <dc:Bounds x="185" y="687" width="2570" height="160" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
-        <dc:Bounds x="185" y="847" width="2170" height="160" />
+        <dc:Bounds x="185" y="847" width="2570" height="160" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
-        <dc:Bounds x="185" y="1007" width="2170" height="160" />
+        <dc:Bounds x="185" y="1007" width="2570" height="160" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
-        <dc:Bounds x="185" y="1167" width="2170" height="170" />
+        <dc:Bounds x="185" y="1167" width="2570" height="170" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Participant_VendorParty_di" bpmnElement="Participant_VendorParty" isHorizontal="true">
@@ -374,7 +390,7 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_VendorResponse_di" bpmnElement="Lane_VendorResponse" isHorizontal="true">
-        <dc:Bounds x="185" y="1367" width="2170" height="160" />
+        <dc:Bounds x="185" y="1367" width="2570" height="160" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_Phase4Initiated_di" bpmnElement="StartEvent_Phase4Initiated">
@@ -508,8 +524,19 @@
         <dc:Bounds x="1360" y="1207" width="100" height="80" />
       </bpmndi:BPMNShape>
 
+      <bpmndi:BPMNShape id="Gateway_Phase4_Complete_di" bpmnElement="Gateway_Phase4_Complete" isMarkerVisible="true">
+        <dc:Bounds x="1560" y="1222" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1545" y="1279" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Phase4_QualityGate_di" bpmnElement="Task_Phase4_QualityGate">
+        <dc:Bounds x="1660" y="1207" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="Gateway_OversightValidationSplit_di" bpmnElement="Gateway_OversightValidationSplit">
-        <dc:Bounds x="1520" y="1222" width="50" height="50" />
+        <dc:Bounds x="1860" y="1222" width="50" height="50" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_Phase4_OversightValidation_di" bpmnElement="Task_Phase4_OversightValidation">
@@ -538,7 +565,7 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_GovernanceDecision_di" bpmnElement="Gateway_GovernanceDecision" isMarkerVisible="true">
-        <dc:Bounds x="1630" y="1222" width="50" height="50" />
+        <dc:Bounds x="1970" y="1222" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1612" y="1279" width="86" height="27" />
         </bpmndi:BPMNLabel>
@@ -559,7 +586,7 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Rejected_di" bpmnElement="EndEvent_Rejected">
-        <dc:Bounds x="1992" y="909" width="36" height="36" />
+        <dc:Bounds x="2332" y="909" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1968" y="952" width="84" height="27" />
         </bpmndi:BPMNLabel>
@@ -693,9 +720,19 @@
         <di:waypoint x="1360" y="1247" />
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_DecisionDoc_OversightSplit_di" bpmnElement="Flow_DecisionDoc_OversightSplit">
+      <bpmndi:BPMNEdge id="Flow_DecisionDoc_Complete_di" bpmnElement="Flow_DecisionDoc_Complete">
         <di:waypoint x="1460" y="1247" />
-        <di:waypoint x="1520" y="1247" />
+        <di:waypoint x="1560" y="1247" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase4Complete_QualityGate_di" bpmnElement="Flow_Phase4Complete_QualityGate">
+        <di:waypoint x="1610" y="1247" />
+        <di:waypoint x="1660" y="1247" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase4QualityGate_OversightSplit_di" bpmnElement="Flow_Phase4QualityGate_OversightSplit">
+        <di:waypoint x="1800" y="1247" />
+        <di:waypoint x="1860" y="1247" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_OversightSplit_GovernanceDecision_di" bpmnElement="Flow_OversightSplit_GovernanceDecision">

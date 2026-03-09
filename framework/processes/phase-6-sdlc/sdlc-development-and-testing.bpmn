@@ -30,6 +30,9 @@
         <bpmn:flowNodeRef>BoundaryEvent_SP6F_SLA</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP6F_SLAEscalated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_Phase6Loop_Merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Phase6_QualityGateBRT</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Phase6_Approval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_Phase6Transition</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Phase6Complete</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_Governance" name="Governance">
@@ -198,8 +201,23 @@
       <bpmn:outgoing>Flow_QGRetry</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:endEvent id="EndEvent_Phase6Complete" name="Phase 6 Complete&#10;(SDLC Ready for&#10;Deployment)">
+    <bpmn:businessRuleTask id="Task_Phase6_QualityGateBRT" name="Phase 6&#10;Quality Gate" camunda:decisionRef="DMN_AutomationTierAssignment" camunda:decisionRefBinding="latest" camunda:resultVariable="qualityGateResult" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_QGPassed</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase6QualityGate_Approval</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:userTask id="Task_Phase6_Approval" name="Phase 6&#10;Approval" camunda:candidateGroups="governance-lane">
+      <bpmn:incoming>Flow_Phase6QualityGate_Approval</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase6Approval_Transition</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:intermediateThrowEvent id="Event_Phase6Transition" name="Phase 6&#10;Complete">
+      <bpmn:incoming>Flow_Phase6Approval_Transition</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase6Transition_End</bpmn:outgoing>
+    </bpmn:intermediateThrowEvent>
+
+    <bpmn:endEvent id="EndEvent_Phase6Complete" name="Phase 6 Complete&#10;(SDLC Ready for&#10;Deployment)">
+      <bpmn:incoming>Flow_Phase6Transition_End</bpmn:incoming>
     </bpmn:endEvent>
 
     <bpmn:textAnnotation id="Annotation_OCC_DORA">
@@ -230,10 +248,13 @@
     <bpmn:sequenceFlow id="Flow_SP6E_SP6F" sourceRef="SubProcess_6E_ComplianceGates" targetRef="SubProcess_6F_SprintReview" />
     <bpmn:sequenceFlow id="Flow_SP6F_SLA_End" sourceRef="BoundaryEvent_SP6F_SLA" targetRef="EndEvent_SP6F_SLAEscalated" />
     <bpmn:sequenceFlow id="Flow_SP6F_QG" sourceRef="SubProcess_6F_SprintReview" targetRef="Gateway_QualityGate" />
-    <bpmn:sequenceFlow id="Flow_QGPassed" name="Yes" sourceRef="Gateway_QualityGate" targetRef="EndEvent_Phase6Complete" />
+    <bpmn:sequenceFlow id="Flow_QGPassed" name="Yes" sourceRef="Gateway_QualityGate" targetRef="Task_Phase6_QualityGateBRT" />
     <bpmn:sequenceFlow id="Flow_QGRetry" name="Loop: Retry Sprint" sourceRef="Gateway_QualityGate" targetRef="Gateway_Phase6Loop_Merge">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${qualityGatePassed == false}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Phase6QualityGate_Approval" sourceRef="Task_Phase6_QualityGateBRT" targetRef="Task_Phase6_Approval" />
+    <bpmn:sequenceFlow id="Flow_Phase6Approval_Transition" sourceRef="Task_Phase6_Approval" targetRef="Event_Phase6Transition" />
+    <bpmn:sequenceFlow id="Flow_Phase6Transition_End" sourceRef="Event_Phase6Transition" targetRef="EndEvent_Phase6Complete" />
 
   </bpmn:process>
 
@@ -515,28 +536,28 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Business_di" bpmnElement="Lane_Business" isHorizontal="true">
-        <dc:Bounds x="185" y="47" width="1870" height="130" />
+        <dc:Bounds x="185" y="47" width="2370" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Governance_di" bpmnElement="Lane_Governance" isHorizontal="true">
-        <dc:Bounds x="185" y="177" width="1870" height="130" />
+        <dc:Bounds x="185" y="177" width="2370" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Contracting_di" bpmnElement="Lane_Contracting" isHorizontal="true">
-        <dc:Bounds x="185" y="307" width="1870" height="60" />
+        <dc:Bounds x="185" y="307" width="2370" height="60" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_TechnicalAssessment_di" bpmnElement="Lane_TechnicalAssessment" isHorizontal="true">
-        <dc:Bounds x="185" y="367" width="1870" height="130" />
+        <dc:Bounds x="185" y="367" width="2370" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_AIReview_di" bpmnElement="Lane_AIReview" isHorizontal="true">
-        <dc:Bounds x="185" y="497" width="1870" height="60" />
+        <dc:Bounds x="185" y="497" width="2370" height="60" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Compliance_di" bpmnElement="Lane_Compliance" isHorizontal="true">
-        <dc:Bounds x="185" y="557" width="1870" height="130" />
+        <dc:Bounds x="185" y="557" width="2370" height="130" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
-        <dc:Bounds x="185" y="687" width="1870" height="60" />
+        <dc:Bounds x="185" y="687" width="2370" height="60" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Automation_di" bpmnElement="Lane_Automation" isHorizontal="true">
-        <dc:Bounds x="185" y="747" width="1870" height="160" />
+        <dc:Bounds x="185" y="747" width="2370" height="160" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Participant_VendorThirdParty_di" bpmnElement="Participant_VendorThirdParty" isHorizontal="true">
@@ -544,7 +565,7 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_VendorResponse_di" bpmnElement="Lane_VendorResponse" isHorizontal="true">
-        <dc:Bounds x="185" y="937" width="1870" height="130" />
+        <dc:Bounds x="185" y="937" width="2370" height="130" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_Phase6Initiated_di" bpmnElement="StartEvent_Phase6Initiated">
@@ -702,8 +723,23 @@
       </bpmndi:BPMNShape>
 
 
+      <bpmndi:BPMNShape id="Task_Phase6_QualityGateBRT_di" bpmnElement="Task_Phase6_QualityGateBRT">
+        <dc:Bounds x="1725" y="187" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Phase6_Approval_di" bpmnElement="Task_Phase6_Approval">
+        <dc:Bounds x="1925" y="187" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Event_Phase6Transition_di" bpmnElement="Event_Phase6Transition">
+        <dc:Bounds x="2125" y="204" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2103" y="247" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="EndEvent_Phase6Complete_di" bpmnElement="EndEvent_Phase6Complete">
-        <dc:Bounds x="1757" y="94" width="36" height="36" />
+        <dc:Bounds x="2225" y="94" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1732" y="137" width="86" height="40" />
         </bpmndi:BPMNLabel>
@@ -840,12 +876,23 @@
 
 
       <bpmndi:BPMNEdge id="Flow_QGPassed_di" bpmnElement="Flow_QGPassed">
-        <di:waypoint x="1650" y="197" />
-        <di:waypoint x="1650" y="112" />
-        <di:waypoint x="1757" y="112" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1658" y="150" width="19" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1675" y="222" />
+        <di:waypoint x="1725" y="222" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase6QualityGate_Approval_di" bpmnElement="Flow_Phase6QualityGate_Approval">
+        <di:waypoint x="1865" y="222" />
+        <di:waypoint x="1925" y="222" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase6Approval_Transition_di" bpmnElement="Flow_Phase6Approval_Transition">
+        <di:waypoint x="2065" y="222" />
+        <di:waypoint x="2125" y="222" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase6Transition_End_di" bpmnElement="Flow_Phase6Transition_End">
+        <di:waypoint x="2161" y="222" />
+        <di:waypoint x="2225" y="222" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QGRetry_di" bpmnElement="Flow_QGRetry">
