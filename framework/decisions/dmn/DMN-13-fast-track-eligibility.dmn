@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN13-FastTrackEligibility-definitions"
+             name="DMN-13: Fast-Track Eligibility"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_FastTrackEligibility"
+            name="Fast-Track Eligibility"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-08 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: OCC 2023-17, SOX</description>
+    <decisionTable id="DMN_FastTrackEligibility-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-13: Fast-Track Eligibility
+        Phase: 1 (Initiation and Intake) — Post-Pathway Routing Gate
+        Hit Policy: FIRST (most restrictive rule wins — evaluated top to bottom)
+        Description: Gates the Fast-Track pathway with risk-based eligibility criteria.
+          Currently DMN-2 (Pathway Routing) can route to Fast-Track based solely on
+          reuse and time-to-value scores, allowing high-risk initiatives to bypass
+          governance controls. This table adds risk-based guardrails.
+        Inputs:
+          riskTier:              "Unacceptable" | "High" | "Limited" | "Minimal" (from DMN-1 output)
+          aiFlag:                true | false (initiative involves AI/ML components)
+          dataSensitivityScore:  1-10 (data sensitivity from intake)
+          vendorPreApproved:     true | false (vendor on pre-approved list)
+          productionFlag:        true | false (deploys to production environments)
+        Outputs:
+          fastTrackEligible:     true | false (whether fast-track is permitted)
+          overrideAuthority:     string (who can override if denied)
+        Regulatory Basis:
+          OCC 2023-17: Risk-proportionate governance — fast-track must not bypass critical controls
+          SOX: Material changes require appropriate approval authority
+      -->
+
+      <input id="input-riskTier" label="Risk Tier (from DMN-1)">
+        <inputExpression id="inputExpr-riskTier" typeRef="string">
+          <text>riskTier</text>
+        </inputExpression>
+        <inputValues id="inputVals-riskTier">
+          <text>"Unacceptable","High","Limited","Minimal"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-aiFlag" label="AI/ML Components?">
+        <inputExpression id="inputExpr-aiFlag" typeRef="boolean">
+          <text>aiFlag</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-dataSensitivity" label="Data Sensitivity Score (1-10)">
+        <inputExpression id="inputExpr-dataSensitivity" typeRef="integer">
+          <text>dataSensitivityScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-vendorPreApproved" label="Vendor Pre-Approved?">
+        <inputExpression id="inputExpr-vendorPreApproved" typeRef="boolean">
+          <text>vendorPreApproved</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-productionFlag" label="Production Deployment?">
+        <inputExpression id="inputExpr-productionFlag" typeRef="boolean">
+          <text>productionFlag</text>
+        </inputExpression>
+      </input>
+
+      <output id="output-fastTrackEligible"
+              label="Fast-Track Eligible"
+              name="fastTrackEligible"
+              typeRef="boolean" />
+
+      <output id="output-overrideAuthority"
+              label="Override Authority"
+              name="overrideAuthority"
+              typeRef="string" />
+
+      <!--
+        RULE 1: UNACCEPTABLE RISK — absolute block
+        Unacceptable risk tier cannot fast-track under any circumstances.
+        No override available — initiative must be rejected at intake.
+      -->
+      <rule id="rule-1">
+        <description>Unacceptable risk tier — no fast-track, no override available (rejected at intake)</description>
+        <inputEntry id="ie-1-1"><text>"Unacceptable"</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"No override — rejected at intake"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 2: HIGH RISK — governance board override only
+        High risk tier requires full governance lifecycle.
+        Only the Governance Board can override to allow fast-track.
+      -->
+      <rule id="rule-2">
+        <description>High risk tier — requires full governance lifecycle, Governance Board override only</description>
+        <inputEntry id="ie-2-1"><text>"High"</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"Governance Board override only"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 3: AI/ML COMPONENTS — AI Governance Committee override required
+        Any initiative involving AI/ML components must go through full AI governance
+        review per EU AI Act and SR 11-7 model risk requirements.
+      -->
+      <rule id="rule-3">
+        <description>AI/ML components present — requires AI Governance Committee review, cannot fast-track</description>
+        <inputEntry id="ie-3-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>true</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"AI Governance Committee override required"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 4: HIGH DATA SENSITIVITY — CISO + DPO joint override
+        Data sensitivity score >= 7 indicates PII, PHI, or financial data
+        that requires full privacy and security assessment.
+      -->
+      <rule id="rule-4">
+        <description>High data sensitivity (&gt;= 7) — requires CISO and DPO joint override for fast-track</description>
+        <inputEntry id="ie-4-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>&gt;= 7</text></inputEntry>
+        <inputEntry id="ie-4-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"CISO + DPO joint override required"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 5: PRODUCTION + NON-PRE-APPROVED VENDOR
+        Production deployment with a vendor not on the pre-approved list
+        requires full vendor due diligence per OCC 2023-17.
+      -->
+      <rule id="rule-5">
+        <description>Production deployment with non-pre-approved vendor — requires full vendor due diligence</description>
+        <inputEntry id="ie-5-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-4"><text>false</text></inputEntry>
+        <inputEntry id="ie-5-5"><text>true</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"Governance Board override required"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 6: MODERATE DATA SENSITIVITY + PRODUCTION
+        Data sensitivity 4-6 combined with production deployment
+        warrants additional governance review.
+      -->
+      <rule id="rule-6">
+        <description>Moderate data sensitivity (4-6) with production deployment — governance lead override required</description>
+        <inputEntry id="ie-6-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>[4..6]</text></inputEntry>
+        <inputEntry id="ie-6-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-5"><text>true</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"Governance lead override required"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 7: IDEAL FAST-TRACK CANDIDATE
+        Pre-approved vendor + Minimal risk + low data sensitivity (< 4).
+        This is the primary fast-track approval path.
+      -->
+      <rule id="rule-7">
+        <description>Ideal fast-track: pre-approved vendor, Minimal risk, low data sensitivity — approved</description>
+        <inputEntry id="ie-7-1"><text>"Minimal"</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-7-4"><text>true</text></inputEntry>
+        <inputEntry id="ie-7-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"N/A"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 8: LIMITED RISK NON-PRODUCTION
+        Limited risk with low data sensitivity and non-production deployment.
+        Acceptable for fast-track — lower risk profile.
+      -->
+      <rule id="rule-8">
+        <description>Limited risk, low data sensitivity, non-production — approved for fast-track</description>
+        <inputEntry id="ie-8-1"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-8-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-5"><text>false</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>true</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"N/A"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 9: DEFAULT — DENY (conservative)
+        Any input combination not matched by rules 1-8 defaults to denial.
+        Governance lead can override after manual review.
+        Under FIRST hit policy, this only fires if no earlier rule matched.
+      -->
+      <rule id="rule-9">
+        <description>Default catch-all: unmatched combination — denied, governance lead override required</description>
+        <inputEntry id="ie-9-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>false</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"Governance lead override required"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN13-diagram">
+      <dmndi:DMNShape id="DMN13-shape" dmnElementRef="DMN_FastTrackEligibility">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
