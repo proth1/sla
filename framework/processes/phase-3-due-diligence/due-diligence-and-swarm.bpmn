@@ -251,12 +251,12 @@
       <bpmn:outgoing>Flow_PathwayMerge_Oversight</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:userTask id="Task_OversightReview" name="Oversight Review&#10;(Risk Acceptance)" camunda:candidateGroups="governance-lane">
+    <bpmn:userTask id="Task_OversightReview" name="Oversight Review&#10;(Risk Acceptance)" camunda:candidateGroups="oversight-lane">
       <bpmn:incoming>Flow_PathwayMerge_Oversight</bpmn:incoming>
       <bpmn:outgoing>Flow_Oversight_Contracting</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_ContractingReview" name="Contracting Review&#10;(Terms Validation)" camunda:candidateGroups="compliance-lane">
+    <bpmn:userTask id="Task_ContractingReview" name="Contracting Review&#10;(Terms Validation)" camunda:candidateGroups="contracting-lane">
       <bpmn:incoming>Flow_Oversight_Contracting</bpmn:incoming>
       <bpmn:outgoing>Flow_Contracting_QualityGate</bpmn:outgoing>
     </bpmn:userTask>
