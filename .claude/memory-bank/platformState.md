@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.103
+**Current Version**: 2026.03.104
 **Last Release**: 2026-03-09
-**Total Releases**: 103
+**Total Releases**: 104
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.104 | 2026-03-09 | #120 | Comparative industry benchmarks slide (standalone HTML) |
 | 2026.03.103 | 2026-03-09 | #117 | Onboarding v15 — fix Build path dead end, wire committee voting |
 | 2026.03.102 | 2026-03-09 | #116 | Onboarding v14 — compliance remediation (regulatory flags, oversight, concentration risk) |
 | 2026.03.101 | 2026-03-09 | #115 | Onboarding v13 — Camunda Desktop Modeler edits |

@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026.03.104] - 2026-03-09
+
+### Added
+- Comparative industry benchmarks slide — standalone 16:9 HTML with current state vs. industry vs. optimized target metrics, horizontal bar charts, cycle time reduction stack, hyperlinked external sources (APQC, Whistic, Venminder, Bitsight/Ponemon, Sirion CLM) (PR #120)
+
 ## [2026.03.103] - 2026-03-09
 
 ### Added
