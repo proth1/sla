@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.79
+**Current Version**: 2026.03.80
 **Last Release**: 2026-03-08
-**Total Releases**: 79
+**Total Releases**: 80
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.80 | 2026-03-08 | #101 | Add candidateUsers to Q&A Submit Question task |
 | 2026.03.79 | 2026-03-08 | #95-100 | Batch 2A: 4 new DMN tables (10,11,12,14) + DMN-7/8 enhancements |
 | 2026.03.73 | 2026-03-08 | #83 | Fix Mini RFP flashing + renumber steps to 1-8 |
 | 2026.03.72 | 2026-03-08 | #82 | Security hardening: timing-safe, error sanitization, CORS/CSP, health check |

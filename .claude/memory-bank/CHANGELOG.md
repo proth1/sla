@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026.03.80] - 2026-03-08
+
+### Changed
+- Committee voting: Add `candidateUsers="=lockedRosterEmails"` to Q&A Submit Question task so roster members can see/claim it in Tasklist (PR #101)
+
 ## [2026.03.79] - 2026-03-08
 
 ### Added
