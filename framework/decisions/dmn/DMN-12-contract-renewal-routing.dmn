@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN12-ContractRenewalRouting-definitions"
+             name="DMN-12: Contract Renewal Routing"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_ContractRenewalRouting"
+            name="Contract Renewal Routing"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-08 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: OCC 2023-17, DORA, SOX</description>
+    <decisionTable id="DMN_ContractRenewalRouting-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-12: Contract Renewal Routing
+        Phase: 8 (Operations) — Contract renewal decision logic
+        Hit Policy: FIRST
+        Regulatory: OCC 2023-17, DORA, SOX
+        Description: Routes contract renewal decisions based on vendor performance,
+                     risk posture changes, compliance findings, and strategic alignment.
+                     Determines renewal action, review authority, transition planning,
+                     and notice period requirements.
+        Inputs:
+          contractExpiry:      Time remaining until contract expiration
+          performanceScore:    0-100 composite vendor performance score
+          riskTierChange:      Direction of risk tier movement since last assessment
+          complianceFindings:  Number of open compliance findings
+          strategicAlignment:  Business criticality classification
+        Outputs:
+          renewalAction:           Action to take (AutoRenew, NegotiateTerms, CompetitiveBid, Terminate)
+          reviewLevel:             Authority required for the renewal decision
+          transitionPlanRequired:  Whether exit/transition planning is needed
+          noticePeriodDays:        Required notice period in calendar days
+      -->
+
+      <input id="input-contractExpiry" label="Contract Expiry">
+        <inputExpression id="inputExpr-contractExpiry" typeRef="string">
+          <text>contractExpiry</text>
+        </inputExpression>
+        <inputValues id="inputVals-contractExpiry">
+          <text>"LessThan90Days","90To180Days","MoreThan180Days"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-performanceScore" label="Performance Score">
+        <inputExpression id="inputExpr-performanceScore" typeRef="double">
+          <text>performanceScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-riskTierChange" label="Risk Tier Change">
+        <inputExpression id="inputExpr-riskTierChange" typeRef="string">
+          <text>riskTierChange</text>
+        </inputExpression>
+        <inputValues id="inputVals-riskTierChange">
+          <text>"Improved","Stable","Degraded"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-complianceFindings" label="Compliance Findings">
+        <inputExpression id="inputExpr-complianceFindings" typeRef="integer">
+          <text>complianceFindings</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-strategicAlignment" label="Strategic Alignment">
+        <inputExpression id="inputExpr-strategicAlignment" typeRef="string">
+          <text>strategicAlignment</text>
+        </inputExpression>
+        <inputValues id="inputVals-strategicAlignment">
+          <text>"Core","Supporting","Non-strategic"</text>
+        </inputValues>
+      </input>
+
+      <output id="output-renewalAction"
+              label="Renewal Action"
+              name="renewalAction"
+              typeRef="string" />
+
+      <output id="output-reviewLevel"
+              label="Review Level"
+              name="reviewLevel"
+              typeRef="string" />
+
+      <output id="output-transitionPlanRequired"
+              label="Transition Plan Required"
+              name="transitionPlanRequired"
+              typeRef="boolean" />
+
+      <output id="output-noticePeriodDays"
+              label="Notice Period (Days)"
+              name="noticePeriodDays"
+              typeRef="integer" />
+
+      <!--
+        IMMEDIATE TERMINATION TRIGGERS (Rules 1-4)
+        Severe performance degradation, excessive compliance findings,
+        or non-strategic vendors with poor performance.
+      -->
+
+      <rule id="rule-1">
+        <description>Degraded risk + poor performance + excessive findings: immediate termination with board notification per OCC 2023-17 escalation requirements</description>
+        <inputEntry id="ie-1-1"><text></text></inputEntry>
+        <inputEntry id="ie-1-2"><text>&lt; 40</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>"Degraded"</text></inputEntry>
+        <inputEntry id="ie-1-4"><text>&gt; 5</text></inputEntry>
+        <inputEntry id="ie-1-5"><text></text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"Terminate"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"VP + Legal + Compliance + Board notification"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>true</text></outputEntry>
+        <outputEntry id="oe-1-4"><text>90</text></outputEntry>
+      </rule>
+
+      <rule id="rule-2">
+        <description>Degraded risk with critical compliance exposure: termination regardless of performance — regulatory risk unacceptable per DORA operational resilience requirements</description>
+        <inputEntry id="ie-2-1"><text></text></inputEntry>
+        <inputEntry id="ie-2-2"><text></text></inputEntry>
+        <inputEntry id="ie-2-3"><text>"Degraded"</text></inputEntry>
+        <inputEntry id="ie-2-4"><text>&gt; 10</text></inputEntry>
+        <inputEntry id="ie-2-5"><text></text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"Terminate"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"VP + Legal + Compliance + Board notification"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>true</text></outputEntry>
+        <outputEntry id="oe-2-4"><text>90</text></outputEntry>
+      </rule>
+
+      <rule id="rule-3">
+        <description>Non-strategic vendor with very poor performance: terminate to reduce vendor portfolio risk — SOX control optimization</description>
+        <inputEntry id="ie-3-1"><text></text></inputEntry>
+        <inputEntry id="ie-3-2"><text>&lt; 30</text></inputEntry>
+        <inputEntry id="ie-3-3"><text></text></inputEntry>
+        <inputEntry id="ie-3-4"><text></text></inputEntry>
+        <inputEntry id="ie-3-5"><text>"Non-strategic"</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Terminate"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"VP + Procurement"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>true</text></outputEntry>
+        <outputEntry id="oe-3-4"><text>60</text></outputEntry>
+      </rule>
+
+      <rule id="rule-4">
+        <description>Imminent expiry + degraded + poor performance + compliance issues: emergency termination with shortened notice</description>
+        <inputEntry id="ie-4-1"><text>"LessThan90Days"</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>&lt; 50</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>"Degraded"</text></inputEntry>
+        <inputEntry id="ie-4-4"><text>&gt; 3</text></inputEntry>
+        <inputEntry id="ie-4-5"><text></text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Terminate"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"VP + Legal + Compliance"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>true</text></outputEntry>
+        <outputEntry id="oe-4-4"><text>30</text></outputEntry>
+      </rule>
+
+      <!--
+        COMPETITIVE BID TRIGGERS (Rules 5-8)
+        Mediocre performance or degraded risk with non-critical alignment
+        warrants market testing before renewal.
+      -->
+
+      <rule id="rule-5">
+        <description>Degraded non-strategic vendor with mediocre performance: competitive bid to validate market alternatives</description>
+        <inputEntry id="ie-5-1"><text></text></inputEntry>
+        <inputEntry id="ie-5-2"><text>[40..60]</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>"Degraded"</text></inputEntry>
+        <inputEntry id="ie-5-4"><text></text></inputEntry>
+        <inputEntry id="ie-5-5"><text>"Non-strategic"</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"CompetitiveBid"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"Procurement + Business Owner"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>true</text></outputEntry>
+        <outputEntry id="oe-5-4"><text>120</text></outputEntry>
+      </rule>
+
+      <rule id="rule-6">
+        <description>Stable supporting vendor with compliance issues and average performance: market test to ensure value</description>
+        <inputEntry id="ie-6-1"><text></text></inputEntry>
+        <inputEntry id="ie-6-2"><text>[40..60]</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>"Stable"</text></inputEntry>
+        <inputEntry id="ie-6-4"><text>&gt; 3</text></inputEntry>
+        <inputEntry id="ie-6-5"><text>"Supporting"</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"CompetitiveBid"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"Procurement + Governance"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>true</text></outputEntry>
+        <outputEntry id="oe-6-4"><text>120</text></outputEntry>
+      </rule>
+
+      <rule id="rule-7">
+        <description>Non-strategic vendor with adequate performance and long runway: proactive market test while time allows</description>
+        <inputEntry id="ie-7-1"><text>"MoreThan180Days"</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>[50..70]</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>"Stable"</text></inputEntry>
+        <inputEntry id="ie-7-4"><text></text></inputEntry>
+        <inputEntry id="ie-7-5"><text>"Non-strategic"</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"CompetitiveBid"</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"Procurement + Business Owner"</text></outputEntry>
+        <outputEntry id="oe-7-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-7-4"><text>180</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8">
+        <description>Degraded supporting vendor with some compliance findings: competitive bid to assess alternatives per OCC 2023-17</description>
+        <inputEntry id="ie-8-1"><text></text></inputEntry>
+        <inputEntry id="ie-8-2"><text></text></inputEntry>
+        <inputEntry id="ie-8-3"><text>"Degraded"</text></inputEntry>
+        <inputEntry id="ie-8-4"><text>[1..5]</text></inputEntry>
+        <inputEntry id="ie-8-5"><text>"Supporting"</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"CompetitiveBid"</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"Procurement + Governance"</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>true</text></outputEntry>
+        <outputEntry id="oe-8-4"><text>120</text></outputEntry>
+      </rule>
+
+      <!--
+        NEGOTIATE TERMS (Rules 9-14)
+        Good-but-not-excellent performance, or core vendors with
+        time pressure requiring proactive renegotiation.
+      -->
+
+      <rule id="rule-9">
+        <description>Imminent expiry on core vendor with good performance and minor findings: negotiate improved terms under time pressure</description>
+        <inputEntry id="ie-9-1"><text>"LessThan90Days"</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>[60..80]</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>"Stable"</text></inputEntry>
+        <inputEntry id="ie-9-4"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-9-5"><text>"Core"</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"NegotiateTerms"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"VP + Procurement + Legal"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-9-4"><text>30</text></outputEntry>
+      </rule>
+
+      <rule id="rule-10">
+        <description>Mid-range expiry with good performance and minor findings: standard renegotiation cycle — SOX requires documented terms review</description>
+        <inputEntry id="ie-10-1"><text>"90To180Days"</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>[60..80]</text></inputEntry>
+        <inputEntry id="ie-10-3"><text>"Stable"</text></inputEntry>
+        <inputEntry id="ie-10-4"><text>[1..3]</text></inputEntry>
+        <inputEntry id="ie-10-5"><text></text></inputEntry>
+        <outputEntry id="oe-10-1"><text>"NegotiateTerms"</text></outputEntry>
+        <outputEntry id="oe-10-2"><text>"Procurement + Legal"</text></outputEntry>
+        <outputEntry id="oe-10-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-10-4"><text>90</text></outputEntry>
+      </rule>
+
+      <rule id="rule-11">
+        <description>Improving vendor with strong performance and minimal findings: negotiate to lock in favorable trajectory</description>
+        <inputEntry id="ie-11-1"><text></text></inputEntry>
+        <inputEntry id="ie-11-2"><text>[70..85]</text></inputEntry>
+        <inputEntry id="ie-11-3"><text>"Improved"</text></inputEntry>
+        <inputEntry id="ie-11-4"><text>[1..2]</text></inputEntry>
+        <inputEntry id="ie-11-5"><text></text></inputEntry>
+        <outputEntry id="oe-11-1"><text>"NegotiateTerms"</text></outputEntry>
+        <outputEntry id="oe-11-2"><text>"Procurement + Business Owner"</text></outputEntry>
+        <outputEntry id="oe-11-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-11-4"><text>90</text></outputEntry>
+      </rule>
+
+      <rule id="rule-12">
+        <description>Stable supporting vendor with clean compliance: negotiate standard terms renewal</description>
+        <inputEntry id="ie-12-1"><text></text></inputEntry>
+        <inputEntry id="ie-12-2"><text>[60..80]</text></inputEntry>
+        <inputEntry id="ie-12-3"><text>"Stable"</text></inputEntry>
+        <inputEntry id="ie-12-4"><text>0</text></inputEntry>
+        <inputEntry id="ie-12-5"><text>"Supporting"</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>"NegotiateTerms"</text></outputEntry>
+        <outputEntry id="oe-12-2"><text>"Procurement"</text></outputEntry>
+        <outputEntry id="oe-12-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-12-4"><text>90</text></outputEntry>
+      </rule>
+
+      <rule id="rule-13">
+        <description>Imminent expiry on core vendor with good-to-strong performance: prioritize renegotiation to avoid service disruption per DORA</description>
+        <inputEntry id="ie-13-1"><text>"LessThan90Days"</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>[60..85]</text></inputEntry>
+        <inputEntry id="ie-13-3"><text></text></inputEntry>
+        <inputEntry id="ie-13-4"><text></text></inputEntry>
+        <inputEntry id="ie-13-5"><text>"Core"</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"NegotiateTerms"</text></outputEntry>
+        <outputEntry id="oe-13-2"><text>"VP + Procurement + Legal"</text></outputEntry>
+        <outputEntry id="oe-13-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-13-4"><text>30</text></outputEntry>
+      </rule>
+
+      <rule id="rule-14">
+        <description>Mid-range expiry on improving core vendor with clean compliance: negotiate favorable multi-year terms</description>
+        <inputEntry id="ie-14-1"><text>"90To180Days"</text></inputEntry>
+        <inputEntry id="ie-14-2"><text>[60..85]</text></inputEntry>
+        <inputEntry id="ie-14-3"><text>"Improved"</text></inputEntry>
+        <inputEntry id="ie-14-4"><text>0</text></inputEntry>
+        <inputEntry id="ie-14-5"><text>"Core"</text></inputEntry>
+        <outputEntry id="oe-14-1"><text>"NegotiateTerms"</text></outputEntry>
+        <outputEntry id="oe-14-2"><text>"Procurement"</text></outputEntry>
+        <outputEntry id="oe-14-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-14-4"><text>90</text></outputEntry>
+      </rule>
+
+      <!--
+        AUTO-RENEW (Rules 15-19)
+        High-performing vendors with clean compliance and
+        strategic alignment qualify for automated renewal.
+      -->
+
+      <rule id="rule-15">
+        <description>Top-performing improving core vendor with zero findings: auto-renew with automated approval — exemplary vendor relationship</description>
+        <inputEntry id="ie-15-1"><text></text></inputEntry>
+        <inputEntry id="ie-15-2"><text>&gt;= 85</text></inputEntry>
+        <inputEntry id="ie-15-3"><text>"Improved"</text></inputEntry>
+        <inputEntry id="ie-15-4"><text>0</text></inputEntry>
+        <inputEntry id="ie-15-5"><text>"Core"</text></inputEntry>
+        <outputEntry id="oe-15-1"><text>"AutoRenew"</text></outputEntry>
+        <outputEntry id="oe-15-2"><text>"Procurement — automated approval"</text></outputEntry>
+        <outputEntry id="oe-15-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-15-4"><text>30</text></outputEntry>
+      </rule>
+
+      <rule id="rule-16">
+        <description>Long runway on stable high-performing core vendor: auto-renew with ample notice — low risk per OCC 2023-17 tiering</description>
+        <inputEntry id="ie-16-1"><text>"MoreThan180Days"</text></inputEntry>
+        <inputEntry id="ie-16-2"><text>&gt;= 85</text></inputEntry>
+        <inputEntry id="ie-16-3"><text>"Stable"</text></inputEntry>
+        <inputEntry id="ie-16-4"><text>0</text></inputEntry>
+        <inputEntry id="ie-16-5"><text>"Core"</text></inputEntry>
+        <outputEntry id="oe-16-1"><text>"AutoRenew"</text></outputEntry>
+        <outputEntry id="oe-16-2"><text>"Procurement — automated approval"</text></outputEntry>
+        <outputEntry id="oe-16-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-16-4"><text>30</text></outputEntry>
+      </rule>
+
+      <rule id="rule-17">
+        <description>Improving supporting vendor with excellent performance and clean record: auto-renew supporting services</description>
+        <inputEntry id="ie-17-1"><text></text></inputEntry>
+        <inputEntry id="ie-17-2"><text>&gt;= 80</text></inputEntry>
+        <inputEntry id="ie-17-3"><text>"Improved"</text></inputEntry>
+        <inputEntry id="ie-17-4"><text>0</text></inputEntry>
+        <inputEntry id="ie-17-5"><text>"Supporting"</text></inputEntry>
+        <outputEntry id="oe-17-1"><text>"AutoRenew"</text></outputEntry>
+        <outputEntry id="oe-17-2"><text>"Procurement — automated approval"</text></outputEntry>
+        <outputEntry id="oe-17-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-17-4"><text>60</text></outputEntry>
+      </rule>
+
+      <rule id="rule-18">
+        <description>Long runway on exceptional stable vendor with minimal findings: auto-renew regardless of alignment — proven reliability</description>
+        <inputEntry id="ie-18-1"><text>"MoreThan180Days"</text></inputEntry>
+        <inputEntry id="ie-18-2"><text>&gt;= 90</text></inputEntry>
+        <inputEntry id="ie-18-3"><text>"Stable"</text></inputEntry>
+        <inputEntry id="ie-18-4"><text>[0..1]</text></inputEntry>
+        <inputEntry id="ie-18-5"><text></text></inputEntry>
+        <outputEntry id="oe-18-1"><text>"AutoRenew"</text></outputEntry>
+        <outputEntry id="oe-18-2"><text>"Procurement — automated approval"</text></outputEntry>
+        <outputEntry id="oe-18-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-18-4"><text>30</text></outputEntry>
+      </rule>
+
+      <rule id="rule-19">
+        <description>Stable high-performing core vendor with clean compliance: auto-renew with manager sign-off — standard renewal per SOX controls</description>
+        <inputEntry id="ie-19-1"><text></text></inputEntry>
+        <inputEntry id="ie-19-2"><text>&gt;= 85</text></inputEntry>
+        <inputEntry id="ie-19-3"><text>"Stable"</text></inputEntry>
+        <inputEntry id="ie-19-4"><text>0</text></inputEntry>
+        <inputEntry id="ie-19-5"><text>"Core"</text></inputEntry>
+        <outputEntry id="oe-19-1"><text>"AutoRenew"</text></outputEntry>
+        <outputEntry id="oe-19-2"><text>"Procurement — manager approval"</text></outputEntry>
+        <outputEntry id="oe-19-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-19-4"><text>60</text></outputEntry>
+      </rule>
+
+      <!--
+        DEFAULT CATCH-ALL (Rule 20)
+        Conservative fallback for any combination not matched above.
+        Manual assessment ensures no renewal decision is made without review.
+      -->
+
+      <rule id="rule-20">
+        <description>Default: no specific rule matched — route to manual assessment with standard notice period for governance review</description>
+        <inputEntry id="ie-20-1"><text></text></inputEntry>
+        <inputEntry id="ie-20-2"><text></text></inputEntry>
+        <inputEntry id="ie-20-3"><text></text></inputEntry>
+        <inputEntry id="ie-20-4"><text></text></inputEntry>
+        <inputEntry id="ie-20-5"><text></text></inputEntry>
+        <outputEntry id="oe-20-1"><text>"NegotiateTerms"</text></outputEntry>
+        <outputEntry id="oe-20-2"><text>"Procurement + Governance — manual assessment required"</text></outputEntry>
+        <outputEntry id="oe-20-3"><text>false</text></outputEntry>
+        <outputEntry id="oe-20-4"><text>90</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN12-diagram">
+      <dmndi:DMNShape id="DMN12-shape" dmnElementRef="DMN_ContractRenewalRouting">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
