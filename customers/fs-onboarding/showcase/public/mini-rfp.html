@@ -356,22 +356,20 @@ async function pollTasks() {
         renderStepBar();
       }
 
-      // Check for deal-killer end state
-      if (task.taskDefinitionId === 'Task_Step3_DealKillerResults') {
-        await loadDealKillerStep(task);
-        return;
-      }
-
-      // Check for receive task (vendor wait)
-      const stepDef = DISPLAY_STEPS.find(s => s.id === task.taskDefinitionId);
-      if (stepDef && stepDef.wait) {
-        renderVendorWait(task);
-        return;
-      }
-
       // Skip re-render if same task is already displayed (prevents flashing)
-      if (task.id !== state.renderedTaskId) {
-        await loadTaskForm(task);
+      if (task.id === state.renderedTaskId) {
+        // Same task — no re-render needed
+      } else if (task.taskDefinitionId === 'Task_Step3_DealKillerResults') {
+        await loadDealKillerStep(task);
+        state.renderedTaskId = task.id;
+      } else {
+        const stepDef = DISPLAY_STEPS.find(s => s.id === task.taskDefinitionId);
+        if (stepDef && stepDef.wait) {
+          renderVendorWait(task);
+          state.renderedTaskId = task.id;
+        } else {
+          await loadTaskForm(task);
+        }
       }
     } else if (state.processKey) {
       // Check if process completed or deal-killer terminated
