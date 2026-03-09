@@ -18,3 +18,13 @@ MINI_RFP_PROCESS_ID = "Process_MiniRFP"
 # - CAMUNDA_CLIENT_ID  (shell: $ZEEBE_CLIENT_ID — not $CAMUNDA_CLIENT_ID)
 # - CAMUNDA_CLIENT_SECRET  (shell: $ZEEBE_CLIENT_SECRET — not $CAMUNDA_CLIENT_SECRET)
 # - PROXY_SECRET
+
+# KV namespace for vendor portal tokens (shared with Auth Worker)
+# To enable:
+#   1. Create namespace: Cloudflare Dashboard > Workers & Pages > KV > Create
+#   2. Name it "sla-showcase-vendor-tokens" and copy the ID
+#   3. Uncomment the binding below and paste the ID
+#   4. Redeploy both Auth and API workers
+# [[kv_namespaces]]
+# binding = "VENDOR_TOKENS_KV"
+# id = "paste-vendor-tokens-kv-id-here"

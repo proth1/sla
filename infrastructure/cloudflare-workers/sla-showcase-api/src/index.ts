@@ -16,6 +16,20 @@ interface Env {
   CAMUNDA_AUTH_URL: string;
   PROCESS_ID: string;
   MINI_RFP_PROCESS_ID: string;
+  VENDOR_TOKENS_KV: KVNamespace;
+}
+
+interface VendorTokenData {
+  token: string;
+  instanceKey: string;
+  vendorName?: string;
+  vendorEmail?: string;
+  softwareName?: string;
+  organizationName?: string;
+  status: 'active' | 'submitted' | 'expired';
+  createdAt: string;
+  accessedAt?: string;
+  submittedAt?: string;
 }
 
 interface TokenEntry {
@@ -422,10 +436,48 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     if (method === 'POST' && segments[0] === 'api' && segments[1] === 'mini-rfp' && segments.length === 4 && segments[3] === 'vendor-token') {
       const key = segments[2];
       if (!isValidKey(key)) return errorResponse('Invalid process key', 400);
+      const body = await request.json().catch(() => ({})) as {
+        vendorName?: string; vendorEmail?: string;
+      };
       const bytes = new Uint8Array(12);
       crypto.getRandomValues(bytes);
       const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
       const vendorToken = `vrfp-${key}-${hex}`;
+
+      // Store token metadata in KV with 14-day TTL
+      if (env.VENDOR_TOKENS_KV) {
+        const tokenData: VendorTokenData = {
+          token: vendorToken,
+          instanceKey: key,
+          vendorName: typeof body.vendorName === 'string' ? body.vendorName.slice(0, 200) : undefined,
+          vendorEmail: typeof body.vendorEmail === 'string' ? body.vendorEmail.slice(0, 200) : undefined,
+          status: 'active',
+          createdAt: new Date().toISOString(),
+        };
+
+        // Try to get software name from process variables
+        try {
+          const tasks = await tasklistApi('POST', '/v1/tasks/search', env, { processInstanceKey: key }) as Task[];
+          if (Array.isArray(tasks) && tasks.length > 0) {
+            const vars = await tasklistApi('POST', `/v1/tasks/${tasks[0].id}/variables/search`, env, {}) as Array<{ name: string; value: string }>;
+            for (const v of vars) {
+              if (v.name === 'vendorName') { try { tokenData.softwareName = JSON.parse(v.value); } catch { tokenData.softwareName = v.value; } }
+            }
+          }
+        } catch { /* non-critical */ }
+
+        await env.VENDOR_TOKENS_KV.put(vendorToken, JSON.stringify(tokenData), {
+          expirationTtl: 14 * 24 * 60 * 60, // 14 days
+        });
+      }
+
+      // Set vendorId process variable for message correlation
+      try {
+        await zeebeApi('PATCH', `/v2/process-instances/${key}`, env, {
+          changeset: { vendorId: vendorToken },
+        });
+      } catch { /* Zeebe PATCH may not be supported — correlation can use instanceKey fallback */ }
+
       return jsonResponse({
         vendorToken,
         portalUrl: `/vendor-portal.html?token=${vendorToken}&instance=${key}`,
@@ -509,6 +561,102 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
         });
       }
       return jsonResponse({ transferred: false, mappedVariables: onboardingVars });
+    }
+
+    // --- Vendor Portal routes (token-authenticated, no proxy secret required) ---
+    // These are called by the auth worker which validates vendor tokens directly
+
+    // GET /api/vendor/status — Check token status and RFP metadata
+    if (method === 'GET' && path === '/api/vendor/status') {
+      const vendorToken = url.searchParams.get('token') || '';
+      const instanceKey = url.searchParams.get('instance') || '';
+      if (!instanceKey || !isValidKey(instanceKey)) return errorResponse('Invalid instance key', 400);
+
+      if (env.VENDOR_TOKENS_KV && vendorToken) {
+        const raw = await env.VENDOR_TOKENS_KV.get(vendorToken);
+        if (!raw) return errorResponse('Token not found or expired', 403);
+        const tokenData = JSON.parse(raw) as VendorTokenData;
+
+        // Update accessedAt
+        tokenData.accessedAt = new Date().toISOString();
+        await env.VENDOR_TOKENS_KV.put(vendorToken, JSON.stringify(tokenData), {
+          expirationTtl: 14 * 24 * 60 * 60,
+        });
+
+        return jsonResponse({
+          status: tokenData.status,
+          vendorName: tokenData.vendorName,
+          softwareName: tokenData.softwareName,
+          organizationName: tokenData.organizationName || 'Financial Services Organization',
+          instanceKey: tokenData.instanceKey,
+          createdAt: tokenData.createdAt,
+          submittedAt: tokenData.submittedAt,
+        });
+      }
+
+      // Fallback if KV not bound — return minimal status
+      return jsonResponse({
+        status: 'active',
+        organizationName: 'Financial Services Organization',
+        instanceKey,
+      });
+    }
+
+    // GET /api/vendor/questionnaire — Return form schemas for assigned categories
+    if (method === 'GET' && path === '/api/vendor/questionnaire') {
+      // Return the 10 vendor questionnaire category definitions
+      // In a full implementation, this would be filtered by the categories selected in Step 4
+      const categories = [
+        { id: 'security', name: 'Security Review', icon: '\u{1F6E1}', description: 'Information security program, access controls, vulnerability management, business continuity, and incident history.' },
+        { id: 'proposal', name: 'Product Proposal', icon: '\u{1F4CB}', description: 'Product capabilities, pricing model, customer references, and competitive differentiators.' },
+        { id: 'compliance', name: 'Compliance Review', icon: '\u2696\uFE0F', description: 'Regulatory compliance posture, certifications, audit history, and data protection measures.' },
+        { id: 'tech-demo', name: 'Technical Demo', icon: '\u{1F4BB}', description: 'Technical architecture, integration capabilities, and deployment requirements.' },
+        { id: 'intake', name: 'Company Profile', icon: '\u{1F3E2}', description: 'Company background, financial stability, key contacts, and organizational structure.' },
+        { id: 'contract-review', name: 'Contract Terms', icon: '\u{1F4DD}', description: 'Standard contract terms, SLA commitments, liability provisions, and termination clauses.' },
+        { id: 'onboarding', name: 'Implementation Plan', icon: '\u{1F680}', description: 'Implementation timeline, resource requirements, training plan, and change management approach.' },
+        { id: 'deploy-support', name: 'Deployment Support', icon: '\u2699\uFE0F', description: 'Deployment model, infrastructure requirements, monitoring, and support tiers.' },
+        { id: 'contract-sign', name: 'Contract Readiness', icon: '\u270D\uFE0F', description: 'Contract readiness confirmation, authorized signatories, and required documentation.' },
+        { id: 'close-request', name: 'Closure Readiness', icon: '\u2705', description: 'Exit planning, data return/destruction procedures, and transition support.' },
+      ];
+      return jsonResponse({ categories });
+    }
+
+    // POST /api/vendor/submit — Submit vendor responses and correlate with Camunda
+    if (method === 'POST' && path === '/api/vendor/submit') {
+      const body = await request.json() as {
+        instance?: string;
+        responseData?: Record<string, unknown>;
+      };
+      const instanceKey = typeof body.instance === 'string' ? body.instance.trim() : '';
+      if (!instanceKey || !isValidKey(instanceKey)) return errorResponse('Invalid instance key', 400);
+
+      const vendorToken = url.searchParams.get('token') || '';
+
+      // Mark token as submitted in KV (single-use enforcement)
+      if (env.VENDOR_TOKENS_KV && vendorToken) {
+        const raw = await env.VENDOR_TOKENS_KV.get(vendorToken);
+        if (raw) {
+          const tokenData = JSON.parse(raw) as VendorTokenData;
+          if (tokenData.status === 'submitted') {
+            return errorResponse('This questionnaire has already been submitted', 409);
+          }
+          tokenData.status = 'submitted';
+          tokenData.submittedAt = new Date().toISOString();
+          await env.VENDOR_TOKENS_KV.put(vendorToken, JSON.stringify(tokenData), {
+            expirationTtl: 14 * 24 * 60 * 60,
+          });
+        }
+      }
+
+      // Publish message to Camunda for correlation with the waiting receive task
+      const correlationKey = vendorToken || instanceKey;
+      const result = await zeebeApi('POST', '/v2/messages/publication', env, {
+        messageName: 'MiniRFPResponseMessage',
+        correlationKey,
+        variables: body.responseData || {},
+      });
+
+      return jsonResponse({ submitted: true, correlated: true, ...(result as Record<string, unknown>) });
     }
 
     // POST /api/deploy — disabled in cloud worker

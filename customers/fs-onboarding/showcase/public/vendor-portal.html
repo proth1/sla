@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Questionnaire Portal | SLA Governance</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1e293b;--surface3:#283548;
+  --border:#334155;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#3b82f6;--accent2:#6366f1;--accent3:#8b5cf6;
+  --success:#22c55e;--warn:#f59e0b;--danger:#ef4444;
+  --glow:rgba(99,102,241,0.15);
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+.header{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+.header-left{display:flex;align-items:center;gap:16px}
+.logo{width:44px;height:44px;background:linear-gradient(135deg,#8b5cf6,#6366f1);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;box-shadow:0 0 30px rgba(139,92,246,0.3)}
+.header h1{font-size:22px;font-weight:600;background:linear-gradient(135deg,#e2e8f0,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-sub{font-size:13px;color:var(--text3);font-weight:400}
+.header-right{display:flex;gap:12px;align-items:center}
+.secure-badge{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#4ade80;font-size:11px;font-weight:600;padding:6px 14px;border-radius:8px;display:flex;align-items:center;gap:6px}
+.secure-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px rgba(34,197,94,0.5)}
+.vendor-badge{background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);color:#a78bfa;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:1px}
+
+.main-content{max-width:860px;margin:0 auto;padding:32px 40px}
+
+/* Loading / Error States */
+.state-screen{text-align:center;padding:80px 20px}
+.state-screen h2{font-size:28px;font-weight:700;margin-bottom:12px}
+.state-screen p{color:var(--text3);font-size:15px;line-height:1.7;max-width:500px;margin:0 auto 24px}
+.state-icon{font-size:56px;margin-bottom:20px}
+.spinner-lg{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 24px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RFP Context Card */
+.context-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:28px}
+.context-card h3{font-size:16px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.context-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.context-item{display:flex;flex-direction:column;gap:2px}
+.context-item .label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+.context-item .value{font-size:14px;color:var(--text)}
+.deadline-banner{background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(239,68,68,0.05));border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:16px 20px;margin-top:16px;display:flex;align-items:center;gap:12px;font-size:14px;color:var(--warn)}
+.deadline-banner .icon{font-size:20px}
+
+/* Category Navigation */
+.category-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;padding:16px 0;border-bottom:1px solid var(--border)}
+.cat-btn{padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.cat-btn:hover{border-color:var(--accent);color:var(--text)}
+.cat-btn.active{border-color:var(--accent);background:rgba(59,130,246,0.1);color:var(--accent)}
+.cat-btn.completed{border-color:var(--success);color:var(--success)}
+.cat-btn .status-dot{width:6px;height:6px;border-radius:50%;background:var(--border)}
+.cat-btn.completed .status-dot{background:var(--success)}
+.cat-btn.active .status-dot{background:var(--accent);box-shadow:0 0 6px rgba(59,130,246,0.5)}
+
+/* Form Rendering (mirrors mini-rfp.html styles) */
+.form-container{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:24px;position:relative}
+.form-container h3{font-size:18px;font-weight:600;margin-bottom:8px}
+.form-container .cat-desc{color:var(--text3);font-size:13px;margin-bottom:24px;line-height:1.6}
+.form-group{margin-bottom:24px}
+.form-group:last-child{margin-bottom:0}
+.form-label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.form-input,.form-textarea,.form-select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:14px;font-family:inherit;transition:all .2s;outline:none}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+.form-textarea{min-height:100px;resize:vertical}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.form-select option{background:var(--surface2);color:var(--text)}
+.form-radio-group{display:flex;gap:12px;flex-wrap:wrap}
+.form-radio{display:flex;align-items:center;gap:8px;padding:10px 18px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.form-radio:hover{border-color:var(--accent)}
+.form-radio input{accent-color:var(--accent)}
+.form-radio.selected{border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.form-text{padding:16px 20px;background:linear-gradient(135deg,rgba(99,102,241,0.05),rgba(139,92,246,0.05));border:1px solid rgba(99,102,241,0.15);border-radius:12px;color:var(--text2);font-size:14px;line-height:1.7}
+.form-text h2,.form-text h3{color:var(--text);margin-bottom:8px;font-size:16px}
+.form-separator{border:none;border-top:1px solid var(--border);margin:20px 0}
+.form-checklist{display:flex;flex-wrap:wrap;gap:8px}
+.form-check-item{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;background:var(--surface2);font-size:13px}
+.form-check-item:hover{border-color:var(--accent)}
+.form-check-item.selected{border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.form-check-item input{accent-color:var(--accent)}
+
+.btn{padding:12px 28px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 15px rgba(59,130,246,0.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 25px rgba(59,130,246,0.4)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--surface3)}
+.btn-success{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 15px rgba(34,197,94,0.3)}
+.btn-warn{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}
+
+.form-actions{display:flex;gap:12px;justify-content:space-between;margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
+.form-actions .right{display:flex;gap:12px}
+
+/* Progress Bar */
+.progress-bar{background:var(--surface2);border-radius:8px;height:8px;margin-bottom:24px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--success));border-radius:8px;transition:width .5s ease}
+
+/* Toast */
+.toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:14px 20px;border-radius:10px;font-size:13px;font-weight:500;animation:slideIn .3s ease;max-width:400px;display:flex;align-items:center;gap:8px;backdrop-filter:blur(20px)}
+.toast.success{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#4ade80}
+.toast.error{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#f87171}
+.toast.info{background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#60a5fa}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Submitted State */
+.submitted-screen{text-align:center;padding:60px 0}
+.submitted-screen h2{font-size:28px;font-weight:700;background:linear-gradient(135deg,#4ade80,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
+.submitted-screen p{color:var(--text3);font-size:15px;line-height:1.7;max-width:500px;margin:0 auto}
+.confirmation-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-top:28px;max-width:400px;margin-left:auto;margin-right:auto;text-align:left}
+.confirmation-card .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.confirmation-card .row:last-child{border-bottom:none}
+.confirmation-card .row .label{color:var(--text3)}
+.confirmation-card .row .value{color:var(--text);font-weight:500}
+
+@media(max-width:768px){
+  .header{padding:16px 20px;flex-direction:column;gap:12px}
+  .main-content{padding:20px}
+  .context-grid{grid-template-columns:1fr}
+  .category-nav{justify-content:center}
+  .form-actions{flex-direction:column}
+  .form-actions .right{justify-content:flex-end}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">VP</div>
+    <div>
+      <h1>Vendor Questionnaire Portal</h1>
+      <div class="header-sub">Third-Party Risk Management Pre-Screen</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="secure-badge"><div class="dot"></div> Secure Session</div>
+    <div class="vendor-badge">Vendor Portal</div>
+  </div>
+</div>
+
+<div class="main-content">
+  <div id="app">
+    <div class="state-screen">
+      <div class="spinner-lg"></div>
+      <h2>Loading Questionnaire</h2>
+      <p>Validating your access and loading the questionnaire...</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script src="defaults-vendor.js"></script>
+<script>
+'use strict';
+
+// --- State ---
+const params = new URLSearchParams(location.search);
+const TOKEN = params.get('token') || '';
+const INSTANCE_KEY = params.get('instance') || '';
+
+let portalState = {
+  status: null,       // loaded from /api/vendor/status
+  categories: [],     // form schemas per category
+  currentCat: 0,
+  completedCats: new Set(),
+  formData: {},       // key → value across all categories
+};
+
+// --- 10 RFP Category Form Definitions ---
+// These map to the 10 vendor-*.form files in the BPMN process
+const VENDOR_CATEGORIES = [
+  { id: 'security', name: 'Security Review', formId: 'Form_VendorSecurityReview', icon: '\u{1F6E1}' },
+  { id: 'proposal', name: 'Product Proposal', formId: 'Form_VendorProposal', icon: '\u{1F4CB}' },
+  { id: 'compliance', name: 'Compliance Review', formId: 'Form_VendorComplianceReview', icon: '\u2696\uFE0F' },
+  { id: 'tech-demo', name: 'Technical Demo', formId: 'Form_VendorTechDemo', icon: '\u{1F4BB}' },
+  { id: 'intake', name: 'Company Profile', formId: 'Form_VendorIntake', icon: '\u{1F3E2}' },
+  { id: 'contract-review', name: 'Contract Terms', formId: 'Form_VendorContractReview', icon: '\u{1F4DD}' },
+  { id: 'onboarding', name: 'Implementation Plan', formId: 'Form_VendorOnboarding', icon: '\u{1F680}' },
+  { id: 'deploy-support', name: 'Deployment Support', formId: 'Form_VendorDeploySupport', icon: '\u2699\uFE0F' },
+  { id: 'contract-sign', name: 'Contract Readiness', formId: 'Form_VendorContractSign', icon: '\u270D\uFE0F' },
+  { id: 'close-request', name: 'Closure Readiness', formId: 'Form_VendorCloseRequest', icon: '\u2705' },
+];
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function toast(msg, type = 'info') {
+  const c = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+// --- API calls with vendor token ---
+async function vendorFetch(path, opts = {}) {
+  const sep = path.includes('?') ? '&' : '?';
+  const url = `${path}${sep}token=${encodeURIComponent(TOKEN)}`;
+  const res = await fetch(url, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+  });
+  if (res.status === 403 || res.status === 401) {
+    throw new Error('ACCESS_DENIED');
+  }
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+
+// --- Initialize ---
+async function init() {
+  if (!TOKEN || !INSTANCE_KEY) {
+    renderError('Invalid Link', 'This vendor portal link is missing required parameters. Please contact the requesting organization for a valid link.');
+    return;
+  }
+
+  try {
+    const status = await vendorFetch(`/api/vendor/status?instance=${encodeURIComponent(INSTANCE_KEY)}`);
+    portalState.status = status;
+
+    if (status.status === 'submitted') {
+      renderAlreadySubmitted(status);
+      return;
+    }
+
+    if (status.status === 'expired') {
+      renderError('Link Expired', 'This questionnaire link has expired. Please contact the requesting organization for a new link.');
+      return;
+    }
+
+    // Load form schemas for each category
+    try {
+      const questionnaire = await vendorFetch(`/api/vendor/questionnaire?instance=${encodeURIComponent(INSTANCE_KEY)}`);
+      portalState.categories = questionnaire.categories || [];
+    } catch {
+      // If questionnaire endpoint fails, use embedded category definitions
+      portalState.categories = VENDOR_CATEGORIES;
+    }
+
+    renderPortal();
+  } catch (e) {
+    if (e.message === 'ACCESS_DENIED') {
+      renderError('Access Denied', 'This link is invalid or has expired. Please contact the requesting organization.');
+    } else {
+      renderError('Connection Error', 'Unable to load the questionnaire. Please check your internet connection and try again.');
+    }
+  }
+}
+
+function renderError(title, message) {
+  document.getElementById('app').innerHTML = `
+    <div class="state-screen">
+      <div class="state-icon">\u{1F6AB}</div>
+      <h2>${escapeHtml(title)}</h2>
+      <p>${escapeHtml(message)}</p>
+    </div>
+  `;
+}
+
+function renderAlreadySubmitted(status) {
+  document.getElementById('app').innerHTML = `
+    <div class="submitted-screen">
+      <div class="state-icon" style="font-size:56px;margin-bottom:20px">\u2705</div>
+      <h2>Questionnaire Already Submitted</h2>
+      <p>Your responses have been received and are being reviewed by the assessment team.</p>
+      <div class="confirmation-card">
+        <div class="row"><span class="label">Submitted</span><span class="value">${status.submittedAt ? new Date(status.submittedAt).toLocaleDateString() : 'N/A'}</span></div>
+        <div class="row"><span class="label">Reference</span><span class="value" style="font-family:'JetBrains Mono',monospace;font-size:12px">${escapeHtml(INSTANCE_KEY)}</span></div>
+        <div class="row"><span class="label">Status</span><span class="value" style="color:var(--success)">Submitted</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPortal() {
+  const s = portalState.status;
+  const cats = portalState.categories.length > 0 ? portalState.categories : VENDOR_CATEGORIES;
+  const totalCats = cats.length;
+  const completedCount = portalState.completedCats.size;
+  const progressPct = totalCats > 0 ? Math.round((completedCount / totalCats) * 100) : 0;
+
+  document.getElementById('app').innerHTML = `
+    <div class="context-card" style="animation:fadeIn .3s ease">
+      <h3>\u{1F4CB} Questionnaire Request</h3>
+      <div class="context-grid">
+        <div class="context-item"><span class="label">Requesting Organization</span><span class="value">${escapeHtml(s.organizationName || 'Financial Services Organization')}</span></div>
+        <div class="context-item"><span class="label">Software / Service</span><span class="value">${escapeHtml(s.softwareName || s.vendorName || 'Vendor Assessment')}</span></div>
+        <div class="context-item"><span class="label">Reference ID</span><span class="value" style="font-family:'JetBrains Mono',monospace;font-size:13px">${escapeHtml(INSTANCE_KEY)}</span></div>
+        <div class="context-item"><span class="label">Categories</span><span class="value">${totalCats} sections</span></div>
+      </div>
+      <div class="deadline-banner">
+        <span class="icon">\u23F0</span>
+        <span><strong>Response deadline:</strong> 14 calendar days from receipt. Automated reminders will be sent at Day 3, 7, and 11.</span>
+      </div>
+    </div>
+
+    <div class="progress-bar"><div class="progress-fill" style="width:${progressPct}%"></div></div>
+
+    <div class="category-nav" id="categoryNav">
+      ${cats.map((cat, i) => `
+        <button class="cat-btn ${i === portalState.currentCat ? 'active' : ''} ${portalState.completedCats.has(i) ? 'completed' : ''}"
+                onclick="switchCategory(${i})">
+          <span class="status-dot"></span>
+          ${escapeHtml(cat.icon || '') + ' ' + escapeHtml(cat.name)}
+        </button>
+      `).join('')}
+    </div>
+
+    <div id="formArea"></div>
+
+    <div class="form-actions">
+      <div>
+        <button class="btn btn-secondary" onclick="autoFillAll()">Auto-Fill (Demo)</button>
+      </div>
+      <div class="right">
+        ${portalState.currentCat > 0 ? `<button class="btn btn-secondary" onclick="prevCategory()">Previous</button>` : ''}
+        ${portalState.currentCat < totalCats - 1
+          ? `<button class="btn btn-primary" onclick="saveAndNext()">Save &amp; Next \u2192</button>`
+          : `<button class="btn btn-success" onclick="submitAll()" id="submitBtn">Submit All Responses \u2192</button>`
+        }
+      </div>
+    </div>
+  `;
+
+  renderCategoryForm();
+}
+
+function renderCategoryForm() {
+  const cats = portalState.categories.length > 0 ? portalState.categories : VENDOR_CATEGORIES;
+  const cat = cats[portalState.currentCat];
+  if (!cat) return;
+
+  const area = document.getElementById('formArea');
+  if (!area) return;
+
+  // Check if we have embedded schema or just metadata
+  const schema = cat.schema || cat.components;
+
+  area.innerHTML = `
+    <div class="form-container" style="animation:fadeIn .3s ease" id="formContainer">
+      <h3>${escapeHtml(cat.icon || '')} ${escapeHtml(cat.name)}</h3>
+      <p class="cat-desc">${escapeHtml(cat.description || getCategoryDescription(cat.id))}</p>
+      ${schema ? renderFormComponents(Array.isArray(schema) ? schema : (schema.components || [])) : renderFallbackForm(cat)}
+    </div>
+  `;
+
+  // Restore saved values
+  restoreFormValues();
+}
+
+function getCategoryDescription(catId) {
+  const descriptions = {
+    'security': 'Information security program, access controls, vulnerability management, business continuity, and incident history.',
+    'proposal': 'Product capabilities, pricing model, customer references, and competitive differentiators.',
+    'compliance': 'Regulatory compliance posture, certifications, audit history, and data protection measures.',
+    'tech-demo': 'Technical architecture, integration capabilities, and deployment requirements.',
+    'intake': 'Company background, financial stability, key contacts, and organizational structure.',
+    'contract-review': 'Standard contract terms, SLA commitments, liability provisions, and termination clauses.',
+    'onboarding': 'Implementation timeline, resource requirements, training plan, and change management approach.',
+    'deploy-support': 'Deployment model, infrastructure requirements, monitoring, and support tiers.',
+    'contract-sign': 'Contract readiness confirmation, authorized signatories, and required documentation.',
+    'close-request': 'Exit planning, data return/destruction procedures, and transition support.'
+  };
+  return descriptions[catId] || 'Please complete all fields in this section.';
+}
+
+function renderFallbackForm(cat) {
+  // Generate a simple form when no Camunda JSON schema is available
+  const fields = getFallbackFields(cat.id);
+  return fields.map(f => {
+    if (f.type === 'textarea') {
+      return `<div class="form-group"><label class="form-label">${escapeHtml(f.label)}</label><textarea class="form-textarea" data-key="${escapeHtml(f.key)}" placeholder="${escapeHtml(f.placeholder || '')}" ${f.required ? 'required' : ''}></textarea></div>`;
+    }
+    if (f.type === 'select') {
+      const opts = f.options.map(o => `<option value="${escapeHtml(o.value)}">${escapeHtml(o.label)}</option>`).join('');
+      return `<div class="form-group"><label class="form-label">${escapeHtml(f.label)}</label><select class="form-select" data-key="${escapeHtml(f.key)}" ${f.required ? 'required' : ''}><option value="">Select...</option>${opts}</select></div>`;
+    }
+    if (f.type === 'radio') {
+      const radios = f.options.map(o =>
+        `<label class="form-radio" onclick="this.parentElement.querySelectorAll('.form-radio').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')"><input type="radio" name="${escapeHtml(f.key)}" data-key="${escapeHtml(f.key)}" value="${escapeHtml(o.value)}"> ${escapeHtml(o.label)}</label>`
+      ).join('');
+      return `<div class="form-group"><label class="form-label">${escapeHtml(f.label)}</label><div class="form-radio-group">${radios}</div></div>`;
+    }
+    return `<div class="form-group"><label class="form-label">${escapeHtml(f.label)}</label><input class="form-input" data-key="${escapeHtml(f.key)}" placeholder="${escapeHtml(f.placeholder || '')}" ${f.required ? 'required' : ''}></div>`;
+  }).join('');
+}
+
+function renderFormComponents(components) {
+  return components.map(comp => {
+    const label = escapeHtml(comp.label || comp.key || '');
+    const key = escapeHtml(comp.key || '');
+    switch (comp.type) {
+      case 'text': {
+        const md = escapeHtml(comp.text || '').replace(/## (.*)/g, '<h3>$1</h3>').replace(/\\n/g, '<br>');
+        return `<div class="form-group"><div class="form-text">${md}</div></div>`;
+      }
+      case 'textfield':
+        return `<div class="form-group"><label class="form-label">${label}</label><input class="form-input" data-key="${key}" placeholder="Enter ${label}..." ${comp.validate?.required ? 'required' : ''}></div>`;
+      case 'textarea':
+        return `<div class="form-group"><label class="form-label">${label}</label><textarea class="form-textarea" data-key="${key}" placeholder="Enter ${label}..." ${comp.validate?.required ? 'required' : ''}></textarea></div>`;
+      case 'number':
+        return `<div class="form-group"><label class="form-label">${label}</label><input class="form-input" type="number" data-key="${key}" ${comp.validate?.required ? 'required' : ''}></div>`;
+      case 'select': {
+        const opts = (comp.values || []).map(v => `<option value="${escapeHtml(v.value)}">${escapeHtml(v.label)}</option>`).join('');
+        return `<div class="form-group"><label class="form-label">${label}</label><select class="form-select" data-key="${key}" ${comp.validate?.required ? 'required' : ''}><option value="">Select...</option>${opts}</select></div>`;
+      }
+      case 'radio': {
+        const radios = (comp.values || []).map(v =>
+          `<label class="form-radio" onclick="this.parentElement.querySelectorAll('.form-radio').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')"><input type="radio" name="${key}" data-key="${key}" value="${escapeHtml(v.value)}"> ${escapeHtml(v.label)}</label>`
+        ).join('');
+        return `<div class="form-group"><label class="form-label">${label}</label><div class="form-radio-group">${radios}</div></div>`;
+      }
+      case 'checkbox':
+        return `<div class="form-group"><label class="form-radio" onclick="this.classList.toggle('selected')"><input type="checkbox" data-key="${key}"> ${label}</label></div>`;
+      case 'checklist': {
+        const checks = (comp.values || []).map(v =>
+          `<label class="form-check-item" onclick="this.classList.toggle('selected')"><input type="checkbox" data-key="${key}" value="${escapeHtml(v.value)}"> ${escapeHtml(v.label)}</label>`
+        ).join('');
+        return `<div class="form-group"><label class="form-label">${label}</label><div class="form-checklist">${checks}</div></div>`;
+      }
+      case 'separator':
+        return '<hr class="form-separator">';
+      case 'group': {
+        const inner = comp.components ? renderFormComponents(comp.components) : '';
+        return `<div class="form-group" style="border:1px solid var(--border);border-radius:12px;padding:20px;background:rgba(30,41,59,0.3)"><label class="form-label" style="font-size:14px;margin-bottom:16px;color:var(--text)">${escapeHtml(comp.label || '')}</label>${inner}</div>`;
+      }
+      default:
+        return '';
+    }
+  }).join('');
+}
+
+function getFallbackFields(catId) {
+  // Minimal fallback fields per category when schema not available
+  const yesNo = [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }];
+  const fields = {
+    'security': [
+      { key: 'iso27001Certified', label: 'ISO 27001 Certified', type: 'radio', options: yesNo, required: true },
+      { key: 'soc2Type2Available', label: 'SOC 2 Type II Report Available', type: 'radio', options: yesNo, required: true },
+      { key: 'encryptionAtRest', label: 'Encryption at Rest', type: 'text', placeholder: 'AES-256', required: true },
+      { key: 'encryptionInTransit', label: 'Encryption in Transit', type: 'text', placeholder: 'TLS 1.3', required: true },
+      { key: 'lastPenTestDate', label: 'Last Penetration Test Date', type: 'text', required: true },
+      { key: 'penTestExecutiveSummary', label: 'Pen Test Executive Summary', type: 'textarea', required: true },
+    ],
+    'proposal': [
+      { key: 'productOverview', label: 'Product Overview', type: 'textarea', required: true },
+      { key: 'pricingModel', label: 'Pricing Model', type: 'text', required: true },
+      { key: 'customerReferences', label: 'Customer References (Financial Services)', type: 'textarea', required: true },
+      { key: 'competitiveDifferentiators', label: 'Key Differentiators', type: 'textarea' },
+    ],
+    'compliance': [
+      { key: 'regulatoryCompliance', label: 'Regulatory Compliance Certifications', type: 'textarea', required: true },
+      { key: 'dataProtectionOfficer', label: 'Data Protection Officer Appointed', type: 'radio', options: yesNo },
+      { key: 'gdprCompliant', label: 'GDPR Compliant', type: 'radio', options: yesNo },
+      { key: 'auditHistory', label: 'Recent Audit Results Summary', type: 'textarea' },
+    ],
+    'tech-demo': [
+      { key: 'architectureOverview', label: 'Architecture Overview', type: 'textarea', required: true },
+      { key: 'integrationCapabilities', label: 'Integration Capabilities (APIs, SDKs)', type: 'textarea', required: true },
+      { key: 'scalabilityMetrics', label: 'Scalability and Performance Metrics', type: 'textarea' },
+    ],
+    'intake': [
+      { key: 'companyName', label: 'Company Legal Name', type: 'text', required: true },
+      { key: 'yearFounded', label: 'Year Founded', type: 'text' },
+      { key: 'employeeCount', label: 'Number of Employees', type: 'text' },
+      { key: 'annualRevenue', label: 'Annual Revenue Range', type: 'text' },
+      { key: 'primaryContact', label: 'Primary Contact Name', type: 'text', required: true },
+      { key: 'primaryContactEmail', label: 'Primary Contact Email', type: 'text', required: true },
+    ],
+    'contract-review': [
+      { key: 'standardSlaCommitment', label: 'Standard SLA Commitment', type: 'text', required: true },
+      { key: 'liabilityCapPercentage', label: 'Liability Cap (% of Annual Fees)', type: 'text' },
+      { key: 'terminationNotice', label: 'Termination Notice Period', type: 'text' },
+      { key: 'dataReturnPolicy', label: 'Data Return/Destruction Policy', type: 'textarea', required: true },
+    ],
+    'onboarding': [
+      { key: 'implementationTimeline', label: 'Implementation Timeline (weeks)', type: 'text', required: true },
+      { key: 'resourceRequirements', label: 'Client Resource Requirements', type: 'textarea' },
+      { key: 'trainingPlan', label: 'Training Plan', type: 'textarea' },
+      { key: 'changeManagement', label: 'Change Management Approach', type: 'textarea' },
+    ],
+    'deploy-support': [
+      { key: 'deploymentModel', label: 'Deployment Model', type: 'select', options: [{ label: 'SaaS (Multi-tenant)', value: 'saas' }, { label: 'SaaS (Single-tenant)', value: 'saas-single' }, { label: 'On-Premise', value: 'on-prem' }, { label: 'Hybrid', value: 'hybrid' }] },
+      { key: 'supportTiers', label: 'Support Tiers and SLAs', type: 'textarea', required: true },
+      { key: 'monitoringCapabilities', label: 'Monitoring and Alerting', type: 'textarea' },
+    ],
+    'contract-sign': [
+      { key: 'authorizedSignatory', label: 'Authorized Signatory Name', type: 'text', required: true },
+      { key: 'signatoryTitle', label: 'Signatory Title', type: 'text', required: true },
+      { key: 'insuranceCoverage', label: 'Cyber Insurance Coverage', type: 'radio', options: yesNo },
+      { key: 'contractReady', label: 'Confirm All Information is Accurate', type: 'radio', options: yesNo, required: true },
+    ],
+    'close-request': [
+      { key: 'exitPlanDefined', label: 'Exit Plan Defined', type: 'radio', options: yesNo },
+      { key: 'dataDestructionProcess', label: 'Data Destruction/Return Process', type: 'textarea' },
+      { key: 'transitionSupport', label: 'Transition Support Available', type: 'radio', options: yesNo },
+      { key: 'closureNotes', label: 'Additional Closure Notes', type: 'textarea' },
+    ],
+  };
+  return fields[catId] || [
+    { key: `${catId}_notes`, label: 'Response Notes', type: 'textarea', required: true },
+  ];
+}
+
+// --- Form Data Management ---
+function saveCurrentFormValues() {
+  document.querySelectorAll('#formContainer [data-key]').forEach(el => {
+    const key = el.dataset.key;
+    if (el.type === 'radio') {
+      if (el.checked) portalState.formData[key] = el.value;
+    } else if (el.type === 'checkbox') {
+      // Handle checklist (multiple checkboxes with same key)
+      const allChecks = [...document.querySelectorAll(`#formContainer [data-key="${key}"]`)];
+      if (allChecks.length > 1) {
+        const checked = allChecks.filter(c => c.checked).map(c => c.value);
+        if (checked.length > 0) portalState.formData[key] = checked.join(',');
+      } else {
+        portalState.formData[key] = el.checked;
+      }
+    } else {
+      if (el.value) portalState.formData[key] = el.value;
+    }
+  });
+}
+
+function restoreFormValues() {
+  document.querySelectorAll('#formContainer [data-key]').forEach(el => {
+    const key = el.dataset.key;
+    const saved = portalState.formData[key];
+    if (saved === undefined) return;
+
+    if (el.type === 'radio') {
+      if (el.value === String(saved)) {
+        el.checked = true;
+        el.closest('.form-radio')?.classList.add('selected');
+      }
+    } else if (el.type === 'checkbox') {
+      const savedStr = String(saved);
+      if (el.value && savedStr.includes(el.value)) {
+        el.checked = true;
+        el.closest('.form-check-item')?.classList.add('selected');
+      } else {
+        el.checked = !!saved;
+      }
+    } else {
+      el.value = String(saved);
+    }
+  });
+}
+
+function gatherAllFormValues() {
+  // Save current category first
+  saveCurrentFormValues();
+  // Return all gathered data
+  return { ...portalState.formData };
+}
+
+// --- Navigation ---
+function switchCategory(idx) {
+  saveCurrentFormValues();
+  portalState.currentCat = idx;
+  renderPortal();
+}
+
+function prevCategory() {
+  saveCurrentFormValues();
+  if (portalState.currentCat > 0) {
+    portalState.currentCat--;
+    renderPortal();
+  }
+}
+
+function saveAndNext() {
+  saveCurrentFormValues();
+  portalState.completedCats.add(portalState.currentCat);
+  const cats = portalState.categories.length > 0 ? portalState.categories : VENDOR_CATEGORIES;
+  if (portalState.currentCat < cats.length - 1) {
+    portalState.currentCat++;
+  }
+  renderPortal();
+  toast('Section saved', 'success');
+}
+
+function autoFillAll() {
+  if (typeof VENDOR_DEFAULTS === 'undefined') {
+    toast('Demo defaults not available', 'error');
+    return;
+  }
+  const filled = new Set();
+  document.querySelectorAll('#formContainer [data-key]').forEach(el => {
+    const key = el.dataset.key;
+    const def = VENDOR_DEFAULTS[key];
+    if (def === undefined) return;
+
+    if (el.type === 'radio') {
+      if (filled.has(key)) return;
+      filled.add(key);
+      const radios = [...document.querySelectorAll(`[name="${el.name}"]`)];
+      const match = radios.find(r => r.value === String(def));
+      if (match) { match.checked = true; match.closest('.form-radio')?.classList.add('selected'); }
+    } else if (el.tagName === 'SELECT') {
+      const opt = [...el.options].find(o => o.value === String(def));
+      if (opt) el.value = opt.value;
+      else if (el.options.length > 1) el.selectedIndex = 1;
+    } else if (el.tagName === 'TEXTAREA') {
+      if (!el.value) el.value = String(def);
+    } else if (el.type === 'checkbox') {
+      el.checked = !!def;
+      el.closest('.form-check-item')?.classList.add('selected');
+    } else {
+      if (!el.value) el.value = String(def);
+    }
+  });
+  toast('Demo data filled', 'success');
+}
+
+// --- Submit ---
+async function submitAll() {
+  saveCurrentFormValues();
+
+  // Mark all categories as completed
+  const cats = portalState.categories.length > 0 ? portalState.categories : VENDOR_CATEGORIES;
+  for (let i = 0; i < cats.length; i++) portalState.completedCats.add(i);
+
+  const btn = document.getElementById('submitBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-lg" style="width:16px;height:16px;border-width:2px;margin:0"></span> Submitting...'; }
+
+  try {
+    const allData = gatherAllFormValues();
+
+    // Add scoring based on key fields
+    const scores = computeScores(allData);
+
+    await vendorFetch('/api/vendor/submit', {
+      method: 'POST',
+      body: JSON.stringify({
+        instance: INSTANCE_KEY,
+        responseData: {
+          ...allData,
+          ...scores,
+          vendorResponseDate: new Date().toISOString(),
+          vendorResponseStatus: 'complete',
+        },
+      }),
+    });
+
+    renderSubmissionSuccess();
+  } catch (e) {
+    toast(`Submission failed: ${e.message}`, 'error');
+    if (btn) { btn.disabled = false; btn.innerHTML = 'Submit All Responses \u2192'; }
+  }
+}
+
+function computeScores(data) {
+  // Simple scoring based on presence/quality of responses
+  const score = (fields, max) => {
+    let s = 0;
+    fields.forEach(f => { if (data[f] && data[f] !== '' && data[f] !== 'no') s++; });
+    return Math.min(max, Math.round((s / fields.length) * max));
+  };
+
+  return {
+    securityScore: score(['iso27001Certified', 'soc2Type2Available', 'encryptionAtRest', 'encryptionInTransit', 'lastPenTestDate', 'bcpDrPlan'], 5),
+    productScore: score(['productOverview', 'pricingModel', 'customerReferences', 'competitiveDifferentiators'], 5),
+    pricingScore: score(['pricingModel', 'standardSlaCommitment', 'liabilityCapPercentage'], 5),
+    tprmScore: score(['regulatoryCompliance', 'gdprCompliant', 'dataProtectionOfficer', 'auditHistory'], 5),
+    privacyScore: score(['gdprCompliant', 'dataProtectionOfficer', 'encryptionAtRest'], 5),
+    integrationScore: score(['architectureOverview', 'integrationCapabilities', 'scalabilityMetrics'], 5),
+    aiScore: score(['architectureOverview', 'integrationCapabilities'], 5),
+    companyScore: score(['companyName', 'yearFounded', 'employeeCount', 'annualRevenue'], 5),
+    implementationScore: score(['implementationTimeline', 'resourceRequirements', 'trainingPlan'], 5),
+    resilienceScore: score(['bcpDrPlan', 'rtoCommitment', 'rpoCommitment', 'drTestFrequency'], 5),
+  };
+}
+
+function renderSubmissionSuccess() {
+  document.getElementById('app').innerHTML = `
+    <div class="submitted-screen" style="animation:fadeIn .5s ease">
+      <div class="state-icon" style="font-size:64px;margin-bottom:20px">\u{1F389}</div>
+      <h2>Questionnaire Submitted Successfully</h2>
+      <p>Thank you for completing the vendor questionnaire. Your responses have been submitted and the assessment team has been notified.</p>
+      <div class="confirmation-card">
+        <div class="row"><span class="label">Reference ID</span><span class="value" style="font-family:'JetBrains Mono',monospace;font-size:12px">${escapeHtml(INSTANCE_KEY)}</span></div>
+        <div class="row"><span class="label">Submitted</span><span class="value">${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</span></div>
+        <div class="row"><span class="label">Categories</span><span class="value">${portalState.completedCats.size} of ${(portalState.categories.length || VENDOR_CATEGORIES.length)}</span></div>
+        <div class="row"><span class="label">Status</span><span class="value" style="color:var(--success)">Received</span></div>
+      </div>
+      <p style="margin-top:24px;font-size:13px;color:var(--text3)">You may close this window. A confirmation will be sent to your email address.</p>
+    </div>
+  `;
+}
+
+// --- Start ---
+init();
+</script>
+</body>
+</html>
