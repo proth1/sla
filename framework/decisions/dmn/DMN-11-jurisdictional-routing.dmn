@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN11-JurisdictionalRouting-definitions"
+             name="DMN-11: Jurisdictional Routing"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_JurisdictionalRouting"
+            name="Jurisdictional Routing"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-08 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: GDPR Articles 44-49, CCPA/CPRA, UK GDPR, DORA, PIPL, PDPA</description>
+    <decisionTable id="DMN_JurisdictionalRouting-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-11: Jurisdictional Routing
+        Phase: 1 (Initiation and Intake) — Jurisdictional routing after intake flag
+        Hit Policy: FIRST (most specific rule wins — evaluated top to bottom)
+        Regulatory: GDPR Articles 44-49, CCPA/CPRA, UK GDPR, DORA, APAC data protection laws
+        Description: Routes governance requirements based on jurisdictional inputs including
+                     primary jurisdiction, data subject location, vendor location, and data
+                     processing location. Determines applicable regulatory frameworks,
+                     required data transfer mechanisms, additional compliance requirements,
+                     and review authority assignment.
+        FIRST hit policy: rules ordered from most specific jurisdiction combinations to
+        catch-all default. First matching rule fires.
+      -->
+
+      <input id="input-primaryJurisdiction" label="Primary Jurisdiction">
+        <inputExpression id="inputExpr-primaryJurisdiction" typeRef="string">
+          <text>primaryJurisdiction</text>
+        </inputExpression>
+        <inputValues id="inputValues-primaryJurisdiction">
+          <text>"US","EU","UK","APAC"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-dataSubjectLocation" label="Data Subject Location">
+        <inputExpression id="inputExpr-dataSubjectLocation" typeRef="string">
+          <text>dataSubjectLocation</text>
+        </inputExpression>
+        <inputValues id="inputValues-dataSubjectLocation">
+          <text>"US","EU","UK","APAC","Global"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-vendorLocation" label="Vendor Location">
+        <inputExpression id="inputExpr-vendorLocation" typeRef="string">
+          <text>vendorLocation</text>
+        </inputExpression>
+        <inputValues id="inputValues-vendorLocation">
+          <text>"US","EU","UK","APAC"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-dataProcessingLocation" label="Data Processing Location">
+        <inputExpression id="inputExpr-dataProcessingLocation" typeRef="string">
+          <text>dataProcessingLocation</text>
+        </inputExpression>
+        <inputValues id="inputValues-dataProcessingLocation">
+          <text>"US","EU","UK","APAC"</text>
+        </inputValues>
+      </input>
+
+      <output id="output-applicableFrameworks"
+              label="Applicable Frameworks"
+              name="applicableFrameworks"
+              typeRef="string" />
+
+      <output id="output-dataTransferMechanism"
+              label="Data Transfer Mechanism"
+              name="dataTransferMechanism"
+              typeRef="string" />
+
+      <output id="output-additionalRequirements"
+              label="Additional Requirements"
+              name="additionalRequirements"
+              typeRef="string" />
+
+      <output id="output-reviewAuthority"
+              label="Review Authority"
+              name="reviewAuthority"
+              typeRef="string" />
+
+      <!--
+        RULE GROUP 1: EU-CENTRIC (rules 1-5)
+        EU as primary jurisdiction with various vendor/processing locations.
+      -->
+
+      <rule id="rule-1">
+        <description>EU domestic: All EU — standard GDPR compliance</description>
+        <inputEntry id="ie-1-1"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-1-4"><text>"EU"</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"GDPR, DORA"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"None — domestic processing"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>"Standard GDPR compliance, DPIA if high risk"</text></outputEntry>
+        <outputEntry id="oe-1-4"><text>"EU Data Protection Officer"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-2">
+        <description>EU to US: EU data subjects, US vendor and processing — DPF required</description>
+        <inputEntry id="ie-2-1"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-2-4"><text>"US"</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"GDPR, EU-US DPF"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"EU-US Data Privacy Framework adequacy"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"Transfer Impact Assessment required, DPIA mandatory, SCCs as fallback"</text></outputEntry>
+        <outputEntry id="oe-2-4"><text>"EU DPO + US Privacy Counsel"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-3">
+        <description>EU to UK: EU data subjects, UK vendor and processing — UK adequacy</description>
+        <inputEntry id="ie-3-1"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>"UK"</text></inputEntry>
+        <inputEntry id="ie-3-4"><text>"UK"</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"GDPR, UK GDPR"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"UK Adequacy Decision"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"Standard GDPR compliance, UK GDPR alignment"</text></outputEntry>
+        <outputEntry id="oe-3-4"><text>"EU DPO + UK DPO"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-4">
+        <description>EU to APAC: EU data subjects, APAC vendor and processing — SCCs required</description>
+        <inputEntry id="ie-4-1"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>"APAC"</text></inputEntry>
+        <inputEntry id="ie-4-4"><text>"APAC"</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"GDPR"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"Standard Contractual Clauses (SCCs)"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>"DPIA mandatory, supplementary measures assessment, local law review"</text></outputEntry>
+        <outputEntry id="oe-4-4"><text>"EU DPO + APAC Privacy Counsel"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-5">
+        <description>EU global: EU jurisdiction, global data subjects — multinational transfer controls</description>
+        <inputEntry id="ie-5-1"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>"Global"</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-4"><text>-</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"GDPR, DORA, local frameworks per jurisdiction"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"SCCs + BCRs for multinational transfer"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>"DPIA mandatory, per-jurisdiction impact assessment"</text></outputEntry>
+        <outputEntry id="oe-5-4"><text>"EU DPO + Global Privacy Team"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 2: UK-CENTRIC (rules 6-8)
+        UK as primary jurisdiction with various vendor/processing locations.
+      -->
+
+      <rule id="rule-6">
+        <description>UK domestic: All UK — standard UK GDPR compliance</description>
+        <inputEntry id="ie-6-1"><text>"UK"</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>"UK"</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>"UK"</text></inputEntry>
+        <inputEntry id="ie-6-4"><text>"UK"</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"UK GDPR, UK DPA 2018"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"None — domestic processing"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>"Standard UK GDPR compliance, UK DPIA if high risk"</text></outputEntry>
+        <outputEntry id="oe-6-4"><text>"UK Data Protection Officer"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-7">
+        <description>UK to EU: UK data subjects, EU vendor and processing — EU adequacy for UK</description>
+        <inputEntry id="ie-7-1"><text>"UK"</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>"UK"</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-7-4"><text>"EU"</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"UK GDPR, GDPR"</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"EU Adequacy Decision for UK"</text></outputEntry>
+        <outputEntry id="oe-7-3"><text>"Dual compliance UK GDPR + GDPR"</text></outputEntry>
+        <outputEntry id="oe-7-4"><text>"UK DPO + EU DPO"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8">
+        <description>UK to US: UK data subjects, US vendor and processing — UK-US Data Bridge</description>
+        <inputEntry id="ie-8-1"><text>"UK"</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>"UK"</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-8-4"><text>"US"</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"UK GDPR, UK-US Data Bridge"</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"UK Extension to EU-US DPF"</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>"Transfer Impact Assessment, UK DPIA"</text></outputEntry>
+        <outputEntry id="oe-8-4"><text>"UK DPO + US Privacy Counsel"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 3: US-CENTRIC (rules 9-12)
+        US as primary jurisdiction with various data subject/vendor/processing locations.
+      -->
+
+      <rule id="rule-9">
+        <description>US domestic: All US — federal and state privacy laws</description>
+        <inputEntry id="ie-9-1"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-9-4"><text>"US"</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"SOX, GLBA, CCPA/CPRA, state privacy laws"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"None — domestic processing"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>"State privacy law compliance scan, GLBA safeguards if financial data"</text></outputEntry>
+        <outputEntry id="oe-9-4"><text>"US Chief Privacy Officer"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-10">
+        <description>US with EU data subjects: GDPR extraterritorial applies — DPF certification needed</description>
+        <inputEntry id="ie-10-1"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-10-3"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-10-4"><text>"US"</text></inputEntry>
+        <outputEntry id="oe-10-1"><text>"GDPR (extraterritorial), CCPA, SOX"</text></outputEntry>
+        <outputEntry id="oe-10-2"><text>"EU-US Data Privacy Framework"</text></outputEntry>
+        <outputEntry id="oe-10-3"><text>"Must verify DPF certification, DPIA for EU data subjects, Art. 27 representative"</text></outputEntry>
+        <outputEntry id="oe-10-4"><text>"US CPO + EU DPO"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-11">
+        <description>US jurisdiction, EU vendor and processing — reverse transfer assessment</description>
+        <inputEntry id="ie-11-1"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-11-2"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-11-3"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-11-4"><text>"EU"</text></inputEntry>
+        <outputEntry id="oe-11-1"><text>"SOX, CCPA, GDPR"</text></outputEntry>
+        <outputEntry id="oe-11-2"><text>"EU-US DPF or SCCs"</text></outputEntry>
+        <outputEntry id="oe-11-3"><text>"Reverse transfer assessment, EU processing agreement required"</text></outputEntry>
+        <outputEntry id="oe-11-4"><text>"US CPO + EU DPO"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-12">
+        <description>US global: US jurisdiction, global data subjects — comprehensive mapping needed</description>
+        <inputEntry id="ie-12-1"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-12-2"><text>"Global"</text></inputEntry>
+        <inputEntry id="ie-12-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-12-4"><text>-</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>"SOX, CCPA, GDPR extraterritorial, local frameworks"</text></outputEntry>
+        <outputEntry id="oe-12-2"><text>"SCCs + DPF where applicable"</text></outputEntry>
+        <outputEntry id="oe-12-3"><text>"Per-jurisdiction compliance mapping, comprehensive DPIA"</text></outputEntry>
+        <outputEntry id="oe-12-4"><text>"US CPO + Global Privacy Team"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 4: APAC-CENTRIC (rules 13-15)
+        APAC as primary jurisdiction with various vendor/processing locations.
+      -->
+
+      <rule id="rule-13">
+        <description>APAC domestic: All APAC — local data protection framework applies</description>
+        <inputEntry id="ie-13-1"><text>"APAC"</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>"APAC"</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>"APAC"</text></inputEntry>
+        <inputEntry id="ie-13-4"><text>"APAC"</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"PDPA/PIPL/APPs (jurisdiction-specific)"</text></outputEntry>
+        <outputEntry id="oe-13-2"><text>"None — domestic or intra-APAC"</text></outputEntry>
+        <outputEntry id="oe-13-3"><text>"Local DPA compliance per operating country"</text></outputEntry>
+        <outputEntry id="oe-13-4"><text>"APAC Privacy Counsel"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-14">
+        <description>APAC to EU: APAC jurisdiction, EU vendor and processing — SCCs and DPIA mandatory</description>
+        <inputEntry id="ie-14-1"><text>"APAC"</text></inputEntry>
+        <inputEntry id="ie-14-2"><text>"APAC"</text></inputEntry>
+        <inputEntry id="ie-14-3"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-14-4"><text>"EU"</text></inputEntry>
+        <outputEntry id="oe-14-1"><text>"GDPR, local APAC framework"</text></outputEntry>
+        <outputEntry id="oe-14-2"><text>"Standard Contractual Clauses"</text></outputEntry>
+        <outputEntry id="oe-14-3"><text>"DPIA mandatory, supplementary measures, PIPL cross-border assessment if China"</text></outputEntry>
+        <outputEntry id="oe-14-4"><text>"APAC Privacy Counsel + EU DPO"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-15">
+        <description>APAC to US: APAC jurisdiction, US vendor and processing — contractual safeguards</description>
+        <inputEntry id="ie-15-1"><text>"APAC"</text></inputEntry>
+        <inputEntry id="ie-15-2"><text>"APAC"</text></inputEntry>
+        <inputEntry id="ie-15-3"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-15-4"><text>"US"</text></inputEntry>
+        <outputEntry id="oe-15-1"><text>"Local APAC framework, CCPA if applicable"</text></outputEntry>
+        <outputEntry id="oe-15-2"><text>"Contractual safeguards"</text></outputEntry>
+        <outputEntry id="oe-15-3"><text>"Cross-border transfer assessment per local law"</text></outputEntry>
+        <outputEntry id="oe-15-4"><text>"APAC Privacy Counsel + US CPO"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 16: CATCH-ALL DEFAULT
+        Catches any input combination not matched by rules 1-15.
+        Requires full jurisdictional analysis before proceeding.
+        Under FIRST hit policy, this only fires if no earlier rule matched.
+      -->
+
+      <rule id="rule-16">
+        <description>Default catch-all: Unclassified jurisdictional combination — requires multi-jurisdictional legal review</description>
+        <inputEntry id="ie-16-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-4"><text>-</text></inputEntry>
+        <outputEntry id="oe-16-1"><text>"Requires multi-jurisdictional analysis"</text></outputEntry>
+        <outputEntry id="oe-16-2"><text>"To be determined — legal review required"</text></outputEntry>
+        <outputEntry id="oe-16-3"><text>"Full jurisdictional impact assessment mandatory before proceeding"</text></outputEntry>
+        <outputEntry id="oe-16-4"><text>"Global Privacy Team + Legal"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN11-diagram">
+      <dmndi:DMNShape id="DMN11-shape" dmnElementRef="DMN_JurisdictionalRouting">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
