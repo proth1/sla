@@ -1,5 +1,12 @@
 # Changelog
 
+## [2026.03.71] - 2026-03-08
+
+### Fixed
+- Add HMAC-SHA256 signature verification to `/webhook/jira` endpoint with timing-safe comparison and length check (PR #80)
+- Consolidate ~63 lines of duplicated persona UI code from index.html and dashboard.html into personas.js (PR #80)
+- Eliminate dual persona data sources — delete personas-data.json, server.js parses from personas.js (PR #80)
+
 ## [2026.03.70] - 2026-03-08
 
 ### Fixed

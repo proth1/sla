@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.70
+**Current Version**: 2026.03.71
 **Last Release**: 2026-03-08
-**Total Releases**: 70
+**Total Releases**: 71
 
 ## Artifact Counts
 
@@ -37,12 +37,12 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.71 | 2026-03-08 | #80 | Webhook HMAC auth, persona UI dedup, single data source |
 | 2026.03.70 | 2026-03-08 | #81 | Document correct env var names for Camunda Wrangler secrets |
 | 2026.03.69 | 2026-03-08 | #79 | Personas, Jira webhook, shared auth, Cloudflare showcase deploy |
 | 2026.03.68 | 2026-03-08 | #3 | Refactor 10 BPMN governance models (140px tasks) |
 | 2026.03.67 | 2026-03-08 | #61 | Mini RFP standalone BPMN with v9 vendor DD merge |
 | 2026.03.66 | 2026-03-08 | #5 | Auth session persistence + executive savings slide |
 | 2026.03.65 | 2026-03-08 | #36 | Hierarchical onboarding v5 BPMN model |
-| 2026.03.64 | 2026-03-08 | #18 | Foundation reconciliation: README, agent guide |
 | 2026.03.63 | 2026-03-08 | #78 | Responsive design for 30-day plan + rename to quarterback |
 | 2026.03.62 | 2026-03-08 | #77 | Rename Sherpa to Quarterback across all UI |
