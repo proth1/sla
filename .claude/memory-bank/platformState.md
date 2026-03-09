@@ -1,16 +1,16 @@
 # Platform State
 
-**Current Version**: 2026.03.81
+**Current Version**: 2026.03.86
 **Last Release**: 2026-03-08
-**Total Releases**: 81
+**Total Releases**: 86
 
 ## Artifact Counts
 
 | Artifact | Count |
 |----------|-------|
-| DMN Decision Tables | 15 |
-| BPMN Process Models | 12 |
-| Cross-Cutting Sub-Processes | 5 |
+| DMN Decision Tables | 18 |
+| BPMN Process Models | 13 |
+| Cross-Cutting Sub-Processes | 6 |
 | Presentation Slides | 42 |
 | BPMN SVG Diagrams | 17 |
 | Regulatory Frameworks | 13 |
@@ -37,13 +37,13 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.86 | 2026-03-08 | #103-107 | Batch 2B: 3 new DMN tables (15,16,17), SP-Cross-6 resilience testing, evidence infrastructure design, 4 Camunda forms |
 | 2026.03.81 | 2026-03-08 | #102 | Presentation consolidation + KPMG debranding |
 | 2026.03.80 | 2026-03-08 | #101 | Add candidateUsers to Q&A Submit Question task |
 | 2026.03.79 | 2026-03-08 | #95-100 | Batch 2A: 4 new DMN tables (10,11,12,14) + DMN-7/8 enhancements |
 | 2026.03.73 | 2026-03-08 | #83 | Fix Mini RFP flashing + renumber steps to 1-8 |
 | 2026.03.72 | 2026-03-08 | #82 | Security hardening: timing-safe, error sanitization, CORS/CSP, health check |
 | 2026.03.71 | 2026-03-08 | #80 | Webhook HMAC auth, persona UI dedup, single data source |
-| 2026.03.70 | 2026-03-08 | #81 | Document correct env var names for Camunda Wrangler secrets |
 | 2026.03.69 | 2026-03-08 | #79 | Personas, Jira webhook, shared auth, Cloudflare showcase deploy |
 | 2026.03.68 | 2026-03-08 | #3 | Refactor 10 BPMN governance models (140px tasks) |
 | 2026.03.67 | 2026-03-08 | #61 | Mini RFP standalone BPMN with v9 vendor DD merge |

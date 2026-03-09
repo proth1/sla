@@ -1,5 +1,18 @@
 # Changelog
 
+## [2026.03.86] - 2026-03-08
+
+### Added
+- SP-Cross-6: Resilience Testing cross-cutting subprocess for DORA Article 26 — annual timer trigger, 4 testing phases (planning, pen testing, scenario, recovery), DMN-driven severity classification, boundary timer SLAs, board reporting (PR #107)
+- Evidence infrastructure design doc: WORM storage architecture with S3 Object Lock, 3-tier retention (7Y regulatory, 3Y operational, 1Y transient), SEC 17a-4/SOX/OCC 2023-17/GDPR/DORA compliance mapping (PR #106)
+- DMN-15: Evidence Retention Routing — 18 rules, FIRST hit policy, routes evidence to retention tiers by type/regime/classification (PR #106)
+- DMN-17: DPIA Trigger Assessment — 20 rules, FIRST hit policy, GDPR Articles 35-36 compliance for data protection impact assessment triggers (PR #105)
+- DPIA assessment Camunda 8 form — 6 groups, 26 fields for GDPR DPIA documentation (PR #105)
+- DMN-16: DORA Contractual Provisions — 16 rules, FIRST hit policy, DORA Article 28/30 contractual clause routing by service criticality and data classification (PR #103)
+- ICT Register Entry Camunda 8 form — 5 groups, 22 fields for DORA Article 28 mandatory ICT third-party register (PR #103)
+- TPRM Quarterly Board Report Camunda 8 form — 7 groups, 32 fields for OCC 2023-17 vendor risk reporting (PR #104)
+- MRM Monthly Board Report Camunda 8 form — 7 groups, 30 fields for SR 11-7 model risk reporting (PR #104)
+
 ## [2026.03.81] - 2026-03-08
 
 ### Changed

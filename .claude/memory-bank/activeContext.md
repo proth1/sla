@@ -4,48 +4,39 @@
 
 **Date**: 2026-03-08
 **Branch**: main
-**Release Version**: 2026.03.81
+**Release Version**: 2026.03.86
 
-### Regulatory Compliance Gap Remediation — Batch 2A (SLA-72 through SLA-78)
-- 7 parallel worktree agents launched for Batch 2A implementation
-- PR #94 (SLA-72 webhook secret): Closed — existing jira-sync.js already has HMAC validation
-- PR #95 (SLA-73 DMN-7 exploit): Merged — 32 rules with CISA KEV exploit-in-the-wild input
-- PR #96 (SLA-75 DMN-10 incident): Merged — 20-rule incident severity classification
-- PR #97 (SLA-74 DMN-8 contract value): Merged — 17 rules with annual contract value input
-- PR #98 (SLA-76 DMN-11 jurisdiction): Merged — 16-rule jurisdictional routing
-- PR #99 (SLA-77 DMN-12 contract renewal): Merged — 20-rule contract renewal routing
-- PR #100 (SLA-78 DMN-14 data residency): Merged — 16-rule data residency routing
-- DMN count: 8 → 15 (4 new tables + 2 enhanced + existing 9 from Batch 1)
+### Regulatory Compliance Gap Remediation — Batch 2B (SLA-72 through SLA-77)
+- 6 parallel worktree agents launched for Batch 2B implementation
+- PR #103 (SLA-73 DORA ICT register + DMN-16): Merged
+- PR #104 (SLA-75 board reporting forms): Merged
+- PR #105 (SLA-74 GDPR DPIA DMN-17 + form): Merged
+- PR #106 (SLA-72 evidence infrastructure + DMN-15): Merged
+- PR #107 (SLA-76 SP-Cross-6 resilience testing): Merged
+- PR #108 (SLA-77 DORA 3-stage incident reporting): Review pending, merge pending
+- DMN count: 15 → 18 (3 new tables: DMN-15, DMN-16, DMN-17)
+- Cross-cutting subprocesses: 5 → 6 (SP-Cross-6 resilience testing)
+- New Camunda 8 forms: 4 (ICT register, DPIA assessment, TPRM quarterly, MRM monthly)
+- New design doc: evidence-infrastructure-design.md
+
+### Batch 2A (previously completed)
+- PRs #95-100: 4 new DMN tables (10,11,12,14) + DMN-7/8 enhancements
 
 ## Platform Stats
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.79 |
-| Total PRs Merged | 100 |
+| Release Version | 2026.03.86 |
+| Total PRs Merged | 107 |
+| DMN Decision Tables | 18 |
+| Cross-Cutting Sub-Processes | 6 |
+| Camunda 8 Forms | 52+ |
 | Cloudflare Deployments | 3 sites (SLA presentation, Onboarding, Showcase) |
 
 ## Recommended Next Steps
 
-1. **Browser test**: Visit showcase.agentic-innovations.com, complete OTP login, verify dashboard loads with live Camunda data
-2. **KV rate limiting**: Create KV namespace and enable OTP rate limiting on showcase auth worker
-3. Epic 5 (SLA-36-39): Vendor Response Collection & Review
-4. Epic 6 (SLA-40-45): Intake Transfer & Engagement Prediction
-
----
-
-
----
-
-## SESSION END WARNING (Auto-generated)
-
-**Session ended**: 2026-03-09T03:32:09Z
-**activeContext.md was NOT updated** before session ended.
-
-The previous Claude may not have documented:
-- What was accomplished
-- Current blockers
-- Recommended next steps
-
-Please review git log and recent changes to reconstruct context.
-
+1. **Merge PR #108** (SLA-77 DORA incident reporting) after review completes
+2. **Clean up worktrees** for all 6 Batch 2B items
+3. **Transition Jira issues** SLA-72 through SLA-77 to Done
+4. Epic 5 (SLA-36-39): Vendor Response Collection & Review
+5. Epic 6 (SLA-40-45): Intake Transfer & Engagement Prediction
