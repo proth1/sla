@@ -1,4 +1,5 @@
 const express = require('express');
+const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 const { createCamundaAuth } = require('./camunda-auth');
@@ -471,8 +472,22 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Webhook endpoint: Jira -> Camunda
+// Webhook endpoint: Jira -> Camunda (HMAC-SHA256 verified)
 app.post('/webhook/jira', (req, res) => {
+  const secret = config.webhook?.secret || process.env.JIRA_WEBHOOK_SECRET;
+  if (secret) {
+    const sig = req.headers['x-hub-signature'];
+    if (!sig) {
+      logEvent('error', null, null, 'Webhook rejected: missing x-hub-signature header');
+      return res.status(401).json({ error: 'Missing signature' });
+    }
+    const raw = JSON.stringify(req.body);
+    const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(raw).digest('hex');
+    if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) {
+      logEvent('error', null, null, 'Webhook rejected: invalid HMAC signature');
+      return res.status(401).json({ error: 'Invalid signature' });
+    }
+  }
   res.status(200).json({ received: true });
   handleJiraWebhook(req.body).catch(err => {
     logEvent('error', null, null, `Webhook processing error: ${err.message}`);
