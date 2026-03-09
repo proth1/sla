@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN15-EvidenceRetentionRouting-definitions"
+             name="DMN-15: Evidence Retention Routing"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_EvidenceRetentionRouting"
+            name="Evidence Retention Routing"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-09 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: SEC 17a-4, SOX, OCC 2023-17, GDPR, DORA</description>
+    <decisionTable id="DMN_EvidenceRetentionRouting-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-15: Evidence Retention Routing
+        Phase: Cross-cutting — evidence storage and retention assignment
+        Hit Policy: FIRST (most restrictive matching rule wins — evaluated top to bottom)
+        Regulatory: SEC 17a-4, SOX, OCC 2023-17, GDPR, DORA
+        Description: Routes evidence to appropriate retention tier, duration, and storage
+                     requirements based on evidence type, regulatory regime, and data
+                     classification. Rules ordered from most restrictive (Restricted/Confidential
+                     regulatory evidence) to least restrictive (Public transient), with a
+                     conservative catch-all default at the end.
+      -->
+
+      <input id="input-evidenceType" label="Evidence Type">
+        <inputExpression id="inputExpr-evidenceType" typeRef="string">
+          <text>evidenceType</text>
+        </inputExpression>
+        <inputValues id="inputValues-evidenceType">
+          <text>"GovernanceDecision","ComplianceAttestation","AuditTrail","RiskAssessment","ContractualRecord"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-regulatoryRegime" label="Regulatory Regime">
+        <inputExpression id="inputExpr-regulatoryRegime" typeRef="string">
+          <text>regulatoryRegime</text>
+        </inputExpression>
+        <inputValues id="inputValues-regulatoryRegime">
+          <text>"US","EU","UK","APAC"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-dataClassification" label="Data Classification">
+        <inputExpression id="inputExpr-dataClassification" typeRef="string">
+          <text>dataClassification</text>
+        </inputExpression>
+        <inputValues id="inputValues-dataClassification">
+          <text>"Public","Internal","Confidential","Restricted"</text>
+        </inputValues>
+      </input>
+
+      <output id="output-retentionTier"
+              label="Retention Tier"
+              name="retentionTier"
+              typeRef="string" />
+
+      <output id="output-retentionDuration"
+              label="Retention Duration"
+              name="retentionDuration"
+              typeRef="string" />
+
+      <output id="output-storageRequirements"
+              label="Storage Requirements"
+              name="storageRequirements"
+              typeRef="string" />
+
+      <output id="output-additionalControls"
+              label="Additional Controls"
+              name="additionalControls"
+              typeRef="string" />
+
+      <!--
+        RULE GROUP 1: RESTRICTED/CONFIDENTIAL — Maximum protection (rules 1-3)
+        Any Restricted or Confidential evidence with regulatory significance
+        receives 7-year WORM storage regardless of evidence type or regime.
+      -->
+
+      <rule id="rule-1">
+        <description>Restricted data + any evidence type + any regime: Maximum restrictions — 7-year WORM with field-level encryption and HSM key management</description>
+        <inputEntry id="ie-1-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>"Restricted"</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"Regulatory-7Y"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"P7Y"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>"WORM (Compliance mode) + Object Lock"</text></outputEntry>
+        <outputEntry id="oe-1-4"><text>"AES-256-GCM field-level encryption, HSM key management, quarterly access review, legal hold eligible"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-2">
+        <description>Confidential + Governance Decision + any regime: 7-year WORM — governance decisions with confidential data require full regulatory retention</description>
+        <inputEntry id="ie-2-1"><text>"GovernanceDecision"</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>"Confidential"</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"Regulatory-7Y"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"P7Y"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"WORM (Compliance mode) + Object Lock"</text></outputEntry>
+        <outputEntry id="oe-2-4"><text>"AES-256 at rest, access logging, dual-approval for retrieval, legal hold eligible"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-3">
+        <description>Confidential + Contractual Record + any regime: 7-year WORM — signed contracts with confidential terms require full retention</description>
+        <inputEntry id="ie-3-1"><text>"ContractualRecord"</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>"Confidential"</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Regulatory-7Y"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"P7Y"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"WORM (Compliance mode) + Object Lock"</text></outputEntry>
+        <outputEntry id="oe-3-4"><text>"AES-256 at rest, version chain preserved, legal hold eligible"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 2: GOVERNANCE DECISIONS — Always 7-year retention (rules 4-5)
+        Governance decisions are always Tier 1 regardless of data classification
+        or regulatory regime. OCC 2023-17 and SOX require long-term preservation
+        of governance decision records.
+      -->
+
+      <rule id="rule-4">
+        <description>Governance Decision + any regime + any classification: 7-year WORM — all governance decisions require full regulatory retention per OCC 2023-17</description>
+        <inputEntry id="ie-4-1"><text>"GovernanceDecision"</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Regulatory-7Y"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"P7Y"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>"WORM (Compliance mode) + Object Lock"</text></outputEntry>
+        <outputEntry id="oe-4-4"><text>"Access logging, SOX audit trail, legal hold eligible"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-5">
+        <description>Contractual Record + any regime + any classification: 7-year WORM — all contract records require full retention per SEC 17a-4</description>
+        <inputEntry id="ie-5-1"><text>"ContractualRecord"</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"Regulatory-7Y"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"P7Y"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>"WORM (Compliance mode) + Object Lock"</text></outputEntry>
+        <outputEntry id="oe-5-4"><text>"Version chain preserved, access logging, legal hold eligible"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 3: COMPLIANCE ATTESTATIONS — Regime-dependent (rules 6-8)
+        US and EU compliance attestations require 7-year retention (SEC 17a-4, GDPR).
+        UK and APAC have shorter local requirements (3-year operational).
+      -->
+
+      <rule id="rule-6">
+        <description>Compliance Attestation + US + any classification: 7-year WORM — SEC 17a-4 and SOX require long retention for compliance evidence</description>
+        <inputEntry id="ie-6-1"><text>"ComplianceAttestation"</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"Regulatory-7Y"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"P7Y"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>"WORM (Compliance mode) + Object Lock"</text></outputEntry>
+        <outputEntry id="oe-6-4"><text>"SEC 17a-4 compliant, SOX audit trail, access logging"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-7">
+        <description>Compliance Attestation + EU + any classification: 7-year WORM — GDPR and DORA require extended retention for compliance records</description>
+        <inputEntry id="ie-7-1"><text>"ComplianceAttestation"</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"Regulatory-7Y"</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"P7Y"</text></outputEntry>
+        <outputEntry id="oe-7-3"><text>"WORM (Compliance mode) + Object Lock"</text></outputEntry>
+        <outputEntry id="oe-7-4"><text>"GDPR Article 5 compliance, DORA evidence, data residency enforcement, access logging"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8">
+        <description>Compliance Attestation + UK or APAC + any classification: 3-year operational — shorter local regulatory requirements</description>
+        <inputEntry id="ie-8-1"><text>"ComplianceAttestation"</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>"UK","APAC"</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"Operational-3Y"</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"P3Y"</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>"Immutable storage (Governance mode)"</text></outputEntry>
+        <outputEntry id="oe-8-4"><text>"Local regulatory compliance, access logging, standard encryption"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 4: RISK ASSESSMENTS — Classification-dependent (rules 9-11)
+        Risk assessments with Confidential classification get 3-year operational retention.
+        Internal/Public risk assessments get 1-year transient retention.
+        Note: Restricted risk assessments already caught by rule 1.
+      -->
+
+      <rule id="rule-9">
+        <description>Risk Assessment + any regime + Confidential: 3-year operational — confidential risk findings require extended operational retention</description>
+        <inputEntry id="ie-9-1"><text>"RiskAssessment"</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>"Confidential"</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"Operational-3Y"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"P3Y"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>"Immutable storage (Governance mode)"</text></outputEntry>
+        <outputEntry id="oe-9-4"><text>"Access logging, quarterly review of findings status, standard encryption"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-10">
+        <description>Risk Assessment + any regime + Internal: 1-year transient — internal risk assessments with limited sensitivity</description>
+        <inputEntry id="ie-10-1"><text>"RiskAssessment"</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-10-3"><text>"Internal"</text></inputEntry>
+        <outputEntry id="oe-10-1"><text>"Transient-1Y"</text></outputEntry>
+        <outputEntry id="oe-10-2"><text>"P1Y"</text></outputEntry>
+        <outputEntry id="oe-10-3"><text>"Standard storage with lifecycle policy"</text></outputEntry>
+        <outputEntry id="oe-10-4"><text>"Standard encryption, automated deletion after expiry"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-11">
+        <description>Risk Assessment + any regime + Public: 1-year transient — public risk assessment summaries</description>
+        <inputEntry id="ie-11-1"><text>"RiskAssessment"</text></inputEntry>
+        <inputEntry id="ie-11-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-11-3"><text>"Public"</text></inputEntry>
+        <outputEntry id="oe-11-1"><text>"Transient-1Y"</text></outputEntry>
+        <outputEntry id="oe-11-2"><text>"P1Y"</text></outputEntry>
+        <outputEntry id="oe-11-3"><text>"Standard storage with lifecycle policy"</text></outputEntry>
+        <outputEntry id="oe-11-4"><text>"Verify no embedded PII/confidential data, automated deletion after expiry"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 5: AUDIT TRAILS — Regime and classification dependent (rules 12-15)
+        US/EU audit trails with Confidential/Restricted data get 7-year retention.
+        All other audit trails get 3-year operational or 1-year transient.
+        Note: Restricted audit trails already caught by rule 1.
+      -->
+
+      <rule id="rule-12">
+        <description>Audit Trail + US + Confidential: 7-year WORM — SEC 17a-4 requires long retention for confidential audit evidence</description>
+        <inputEntry id="ie-12-1"><text>"AuditTrail"</text></inputEntry>
+        <inputEntry id="ie-12-2"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-12-3"><text>"Confidential"</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>"Regulatory-7Y"</text></outputEntry>
+        <outputEntry id="oe-12-2"><text>"P7Y"</text></outputEntry>
+        <outputEntry id="oe-12-3"><text>"WORM (Compliance mode) + Object Lock"</text></outputEntry>
+        <outputEntry id="oe-12-4"><text>"SEC 17a-4 compliant, SOX audit trail, access logging, integrity verification"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-13">
+        <description>Audit Trail + EU + Confidential: 7-year WORM — GDPR and DORA require extended retention for confidential audit records</description>
+        <inputEntry id="ie-13-1"><text>"AuditTrail"</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>"Confidential"</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"Regulatory-7Y"</text></outputEntry>
+        <outputEntry id="oe-13-2"><text>"P7Y"</text></outputEntry>
+        <outputEntry id="oe-13-3"><text>"WORM (Compliance mode) + Object Lock"</text></outputEntry>
+        <outputEntry id="oe-13-4"><text>"GDPR compliance, DORA evidence, data residency enforcement, access logging"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-14">
+        <description>Audit Trail + any regime + Internal: 3-year operational — standard operational audit trail retention</description>
+        <inputEntry id="ie-14-1"><text>"AuditTrail"</text></inputEntry>
+        <inputEntry id="ie-14-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-14-3"><text>"Internal"</text></inputEntry>
+        <outputEntry id="oe-14-1"><text>"Operational-3Y"</text></outputEntry>
+        <outputEntry id="oe-14-2"><text>"P3Y"</text></outputEntry>
+        <outputEntry id="oe-14-3"><text>"Immutable storage (Governance mode)"</text></outputEntry>
+        <outputEntry id="oe-14-4"><text>"Access logging, standard encryption, integrity hash verification"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-15">
+        <description>Audit Trail + any regime + Public: 1-year transient — public process execution logs with minimal sensitivity</description>
+        <inputEntry id="ie-15-1"><text>"AuditTrail"</text></inputEntry>
+        <inputEntry id="ie-15-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-15-3"><text>"Public"</text></inputEntry>
+        <outputEntry id="oe-15-1"><text>"Transient-1Y"</text></outputEntry>
+        <outputEntry id="oe-15-2"><text>"P1Y"</text></outputEntry>
+        <outputEntry id="oe-15-3"><text>"Standard storage with lifecycle policy"</text></outputEntry>
+        <outputEntry id="oe-15-4"><text>"Verify no embedded PII, automated deletion after expiry"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 6: CATCH-ALL DEFAULT (rules 16-18)
+        Conservative defaults for unmatched combinations.
+        Confidential catch-all gets 7-year, others get 3-year operational.
+      -->
+
+      <rule id="rule-16">
+        <description>Any evidence type + any regime + Confidential: 7-year WORM — conservative default for unclassified confidential evidence</description>
+        <inputEntry id="ie-16-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-3"><text>"Confidential"</text></inputEntry>
+        <outputEntry id="oe-16-1"><text>"Regulatory-7Y"</text></outputEntry>
+        <outputEntry id="oe-16-2"><text>"P7Y"</text></outputEntry>
+        <outputEntry id="oe-16-3"><text>"WORM (Compliance mode) + Object Lock"</text></outputEntry>
+        <outputEntry id="oe-16-4"><text>"Evidence classification review required, access logging, standard encryption"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-17">
+        <description>Any evidence type + any regime + Internal: 3-year operational — conservative default for internal evidence</description>
+        <inputEntry id="ie-17-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-17-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-17-3"><text>"Internal"</text></inputEntry>
+        <outputEntry id="oe-17-1"><text>"Operational-3Y"</text></outputEntry>
+        <outputEntry id="oe-17-2"><text>"P3Y"</text></outputEntry>
+        <outputEntry id="oe-17-3"><text>"Immutable storage (Governance mode)"</text></outputEntry>
+        <outputEntry id="oe-17-4"><text>"Standard encryption, access logging, automated deletion after expiry"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-18">
+        <description>Default catch-all: Unmatched combination — 3-year operational retention pending classification review</description>
+        <inputEntry id="ie-18-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-18-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-18-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-18-1"><text>"Operational-3Y"</text></outputEntry>
+        <outputEntry id="oe-18-2"><text>"P3Y"</text></outputEntry>
+        <outputEntry id="oe-18-3"><text>"Immutable storage (Governance mode)"</text></outputEntry>
+        <outputEntry id="oe-18-4"><text>"Immediate evidence classification required, access logging, standard encryption"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN15-diagram">
+      <dmndi:DMNShape id="DMN15-shape" dmnElementRef="DMN_EvidenceRetentionRouting">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
