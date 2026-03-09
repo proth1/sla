@@ -13,7 +13,7 @@
   "webhook": {
     "enabled": true,
     "path": "/webhook/jira",
-    "secret": null
+    "secret": "process.env.JIRA_WEBHOOK_SECRET"
   },
   "routing": {
     "jiraGroups": [

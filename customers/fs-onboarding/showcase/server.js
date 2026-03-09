@@ -4,7 +4,9 @@ const fs = require('fs');
 const { createCamundaAuth } = require('./camunda-auth');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => { req.rawBody = buf; },
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- Shared Camunda Auth ---
@@ -461,6 +463,42 @@ app.post('/api/deploy', async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
+});
+
+// ========================
+// Jira Webhook (HMAC-validated)
+// ========================
+
+const jiraSyncConfig = JSON.parse(fs.readFileSync(path.join(__dirname, 'jira-sync-config.json'), 'utf8'));
+
+app.post(jiraSyncConfig.webhook.path, (req, res) => {
+  const secret = process.env.JIRA_WEBHOOK_SECRET;
+  if (!secret) {
+    console.error('JIRA_WEBHOOK_SECRET not configured');
+    return res.status(500).json({ error: 'Webhook secret not configured' });
+  }
+
+  const signature = req.headers['x-hub-signature'] || req.headers['x-atlassian-webhook-signature'];
+  if (!signature) {
+    return res.status(401).json({ error: 'Missing webhook signature' });
+  }
+
+  const { createHmac, timingSafeEqual } = require('crypto');
+  const rawBody = req.rawBody;
+  if (!rawBody) {
+    return res.status(400).json({ error: 'Unable to read request body' });
+  }
+  const expected = 'sha256=' + createHmac('sha256', secret).update(rawBody).digest('hex');
+
+  // Timing-safe comparison to prevent timing attacks
+  const sigBuffer = Buffer.from(signature);
+  const expectedBuffer = Buffer.from(expected);
+  if (sigBuffer.length !== expectedBuffer.length || !timingSafeEqual(sigBuffer, expectedBuffer)) {
+    return res.status(401).json({ error: 'Invalid webhook signature' });
+  }
+
+  console.log('Jira webhook received and validated');
+  res.json({ received: true });
 });
 
 app.listen(3847, '127.0.0.1', () => {
