@@ -1,5 +1,16 @@
 # Changelog
 
+## [2026.03.81] - 2026-03-08
+
+### Changed
+- Presentation consolidation: Add Mini RFP Self-Service Pre-Screening (SP0) slide to main presentation (now 42 slides), update roadmap with Day-30 completion status (PR #102)
+- Remove all KPMG branding: CSS variables `--kpmg-*` → `--brand-*`, logos, auth worker allowed domains, PPTX generators, transformation scripts (PR #102)
+- Regenerate `Software-Onboarding-Transformation.pptx` (53 slides, KPMG-free), fix KPMG text in `30-day-readout.pptx` (PR #102)
+
+### Removed
+- Delete superseded `Software-Onboarding-Transformation-KPMG.pptx` and `reference/index.html` (PR #102)
+- Remove `kpmg.com` from all 3 auth worker allowed domains (presentation, showcase, onboarding) (PR #102)
+
 ## [2026.03.80] - 2026-03-08
 
 ### Changed
