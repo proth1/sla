@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN16-DORAContractualProvisions-definitions"
+             name="DMN-16: DORA Contractual Provisions"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_DORAContractualProvisions"
+            name="DORA Contractual Provisions"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-09 | Regulatory Basis: DORA Articles 28, 30</description>
+    <decisionTable id="DMN_DORAContractualProvisions-table" hitPolicy="FIRST">
+
+      <input id="input-serviceCriticality" label="Service Criticality">
+        <inputExpression id="inputExpr-serviceCriticality" typeRef="string">
+          <text>serviceCriticality</text>
+        </inputExpression>
+        <inputValues id="inputVals-serviceCriticality">
+          <text>"Critical","Important","Standard"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-dataClassification" label="Data Classification">
+        <inputExpression id="inputExpr-dataClassification" typeRef="string">
+          <text>dataClassification</text>
+        </inputExpression>
+        <inputValues id="inputVals-dataClassification">
+          <text>"Public","Internal","Confidential","Restricted"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-subOutsourcingDepth" label="Sub-Outsourcing Depth (0-5)">
+        <inputExpression id="inputExpr-subOutsourcingDepth" typeRef="integer">
+          <text>subOutsourcingDepth</text>
+        </inputExpression>
+      </input>
+
+      <output id="output-requiredClauses"
+              label="Required Contractual Clauses"
+              name="requiredClauses"
+              typeRef="string" />
+
+      <output id="output-auditRights"
+              label="Audit Rights"
+              name="auditRights"
+              typeRef="string" />
+
+      <output id="output-terminationNotice"
+              label="Termination Notice Period"
+              name="terminationNotice"
+              typeRef="string" />
+
+      <output id="output-dataReturnPeriod"
+              label="Data Return Period"
+              name="dataReturnPeriod"
+              typeRef="string" />
+
+      <!-- RULE GROUP 1: CRITICAL + RESTRICTED — Maximum provisions -->
+
+      <rule id="rule-1">
+        <description>Critical service + Restricted data + deep sub-outsourcing: Full DORA Art 30(2) clause set with unlimited audit</description>
+        <inputEntry id="ie-1-1"><text>"Critical"</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>"Restricted"</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>&gt; 2</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"DORA Art 30(2)(a-j) full clause set: access/audit/inspection rights, SLA definitions, data location restrictions, incident notification &lt;4h, sub-outsourcing approval, exit plan, business continuity testing, data return, IP protection, regulatory reporting cooperation, full sub-outsourcing chain audit"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"Unlimited audit rights: on-premises inspection, third-party audit, regulatory authority access, annual audit minimum, real-time monitoring access, sub-outsourcing chain audit"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>"P180D"</text></outputEntry>
+        <outputEntry id="oe-1-4"><text>"P30D"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-2">
+        <description>Critical service + Restricted data + shallow sub-outsourcing: Full DORA Art 30(2) clause set</description>
+        <inputEntry id="ie-2-1"><text>"Critical"</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>"Restricted"</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>[0..2]</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"DORA Art 30(2)(a-j) full clause set: access/audit/inspection rights, SLA definitions, data location restrictions, incident notification &lt;4h, sub-outsourcing approval, exit plan, business continuity testing, data return, IP protection, regulatory reporting cooperation"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"Unlimited audit rights: on-premises inspection, third-party audit, regulatory authority access, annual audit minimum, real-time monitoring access"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"P180D"</text></outputEntry>
+        <outputEntry id="oe-2-4"><text>"P30D"</text></outputEntry>
+      </rule>
+
+      <!-- RULE GROUP 2: CRITICAL + CONFIDENTIAL -->
+
+      <rule id="rule-3">
+        <description>Critical service + Confidential data + deep sub-outsourcing: Full clauses with sub-outsourcing chain audit</description>
+        <inputEntry id="ie-3-1"><text>"Critical"</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>"Confidential"</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>&gt; 2</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"DORA Art 30(2)(a-j) full clause set: access/audit/inspection rights, SLA definitions, data location restrictions, incident notification &lt;4h, sub-outsourcing approval and chain audit, exit plan, business continuity testing, data return, IP protection"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"Unlimited audit rights: on-premises inspection, third-party audit, regulatory authority access, annual audit minimum, sub-outsourcing chain audit"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"P180D"</text></outputEntry>
+        <outputEntry id="oe-3-4"><text>"P30D"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-4">
+        <description>Critical service + Confidential data + shallow sub-outsourcing: Standard critical clauses</description>
+        <inputEntry id="ie-4-1"><text>"Critical"</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>"Confidential"</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>[0..2]</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"DORA Art 30(2) key clauses: access/audit/inspection rights, SLA definitions, data location restrictions, incident notification &lt;4h, sub-outsourcing notification, exit plan, business continuity testing, data return"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"Annual audit rights with 30-day notice, third-party audit option"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>"P120D"</text></outputEntry>
+        <outputEntry id="oe-4-4"><text>"P30D"</text></outputEntry>
+      </rule>
+
+      <!-- RULE GROUP 3: CRITICAL + INTERNAL/PUBLIC -->
+
+      <rule id="rule-5">
+        <description>Critical service + Internal data: Standard critical clauses with annual audit</description>
+        <inputEntry id="ie-5-1"><text>"Critical"</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>"Internal"</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"DORA Art 30(2) key clauses: access/audit/inspection rights, SLA definitions, incident notification &lt;4h, sub-outsourcing notification, exit plan, business continuity testing, data return"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"Annual audit rights with 30-day notice, third-party audit option"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>"P120D"</text></outputEntry>
+        <outputEntry id="oe-5-4"><text>"P30D"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-6">
+        <description>Critical service + Public data: Standard critical clauses</description>
+        <inputEntry id="ie-6-1"><text>"Critical"</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>"Public"</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"DORA Art 30(2) key clauses: access/audit/inspection rights, SLA definitions, incident notification &lt;4h, sub-outsourcing notification, exit plan, business continuity testing"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"Annual audit rights with 30-day notice, third-party audit option"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>"P120D"</text></outputEntry>
+        <outputEntry id="oe-6-4"><text>"P30D"</text></outputEntry>
+      </rule>
+
+      <!-- RULE GROUP 4: IMPORTANT + RESTRICTED/CONFIDENTIAL -->
+
+      <rule id="rule-7">
+        <description>Important service + Restricted data: Enhanced important provisions</description>
+        <inputEntry id="ie-7-1"><text>"Important"</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>"Restricted"</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"DORA Art 30(2) key clauses: SLA definitions, incident notification &lt;24h, data location awareness, exit plan, sub-outsourcing notification, data return provisions"</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"Annual audit rights with 60-day notice"</text></outputEntry>
+        <outputEntry id="oe-7-3"><text>"P90D"</text></outputEntry>
+        <outputEntry id="oe-7-4"><text>"P45D"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8">
+        <description>Important service + Confidential data: Standard important provisions</description>
+        <inputEntry id="ie-8-1"><text>"Important"</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>"Confidential"</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"DORA Art 30(2) key clauses: SLA definitions, incident notification &lt;24h, data location awareness, exit plan, sub-outsourcing notification"</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"Annual audit rights with 60-day notice"</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>"P90D"</text></outputEntry>
+        <outputEntry id="oe-8-4"><text>"P45D"</text></outputEntry>
+      </rule>
+
+      <!-- RULE GROUP 5: IMPORTANT + INTERNAL with deep sub-outsourcing -->
+
+      <rule id="rule-9">
+        <description>Important service + Internal data + deep sub-outsourcing: Enhanced monitoring due to chain depth</description>
+        <inputEntry id="ie-9-1"><text>"Important"</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>"Internal"</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>&gt; 2</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"DORA Art 30(2) key clauses: SLA definitions, incident notification &lt;24h, sub-outsourcing chain visibility, exit plan, enhanced sub-outsourcing notification and approval"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"Biennial audit rights with sub-outsourcing chain review"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>"P90D"</text></outputEntry>
+        <outputEntry id="oe-9-4"><text>"P45D"</text></outputEntry>
+      </rule>
+
+      <!-- RULE GROUP 6: IMPORTANT + INTERNAL/PUBLIC with shallow sub-outsourcing -->
+
+      <rule id="rule-10">
+        <description>Important service + Internal data + shallow sub-outsourcing: Standard important clauses</description>
+        <inputEntry id="ie-10-1"><text>"Important"</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>"Internal"</text></inputEntry>
+        <inputEntry id="ie-10-3"><text>[0..2]</text></inputEntry>
+        <outputEntry id="oe-10-1"><text>"DORA Art 30(2) standard clauses: SLA definitions, incident notification &lt;24h, exit plan, sub-outsourcing notification"</text></outputEntry>
+        <outputEntry id="oe-10-2"><text>"Biennial audit rights with 90-day notice"</text></outputEntry>
+        <outputEntry id="oe-10-3"><text>"P60D"</text></outputEntry>
+        <outputEntry id="oe-10-4"><text>"P60D"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-11">
+        <description>Important service + Public data: Baseline important clauses</description>
+        <inputEntry id="ie-11-1"><text>"Important"</text></inputEntry>
+        <inputEntry id="ie-11-2"><text>"Public"</text></inputEntry>
+        <inputEntry id="ie-11-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-11-1"><text>"DORA Art 30(2) standard clauses: SLA definitions, incident notification &lt;24h, exit plan, sub-outsourcing notification"</text></outputEntry>
+        <outputEntry id="oe-11-2"><text>"Biennial audit rights with 90-day notice"</text></outputEntry>
+        <outputEntry id="oe-11-3"><text>"P60D"</text></outputEntry>
+        <outputEntry id="oe-11-4"><text>"P60D"</text></outputEntry>
+      </rule>
+
+      <!-- RULE GROUP 7: STANDARD + RESTRICTED/CONFIDENTIAL -->
+
+      <rule id="rule-12">
+        <description>Standard service + Restricted data: Data-driven provisions despite low criticality</description>
+        <inputEntry id="ie-12-1"><text>"Standard"</text></inputEntry>
+        <inputEntry id="ie-12-2"><text>"Restricted"</text></inputEntry>
+        <inputEntry id="ie-12-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>"Basic DORA clauses: SLA definitions, incident notification, data handling and location requirements, termination provisions, data return"</text></outputEntry>
+        <outputEntry id="oe-12-2"><text>"Triennial audit rights"</text></outputEntry>
+        <outputEntry id="oe-12-3"><text>"P60D"</text></outputEntry>
+        <outputEntry id="oe-12-4"><text>"P60D"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-13">
+        <description>Standard service + Confidential data: Data-driven provisions</description>
+        <inputEntry id="ie-13-1"><text>"Standard"</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>"Confidential"</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"Basic DORA clauses: SLA definitions, incident notification, data handling requirements, termination provisions"</text></outputEntry>
+        <outputEntry id="oe-13-2"><text>"Triennial audit rights"</text></outputEntry>
+        <outputEntry id="oe-13-3"><text>"P60D"</text></outputEntry>
+        <outputEntry id="oe-13-4"><text>"P60D"</text></outputEntry>
+      </rule>
+
+      <!-- RULE GROUP 8: STANDARD + INTERNAL/PUBLIC -->
+
+      <rule id="rule-14">
+        <description>Standard service + Internal data: Minimal DORA provisions</description>
+        <inputEntry id="ie-14-1"><text>"Standard"</text></inputEntry>
+        <inputEntry id="ie-14-2"><text>"Internal"</text></inputEntry>
+        <inputEntry id="ie-14-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-14-1"><text>"Minimal DORA clauses: SLA definitions, incident notification, termination provisions"</text></outputEntry>
+        <outputEntry id="oe-14-2"><text>"Audit rights on material change"</text></outputEntry>
+        <outputEntry id="oe-14-3"><text>"P30D"</text></outputEntry>
+        <outputEntry id="oe-14-4"><text>"P90D"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-15">
+        <description>Standard service + Public data: Minimal provisions</description>
+        <inputEntry id="ie-15-1"><text>"Standard"</text></inputEntry>
+        <inputEntry id="ie-15-2"><text>"Public"</text></inputEntry>
+        <inputEntry id="ie-15-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-15-1"><text>"Minimal DORA clauses: SLA definitions, incident notification, termination provisions"</text></outputEntry>
+        <outputEntry id="oe-15-2"><text>"Audit rights on material change"</text></outputEntry>
+        <outputEntry id="oe-15-3"><text>"P30D"</text></outputEntry>
+        <outputEntry id="oe-15-4"><text>"P90D"</text></outputEntry>
+      </rule>
+
+      <!-- RULE 16: CATCH-ALL DEFAULT -->
+
+      <rule id="rule-16">
+        <description>Default catch-all: Unclassified combination — assigned Important-level provisions as conservative default pending manual review</description>
+        <inputEntry id="ie-16-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-16-1"><text>"DORA Art 30(2) key clauses: SLA definitions, incident notification &lt;24h, data location awareness, exit plan, sub-outsourcing notification"</text></outputEntry>
+        <outputEntry id="oe-16-2"><text>"Annual audit rights"</text></outputEntry>
+        <outputEntry id="oe-16-3"><text>"P90D"</text></outputEntry>
+        <outputEntry id="oe-16-4"><text>"P45D"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN16-diagram">
+      <dmndi:DMNShape id="DMN16-shape" dmnElementRef="DMN_DORAContractualProvisions">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
