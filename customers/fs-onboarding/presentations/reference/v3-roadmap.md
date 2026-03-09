@@ -539,7 +539,7 @@ Key quote: "If we want this to really click... I can't have the architect review
 ### Presentation Build
 
 The v3 HTML presentation should:
-1. Use the same KPMG brand template as the current `docs/presentations/index.html` (not the v2-roadmap SLA brand)
+1. Use the same brand template as the current `docs/presentations/index.html`
 2. Add 9 new slides (48 total vs v2's 39)
 3. Update all 11 topic sections with new evidence and quotes
 4. Include the quantified metrics slide early (slide 2b) for executive impact

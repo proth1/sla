@@ -18,8 +18,8 @@ with open(INPUT, 'r') as f:
 
 # ─── 1. Remove Camunda references ──────────────────────────────────────
 html = html.replace(
-    '<td><strong>Camunda 8</strong> (target)</td><td>E2E process orchestration</td><td style="color:var(--kpmg-emerald);font-weight:600;">Target platform</td>',
-    '<td><strong>Process Orchestration Engine</strong> (target)</td><td>E2E process orchestration</td><td style="color:var(--kpmg-emerald);font-weight:600;">Target platform</td>'
+    '<td><strong>Camunda 8</strong> (target)</td><td>E2E process orchestration</td><td style="color:var(--brand-emerald);font-weight:600;">Target platform</td>',
+    '<td><strong>Process Orchestration Engine</strong> (target)</td><td>E2E process orchestration</td><td style="color:var(--brand-emerald);font-weight:600;">Target platform</td>'
 )
 html = html.replace(
     'Camunda 8 orchestrates across all systems via API integration.',
@@ -111,7 +111,7 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
 <div class="slide slide-section" data-slide="44">
   <h2>Future State Process Design</h2>
   <p style="color:rgba(255,255,255,0.85);font-size:1rem;max-width:700px;margin-top:1rem;">A 5-phase hierarchical process model with 64 structured forms, 6 DMN decision tables, and parallel evaluation streams &mdash; reducing onboarding from 75 days to 20.</p>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>March 2026</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>March 2026</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -119,16 +119,16 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
 <!-- ============================================================ -->
 <div class="slide" data-slide="45">
   <h2>End-to-End Process Orchestrator</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">Hierarchical 5-phase model with collapsed sub-processes, 5 decision gateways, vendor pool with message flows, NDA gate, and 3 request type routing (Defined Need, Forced Update, Speculative).</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Hierarchical 5-phase model with collapsed sub-processes, 5 decision gateways, vendor pool with message flows, NDA gate, and 3 request type routing (Defined Need, Forced Update, Speculative).</p>
   <div style="background:white;border-radius:8px;padding:12px;box-shadow:0 2px 8px rgba(0,51,141,0.08);margin:0.5rem 0;overflow-x:auto;">
     <img src="bpmn-images/v8-orchestrator.png" alt="End-to-End Orchestrator" style="display:block;max-width:100%;height:auto;margin:0 auto;">
   </div>
   <div style="display:flex;gap:12px;margin-top:0.5rem;">
-    <div style="flex:1;background:var(--kpmg-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--kpmg-emerald);"><strong>64 Forms</strong> across 5 phases + vendor pool capture every data point, decision, and approval</div>
-    <div style="flex:1;background:var(--kpmg-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--kpmg-gold);"><strong>6 DMN Tables</strong> automate routing: risk tier, pathway, governance, prioritization, security, SLA escalation</div>
-    <div style="flex:1;background:var(--kpmg-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--kpmg-light-blue);"><strong>20-Day Target</strong> end-to-end cycle time (down from 75 days) through parallel evaluation and automated gates</div>
+    <div style="flex:1;background:var(--brand-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--brand-emerald);"><strong>64 Forms</strong> across 5 phases + vendor pool capture every data point, decision, and approval</div>
+    <div style="flex:1;background:var(--brand-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--brand-gold);"><strong>6 DMN Tables</strong> automate routing: risk tier, pathway, governance, prioritization, security, SLA escalation</div>
+    <div style="flex:1;background:var(--brand-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--brand-light-blue);"><strong>20-Day Target</strong> end-to-end cycle time (down from 75 days) through parallel evaluation and automated gates</div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>E2E Orchestrator</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>E2E Orchestrator</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -136,15 +136,15 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
 <!-- ============================================================ -->
 <div class="slide" data-slide="46">
   <h2>Request and Triage</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">The front door to onboarding. Requesters describe their need, existing solutions are checked for reuse, documentation is gathered, and requests are triaged, classified, and routed.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">The front door to onboarding. Requesters describe their need, existing solutions are checked for reuse, documentation is gathered, and requests are triaged, classified, and routed.</p>
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
         <img src="bpmn-images/v8-sp1-request-triage.png" alt="Request and Triage" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <span style="background:var(--kpmg-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">2-Day SLA</span>
-        <span style="background:var(--kpmg-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Deal-Killer Pre-Screen</span>
+        <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">2-Day SLA</span>
+        <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Deal-Killer Pre-Screen</span>
       </div>
     </div>
     <div>
@@ -155,9 +155,9 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
         <li><strong>Request Type:</strong> Defined Need &rarr; NDA &rarr; Planning | Forced Update &rarr; Fast-track | Speculative &rarr; Idea Funnel</li>
       </ul>
       <h3 style="font-size:0.95rem;">Forms &amp; Data Collected</h3>
-      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-gold);border-radius:8px;padding:10px 14px;">
-        <div style="font-size:1.2rem;font-weight:700;color:var(--kpmg-blue);font-family:var(--font-heading);">8 Forms</div>
-        <ul style="font-size:0.72rem;color:var(--kpmg-medium-gray);margin-left:1rem;margin-bottom:0;">
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-gold);border-radius:8px;padding:10px 14px;">
+        <div style="font-size:1.2rem;font-weight:700;color:var(--brand-blue);font-family:var(--font-heading);">8 Forms</div>
+        <ul style="font-size:0.72rem;color:var(--brand-medium-gray);margin-left:1rem;margin-bottom:0;">
           <li><strong>Review Existing</strong> &mdash; catalog search, reuse decision, cost avoidance</li>
           <li><strong>Gather Documentation</strong> &mdash; business case, data classification, budget authorization</li>
           <li><strong>Completeness Gate</strong> &mdash; 6 automated validation checkpoints</li>
@@ -167,7 +167,7 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Request and Triage</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Request and Triage</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -175,16 +175,16 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
 <!-- ============================================================ -->
 <div class="slide" data-slide="47">
   <h2>Planning and Routing</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">Validated requests are analyzed for strategic fit, scored for priority, and routed to Buy, Build, or Enable pathways via DMN decision tables.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Validated requests are analyzed for strategic fit, scored for priority, and routed to Buy, Build, or Enable pathways via DMN decision tables.</p>
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
         <img src="bpmn-images/v8-sp2-planning-routing.png" alt="Planning and Routing" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <span style="background:var(--kpmg-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">3-Day SLA</span>
-        <span style="background:var(--kpmg-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Prioritization Scoring</span>
-        <span style="background:var(--kpmg-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Pathway Routing</span>
+        <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">3-Day SLA</span>
+        <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Prioritization Scoring</span>
+        <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Pathway Routing</span>
       </div>
     </div>
     <div>
@@ -195,16 +195,16 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
         <li><strong>Priority Scoring (DMN):</strong> Composite score driving resource allocation</li>
       </ul>
       <h3 style="font-size:0.95rem;">Forms &amp; Data Collected</h3>
-      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-gold);border-radius:8px;padding:10px 14px;">
-        <div style="font-size:1.2rem;font-weight:700;color:var(--kpmg-blue);font-family:var(--font-heading);">2 Forms</div>
-        <ul style="font-size:0.72rem;color:var(--kpmg-medium-gray);margin-left:1rem;margin-bottom:0;">
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-gold);border-radius:8px;padding:10px 14px;">
+        <div style="font-size:1.2rem;font-weight:700;color:var(--brand-blue);font-family:var(--font-heading);">2 Forms</div>
+        <ul style="font-size:0.72rem;color:var(--brand-medium-gray);margin-left:1rem;margin-bottom:0;">
           <li><strong>Preliminary Analysis</strong> &mdash; business impact, risk appetite alignment, DPIA screening, capacity impact score, vendor affinity check</li>
           <li><strong>Backlog Prioritization</strong> &mdash; strategic value, urgency, resource availability, priority tier assignment</li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Planning and Routing</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Planning and Routing</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -212,23 +212,23 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
 <!-- ============================================================ -->
 <div class="slide" data-slide="48">
   <h2>Evaluation and Due Diligence</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">The most complex phase. Five parallel assessment streams evaluate simultaneously &mdash; eliminating the sequential bottleneck that currently takes 75 days.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">The most complex phase. Five parallel assessment streams evaluate simultaneously &mdash; eliminating the sequential bottleneck that currently takes 75 days.</p>
   <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;margin-bottom:8px;">
     <img src="bpmn-images/v8-sp3-evaluation-dd.png" alt="Evaluation and Due Diligence" style="display:block;max-width:100%;height:auto;">
   </div>
   <div style="display:flex;gap:8px;margin-bottom:8px;">
-    <span style="background:var(--kpmg-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">5-Day SLA</span>
-    <span style="background:var(--kpmg-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">5 Parallel Streams</span>
-    <span style="background:var(--kpmg-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Shift-Left: All assessments simultaneous</span>
+    <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">5-Day SLA</span>
+    <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">5 Parallel Streams</span>
+    <span style="background:var(--brand-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Shift-Left: All assessments simultaneous</span>
   </div>
   <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
     <div class="card" style="padding:10px;"><h4 style="font-size:0.72rem;">Tech Architecture</h4><p style="font-size:0.65rem;">Scalability, integration, enterprise standards</p></div>
-    <div class="card" style="padding:10px;border-left-color:var(--kpmg-rose);"><h4 style="font-size:0.72rem;">Security</h4><p style="font-size:0.65rem;">Encryption, MFA, pen testing, SOC 2, incident response</p></div>
-    <div class="card" style="padding:10px;border-left-color:var(--kpmg-amber);"><h4 style="font-size:0.72rem;">Risk &amp; Compliance</h4><p style="font-size:0.65rem;">GDPR, OCC 2023-17, DORA, data residency</p></div>
+    <div class="card" style="padding:10px;border-left-color:var(--brand-rose);"><h4 style="font-size:0.72rem;">Security</h4><p style="font-size:0.65rem;">Encryption, MFA, pen testing, SOC 2, incident response</p></div>
+    <div class="card" style="padding:10px;border-left-color:var(--brand-amber);"><h4 style="font-size:0.72rem;">Risk &amp; Compliance</h4><p style="font-size:0.65rem;">GDPR, OCC 2023-17, DORA, data residency</p></div>
     <div class="card gold" style="padding:10px;"><h4 style="font-size:0.72rem;">Financial</h4><p style="font-size:0.65rem;">TCO, ROI, budget authorization, funding source</p></div>
     <div class="card emerald" style="padding:10px;"><h4 style="font-size:0.72rem;">Vendor Landscape</h4><p style="font-size:0.65rem;">Market research, shortlist, viability scoring</p></div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Evaluation and Due Diligence</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Evaluation and Due Diligence</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -236,12 +236,12 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
 <!-- ============================================================ -->
 <div class="slide" data-slide="49">
   <h2>Evaluation: Forms and Data Architecture</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">The heaviest data collection phase: 8 structured forms capture 147+ fields across security, risk, financial, vendor, and AI governance dimensions.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">The heaviest data collection phase: 8 structured forms capture 147+ fields across security, risk, financial, vendor, and AI governance dimensions.</p>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-rose);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-rose);margin-bottom:4px;">Security Assessment</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">25 fields across 6 groups</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-rose);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-rose);margin-bottom:4px;">Security Assessment</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">25 fields across 6 groups</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>Security tier classification (6 levels)</li>
         <li>Encryption at rest/transit, key management</li>
         <li>Vulnerability scan results, pen test dates</li>
@@ -249,50 +249,50 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
         <li>SOC 2 Type II, ISO 27001 certifications</li>
       </ul>
     </div>
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-blue);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-blue);margin-bottom:4px;">Tech Architecture Review</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">18 fields</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-blue);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-blue);margin-bottom:4px;">Tech Architecture Review</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">18 fields</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>Architecture pattern, deployment model</li>
         <li>Integration points, API compatibility</li>
         <li>Scalability and performance ratings</li>
         <li>Tech debt and maintainability assessment</li>
       </ul>
     </div>
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-amber);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-amber);margin-bottom:4px;">Risk, Compliance &amp; Legal</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">15 fields</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-amber);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-amber);margin-bottom:4px;">Risk, Compliance &amp; Legal</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">15 fields</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>Regulatory exposure assessment</li>
         <li>Data residency, cross-border transfer</li>
         <li>Consent management, DPIA results</li>
         <li>OCC 2023-17 / DORA alignment</li>
       </ul>
     </div>
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-gold);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-gold);margin-bottom:4px;">Financial Analysis</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">16 fields</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-gold);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-gold);margin-bottom:4px;">Financial Analysis</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">16 fields</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>Total cost of ownership model</li>
         <li>ROI projection, payback period</li>
         <li>Budget authorization chain</li>
         <li>Funding source identification</li>
       </ul>
     </div>
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-emerald);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-emerald);margin-bottom:4px;">AI Governance Review</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">32 fields &mdash; largest single form</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-emerald);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-emerald);margin-bottom:4px;">AI Governance Review</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">32 fields &mdash; largest single form</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>EU AI Act risk classification</li>
         <li>Model transparency, explainability</li>
         <li>Bias testing, fairness metrics</li>
         <li>SR 11-7 model risk alignment</li>
       </ul>
     </div>
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-light-blue);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-light-blue);margin-bottom:4px;">Vendor Due Diligence</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">18 fields + vendor landscape (11 fields)</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-light-blue);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-light-blue);margin-bottom:4px;">Vendor Due Diligence</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">18 fields + vendor landscape (11 fields)</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>Financial stability, operational resilience</li>
         <li>Fourth-party risk, subcontractor disclosure</li>
         <li>Market positioning, viability scoring</li>
@@ -300,7 +300,7 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
       </ul>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Evaluation Forms</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Evaluation Forms</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -308,22 +308,22 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
 <!-- ============================================================ -->
 <div class="slide" data-slide="50">
   <h2>Contracting and Build</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">Two pathways converge here. <strong>Buy:</strong> refine requirements, proof of concept, contract negotiation. <strong>Build:</strong> define requirements, then the full Product Development Life Cycle (PDLC).</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Two pathways converge here. <strong>Buy:</strong> refine requirements, proof of concept, contract negotiation. <strong>Build:</strong> define requirements, then the full Product Development Life Cycle (PDLC).</p>
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
         <img src="bpmn-images/v8-sp4-contracting-build.png" alt="Contracting and Build" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <span style="background:var(--kpmg-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">7-Day SLA</span>
-        <span style="background:var(--kpmg-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Buy vs Build Pathways</span>
+        <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">7-Day SLA</span>
+        <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Buy vs Build Pathways</span>
       </div>
     </div>
     <div>
       <h3 style="font-size:0.95rem;margin-top:0;">Buy Path Forms</h3>
-      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-blue);border-radius:8px;padding:10px 14px;margin-bottom:8px;">
-        <div style="font-size:1rem;font-weight:700;color:var(--kpmg-blue);font-family:var(--font-heading);">5 Forms</div>
-        <ul style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-blue);border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+        <div style="font-size:1rem;font-weight:700;color:var(--brand-blue);font-family:var(--font-heading);">5 Forms</div>
+        <ul style="font-size:0.68rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
           <li><strong>Refine Requirements</strong> &mdash; final spec from evaluation insights</li>
           <li><strong>Proof of Concept</strong> &mdash; structured PoC with pass/fail criteria</li>
           <li><strong>Negotiate Contract</strong> &mdash; OCC 2023-17, DORA Art. 30, GDPR Art. 28 provisions</li>
@@ -331,9 +331,9 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
         </ul>
       </div>
       <h3 style="font-size:0.95rem;">Build Path Forms</h3>
-      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-emerald);border-radius:8px;padding:10px 14px;">
-        <div style="font-size:1rem;font-weight:700;color:var(--kpmg-emerald);font-family:var(--font-heading);">5 Forms (PDLC)</div>
-        <ul style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-emerald);border-radius:8px;padding:10px 14px;">
+        <div style="font-size:1rem;font-weight:700;color:var(--brand-emerald);font-family:var(--font-heading);">5 Forms (PDLC)</div>
+        <ul style="font-size:0.68rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
           <li><strong>Define Build Requirements</strong> &mdash; functional specs, architecture constraints</li>
           <li><strong>Architecture Review</strong> &mdash; enterprise standards validation</li>
           <li><strong>Development</strong> &mdash; secure coding, CI/CD pipeline tracking</li>
@@ -342,7 +342,7 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Contracting and Build</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Contracting and Build</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -350,15 +350,15 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
 <!-- ============================================================ -->
 <div class="slide" data-slide="51">
   <h2>UAT and Go-Live</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">The finish line. User acceptance testing validates the solution, final approval confirms governance compliance, software is onboarded, ownership is assigned, and the request is formally closed.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">The finish line. User acceptance testing validates the solution, final approval confirms governance compliance, software is onboarded, ownership is assigned, and the request is formally closed.</p>
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
         <img src="bpmn-images/v8-sp5-uat-golive.png" alt="UAT and Go-Live" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <span style="background:var(--kpmg-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">3-Day SLA</span>
-        <span style="background:var(--kpmg-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Final Governance Gate</span>
+        <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">3-Day SLA</span>
+        <span style="background:var(--brand-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Final Governance Gate</span>
       </div>
     </div>
     <div>
@@ -370,9 +370,9 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
         <li><strong>Dual Ownership:</strong> Business Owner + Vendor Owner assigned at completion</li>
       </ul>
       <h3 style="font-size:0.95rem;">Forms &amp; Data Collected</h3>
-      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-gold);border-radius:8px;padding:10px 14px;">
-        <div style="font-size:1.2rem;font-weight:700;color:var(--kpmg-blue);font-family:var(--font-heading);">6 Forms</div>
-        <ul style="font-size:0.72rem;color:var(--kpmg-medium-gray);margin-left:1rem;margin-bottom:0;">
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-gold);border-radius:8px;padding:10px 14px;">
+        <div style="font-size:1.2rem;font-weight:700;color:var(--brand-blue);font-family:var(--font-heading);">6 Forms</div>
+        <ul style="font-size:0.72rem;color:var(--brand-medium-gray);margin-left:1rem;margin-bottom:0;">
           <li><strong>Perform UAT</strong> &mdash; test scenarios, pass/fail rates, critical defects, user satisfaction (1-10)</li>
           <li><strong>Final Approval</strong> &mdash; governance sign-off, risk acceptance, audit evidence</li>
           <li><strong>Onboard Software</strong> &mdash; catalog entry, access provisioning, monitoring setup</li>
@@ -382,7 +382,7 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>UAT and Go-Live</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>UAT and Go-Live</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -390,9 +390,9 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
 <!-- ============================================================ -->
 <div class="slide" data-slide="52">
   <h2>Vendor Pool: The External Partner Journey</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">Running in parallel with the enterprise process, vendors follow their own structured journey. 10 tasks span intake through deployment support, with message flows synchronizing handoffs at key milestones.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Running in parallel with the enterprise process, vendors follow their own structured journey. 10 tasks span intake through deployment support, with message flows synchronizing handoffs at key milestones.</p>
   <div class="process-flow" style="margin:0.5rem 0;">
-    <div style="width:24px;height:24px;border-radius:50%;background:var(--kpmg-emerald);border:2px solid #007a4d;flex-shrink:0;"></div>
+    <div style="width:24px;height:24px;border-radius:50%;background:var(--brand-emerald);border:2px solid #007a4d;flex-shrink:0;"></div>
     <span class="pf-arrow">&#9654;</span>
     <div class="pf-phase" style="min-width:95px;padding:8px;"><h5 style="font-size:0.62rem;">Vendor Intake</h5><div class="pf-tasks" style="font-size:0.55rem;">Qualification, sanctions screening</div></div>
     <span class="pf-arrow">&#9654;</span>
@@ -406,12 +406,12 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
     <span class="pf-arrow">&#9654;</span>
     <div class="pf-phase" style="min-width:95px;padding:8px;"><h5 style="font-size:0.62rem;">Deploy &amp; Close</h5><div class="pf-tasks" style="font-size:0.55rem;">Onboarding, support, close</div></div>
     <span class="pf-arrow">&#9654;</span>
-    <div style="width:24px;height:24px;border-radius:50%;background:var(--kpmg-rose);border:3px solid #8b1a1a;flex-shrink:0;"></div>
+    <div style="width:24px;height:24px;border-radius:50%;background:var(--brand-rose);border:3px solid #8b1a1a;flex-shrink:0;"></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-gold);border-radius:8px;padding:10px 14px;">
-      <div style="font-size:1.2rem;font-weight:700;color:var(--kpmg-blue);font-family:var(--font-heading);">10 Vendor Forms</div>
-      <ul style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-gold);border-radius:8px;padding:10px 14px;">
+      <div style="font-size:1.2rem;font-weight:700;color:var(--brand-blue);font-family:var(--font-heading);">10 Vendor Forms</div>
+      <ul style="font-size:0.68rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li><strong>Vendor Intake</strong> &mdash; legal entity, tax ID, ownership, sanctions screening, insurance</li>
         <li><strong>Security Questionnaire</strong> &mdash; SOC 2, pen testing, encryption, incident response</li>
         <li><strong>Compliance Documentation</strong> &mdash; regulatory certifications, DPA, sub-processor disclosures</li>
@@ -428,7 +428,7 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Vendor Pool</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Vendor Pool</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -436,9 +436,9 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
 <!-- ============================================================ -->
 <div class="slide" data-slide="53">
   <h2>End-to-End Process Flow</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">5-phase hierarchical process model with 6 DMN decision tables, 3 request type routing, Buy/Build/Enable pathways, and parallel evaluation streams.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">5-phase hierarchical process model with 6 DMN decision tables, 3 request type routing, Buy/Build/Enable pathways, and parallel evaluation streams.</p>
   <div class="process-flow">
-    <div style="width:28px;height:28px;border-radius:50%;background:var(--kpmg-emerald);border:2px solid #007a4d;flex-shrink:0;"></div>
+    <div style="width:28px;height:28px;border-radius:50%;background:var(--brand-emerald);border:2px solid #007a4d;flex-shrink:0;"></div>
     <span class="pf-arrow">&#9654;</span>
     <div class="pf-phase">
       <h5>Request and Triage</h5>
@@ -478,8 +478,8 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
       <div class="pf-sla">SLA: 3 Days &bull; 6 Forms</div>
     </div>
     <span class="pf-arrow">&#9654;</span>
-    <div style="width:28px;height:28px;border-radius:50%;background:var(--kpmg-rose);border:3px solid #8b1a1a;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-      <div style="width:16px;height:16px;border-radius:50%;background:var(--kpmg-rose);border:2px solid white;"></div>
+    <div style="width:28px;height:28px;border-radius:50%;background:var(--brand-rose);border:3px solid #8b1a1a;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+      <div style="width:16px;height:16px;border-radius:50%;background:var(--brand-rose);border:2px solid white;"></div>
     </div>
   </div>
   <div class="card-grid" style="grid-template-columns:repeat(4,1fr);margin-top:1rem;">
@@ -500,7 +500,7 @@ NEW_PROCESS_SECTION = '''<!-- ==================================================
       <p>Down from 75 days through parallel evaluation, automated gates, and DMN-driven routing</p>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>E2E Process Summary</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>E2E Process Summary</span></div>
 </div>
 
 '''

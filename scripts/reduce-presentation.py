@@ -164,33 +164,33 @@ def build_merged_slide(topic_name, current_content, recs_content):
             summary = first_li.group(1) if first_li else ''
             if len(summary) > 40:
                 summary = summary[:37] + '...'
-            color_map = {'d30': 'var(--kpmg-emerald)', 'd60': 'var(--kpmg-medium-blue)', 'd90': 'var(--kpmg-gold)', 'd120': 'var(--kpmg-amber)'}
-            color = color_map.get(cls, 'var(--kpmg-medium-gray)')
+            color_map = {'d30': 'var(--brand-emerald)', 'd60': 'var(--brand-medium-blue)', 'd90': 'var(--brand-gold)', 'd120': 'var(--brand-amber)'}
+            color = color_map.get(cls, 'var(--brand-medium-gray)')
             roadmap_html += f'<span style="background:{color};color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">{label}</span>'
         roadmap_html += '</div>'
 
     # RACI as compact line
     raci_html = ''
     if raci:
-        raci_html = f'<div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;">{raci}</div>'
+        raci_html = f'<div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;">{raci}</div>'
 
     slide = f'''<div class="slide" data-slide="PLACEHOLDER">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">{topic_name}</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">{topic_name}</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
 {findings_html}      </div>
       {raci_html}
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
 {recs_html}      </div>
       {roadmap_html}
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>{topic_name}</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>{topic_name}</span></div>
 </div>'''
     return slide
 
@@ -241,22 +241,22 @@ if dmn56_block and dmn58_block:
       <div class="dmn-header">
         <h4>OB-DMN-1: Risk Tier Classification</h4>
         <span class="dmn-badge">UNIQUE</span>
-        <span class="dmn-badge" style="background:var(--kpmg-medium-blue);">Phase 2</span>
+        <span class="dmn-badge" style="background:var(--brand-medium-blue);">Phase 2</span>
       </div>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin-bottom:4px;">5 risk dimensions (1-10) assign one of 4 tiers. Unacceptable terminates immediately.</p>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin-bottom:4px;">5 risk dimensions (1-10) assign one of 4 tiers. Unacceptable terminates immediately.</p>
       {risk_tier_table.group(1)}
     </div>
     <div>
       <div class="dmn-header">
         <h4>OB-DMN-4: SLA Breach Escalation</h4>
         <span class="dmn-badge">FIRST</span>
-        <span class="dmn-badge" style="background:var(--kpmg-medium-blue);">Cross-Cutting</span>
+        <span class="dmn-badge" style="background:var(--brand-medium-blue);">Cross-Cutting</span>
       </div>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin-bottom:4px;">4-level escalation ladder triggered by SLA timer boundary events.</p>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin-bottom:4px;">4-level escalation ladder triggered by SLA timer boundary events.</p>
       {sla_breach_table.group(1)}
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>OB-DMN-1 and OB-DMN-4</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>OB-DMN-1 and OB-DMN-4</span></div>
 </div>'''
 
         # Remove slide 58 first (comes after 56)
@@ -286,7 +286,7 @@ if dmn57_block and dmn59_block:
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
     {grid59.group(1)}
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>OB-DMN-2, 3, 5, 6</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>OB-DMN-2, 3, 5, 6</span></div>
 </div>'''
 
         # Remove slide 59 first
@@ -426,7 +426,7 @@ if agenda_block and agenda_start > 0:
       </ul>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>March 2026</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>March 2026</span></div>
 </div>'''
 
     html = html[:agenda_start] + new_agenda + html[agenda_block_end:]

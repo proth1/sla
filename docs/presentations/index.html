@@ -3,30 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Software Onboarding Transformation | KPMG</title>
+<title>Software Onboarding Transformation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
 <style>
 :root {
-  --kpmg-blue: #00338D;
-  --kpmg-medium-blue: #005EB8;
-  --kpmg-light-blue: #0091DA;
-  --kpmg-dark-navy: #001D48;
-  --kpmg-white: #ffffff;
-  --kpmg-light-gray: #f5f5f5;
-  --kpmg-medium-gray: #666666;
-  --kpmg-dark-gray: #333333;
-  --kpmg-gold: #D4A843;
-  --kpmg-emerald: #00A86B;
-  --kpmg-rose: #C62828;
-  --kpmg-amber: #E67E22;
+  --brand-blue: #00338D;
+  --brand-medium-blue: #005EB8;
+  --brand-light-blue: #0091DA;
+  --brand-dark-navy: #001D48;
+  --brand-white: #ffffff;
+  --brand-light-gray: #f5f5f5;
+  --brand-medium-gray: #666666;
+  --brand-dark-gray: #333333;
+  --brand-gold: #D4A843;
+  --brand-emerald: #00A86B;
+  --brand-rose: #C62828;
+  --brand-amber: #E67E22;
   --font-heading: 'Open Sans Condensed', 'Arial Narrow', sans-serif;
   --font-body: 'Open Sans', Arial, Helvetica, sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; scroll-behavior: smooth; overflow: hidden; height: 100%; }
-body { font-family: var(--font-body); background: var(--kpmg-white); color: var(--kpmg-dark-gray); overflow: hidden; height: 100%; line-height: 1.6; }
+body { font-family: var(--font-body); background: var(--brand-white); color: var(--brand-dark-gray); overflow: hidden; height: 100%; line-height: 1.6; }
 h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 
 .slides-container {
@@ -54,60 +54,60 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
   margin: 0 auto;
 }
 .slide-hero {
-  background: linear-gradient(135deg, var(--kpmg-blue) 0%, var(--kpmg-medium-blue) 100%);
+  background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-medium-blue) 100%);
   color: white;
   max-width: 100%;
   padding: 80px 60px;
   justify-content: center;
 }
 .slide-hero h1 { font-size: 3.2rem; margin-bottom: 0.5rem; line-height: 1.15; }
-.slide-hero h2 { font-size: 1.6rem; font-weight: 700; color: var(--kpmg-gold); margin-bottom: 1.5rem; }
+.slide-hero h2 { font-size: 1.6rem; font-weight: 700; color: var(--brand-gold); margin-bottom: 1.5rem; }
 .slide-section {
-  background: linear-gradient(135deg, var(--kpmg-medium-blue), var(--kpmg-blue));
+  background: linear-gradient(135deg, var(--brand-medium-blue), var(--brand-blue));
   color: white;
   max-width: 100%;
   padding: 80px 60px;
   justify-content: center;
 }
-.slide-section h2 { font-size: 2.5rem; border-bottom: 3px solid var(--kpmg-gold); padding-bottom: 10px; display: inline-block; color: white; }
-.slide h2 { font-size: 1.9rem; color: var(--kpmg-blue); margin-bottom: 0.75rem; }
-.slide.slide-hero h2 { color: var(--kpmg-gold); }
+.slide-section h2 { font-size: 2.5rem; border-bottom: 3px solid var(--brand-gold); padding-bottom: 10px; display: inline-block; color: white; }
+.slide h2 { font-size: 1.9rem; color: var(--brand-blue); margin-bottom: 0.75rem; }
+.slide.slide-hero h2 { color: var(--brand-gold); }
 .slide.slide-section h2 { color: white; }
-.slide h3 { font-size: 1.2rem; color: var(--kpmg-dark-navy); margin: 0.75rem 0 0.5rem; }
+.slide h3 { font-size: 1.2rem; color: var(--brand-dark-navy); margin: 0.75rem 0 0.5rem; }
 .slide p { line-height: 1.6; margin-bottom: 0.6rem; max-width: 960px; font-size: 0.92rem; }
 .slide ul { margin-left: 1.5rem; margin-bottom: 0.75rem; }
 .slide li { margin-bottom: 0.3rem; line-height: 1.5; font-size: 0.88rem; }
 
 /* Cards */
 .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 0.75rem 0; }
-.card { background: white; border-radius: 8px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(0,51,141,0.08); border-left: 4px solid var(--kpmg-blue); transition: transform 0.2s, box-shadow 0.2s; }
+.card { background: white; border-radius: 8px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(0,51,141,0.08); border-left: 4px solid var(--brand-blue); transition: transform 0.2s, box-shadow 0.2s; }
 .card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,51,141,0.12); }
-.card h4 { color: var(--kpmg-blue); margin-bottom: 0.4rem; font-size: 1rem; font-family: var(--font-body); font-weight: 700; }
-.card p, .card ul { font-size: 0.82rem; color: var(--kpmg-medium-gray); }
-.card.gold { border-left-color: var(--kpmg-gold); }
-.card.emerald { border-left-color: var(--kpmg-emerald); }
-.card.rose { border-left-color: var(--kpmg-rose); }
-.card.amber { border-left-color: var(--kpmg-amber); }
-.card.light-blue { border-left-color: var(--kpmg-light-blue); }
+.card h4 { color: var(--brand-blue); margin-bottom: 0.4rem; font-size: 1rem; font-family: var(--font-body); font-weight: 700; }
+.card p, .card ul { font-size: 0.82rem; color: var(--brand-medium-gray); }
+.card.gold { border-left-color: var(--brand-gold); }
+.card.emerald { border-left-color: var(--brand-emerald); }
+.card.rose { border-left-color: var(--brand-rose); }
+.card.amber { border-left-color: var(--brand-amber); }
+.card.light-blue { border-left-color: var(--brand-light-blue); }
 
 /* Metrics */
 .metric-row { display: flex; gap: 16px; flex-wrap: wrap; margin: 0.75rem 0; }
 .metric { text-align: center; padding: 16px 12px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,51,141,0.08); flex: 1; min-width: 130px; }
-.metric .value { font-size: 1.8rem; font-weight: 700; color: var(--kpmg-blue); font-family: var(--font-heading); }
-.metric .label { font-size: 0.72rem; color: var(--kpmg-medium-gray); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+.metric .value { font-size: 1.8rem; font-weight: 700; color: var(--brand-blue); font-family: var(--font-heading); }
+.metric .label { font-size: 0.72rem; color: var(--brand-medium-gray); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
 
 /* Tables */
 .styled-table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.82rem; }
-.styled-table thead { background: var(--kpmg-blue); color: white; }
+.styled-table thead { background: var(--brand-blue); color: white; }
 .styled-table th { padding: 8px 10px; text-align: left; font-weight: 600; font-size: 0.78rem; }
 .styled-table td { padding: 7px 10px; border-bottom: 1px solid #e0e0e0; }
-.styled-table tbody tr:nth-child(even) { background: var(--kpmg-light-gray); }
+.styled-table tbody tr:nth-child(even) { background: var(--brand-light-gray); }
 .styled-table tbody tr:hover { background: #e8edf5; }
 
 /* Navigation */
 .nav-bar {
   position: fixed; top: 0; left: 0; right: 0;
-  background: var(--kpmg-blue);
+  background: var(--brand-blue);
   color: white; padding: 0 20px; height: 52px;
   display: flex; justify-content: space-between; align-items: center;
   z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
@@ -118,13 +118,13 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 .nav-links { display: flex; gap: 14px; }
 .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; cursor: pointer; font-size: 0.75rem; font-weight: 600; transition: color 0.2s; }
 .nav-links a:hover { color: white; }
-.slide-counter { position: fixed; bottom: 16px; right: 20px; background: var(--kpmg-blue); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; z-index: 1000; }
+.slide-counter { position: fixed; bottom: 16px; right: 20px; background: var(--brand-blue); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; z-index: 1000; }
 
 /* Slide dots */
 .slide-indicator { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; z-index: 999; }
 .slide-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,51,141,0.25); cursor: pointer; transition: all 0.3s; }
-.slide-dot:hover { background: var(--kpmg-light-blue); transform: scale(1.3); }
-.slide-dot.active { background: var(--kpmg-gold); transform: scale(1.2); }
+.slide-dot:hover { background: var(--brand-light-blue); transform: scale(1.3); }
+.slide-dot.active { background: var(--brand-gold); transform: scale(1.2); }
 
 /* Layout helpers */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
@@ -133,14 +133,14 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 
 /* Roadmap */
 .roadmap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0.75rem 0; }
-.roadmap-phase { border-radius: 8px; padding: 14px; border-top: 4px solid var(--kpmg-blue); background: white; box-shadow: 0 2px 8px rgba(0,51,141,0.08); }
-.roadmap-phase h4 { font-size: 0.85rem; color: var(--kpmg-blue); margin-bottom: 6px; font-family: var(--font-body); font-weight: 700; }
-.roadmap-phase ul { margin: 0; padding-left: 14px; font-size: 0.76rem; color: var(--kpmg-medium-gray); }
+.roadmap-phase { border-radius: 8px; padding: 14px; border-top: 4px solid var(--brand-blue); background: white; box-shadow: 0 2px 8px rgba(0,51,141,0.08); }
+.roadmap-phase h4 { font-size: 0.85rem; color: var(--brand-blue); margin-bottom: 6px; font-family: var(--font-body); font-weight: 700; }
+.roadmap-phase ul { margin: 0; padding-left: 14px; font-size: 0.76rem; color: var(--brand-medium-gray); }
 .roadmap-phase li { margin-bottom: 3px; line-height: 1.4; }
-.roadmap-phase.d30 { border-top-color: var(--kpmg-emerald); }
-.roadmap-phase.d60 { border-top-color: var(--kpmg-light-blue); }
-.roadmap-phase.d90 { border-top-color: var(--kpmg-medium-blue); }
-.roadmap-phase.d120 { border-top-color: var(--kpmg-blue); }
+.roadmap-phase.d30 { border-top-color: var(--brand-emerald); }
+.roadmap-phase.d60 { border-top-color: var(--brand-light-blue); }
+.roadmap-phase.d90 { border-top-color: var(--brand-medium-blue); }
+.roadmap-phase.d120 { border-top-color: var(--brand-blue); }
 
 /* Phase pipeline */
 .phase-pipeline { display: flex; gap: 3px; margin: 0.75rem 0; }
@@ -155,111 +155,111 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 .pain-node.red { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
 .pain-node.amber { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; }
 .pain-node.green { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
-.pain-arrow { display: flex; align-items: center; color: var(--kpmg-medium-gray); font-size: 1.2rem; padding: 0 2px; }
+.pain-arrow { display: flex; align-items: center; color: var(--brand-medium-gray); font-size: 1.2rem; padding: 0 2px; }
 
 /* Severity badges */
-.sev-critical { background: var(--kpmg-rose); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; }
-.sev-high { background: var(--kpmg-amber); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; }
-.sev-medium { background: var(--kpmg-light-blue); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; }
+.sev-critical { background: var(--brand-rose); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; }
+.sev-high { background: var(--brand-amber); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; }
+.sev-medium { background: var(--brand-light-blue); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; }
 
 /* Quote block */
-.quote-block { border-left: 4px solid var(--kpmg-gold); padding: 12px 16px; margin: 0.6rem 0; background: #faf8f1; border-radius: 0 6px 6px 0; font-style: italic; font-size: 0.88rem; color: var(--kpmg-dark-gray); }
-.quote-block cite { display: block; font-style: normal; font-size: 0.76rem; color: var(--kpmg-medium-gray); margin-top: 4px; }
+.quote-block { border-left: 4px solid var(--brand-gold); padding: 12px 16px; margin: 0.6rem 0; background: #faf8f1; border-radius: 0 6px 6px 0; font-style: italic; font-size: 0.88rem; color: var(--brand-dark-gray); }
+.quote-block cite { display: block; font-style: normal; font-size: 0.76rem; color: var(--brand-medium-gray); margin-top: 4px; }
 
 /* ROI highlight */
-.roi-card { background: linear-gradient(135deg, var(--kpmg-blue), var(--kpmg-medium-blue)); color: white; border-radius: 8px; padding: 20px; text-align: center; }
-.roi-card .value { font-size: 2.5rem; font-family: var(--font-heading); font-weight: 700; color: var(--kpmg-gold); }
+.roi-card { background: linear-gradient(135deg, var(--brand-blue), var(--brand-medium-blue)); color: white; border-radius: 8px; padding: 20px; text-align: center; }
+.roi-card .value { font-size: 2.5rem; font-family: var(--font-heading); font-weight: 700; color: var(--brand-gold); }
 .roi-card .label { font-size: 0.82rem; opacity: 0.9; margin-top: 4px; }
 
 /* Footer */
-.slide-footer { position: absolute; bottom: 10px; left: 40px; right: 40px; display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--kpmg-medium-gray); border-top: 1px solid #e0e0e0; padding-top: 6px; }
+.slide-footer { position: absolute; bottom: 10px; left: 40px; right: 40px; display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--brand-medium-gray); border-top: 1px solid #e0e0e0; padding-top: 6px; }
 .slide-section .slide-footer, .slide-hero .slide-footer { border-top-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); }
 
 /* Topic current/rec/roadmap pattern */
 .topic-header { display: flex; align-items: center; gap: 12px; margin-bottom: 0.5rem; }
-.topic-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; background: var(--kpmg-blue); flex-shrink: 0; }
+.topic-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; background: var(--brand-blue); flex-shrink: 0; }
 .finding-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0.5rem 0; }
-.finding { padding: 10px 12px; border-radius: 6px; font-size: 0.8rem; background: var(--kpmg-light-gray); border-left: 3px solid var(--kpmg-rose); }
-.finding.positive { border-left-color: var(--kpmg-emerald); background: #f0fdf4; }
-.finding strong { color: var(--kpmg-dark-navy); font-size: 0.78rem; }
+.finding { padding: 10px 12px; border-radius: 6px; font-size: 0.8rem; background: var(--brand-light-gray); border-left: 3px solid var(--brand-rose); }
+.finding.positive { border-left-color: var(--brand-emerald); background: #f0fdf4; }
+.finding strong { color: var(--brand-dark-navy); font-size: 0.78rem; }
 
 /* Rec cards */
 .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0.5rem 0; }
-.rec-card { padding: 14px; border-radius: 8px; background: white; box-shadow: 0 2px 8px rgba(0,51,141,0.08); border-top: 3px solid var(--kpmg-emerald); }
-.rec-card h4 { font-size: 0.88rem; color: var(--kpmg-blue); margin-bottom: 4px; font-family: var(--font-body); font-weight: 700; }
-.rec-card p { font-size: 0.78rem; color: var(--kpmg-medium-gray); margin: 0; }
-.rec-card .impact { font-size: 0.72rem; color: var(--kpmg-emerald); font-weight: 600; margin-top: 6px; }
+.rec-card { padding: 14px; border-radius: 8px; background: white; box-shadow: 0 2px 8px rgba(0,51,141,0.08); border-top: 3px solid var(--brand-emerald); }
+.rec-card h4 { font-size: 0.88rem; color: var(--brand-blue); margin-bottom: 4px; font-family: var(--font-body); font-weight: 700; }
+.rec-card p { font-size: 0.78rem; color: var(--brand-medium-gray); margin: 0; }
+.rec-card .impact { font-size: 0.72rem; color: var(--brand-emerald); font-weight: 600; margin-top: 6px; }
 
 /* RACI */
-.raci-r { background: var(--kpmg-blue); color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.68rem; font-weight: 700; }
-.raci-a { background: var(--kpmg-medium-blue); color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.68rem; font-weight: 700; }
+.raci-r { background: var(--brand-blue); color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.68rem; font-weight: 700; }
+.raci-a { background: var(--brand-medium-blue); color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.68rem; font-weight: 700; }
 .raci-c { background: #94a3b8; color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.68rem; font-weight: 700; }
-.raci-i { background: #cbd5e1; color: var(--kpmg-dark-gray); padding: 1px 6px; border-radius: 3px; font-size: 0.68rem; font-weight: 700; }
+.raci-i { background: #cbd5e1; color: var(--brand-dark-gray); padding: 1px 6px; border-radius: 3px; font-size: 0.68rem; font-weight: 700; }
 
 /* Small text */
 .small { font-size: 0.78rem; }
 .tiny { font-size: 0.7rem; }
-.muted { color: var(--kpmg-medium-gray); }
+.muted { color: var(--brand-medium-gray); }
 
 /* Window motif accent */
-.window-accent { border: 3px solid var(--kpmg-blue); padding: 16px; position: relative; border-radius: 2px; }
+.window-accent { border: 3px solid var(--brand-blue); padding: 16px; position: relative; border-radius: 2px; }
 .window-accent::before { content: ''; position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; border: 1px solid rgba(0,51,141,0.2); border-radius: 4px; }
 
 /* Heatmap */
 .heatmap-wrap { overflow-x: auto; }
 .heatmap { border-collapse: collapse; width: 100%; font-size: 0.72rem; }
-.heatmap th { background: var(--kpmg-blue); color: white; padding: 7px 8px; text-align: center; font-weight: 600; white-space: nowrap; }
+.heatmap th { background: var(--brand-blue); color: white; padding: 7px 8px; text-align: center; font-weight: 600; white-space: nowrap; }
 .heatmap th.topic-col { text-align: left; min-width: 130px; }
 .heatmap td { padding: 0; height: 36px; position: relative; border: 1px solid #e0e0e0; }
-.heatmap td.topic-label { background: var(--kpmg-light-gray); padding: 4px 10px; font-weight: 600; color: var(--kpmg-dark-navy); font-size: 0.75rem; }
+.heatmap td.topic-label { background: var(--brand-light-gray); padding: 4px 10px; font-weight: 600; color: var(--brand-dark-navy); font-size: 0.75rem; }
 .hm-cell { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; cursor: default; font-weight: 700; }
-.hm-cell.active { background: var(--kpmg-blue); color: white; }
+.hm-cell.active { background: var(--brand-blue); color: white; }
 .hm-cell.secondary { background: #93a5c0; color: white; }
 .hm-cell.empty { background: #fafbfc; }
-.hm-cell .hm-tip { display: none; position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); background: var(--kpmg-dark-navy); color: white; padding: 6px 10px; border-radius: 4px; font-size: 0.68rem; font-weight: 400; white-space: nowrap; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+.hm-cell .hm-tip { display: none; position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); background: var(--brand-dark-navy); color: white; padding: 6px 10px; border-radius: 4px; font-size: 0.68rem; font-weight: 400; white-space: nowrap; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 .hm-cell:hover .hm-tip { display: block; }
-.hm-legend { display: flex; gap: 16px; margin-top: 8px; font-size: 0.72rem; color: var(--kpmg-medium-gray); align-items: center; }
+.hm-legend { display: flex; gap: 16px; margin-top: 8px; font-size: 0.72rem; color: var(--brand-medium-gray); align-items: center; }
 .hm-legend-box { display: inline-block; width: 14px; height: 14px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
 
 /* Journey Rails */
 .journey-rail { display: flex; gap: 6px; margin: 10px 0; align-items: stretch; }
-.journey-phase { flex: 1; border-radius: 6px; padding: 10px 10px; min-height: 80px; position: relative; background: var(--kpmg-light-gray); border: 1px solid #e0e0e0; }
-.journey-phase.active { background: linear-gradient(135deg, var(--kpmg-blue), var(--kpmg-medium-blue)); color: white; border-color: var(--kpmg-blue); }
+.journey-phase { flex: 1; border-radius: 6px; padding: 10px 10px; min-height: 80px; position: relative; background: var(--brand-light-gray); border: 1px solid #e0e0e0; }
+.journey-phase.active { background: linear-gradient(135deg, var(--brand-blue), var(--brand-medium-blue)); color: white; border-color: var(--brand-blue); }
 .journey-phase.inactive { opacity: 0.5; }
 .jp-label { font-size: 0.7rem; font-weight: 700; margin-bottom: 6px; }
 .jp-tasks { list-style: none; padding: 0; margin: 0; }
 .jp-tasks li { font-size: 0.65rem; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.15); }
 .jp-tasks li:last-child { border-bottom: none; }
 .journey-footer { display: flex; gap: 12px; margin-top: 6px; }
-.journey-footer-block { flex: 1; background: var(--kpmg-light-gray); border-radius: 4px; padding: 8px 10px; font-size: 0.68rem; color: var(--kpmg-dark-gray); }
-.journey-footer-block strong { color: var(--kpmg-dark-navy); display: block; margin-bottom: 2px; font-size: 0.72rem; }
+.journey-footer-block { flex: 1; background: var(--brand-light-gray); border-radius: 4px; padding: 8px 10px; font-size: 0.68rem; color: var(--brand-dark-gray); }
+.journey-footer-block strong { color: var(--brand-dark-navy); display: block; margin-bottom: 2px; font-size: 0.72rem; }
 
 /* Topic Explorer */
-.topic-pill { background: var(--kpmg-light-gray); border: 1px solid #d0d5dd; border-radius: 20px; padding: 6px 14px; font-size: 0.75rem; font-family: var(--font-body); cursor: pointer; color: var(--kpmg-dark-gray); transition: all 0.2s; font-weight: 600; }
-.topic-pill:hover { background: var(--kpmg-medium-blue); color: white; border-color: var(--kpmg-medium-blue); }
-.topic-pill.active { background: var(--kpmg-blue); color: white; border-color: var(--kpmg-blue); }
+.topic-pill { background: var(--brand-light-gray); border: 1px solid #d0d5dd; border-radius: 20px; padding: 6px 14px; font-size: 0.75rem; font-family: var(--font-body); cursor: pointer; color: var(--brand-dark-gray); transition: all 0.2s; font-weight: 600; }
+.topic-pill:hover { background: var(--brand-medium-blue); color: white; border-color: var(--brand-medium-blue); }
+.topic-pill.active { background: var(--brand-blue); color: white; border-color: var(--brand-blue); }
 
 /* DMN Tables */
 .dmn-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; margin: 0.5rem 0; }
-.dmn-table th { background: var(--kpmg-blue); color: white; padding: 6px 8px; font-weight: 600; text-align: left; font-size: 0.7rem; }
-.dmn-table th.input-col { background: var(--kpmg-medium-blue); }
-.dmn-table th.output-col { background: var(--kpmg-dark-navy); }
+.dmn-table th { background: var(--brand-blue); color: white; padding: 6px 8px; font-weight: 600; text-align: left; font-size: 0.7rem; }
+.dmn-table th.input-col { background: var(--brand-medium-blue); }
+.dmn-table th.output-col { background: var(--brand-dark-navy); }
 .dmn-table td { padding: 5px 8px; border-bottom: 1px solid #e0e0e0; font-size: 0.7rem; }
-.dmn-table tr:nth-child(even) { background: var(--kpmg-light-gray); }
+.dmn-table tr:nth-child(even) { background: var(--brand-light-gray); }
 .dmn-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.dmn-header h4 { margin: 0; color: var(--kpmg-blue); font-family: var(--font-body); }
-.dmn-badge { background: var(--kpmg-blue); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.65rem; font-weight: 600; }
+.dmn-header h4 { margin: 0; color: var(--brand-blue); font-family: var(--font-body); }
+.dmn-badge { background: var(--brand-blue); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.65rem; font-weight: 600; }
 
 /* Process Flow Diagram */
 .process-flow { display: flex; align-items: center; gap: 0; margin: 1rem 0; overflow-x: auto; padding: 10px 0; }
-.pf-phase { background: white; border: 2px solid var(--kpmg-blue); border-radius: 8px; padding: 12px 14px; min-width: 140px; text-align: center; position: relative; flex-shrink: 0; }
-.pf-phase h5 { font-size: 0.72rem; color: var(--kpmg-blue); margin-bottom: 4px; font-family: var(--font-body); font-weight: 700; }
-.pf-phase .pf-tasks { font-size: 0.62rem; color: var(--kpmg-medium-gray); }
-.pf-phase .pf-sla { font-size: 0.62rem; color: var(--kpmg-emerald); font-weight: 600; margin-top: 4px; }
-.pf-arrow { font-size: 1.2rem; color: var(--kpmg-medium-blue); flex-shrink: 0; padding: 0 2px; }
-.pf-gateway { width: 36px; height: 36px; background: var(--kpmg-gold); transform: rotate(45deg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin: 0 4px; border: 2px solid #b8912e; }
+.pf-phase { background: white; border: 2px solid var(--brand-blue); border-radius: 8px; padding: 12px 14px; min-width: 140px; text-align: center; position: relative; flex-shrink: 0; }
+.pf-phase h5 { font-size: 0.72rem; color: var(--brand-blue); margin-bottom: 4px; font-family: var(--font-body); font-weight: 700; }
+.pf-phase .pf-tasks { font-size: 0.62rem; color: var(--brand-medium-gray); }
+.pf-phase .pf-sla { font-size: 0.62rem; color: var(--brand-emerald); font-weight: 600; margin-top: 4px; }
+.pf-arrow { font-size: 1.2rem; color: var(--brand-medium-blue); flex-shrink: 0; padding: 0 2px; }
+.pf-gateway { width: 36px; height: 36px; background: var(--brand-gold); transform: rotate(45deg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin: 0 4px; border: 2px solid #b8912e; }
 .pf-gateway span { transform: rotate(-45deg); font-size: 0.55rem; font-weight: 700; color: white; }
-.pf-reject { font-size: 0.6rem; color: var(--kpmg-rose); font-weight: 600; position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+.pf-reject { font-size: 0.6rem; color: var(--brand-rose); font-weight: 600; position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
 
 /* Chart Container */
 .chart-container { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,51,141,0.08); margin: 1rem 0; min-height: 280px; }
@@ -271,7 +271,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- Navigation Bar -->
 <div class="nav-bar">
   <div class="nav-left">
-    <svg class="nav-logo" viewBox="0.056 0.2 80.576 32.073" xmlns="http://www.w3.org/2000/svg"><path d="M62.742.201v16.002l-.204.17-.204.168-.196.177-.187.177-.179.177-.178.185-.17.186-.17.185V.201h-17.89v14.57h-1.48V.2h-17.89v14.594h-1.48V.201H4.624v16.635L.056 31.919H4.07l2.016-6.677h.579L10 31.919h4.849l-3.233-6.677h7.333l-2.033 6.677h4.381l2.008-6.66h.97v-.017H34.04l-1.94 6.66h4.424l1.88-6.66h1.99l.052 6.66h3.709l4.262-6.66h2.79l-1.446 6.66h4.355l1.42-6.66h2.519l-.017.379.009.388.017.37.034.372.025.177.026.177.034.177.034.177.042.177.043.169.05.168.052.169.06.169.059.16.068.16.068.152.077.16.076.152.085.143.085.152.094.143.102.135.102.143.11.127.111.135.111.126.128.127.127.118.162.134.161.135.17.127.18.118.178.118.179.11.187.092.195.101.187.085.196.084.196.076.204.076.204.067.204.06.204.058.205.05.408.094.417.067.408.06.408.05.4.033.392.017.382.017h.366l.494-.008.493-.008.502-.025.502-.025.502-.043.501-.042.502-.05.502-.06.51-.067.511-.076.51-.084.51-.084.511-.093.51-.101.511-.101.519-.118 1.514-6.046h4.968V.202h-17.89zM6.282 24.618l.026-.093.06.093zm15.585-8.971l-.255.852-2.382 7.84-.094.279H11.31l-.604-1.282 8.43-8.54h-5.418l-6.593 7.04 2.135-7.04H5.262V.833h16.605v14.813zm4.62 6.627l-.128.008-.12.008-.127.008H25.644l-.145.008h-.136l-1.063-.008.493-1.804.23-.894.562-2.1h.365l.179-.007h.995l.502.008.46.016.204.008.195.017.187.026.17.025.154.025.144.042.136.043.12.05.102.05.093.068.085.068.068.084.043.068.034.067.034.076.025.084.017.093.01.093V18.714l-.01.119-.008.118-.025.135-.026.134-.076.287-.094.32-.093.27-.103.262-.11.244-.12.228-.059.1-.06.102-.068.101-.076.093-.077.093-.076.084-.085.084-.086.076-.093.068-.094.076-.102.059-.11.067-.111.06-.12.05-.118.05-.128.042-.136.051-.144.034-.154.033-.153.034-.17.025-.17.026-.179.017-.187.017zm12.096 2.344l1.744-6.155.068 6.155h-1.812zm2.654-9.848h-4.151l-2.859 9.848h-4.406l.204-.085.204-.084.196-.084.196-.093.187-.093.178-.11.179-.1.17-.11.17-.118.162-.118.153-.118.153-.135.145-.126.136-.144.136-.135.128-.151.127-.144.12-.16.11-.152.11-.168.102-.169.094-.169.094-.177.085-.185.085-.186.076-.185.068-.194.069-.202.05-.203.06-.202.043-.22.042-.21.06-.337.05-.32.035-.304.025-.287.01-.286-.01-.262-.008-.261-.034-.245-.034-.227-.06-.228-.059-.21-.085-.203-.094-.194-.102-.194-.119-.177-.136-.169-.11-.118-.111-.118-.12-.1-.127-.094-.136-.092-.136-.085-.145-.075-.144-.068-.153-.067-.153-.051-.162-.05-.162-.051-.17-.042-.17-.034-.17-.034-.179-.025-.366-.05-.365-.026-.375-.025-.382-.008h-4.824V.834h16.605v13.937zm10.089 9.848h-2.493l3.777-5.902zm9.28-9.57l-.008 3.415-.213.295-.195.304-.196.303-.179.304-.17.303-.17.312-.145.304-.144.303-.136.295-.12.304-.119.295-.102.287-.093.286-.085.278-.077.27-.068.27-.043.177-.042.186-.043.177-.034.185-.034.177-.025.177-.026.177-.017.186h-2.441l2.084-9.823-7.026-.008-6.287 9.831h-.46V.834h16.614v14.215zm9.58 13.591l-.35.06-.357.05-.357.05-.349.043-.348.033-.35.026-.34.017h-.561l-.221-.008-.213-.017-.212-.026-.205-.033-.195-.034-.196-.042-.187-.05-.179-.06-.178-.059-.17-.076-.162-.076-.162-.092-.153-.093-.145-.101-.136-.101-.136-.118-.119-.127-.119-.126-.11-.144-.103-.143-.093-.16-.085-.16-.085-.169-.068-.177-.06-.194-.051-.194-.051-.202-.034-.21-.026-.22-.017-.228-.009-.236h7.742l-.851 3.398zm9.816-4.021h-4.185l.689-2.749h-8.388l-.689 2.749h-4.057v-.565l.05-.236.043-.236.051-.253.051-.253.077-.278.076-.279.085-.278.094-.27.102-.27.11-.27.12-.26.119-.262.136-.261.136-.245.145-.253.161-.236.162-.236.161-.228.18-.219.186-.21.196-.203.196-.185.212-.186.213-.177.221-.16.238-.152.238-.135.247-.126.255-.118.264-.101.272-.085.281-.067.29-.06.297-.041.306-.026.315-.008.247.008.246.017.247.034.238.05.12.034.11.034.11.034.103.05.102.042.102.06.093.058.094.06.085.075.085.076.077.076.076.093.068.084.06.101.051.11.051.11.043.117.034.127.025.126.026.144.009.143v.312l-.017.169h5.002l.076-.346.068-.396.034-.211.017-.228.017-.227v-.236l-.008-.245-.025-.253-.026-.118-.017-.126-.034-.127-.034-.126-.042-.135-.043-.127-.05-.126-.06-.127-.06-.126-.077-.127-.076-.126-.085-.126-.102-.135-.11-.127-.112-.126-.119-.118-.127-.118-.136-.11-.136-.101-.145-.101-.153-.101-.153-.085-.162-.084-.17-.084-.17-.076-.179-.076-.187-.068-.187-.067-.187-.06-.204-.05-.196-.05-.213-.051-.212-.042-.213-.042-.221-.034-.23-.025-.468-.051-.476-.042-.502-.017-.51-.008-.383.008-.4.008-.417.025-.434.034-.45.05-.46.06-.468.075-.476.102-.238.05-.247.06-.238.067-.247.067-.247.076-.246.084-.247.085-.238.092-.247.102-.247.11-.238.109-.247.118-.238.126-.238.135-.238.135-.238.152V.833h16.63v23.784z" fill="#FFFFFF"/></svg>
+    <svg class="nav-logo" viewBox="0 0 40 24" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="24" rx="4" fill="rgba(255,255,255,0.2)"/><text x="20" y="16" text-anchor="middle" fill="white" font-family="Open Sans Condensed, sans-serif" font-weight="700" font-size="12">SLA</text></svg>
     <span class="title" style="margin-left:12px;">Software Onboarding Transformation</span>
   </div>
   <div class="nav-links">
@@ -315,7 +315,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:4px 10px;font-size:0.7rem;letter-spacing:0.5px;">24 Gap Findings</span>
     <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:4px 10px;font-size:0.7rem;letter-spacing:0.5px;">120-Day Roadmap</span>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>March 2026</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>March 2026</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -365,7 +365,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       </ul>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>March 2026</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>March 2026</span></div>
 </div><!-- ============================================================ -->
 <!-- SLIDE 2: Executive Summary -->
 <!-- ============================================================ -->
@@ -376,12 +376,12 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
   <p>The software onboarding process spans <strong>6 to 9 months</strong> end-to-end, driven by 18 sequential committees, 5+ disconnected intake channels, and critical resource bottlenecks in Security and Legal. The START initiative (9 months old) created centralized awareness but did not integrate underlying team processes. Competitors with less mature processes achieve 60-90 day cycles.</p>
 
   <div class="metric-row">
-    <div class="metric"><div class="value" style="color:var(--kpmg-rose);">6-9 mo</div><div class="label">Current E2E Cycle</div></div>
-    <div class="metric"><div class="value" style="color:var(--kpmg-rose);">18</div><div class="label">Committees / Reviews</div></div>
+    <div class="metric"><div class="value" style="color:var(--brand-rose);">6-9 mo</div><div class="label">Current E2E Cycle</div></div>
+    <div class="metric"><div class="value" style="color:var(--brand-rose);">18</div><div class="label">Committees / Reviews</div></div>
     <div class="metric"><div class="value">335</div><div class="label">Assessments / Year</div></div>
-    <div class="metric"><div class="value" style="color:var(--kpmg-rose);">28-29 d</div><div class="label">RAE (2x 14-Day Target)</div></div>
-    <div class="metric"><div class="value" style="color:var(--kpmg-rose);">75 days</div><div class="label">DD Internal Review</div></div>
-    <div class="metric"><div class="value" style="color:var(--kpmg-amber);">60-90 d</div><div class="label">Competitor Benchmark</div></div>
+    <div class="metric"><div class="value" style="color:var(--brand-rose);">28-29 d</div><div class="label">RAE (2x 14-Day Target)</div></div>
+    <div class="metric"><div class="value" style="color:var(--brand-rose);">75 days</div><div class="label">DD Internal Review</div></div>
+    <div class="metric"><div class="value" style="color:var(--brand-amber);">60-90 d</div><div class="label">Competitor Benchmark</div></div>
   </div>
 
   <h3>Biggest Challenges</h3>
@@ -397,7 +397,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <div class="card emerald"><h4>Unified Intake + Deal-Killer Gate</h4><p>Consolidate 5+ intake channels. Block non-starters at day 1 before consuming reviewer capacity.</p></div>
     <div class="card emerald"><h4>Contract Automation</h4><p>Automate contract review for the 2-person team handling 30+/month. Identified as "Dumpster Fire #1" by TPRM Lead.</p></div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>March 2026</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>March 2026</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -407,15 +407,15 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
   <h2>End-to-End Workflow: Current Pain Points</h2>
 
   <div class="phase-pipeline">
-    <div class="phase-pip" style="background:var(--kpmg-rose);"><span class="num">1</span>Intake<br><small>5+ channels</small></div>
-    <div class="phase-pip" style="background:var(--kpmg-rose);"><span class="num">2</span>Prioritization<br><small>No formula</small></div>
-    <div class="phase-pip" style="background:var(--kpmg-amber);"><span class="num">3</span>Funding<br><small>Locked forms</small></div>
-    <div class="phase-pip" style="background:var(--kpmg-rose);"><span class="num">4</span>Sourcing/DD<br><small>75 day review</small></div>
-    <div class="phase-pip" style="background:var(--kpmg-rose);"><span class="num">5</span>Cyber<br><small>#1 bottleneck</small></div>
-    <div class="phase-pip" style="background:var(--kpmg-amber);"><span class="num">6</span>EA Review<br><small>2wk ARB SLA</small></div>
-    <div class="phase-pip" style="background:var(--kpmg-amber);"><span class="num">7</span>AI Gov<br><small>60+ queue</small></div>
-    <div class="phase-pip" style="background:var(--kpmg-rose);"><span class="num">8</span>Legal<br><small>2 people</small></div>
-    <div class="phase-pip" style="background:var(--kpmg-amber);"><span class="num">9</span>Contract<br><small>Up to 1.5yr</small></div>
+    <div class="phase-pip" style="background:var(--brand-rose);"><span class="num">1</span>Intake<br><small>5+ channels</small></div>
+    <div class="phase-pip" style="background:var(--brand-rose);"><span class="num">2</span>Prioritization<br><small>No formula</small></div>
+    <div class="phase-pip" style="background:var(--brand-amber);"><span class="num">3</span>Funding<br><small>Locked forms</small></div>
+    <div class="phase-pip" style="background:var(--brand-rose);"><span class="num">4</span>Sourcing/DD<br><small>75 day review</small></div>
+    <div class="phase-pip" style="background:var(--brand-rose);"><span class="num">5</span>Cyber<br><small>#1 bottleneck</small></div>
+    <div class="phase-pip" style="background:var(--brand-amber);"><span class="num">6</span>EA Review<br><small>2wk ARB SLA</small></div>
+    <div class="phase-pip" style="background:var(--brand-amber);"><span class="num">7</span>AI Gov<br><small>60+ queue</small></div>
+    <div class="phase-pip" style="background:var(--brand-rose);"><span class="num">8</span>Legal<br><small>2 people</small></div>
+    <div class="phase-pip" style="background:var(--brand-amber);"><span class="num">9</span>Contract<br><small>Up to 1.5yr</small></div>
   </div>
 
   <div class="two-col" style="margin-top:0.5rem;">
@@ -440,7 +440,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <div class="card emerald"><h4>Acquisition 2.0</h4><p>Brings all teams together at the start. Enables collective go/no-go at first tollgate. Acknowledged as time-consuming but necessary.</p></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>March 2026</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>March 2026</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -458,14 +458,14 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <tr><td><strong>Oracle</strong></td><td>Accounts payable</td><td><span class="sev-medium">API from Ariba</span></td></tr>
       <tr><td><strong>Confluence + Catfox</strong></td><td>Architecture approvals</td><td><span class="sev-high">Plugin-based, no workflow integration</span></td></tr>
       <tr><td><strong>JIRA</strong></td><td>Architecture ticket tracking</td><td><span class="sev-high">Per-team, no cross-functional view</span></td></tr>
-      <tr><td><strong>Process Orchestration Engine</strong> (target)</td><td>E2E process orchestration</td><td style="color:var(--kpmg-emerald);font-weight:600;">Target platform</td></tr>
+      <tr><td><strong>Process Orchestration Engine</strong> (target)</td><td>E2E process orchestration</td><td style="color:var(--brand-emerald);font-weight:600;">Target platform</td></tr>
     </tbody>
   </table>
   <div class="two-col" style="margin-top:0.75rem;">
     <div class="card rose"><h4>Current: Manual Handoffs</h4><p>PDF exports between OneTrust and ServiceNow. Copy-paste between Ariba and JIRA. No automated data flow across intake, assessment, and contracting.</p></div>
     <div class="card emerald"><h4>Target: Automated Flows</h4><p>Process orchestration engine coordinates across all systems via API integration. Single process instance tracks a request from ServiceNow intake through OneTrust assessment to Ariba contracting.</p></div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>System Landscape</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>System Landscape</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -476,19 +476,19 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
   <p class="small muted">Hard metrics from TPRM, Architecture, and Security stakeholder sessions. These data points size the operational improvement opportunity.</p>
   <div class="metric-row">
     <div class="metric"><div class="value">335</div><div class="label">Assessments / Year</div><p class="tiny muted" style="margin-top:4px;">8-person DD team</p></div>
-    <div class="metric"><div class="value" style="color:var(--kpmg-rose);">28-29 d</div><div class="label">RAE Actual</div><p class="tiny muted" style="margin-top:4px;">2x the 14-day target</p></div>
-    <div class="metric"><div class="value" style="color:var(--kpmg-rose);">75 d</div><div class="label">DD Internal Review</div><p class="tiny muted" style="margin-top:4px;">Down from 144 days (2019)</p></div>
+    <div class="metric"><div class="value" style="color:var(--brand-rose);">28-29 d</div><div class="label">RAE Actual</div><p class="tiny muted" style="margin-top:4px;">2x the 14-day target</p></div>
+    <div class="metric"><div class="value" style="color:var(--brand-rose);">75 d</div><div class="label">DD Internal Review</div><p class="tiny muted" style="margin-top:4px;">Down from 144 days (2019)</p></div>
   </div>
   <div class="metric-row">
-    <div class="metric"><div class="value" style="color:var(--kpmg-rose);">2</div><div class="label">Contract Negotiators</div><p class="tiny muted" style="margin-top:4px;">Handling 30+ contracts/month</p></div>
-    <div class="metric"><div class="value" style="color:var(--kpmg-amber);">60-90 d</div><div class="label">Competitor Benchmark</div><p class="tiny muted" style="margin-top:4px;">Less mature processes</p></div>
+    <div class="metric"><div class="value" style="color:var(--brand-rose);">2</div><div class="label">Contract Negotiators</div><p class="tiny muted" style="margin-top:4px;">Handling 30+ contracts/month</p></div>
+    <div class="metric"><div class="value" style="color:var(--brand-amber);">60-90 d</div><div class="label">Competitor Benchmark</div><p class="tiny muted" style="margin-top:4px;">Less mature processes</p></div>
     <div class="metric"><div class="value">18</div><div class="label">Committees</div><p class="tiny muted" style="margin-top:4px;">Mapped to 5 streams</p></div>
   </div>
   <div class="two-col" style="margin-top:0.75rem;">
     <div class="quote-block">"If we want this to really click... I can't have the architect review group being a critical portion with only two people."<cite>Risk Management Lead</cite></div>
     <div class="quote-block">"I need three of me right now."<cite>Security Architect, on AI review capacity</cite></div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Quantified Pain</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Quantified Pain</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -503,7 +503,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <div>
       <h3>What Works Today (Architecture)</h3>
       <div class="card emerald" style="margin-bottom:10px;"><h4>Governance Facilitator</h4>
-        <ul style="font-size:0.8rem;color:var(--kpmg-medium-gray);">
+        <ul style="font-size:0.8rem;color:var(--brand-medium-gray);">
           <li>Pre-screens all design artifacts</li>
           <li>Removes incomplete items from agenda</li>
           <li>Captures action items, manages follow-ups</li>
@@ -516,7 +516,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <div>
       <h3>Proposed E2E Extension</h3>
       <div class="card light-blue" style="margin-bottom:10px;"><h4>Process Quarterback</h4>
-        <ul style="font-size:0.8rem;color:var(--kpmg-medium-gray);">
+        <ul style="font-size:0.8rem;color:var(--brand-medium-gray);">
           <li>Single point of contact for requesters (eliminates 5-6 team self-navigation)</li>
           <li>Automated DART formation (replaces requester burden)</li>
           <li>Quality gates at each phase boundary</li>
@@ -528,7 +528,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     </div>
   </div>
   <div class="quote-block">"Exactly like what we're talking about for the quarterback from a broader end-to-end."<cite>Consulting Team</cite></div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Concierge Model</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Concierge Model</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -570,7 +570,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     </div>
   </div>
   <div class="quote-block">"I disagree with that because that makes us a bottleneck... there should be simultaneous engagement of all the major players that have a vote."<cite>Architecture Lead</cite></div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Simultaneous Engagement</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Simultaneous Engagement</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -600,7 +600,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <tr><td>TPRM</td><td>Assessment methodology, vendor scoring</td><td>Cross-pod visibility</td></tr>
     </tbody>
   </table>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Request Types and Pod Model</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Request Types and Pod Model</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -614,15 +614,15 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <div class="roadmap-phase d30">
       <h4>Days 1-30: Consolidate</h4>
       <ul>
-        <li><span style="color:var(--kpmg-emerald);font-weight:700;">&#10003;</span> Unified intake form replacing 5+ channels</li>
-        <li><span style="color:var(--kpmg-emerald);font-weight:700;">&#10003;</span> Deal-killer pre-screen gate and AI no-go list</li>
-        <li><span style="color:var(--kpmg-emerald);font-weight:700;">&#10003;</span> Completeness quality gate at submission</li>
-        <li><span style="color:var(--kpmg-emerald);font-weight:700;">&#10003;</span> 3 request types: Defined Need / Forced Update / Speculative</li>
-        <li><span style="color:var(--kpmg-emerald);font-weight:700;">&#10003;</span> 3-pathway routing: Buy / Build / Enable</li>
-        <li><span style="color:var(--kpmg-emerald);font-weight:700;">&#10003;</span> Quarterback role definition (Architecture Facilitator model)</li>
-        <li><span style="color:var(--kpmg-emerald);font-weight:700;">&#10003;</span> Simultaneous engagement rules defined</li>
-        <li><span style="color:var(--kpmg-amber);font-weight:700;">&#9679;</span> NDA timing decision (Security + Legal alignment)</li>
-        <li><span style="color:var(--kpmg-emerald);font-weight:700;">&#10003;</span> Prioritization scoring with capacity impact (OB-DMN-5)</li>
+        <li><span style="color:var(--brand-emerald);font-weight:700;">&#10003;</span> Unified intake form replacing 5+ channels</li>
+        <li><span style="color:var(--brand-emerald);font-weight:700;">&#10003;</span> Deal-killer pre-screen gate and AI no-go list</li>
+        <li><span style="color:var(--brand-emerald);font-weight:700;">&#10003;</span> Completeness quality gate at submission</li>
+        <li><span style="color:var(--brand-emerald);font-weight:700;">&#10003;</span> 3 request types: Defined Need / Forced Update / Speculative</li>
+        <li><span style="color:var(--brand-emerald);font-weight:700;">&#10003;</span> 3-pathway routing: Buy / Build / Enable</li>
+        <li><span style="color:var(--brand-emerald);font-weight:700;">&#10003;</span> Quarterback role definition (Architecture Facilitator model)</li>
+        <li><span style="color:var(--brand-emerald);font-weight:700;">&#10003;</span> Simultaneous engagement rules defined</li>
+        <li><span style="color:var(--brand-amber);font-weight:700;">&#9679;</span> NDA timing decision (Security + Legal alignment)</li>
+        <li><span style="color:var(--brand-emerald);font-weight:700;">&#10003;</span> Prioritization scoring with capacity impact (OB-DMN-5)</li>
       </ul>
     </div>
     <div class="roadmap-phase d60">
@@ -672,304 +672,304 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <div class="roi-card" style="flex:1;"><div class="value">3 Pathways</div><div class="label">Buy / Build / Enable Routing</div></div>
     <div class="roi-card" style="flex:1;"><div class="value">Day 1</div><div class="label">Non-Starter Identification</div></div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>March 2026</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>March 2026</span></div>
 </div>
 
 <div class="slide" data-slide="10">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">Intake</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">Intake</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>5+ disconnected entry points</strong><br>ServiceNow START, AI Use Case form, AI Governance form, Rapid Risk Assessment (Power Apps), email/chat. No unified routing.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Requester confusion</strong><br>First-time requesters struggle with complexity. "Nothing directly points folks to intake forms... discovered ad hoc" (Security Architect)</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Forms require multi-disciplinary expertise</strong><br>RAE form has 80 questions. Business partners frequently cannot complete accurately. Questions asked from the writer's perspective, not the user's.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Process bypasses are common</strong><br>Technology teams especially prone to bypassing standard processes. Business partners arrive with pre-selected vendors, skipping sourcing.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> Business (submits request) | <span class="raci-a">A</span> Business (owns request) | <span class="raci-c">C</span> Governance, Compliance</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> Business (submits request) | <span class="raci-a">A</span> Business (owns request) | <span class="raci-c">C</span> Governance, Compliance</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Unified Intake Gateway</h4><p style="font-size:0.65rem;">Single entry point absorbing all channels. Dynamic routing based on request type: Standard, AI, E...</p><div class="impact">Impact: Eliminates 4 redundant channels, reduces requester confusion</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Deal-Killer Pre-Screen</h4><p style="font-size:0.65rem;">DMN-driven no-go check at submission. Inputs: vendor name, AI model, data residency. Blocked requ...</p><div class="impact">Impact: Saves 100% of downstream effort on non-starters</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Completeness Quality Gate</h4><p style="font-size:0.65rem;">AI-assisted pre-screening validates minimum viable fields before routing to SME review teams. Inc...</p><div class="impact">Impact: Eliminates rework from late-surfacing requirements</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Request Classification</h4><p style="font-size:0.65rem;">Automated classification: Defined Need, Forced Update, or Speculative. Each type routes to the ap...</p><div class="impact">Impact: Right-sizes governance effort to request complexity</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Intake</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Intake</span></div>
 </div>
 
 <div class="slide" data-slide="11">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">Prioritization</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">Prioritization</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>No formal prioritization formula</strong><br>Teams "horse trade" internally. Each requestor views their request as most important. No force-ranking mechanism across the enterprise.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>"Whoever screams loudest" gets priority</strong><br>EVP support pushes other reviews down. No SLA enforcement possible without fundamental process fixes.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Business Council quorum failures</strong><br>Monthly meetings draw 2-3 of 8-10 members. Evolved to email voting with manual facilitation by an executive.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>All requests follow same heavyweight process</strong><br>No auto-approval for low-risk items. No de-prioritization guidelines for exception cases.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Governance | <span class="raci-c">C</span> Business, Finance, Technical Assessment</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Governance | <span class="raci-c">C</span> Business, Finance, Technical Assessment</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Quantitative Scoring Formula</h4><p style="font-size:0.65rem;">DMN-driven priority scoring. Inputs: business impact, strategic alignment, urgency, risk tier, ca...</p><div class="impact">Impact: Replaces subjective "horse trading" with auditable decisions</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">3-Pathway Routing: Buy / Build / Enable</h4><p style="font-size:0.65rem;">Replace binary Buy/Build gateway with three pathways. Enable (Vendor Affinity) skips funding vali...</p><div class="impact">Impact: 30-day turnaround for Enable vs 6-9 months</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Tiered Governance Depth</h4><p style="font-size:0.65rem;">Risk tier determines governance intensity. Low-risk items get streamlined review. High-risk gets ...</p><div class="impact">Impact: Frees 40%+ reviewer capacity for complex cases</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Capacity-Aware Scheduling</h4><p style="font-size:0.65rem;">Integrate team capacity into routing decisions. Display queue depth and estimated wait time at su...</p><div class="impact">Impact: Sets realistic expectations, reduces status inquiries</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Prioritization</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Prioritization</span></div>
 </div>
 
 <div class="slide" data-slide="12">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">Funding / Finance</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">Funding / Finance</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Formal denial restarts entire process</strong><br>Cannot reroute coding matrix issues to FP&A. Minor cosmetic corrections (dates, alignment) require full denial and restart.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Financial business case form outdated</strong><br>Shows 2024 in 2026. Form is locked, password unknown (owner left organization). Downloaded, completed offline, uploaded to shared folder.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Enable pathway forced through funding validation</strong><br>Vendor Affinity products require no organizational investment, but the process still requires funding justification. Creates unnecessary friction.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>FP&A process cumbersome</strong><br>Hard to navigate. Business case justification required multiple times across different forms.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Finance | <span class="raci-c">C</span> Governance, Procurement | <span class="raci-i">I</span> Oversight</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Finance | <span class="raci-c">C</span> Governance, Procurement | <span class="raci-i">I</span> Oversight</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Finance Rework Loop</h4><p style="font-size:0.65rem;">Add correction pathway for coding matrix issues. Minor fixes route directly to FP&A without full ...</p><div class="impact">Impact: Eliminates weeks of rework for cosmetic corrections</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Enable Pathway Bypass</h4><p style="font-size:0.65rem;">Vendor Affinity requests skip funding validation entirely. DMN routing detects "no org investment...</p><div class="impact">Impact: Removes unnecessary friction for zero-cost tools</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Modernized Financial Form</h4><p style="font-size:0.65rem;">Replace locked, outdated form with dynamic digital version. Pre-populate from intake data. Condit...</p><div class="impact">Impact: Single source of truth for financial data</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Consolidated Business Case</h4><p style="font-size:0.65rem;">One business case captured at intake, enriched progressively. Eliminates repeated justification a...</p><div class="impact">Impact: Reduces form burden by 60%+ for requesters</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Funding / Finance</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Funding / Finance</span></div>
 </div>
 
 <div class="slide" data-slide="13">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">Sourcing</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">Sourcing</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>RAE: 80-question internal questionnaire</strong><br>Target: 14 days. Actual: 28-29 days (2x target). Assigns inherent risk tier and determines DD level.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Due Diligence: 830-question vendor questionnaire</strong><br>Skip logic enabled. Vendor completion: 30 days (ahead of 42-day target). Internal review: 75 days (down from 144).</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>"Sourcing department doesn't source"</strong><br>They manage contract lifecycle. True sourcing activity falls on requesters.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Single-vendor selection common</strong><br>Business partners bypass competitive sourcing, arriving with pre-selected vendors. Weakens pricing leverage.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> Procurement | <span class="raci-a">A</span> Governance | <span class="raci-c">C</span> Compliance | <span class="raci-i">I</span> Oversight</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> Procurement | <span class="raci-a">A</span> Governance | <span class="raci-c">C</span> Compliance | <span class="raci-i">I</span> Oversight</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">NDA-First Gate</h4><p style="font-size:0.65rem;">Enforce NDA execution before detailed vendor engagement. Single discussion allowed before NDA req...</p><div class="impact">Impact: Protects IP, aligns Legal and Security requirements</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Shift-Left: Self-Service Mini-RFP</h4><p style="font-size:0.65rem;">Empower requesters with structured RFP tools before formal onboarding. Codify sourcing knowledge ...</p><div class="impact">Impact: Better vendor selection, reduced single-vendor bias</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Tiered Due Diligence</h4><p style="font-size:0.65rem;">Risk tier determines DD depth. Low-risk: automated checks only. Medium: abbreviated review. High/...</p><div class="impact">Impact: 60% reduction in DD cycle time for low-risk items</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Vendor-Level Aggregation</h4><p style="font-size:0.65rem;">Single vendor spanning 10+ business units shares vendor-level compliance artifacts. Per-request a...</p><div class="impact">Impact: Eliminates redundant vendor-level assessments</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Sourcing</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Sourcing</span></div>
 </div>
 
 <div class="slide" data-slide="14">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">Cybersecurity</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">Cybersecurity</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>"Security is our biggest bottleneck"</strong><br>Understaffed security architecture team. The primary reason ARB SLA takes 2 weeks. EA could "get our SLA way down" without security constraints.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>"I need three of me right now"</strong><br>Request volume increasing continuously, specifically for AI reviews. Current process cannot scale with existing staffing.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>No "secure by design" standard</strong><br>Teams don't know minimum security controls. Enforcement is "fairly loose." Only a fraction of systems covered by identity management.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>3x vendor contact for AI questions</strong><br>Technology risk management, cybersecurity, and third-party risk management each contact the vendor independently. Creates redundancy and vendor frustration.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Technical Assessment | <span class="raci-c">C</span> Governance, Compliance</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Technical Assessment | <span class="raci-c">C</span> Governance, Compliance</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Tiered Security Assessment</h4><p style="font-size:0.65rem;">DMN-driven. Inputs: risk tier + data classification + AI component. Baseline: automated checks on...</p><div class="impact">Impact: 70% of requests handled by automated baseline checks</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Consolidated Vendor Contact</h4><p style="font-size:0.65rem;">Single coordinated vendor engagement for security, replacing 3 independent contact points. One qu...</p><div class="impact">Impact: Eliminates 2/3 of vendor security touchpoints</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Security Baseline Definition</h4><p style="font-size:0.65rem;">Define minimum control requirements (the "secure by design" standard). Publish baseline, elevated...</p><div class="impact">Impact: Clear expectations for teams and vendors</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Parallel Evaluation (not Sequential)</h4><p style="font-size:0.65rem;">Security runs concurrently with Architecture, Compliance, and Financial reviews. Architecture Lea...</p><div class="impact">Impact: Eliminates 4-8 weeks of sequential waiting</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Cybersecurity</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Cybersecurity</span></div>
 </div>
 
 <div class="slide" data-slide="15">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">Enterprise Architecture</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">Enterprise Architecture</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Governance Facilitator role</strong><br>Dedicated facilitator pre-screens all designs, removes incomplete artifacts from agenda, manages follow-ups. Runs both ARB and SDRB.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>ARB: 2-week SLA commitment</strong><br>Present, start workflow, reviews by security, EA leaders, distinguished architects. SDRB: same-day if no issues.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>JIRA integration</strong><br>Every design has a JIRA ticket. Facilitator documents notes and action items. Approvers ask questions in tickets.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>AI tooling adoption</strong><br>Cursor AI for diagram generation. Custom AI agent scans design documents for pattern conformance.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Technical Assessment | <span class="raci-c">C</span> Governance</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Technical Assessment | <span class="raci-c">C</span> Governance</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Scale the Governance Facilitator Model</h4><p style="font-size:0.65rem;">The Architecture Facilitator role is the blueprint for the broader end-to-end "quarterback." Expa...</p><div class="impact">Impact: Proven model reduces requester burden organization-wide</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Define Clear Committee Scope</h4><p style="font-size:0.65rem;">Architecture questions asked by architects only. TBC covers business case. AI Governance covers A...</p><div class="impact">Impact: Eliminates redundant presentations and "hands slapping"</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Simultaneous Engagement Model</h4><p style="font-size:0.65rem;">"When a request comes in, simultaneous engagement of all major players that have a vote." Replace...</p><div class="impact">Impact: Architecture Lead's own proposal, validated by team</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Domain-Based Auto-Assignment</h4><p style="font-size:0.65rem;">Automated routing based on requesting domain. EA leader to architect by bandwidth. Cross-enterpri...</p><div class="impact">Impact: Reduces manual triage, balances workload</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Enterprise Architecture</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Enterprise Architecture</span></div>
 </div>
 
 <div class="slide" data-slide="16">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">Compliance</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">Compliance</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>End-of-year compliance failures common</strong><br>PII found in uncontrolled systems. Compliance enforcement is "fairly loose." No consistent standard for escalation triggers.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Multiple teams assess compliance independently</strong><br>Risk, Legal, Privacy, and Compliance each conduct their own review without shared findings or coordinated assessment.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>No standardized business case definition</strong><br>TBC business case overlaps with financial review. Architecture teams assessing financials (outside expertise). Financial teams assessing architecture.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Contract deviations not reportable</strong><br>No structured format for tracking contract deviations. Unknown compliance status for older contracts.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Compliance | <span class="raci-c">C</span> Governance, Oversight</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Compliance | <span class="raci-c">C</span> Governance, Oversight</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Consolidated Compliance Stream</h4><p style="font-size:0.65rem;">Single compliance review stream combining Risk, Legal, Privacy, and Compliance assessments. Share...</p><div class="impact">Impact: One review instead of four independent assessments</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Regulatory Annotation Framework</h4><p style="font-size:0.65rem;">Every process task mapped to applicable regulations. OCC 2023-17, DORA, GDPR/CCPA, SOX, EU AI Act...</p><div class="impact">Impact: Audit-ready compliance documentation from day one</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Contract Deviation Tracking</h4><p style="font-size:0.65rem;">Structured format for recording and reporting contract deviations in OneTrust. Automated alerting...</p><div class="impact">Impact: Visibility into compliance status across all contracts</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Compliance Quality Gates</h4><p style="font-size:0.65rem;">Phase-boundary compliance checks at each transition. Automated validation that required artifacts...</p><div class="impact">Impact: Prevents downstream compliance failures</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Compliance</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Compliance</span></div>
 </div>
 
 <div class="slide" data-slide="17">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">AI Governance</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">AI Governance</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>60+ items in AI governance queue</strong><br>Multiple tools submitted for the same function with no alignment to AI strategy. "Crawl, walk, run" messaging rejected by stakeholders.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>3 separate AI committees + redundancy with TBC</strong><br>AI Risk Working Group, AI Cyber Review, AI Risk Review, AI Governance Committee. Working Committee "somewhat redundant with TBC process." Sequential processing adds months.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Overly restrictive AI addendum</strong><br>Causes extended vendor negotiations. External firms frequently push back on AI terms. Different teams have varying risk acceptance thresholds. EU AI Act landscape "ever-changing, different every other day."</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>3 additional AI questionnaires "snuck up"</strong><br>"I have no idea why they're there... I'm really annoyed that they're even in existence." Working to merge into single dataset.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> AI Review | <span class="raci-c">C</span> Technical Assessment, Compliance | <span class="raci-i">I</span> Governance</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> AI Review | <span class="raci-c">C</span> Technical Assessment, Compliance | <span class="raci-i">I</span> Governance</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Consolidate 3 AI Committees to 1 Stream</h4><p style="font-size:0.65rem;">Single AI governance review stream replacing Working Group, Cyber Review, Risk Review, and Govern...</p><div class="impact">Impact: Eliminates months of sequential committee queuing</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">AI Fast-Track Pathway</h4><p style="font-size:0.65rem;">Pre-defined risk posture for common AI scenarios. AI tools run AI Governance + Security in parall...</p><div class="impact">Impact: 2-week target vs current 6-9 months</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Unified AI Questionnaire</h4><p style="font-size:0.65rem;">Merge 3 "snuck up" questionnaires into single dataset. One vendor engagement, one questionnaire, ...</p><div class="impact">Impact: 1 vendor contact instead of 3</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">AI No-Go List</h4><p style="font-size:0.65rem;">Communicate non-starter models/vendors early. Enterprise Risk Management decision matrix for imme...</p><div class="impact">Impact: Instant reject for known non-starters, zero wasted effort</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>AI Governance</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>AI Governance</span></div>
 </div>
 
 <div class="slide" data-slide="18">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">Privacy</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">Privacy</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Privacy review embedded across multiple teams</strong><br>Privacy SME participates in vendor risk reviews, AI governance, and compliance. No dedicated privacy review stream in the current process.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>PII found in uncontrolled systems</strong><br>End-of-year compliance failures include PII discovery outside managed environments. Data classification not consistently enforced at onboarding.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Different risk thresholds per team</strong><br>Different teams have varying risk acceptance thresholds for AI-related privacy concerns. No unified privacy risk classification.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Data hosting/storage questions could be answered earlier</strong><br>Many RAE questions about data hosting, storage, and transmission could be resolved through proper sourcing events before formal assessment.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Compliance (Privacy) | <span class="raci-c">C</span> Governance, Business</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Compliance (Privacy) | <span class="raci-c">C</span> Governance, Business</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Data Classification at Intake</h4><p style="font-size:0.65rem;">Mandatory data classification fields in the unified intake form. Determines privacy review depth:...</p><div class="impact">Impact: Right-sizes privacy effort from day one</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Privacy Review as Parallel Stream</h4><p style="font-size:0.65rem;">Dedicated privacy evaluation branch running concurrently with security and compliance. Not embedd...</p><div class="impact">Impact: Consistent, predictable privacy assessment timeline</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Unified Privacy Risk Classification</h4><p style="font-size:0.65rem;">Single privacy risk framework replacing team-by-team thresholds. DMN-driven: inputs include data ...</p><div class="impact">Impact: Eliminates inconsistent risk acceptance decisions</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Early Data Residency Screening</h4><p style="font-size:0.65rem;">Data hosting, storage, and transmission requirements validated at sourcing stage. Prevents late-s...</p><div class="impact">Impact: Eliminates rework from late privacy findings</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Privacy</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Privacy</span></div>
 </div>
 
 <div class="slide" data-slide="19">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">Commercial Counsel</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">Commercial Counsel</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>"Dumpster Fire #1": 2 people, 30+ contracts/month</strong><br>Manual review process sustained for 4 years at unsustainable levels. Contract lifecycle management system requested for 5-6 years without funding.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Contract negotiation: up to 1.5 years</strong><br>Security exhibits drive the longest negotiations. No reportable format for contract deviations. Unknown compliance status for older contracts.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Sourcing makes quasi-legal decisions</strong><br>Legal bottleneck forces sourcing team into areas beyond their expertise. Creates risk and potential liability.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Only 2 legal partners for all vendor contracts</strong><br>Legal capacity hasn't scaled with organizational growth. Solutions often underused after purchase.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Contracting | <span class="raci-c">C</span> Finance, Governance, Compliance | <span class="raci-i">I</span> Oversight</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Contracting | <span class="raci-c">C</span> Finance, Governance, Compliance | <span class="raci-i">I</span> Oversight</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Contract Review Automation</h4><p style="font-size:0.65rem;">AI-assisted contract review for standard clauses, redlining, and deviation detection. Human revie...</p><div class="impact">Impact: 50%+ reduction in manual review time for standard contracts</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Standardized Contract Templates</h4><p style="font-size:0.65rem;">Pre-approved MSA/SOW templates by vendor tier and risk classification. Reduces negotiation scope ...</p><div class="impact">Impact: Days instead of months for template-based contracts</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Parallel Contracting</h4><p style="font-size:0.65rem;">Begin contract negotiation in parallel with due diligence (not sequentially). Architecture Lead a...</p><div class="impact">Impact: Compresses 2-3 month contracting phase significantly</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Contract Deviation Register</h4><p style="font-size:0.65rem;">Structured tracking of all contract deviations with risk classification, expiry dates, and automa...</p><div class="impact">Impact: Full visibility into organizational contract risk posture</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Commercial Counsel</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Commercial Counsel</span></div>
 </div>
 
 <div class="slide" data-slide="20">
-  <h2 style="border-left:4px solid var(--kpmg-blue);padding-left:12px;">Third-Party Risk Management</h2>
+  <h2 style="border-left:4px solid var(--brand-blue);padding-left:12px;">Third-Party Risk Management</h2>
   <div class="two-col" style="gap:20px;align-items:start;">
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-rose);margin-top:0;">Current State</h3>
+      <h3 style="font-size:1rem;color:var(--brand-rose);margin-top:0;">Current State</h3>
       <div class="finding-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>System landscape fragmented</strong><br>ServiceNow (intake), Ariba (contracts), OneTrust (risk), Oracle (AP). Data lives in 4+ systems with manual PDF exports between them.</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Process ownership vacuum</strong><br>"Somebody needs to be empowered to say I own this... we will not allow you to do it any other way." START assigned "half a person."</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>4 people contacted same vendor on data breach</strong><br>No clear ownership for incident communication. Same questions asked multiple times. "We're all doing the same thing to be helpful."</div>
       <div class="finding" style="padding:6px 8px;font-size:0.68rem;line-height:1.4;"><strong>Tripartite ownership model weak on tech owner</strong><br>Business Owner identified. Vendor Owner tracked by TPRM team of 6. Product/Tech Owner weakly tracked, often different from requesting team.</div>
       </div>
-      <div style="font-size:0.62rem;color:var(--kpmg-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Governance | <span class="raci-c">C</span> Procurement, Contracting, Technical Assessment, Compliance | <span class="raci-i">I</span> Oversight</p></div>
+      <div style="font-size:0.62rem;color:var(--brand-medium-gray);margin-top:4px;"><p class="small muted"><strong>RACI</strong>: <span class="raci-r">R</span> <span class="raci-a">A</span> Governance | <span class="raci-c">C</span> Procurement, Contracting, Technical Assessment, Compliance | <span class="raci-i">I</span> Oversight</p></div>
     </div>
     <div>
-      <h3 style="font-size:1rem;color:var(--kpmg-emerald);margin-top:0;">Recommendations</h3>
+      <h3 style="font-size:1rem;color:var(--brand-emerald);margin-top:0;">Recommendations</h3>
       <div class="rec-grid" style="grid-template-columns:1fr;gap:6px;">
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Empowered Process Owner</h4><p style="font-size:0.65rem;">Dedicated strategic owner with authority and resources: 1 workflow manager, 2-3 project managers....</p><div class="impact">Impact: Single point of accountability for E2E process</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Mandatory Ownership Assignment</h4><p style="font-size:0.65rem;">Business Owner, Technical Owner, and Support Owner assigned at onboarding completion. Annual owne...</p><div class="impact">Impact: Resolves the #1 post-onboarding governance gap</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Integrated System of Record</h4><p style="font-size:0.65rem;">Connect ServiceNow, Ariba, OneTrust, and Oracle into unified workflow. Eliminate manual PDF expor...</p><div class="impact">Impact: Single source of truth across 4+ systems</div></div>
       <div class="rec-card" style="padding:8px 10px;"><h4 style="font-size:0.78rem;">Incident Response Coordination</h4><p style="font-size:0.65rem;">Single vendor contact point for security incidents and data breach notifications. Clear ownership...</p><div class="impact">Impact: Prevents 4 people contacting same vendor on breach</div></div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--kpmg-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--kpmg-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--kpmg-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--kpmg-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span style="background:var(--brand-emerald);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">30 Days</span><span style="background:var(--brand-medium-blue);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">60 Days</span><span style="background:var(--brand-gold);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">90 Days</span><span style="background:var(--brand-amber);color:white;font-size:0.58rem;padding:2px 8px;border-radius:10px;white-space:nowrap;">120 Days</span></div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Third-Party Risk Management</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Third-Party Risk Management</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -980,16 +980,16 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="21">
   <h2>End-to-End Process Orchestrator</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">Hierarchical 5-phase model with collapsed sub-processes, 5 decision gateways, vendor pool with message flows, NDA gate, and 3 request type routing (Defined Need, Forced Update, Speculative).</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Hierarchical 5-phase model with collapsed sub-processes, 5 decision gateways, vendor pool with message flows, NDA gate, and 3 request type routing (Defined Need, Forced Update, Speculative).</p>
   <div style="background:white;border-radius:8px;padding:12px;box-shadow:0 2px 8px rgba(0,51,141,0.08);margin:0.5rem 0;overflow-x:auto;">
     <img src="bpmn-images/v8-orchestrator.png" alt="End-to-End Orchestrator" style="display:block;max-width:100%;height:auto;margin:0 auto;">
   </div>
   <div style="display:flex;gap:12px;margin-top:0.5rem;">
-    <div style="flex:1;background:var(--kpmg-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--kpmg-emerald);"><strong>64 Forms</strong> across 5 phases + vendor pool capture every data point, decision, and approval</div>
-    <div style="flex:1;background:var(--kpmg-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--kpmg-gold);"><strong>6 DMN Tables</strong> automate routing: risk tier, pathway, governance, prioritization, security, SLA escalation</div>
-    <div style="flex:1;background:var(--kpmg-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--kpmg-light-blue);"><strong>20-Day Target</strong> end-to-end cycle time (down from 75 days) through parallel evaluation and automated gates</div>
+    <div style="flex:1;background:var(--brand-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--brand-emerald);"><strong>64 Forms</strong> across 5 phases + vendor pool capture every data point, decision, and approval</div>
+    <div style="flex:1;background:var(--brand-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--brand-gold);"><strong>6 DMN Tables</strong> automate routing: risk tier, pathway, governance, prioritization, security, SLA escalation</div>
+    <div style="flex:1;background:var(--brand-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--brand-light-blue);"><strong>20-Day Target</strong> end-to-end cycle time (down from 75 days) through parallel evaluation and automated gates</div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>E2E Orchestrator</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>E2E Orchestrator</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -997,15 +997,15 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="22">
   <h2>Request and Triage</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">The front door to onboarding. Requesters describe their need, existing solutions are checked for reuse, documentation is gathered, and requests are triaged, classified, and routed.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">The front door to onboarding. Requesters describe their need, existing solutions are checked for reuse, documentation is gathered, and requests are triaged, classified, and routed.</p>
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
         <img src="bpmn-images/v8-sp1-request-triage.png" alt="Request and Triage" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <span style="background:var(--kpmg-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">2-Day SLA</span>
-        <span style="background:var(--kpmg-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Deal-Killer Pre-Screen</span>
+        <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">2-Day SLA</span>
+        <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Deal-Killer Pre-Screen</span>
       </div>
     </div>
     <div>
@@ -1016,9 +1016,9 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
         <li><strong>Request Type:</strong> Defined Need &rarr; NDA &rarr; Planning | Forced Update &rarr; Fast-track | Speculative &rarr; Idea Funnel</li>
       </ul>
       <h3 style="font-size:0.95rem;">Forms &amp; Data Collected</h3>
-      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-gold);border-radius:8px;padding:10px 14px;">
-        <div style="font-size:1.2rem;font-weight:700;color:var(--kpmg-blue);font-family:var(--font-heading);">8 Forms</div>
-        <ul style="font-size:0.72rem;color:var(--kpmg-medium-gray);margin-left:1rem;margin-bottom:0;">
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-gold);border-radius:8px;padding:10px 14px;">
+        <div style="font-size:1.2rem;font-weight:700;color:var(--brand-blue);font-family:var(--font-heading);">8 Forms</div>
+        <ul style="font-size:0.72rem;color:var(--brand-medium-gray);margin-left:1rem;margin-bottom:0;">
           <li><strong>Review Existing</strong> &mdash; catalog search, reuse decision, cost avoidance</li>
           <li><strong>Gather Documentation</strong> &mdash; business case, data classification, budget authorization</li>
           <li><strong>Completeness Gate</strong> &mdash; 6 automated validation checkpoints</li>
@@ -1028,7 +1028,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Request and Triage</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Request and Triage</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1036,16 +1036,16 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="23">
   <h2>Planning and Routing</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">Validated requests are analyzed for strategic fit, scored for priority, and routed to Buy, Build, or Enable pathways via DMN decision tables.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Validated requests are analyzed for strategic fit, scored for priority, and routed to Buy, Build, or Enable pathways via DMN decision tables.</p>
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
         <img src="bpmn-images/v8-sp2-planning-routing.png" alt="Planning and Routing" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <span style="background:var(--kpmg-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">3-Day SLA</span>
-        <span style="background:var(--kpmg-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Prioritization Scoring</span>
-        <span style="background:var(--kpmg-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Pathway Routing</span>
+        <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">3-Day SLA</span>
+        <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Prioritization Scoring</span>
+        <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Pathway Routing</span>
       </div>
     </div>
     <div>
@@ -1056,16 +1056,16 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
         <li><strong>Priority Scoring (DMN):</strong> Composite score driving resource allocation</li>
       </ul>
       <h3 style="font-size:0.95rem;">Forms &amp; Data Collected</h3>
-      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-gold);border-radius:8px;padding:10px 14px;">
-        <div style="font-size:1.2rem;font-weight:700;color:var(--kpmg-blue);font-family:var(--font-heading);">2 Forms</div>
-        <ul style="font-size:0.72rem;color:var(--kpmg-medium-gray);margin-left:1rem;margin-bottom:0;">
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-gold);border-radius:8px;padding:10px 14px;">
+        <div style="font-size:1.2rem;font-weight:700;color:var(--brand-blue);font-family:var(--font-heading);">2 Forms</div>
+        <ul style="font-size:0.72rem;color:var(--brand-medium-gray);margin-left:1rem;margin-bottom:0;">
           <li><strong>Preliminary Analysis</strong> &mdash; business impact, risk appetite alignment, DPIA screening, capacity impact score, vendor affinity check</li>
           <li><strong>Backlog Prioritization</strong> &mdash; strategic value, urgency, resource availability, priority tier assignment</li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Planning and Routing</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Planning and Routing</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1073,23 +1073,23 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="24">
   <h2>Evaluation and Due Diligence</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">The most complex phase. Five parallel assessment streams evaluate simultaneously &mdash; eliminating the sequential bottleneck that currently takes 75 days.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">The most complex phase. Five parallel assessment streams evaluate simultaneously &mdash; eliminating the sequential bottleneck that currently takes 75 days.</p>
   <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;margin-bottom:8px;">
     <img src="bpmn-images/v8-sp3-evaluation-dd.png" alt="Evaluation and Due Diligence" style="display:block;max-width:100%;height:auto;">
   </div>
   <div style="display:flex;gap:8px;margin-bottom:8px;">
-    <span style="background:var(--kpmg-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">5-Day SLA</span>
-    <span style="background:var(--kpmg-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">5 Parallel Streams</span>
-    <span style="background:var(--kpmg-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Shift-Left: All assessments simultaneous</span>
+    <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">5-Day SLA</span>
+    <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">5 Parallel Streams</span>
+    <span style="background:var(--brand-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Shift-Left: All assessments simultaneous</span>
   </div>
   <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
     <div class="card" style="padding:10px;"><h4 style="font-size:0.72rem;">Tech Architecture</h4><p style="font-size:0.65rem;">Scalability, integration, enterprise standards</p></div>
-    <div class="card" style="padding:10px;border-left-color:var(--kpmg-rose);"><h4 style="font-size:0.72rem;">Security</h4><p style="font-size:0.65rem;">Encryption, MFA, pen testing, SOC 2, incident response</p></div>
-    <div class="card" style="padding:10px;border-left-color:var(--kpmg-amber);"><h4 style="font-size:0.72rem;">Risk &amp; Compliance</h4><p style="font-size:0.65rem;">GDPR, OCC 2023-17, DORA, data residency</p></div>
+    <div class="card" style="padding:10px;border-left-color:var(--brand-rose);"><h4 style="font-size:0.72rem;">Security</h4><p style="font-size:0.65rem;">Encryption, MFA, pen testing, SOC 2, incident response</p></div>
+    <div class="card" style="padding:10px;border-left-color:var(--brand-amber);"><h4 style="font-size:0.72rem;">Risk &amp; Compliance</h4><p style="font-size:0.65rem;">GDPR, OCC 2023-17, DORA, data residency</p></div>
     <div class="card gold" style="padding:10px;"><h4 style="font-size:0.72rem;">Financial</h4><p style="font-size:0.65rem;">TCO, ROI, budget authorization, funding source</p></div>
     <div class="card emerald" style="padding:10px;"><h4 style="font-size:0.72rem;">Vendor Landscape</h4><p style="font-size:0.65rem;">Market research, shortlist, viability scoring</p></div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Evaluation and Due Diligence</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Evaluation and Due Diligence</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1097,12 +1097,12 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="25">
   <h2>Evaluation: Forms and Data Architecture</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">The heaviest data collection phase: 8 structured forms capture 147+ fields across security, risk, financial, vendor, and AI governance dimensions.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">The heaviest data collection phase: 8 structured forms capture 147+ fields across security, risk, financial, vendor, and AI governance dimensions.</p>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-rose);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-rose);margin-bottom:4px;">Security Assessment</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">25 fields across 6 groups</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-rose);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-rose);margin-bottom:4px;">Security Assessment</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">25 fields across 6 groups</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>Security tier classification (6 levels)</li>
         <li>Encryption at rest/transit, key management</li>
         <li>Vulnerability scan results, pen test dates</li>
@@ -1110,50 +1110,50 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
         <li>SOC 2 Type II, ISO 27001 certifications</li>
       </ul>
     </div>
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-blue);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-blue);margin-bottom:4px;">Tech Architecture Review</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">18 fields</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-blue);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-blue);margin-bottom:4px;">Tech Architecture Review</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">18 fields</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>Architecture pattern, deployment model</li>
         <li>Integration points, API compatibility</li>
         <li>Scalability and performance ratings</li>
         <li>Tech debt and maintainability assessment</li>
       </ul>
     </div>
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-amber);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-amber);margin-bottom:4px;">Risk, Compliance &amp; Legal</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">15 fields</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-amber);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-amber);margin-bottom:4px;">Risk, Compliance &amp; Legal</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">15 fields</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>Regulatory exposure assessment</li>
         <li>Data residency, cross-border transfer</li>
         <li>Consent management, DPIA results</li>
         <li>OCC 2023-17 / DORA alignment</li>
       </ul>
     </div>
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-gold);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-gold);margin-bottom:4px;">Financial Analysis</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">16 fields</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-gold);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-gold);margin-bottom:4px;">Financial Analysis</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">16 fields</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>Total cost of ownership model</li>
         <li>ROI projection, payback period</li>
         <li>Budget authorization chain</li>
         <li>Funding source identification</li>
       </ul>
     </div>
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-emerald);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-emerald);margin-bottom:4px;">AI Governance Review</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">32 fields &mdash; largest single form</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-emerald);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-emerald);margin-bottom:4px;">AI Governance Review</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">32 fields &mdash; largest single form</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>EU AI Act risk classification</li>
         <li>Model transparency, explainability</li>
         <li>Bias testing, fairness metrics</li>
         <li>SR 11-7 model risk alignment</li>
       </ul>
     </div>
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-light-blue);border-radius:8px;padding:10px 12px;">
-      <h4 style="font-size:0.78rem;color:var(--kpmg-light-blue);margin-bottom:4px;">Vendor Due Diligence</h4>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:0;">18 fields + vendor landscape (11 fields)</p>
-      <ul style="font-size:0.65rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-light-blue);border-radius:8px;padding:10px 12px;">
+      <h4 style="font-size:0.78rem;color:var(--brand-light-blue);margin-bottom:4px;">Vendor Due Diligence</h4>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin:0;">18 fields + vendor landscape (11 fields)</p>
+      <ul style="font-size:0.65rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li>Financial stability, operational resilience</li>
         <li>Fourth-party risk, subcontractor disclosure</li>
         <li>Market positioning, viability scoring</li>
@@ -1161,7 +1161,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       </ul>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Evaluation Forms</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Evaluation Forms</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1169,22 +1169,22 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="26">
   <h2>Contracting and Build</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">Two pathways converge here. <strong>Buy:</strong> refine requirements, proof of concept, contract negotiation. <strong>Build:</strong> define requirements, then the full Product Development Life Cycle (PDLC).</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Two pathways converge here. <strong>Buy:</strong> refine requirements, proof of concept, contract negotiation. <strong>Build:</strong> define requirements, then the full Product Development Life Cycle (PDLC).</p>
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
         <img src="bpmn-images/v8-sp4-contracting-build.png" alt="Contracting and Build" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <span style="background:var(--kpmg-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">7-Day SLA</span>
-        <span style="background:var(--kpmg-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Buy vs Build Pathways</span>
+        <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">7-Day SLA</span>
+        <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Buy vs Build Pathways</span>
       </div>
     </div>
     <div>
       <h3 style="font-size:0.95rem;margin-top:0;">Buy Path Forms</h3>
-      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-blue);border-radius:8px;padding:10px 14px;margin-bottom:8px;">
-        <div style="font-size:1rem;font-weight:700;color:var(--kpmg-blue);font-family:var(--font-heading);">5 Forms</div>
-        <ul style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-blue);border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+        <div style="font-size:1rem;font-weight:700;color:var(--brand-blue);font-family:var(--font-heading);">5 Forms</div>
+        <ul style="font-size:0.68rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
           <li><strong>Refine Requirements</strong> &mdash; final spec from evaluation insights</li>
           <li><strong>Proof of Concept</strong> &mdash; structured PoC with pass/fail criteria</li>
           <li><strong>Negotiate Contract</strong> &mdash; OCC 2023-17, DORA Art. 30, GDPR Art. 28 provisions</li>
@@ -1192,9 +1192,9 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
         </ul>
       </div>
       <h3 style="font-size:0.95rem;">Build Path Forms</h3>
-      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-emerald);border-radius:8px;padding:10px 14px;">
-        <div style="font-size:1rem;font-weight:700;color:var(--kpmg-emerald);font-family:var(--font-heading);">5 Forms (PDLC)</div>
-        <ul style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-emerald);border-radius:8px;padding:10px 14px;">
+        <div style="font-size:1rem;font-weight:700;color:var(--brand-emerald);font-family:var(--font-heading);">5 Forms (PDLC)</div>
+        <ul style="font-size:0.68rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
           <li><strong>Define Build Requirements</strong> &mdash; functional specs, architecture constraints</li>
           <li><strong>Architecture Review</strong> &mdash; enterprise standards validation</li>
           <li><strong>Development</strong> &mdash; secure coding, CI/CD pipeline tracking</li>
@@ -1203,7 +1203,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Contracting and Build</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Contracting and Build</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1211,15 +1211,15 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="27">
   <h2>UAT and Go-Live</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">The finish line. User acceptance testing validates the solution, final approval confirms governance compliance, software is onboarded, ownership is assigned, and the request is formally closed.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">The finish line. User acceptance testing validates the solution, final approval confirms governance compliance, software is onboarded, ownership is assigned, and the request is formally closed.</p>
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
         <img src="bpmn-images/v8-sp5-uat-golive.png" alt="UAT and Go-Live" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <span style="background:var(--kpmg-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">3-Day SLA</span>
-        <span style="background:var(--kpmg-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Final Governance Gate</span>
+        <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">3-Day SLA</span>
+        <span style="background:var(--brand-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Final Governance Gate</span>
       </div>
     </div>
     <div>
@@ -1231,9 +1231,9 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
         <li><strong>Dual Ownership:</strong> Business Owner + Vendor Owner assigned at completion</li>
       </ul>
       <h3 style="font-size:0.95rem;">Forms &amp; Data Collected</h3>
-      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-gold);border-radius:8px;padding:10px 14px;">
-        <div style="font-size:1.2rem;font-weight:700;color:var(--kpmg-blue);font-family:var(--font-heading);">6 Forms</div>
-        <ul style="font-size:0.72rem;color:var(--kpmg-medium-gray);margin-left:1rem;margin-bottom:0;">
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-gold);border-radius:8px;padding:10px 14px;">
+        <div style="font-size:1.2rem;font-weight:700;color:var(--brand-blue);font-family:var(--font-heading);">6 Forms</div>
+        <ul style="font-size:0.72rem;color:var(--brand-medium-gray);margin-left:1rem;margin-bottom:0;">
           <li><strong>Perform UAT</strong> &mdash; test scenarios, pass/fail rates, critical defects, user satisfaction (1-10)</li>
           <li><strong>Final Approval</strong> &mdash; governance sign-off, risk acceptance, audit evidence</li>
           <li><strong>Onboard Software</strong> &mdash; catalog entry, access provisioning, monitoring setup</li>
@@ -1243,7 +1243,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>UAT and Go-Live</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>UAT and Go-Live</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1251,9 +1251,9 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="28">
   <h2>Vendor Pool: The External Partner Journey</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">Running in parallel with the enterprise process, vendors follow their own structured journey. 10 tasks span intake through deployment support, with message flows synchronizing handoffs at key milestones.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Running in parallel with the enterprise process, vendors follow their own structured journey. 10 tasks span intake through deployment support, with message flows synchronizing handoffs at key milestones.</p>
   <div class="process-flow" style="margin:0.5rem 0;">
-    <div style="width:24px;height:24px;border-radius:50%;background:var(--kpmg-emerald);border:2px solid #007a4d;flex-shrink:0;"></div>
+    <div style="width:24px;height:24px;border-radius:50%;background:var(--brand-emerald);border:2px solid #007a4d;flex-shrink:0;"></div>
     <span class="pf-arrow">&#9654;</span>
     <div class="pf-phase" style="min-width:95px;padding:8px;"><h5 style="font-size:0.62rem;">Vendor Intake</h5><div class="pf-tasks" style="font-size:0.55rem;">Qualification, sanctions screening</div></div>
     <span class="pf-arrow">&#9654;</span>
@@ -1267,12 +1267,12 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <span class="pf-arrow">&#9654;</span>
     <div class="pf-phase" style="min-width:95px;padding:8px;"><h5 style="font-size:0.62rem;">Deploy &amp; Close</h5><div class="pf-tasks" style="font-size:0.55rem;">Onboarding, support, close</div></div>
     <span class="pf-arrow">&#9654;</span>
-    <div style="width:24px;height:24px;border-radius:50%;background:var(--kpmg-rose);border:3px solid #8b1a1a;flex-shrink:0;"></div>
+    <div style="width:24px;height:24px;border-radius:50%;background:var(--brand-rose);border:3px solid #8b1a1a;flex-shrink:0;"></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
-    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--kpmg-gold);border-radius:8px;padding:10px 14px;">
-      <div style="font-size:1.2rem;font-weight:700;color:var(--kpmg-blue);font-family:var(--font-heading);">10 Vendor Forms</div>
-      <ul style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin:4px 0 0 14px;">
+    <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border-left:4px solid var(--brand-gold);border-radius:8px;padding:10px 14px;">
+      <div style="font-size:1.2rem;font-weight:700;color:var(--brand-blue);font-family:var(--font-heading);">10 Vendor Forms</div>
+      <ul style="font-size:0.68rem;color:var(--brand-medium-gray);margin:4px 0 0 14px;">
         <li><strong>Vendor Intake</strong> &mdash; legal entity, tax ID, ownership, sanctions screening, insurance</li>
         <li><strong>Security Questionnaire</strong> &mdash; SOC 2, pen testing, encryption, incident response</li>
         <li><strong>Compliance Documentation</strong> &mdash; regulatory certifications, DPA, sub-processor disclosures</li>
@@ -1289,7 +1289,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Vendor Pool</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Vendor Pool</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1297,9 +1297,9 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="29">
   <h2>End-to-End Process Flow</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">5-phase hierarchical process model with 6 DMN decision tables, 3 request type routing, Buy/Build/Enable pathways, and parallel evaluation streams.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">5-phase hierarchical process model with 6 DMN decision tables, 3 request type routing, Buy/Build/Enable pathways, and parallel evaluation streams.</p>
   <div class="process-flow">
-    <div style="width:28px;height:28px;border-radius:50%;background:var(--kpmg-emerald);border:2px solid #007a4d;flex-shrink:0;"></div>
+    <div style="width:28px;height:28px;border-radius:50%;background:var(--brand-emerald);border:2px solid #007a4d;flex-shrink:0;"></div>
     <span class="pf-arrow">&#9654;</span>
     <div class="pf-phase">
       <h5>Request and Triage</h5>
@@ -1339,8 +1339,8 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <div class="pf-sla">SLA: 3 Days &bull; 6 Forms</div>
     </div>
     <span class="pf-arrow">&#9654;</span>
-    <div style="width:28px;height:28px;border-radius:50%;background:var(--kpmg-rose);border:3px solid #8b1a1a;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-      <div style="width:16px;height:16px;border-radius:50%;background:var(--kpmg-rose);border:2px solid white;"></div>
+    <div style="width:28px;height:28px;border-radius:50%;background:var(--brand-rose);border:3px solid #8b1a1a;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+      <div style="width:16px;height:16px;border-radius:50%;background:var(--brand-rose);border:2px solid white;"></div>
     </div>
   </div>
   <div class="card-grid" style="grid-template-columns:repeat(4,1fr);margin-top:1rem;">
@@ -1361,7 +1361,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <p>Down from 75 days through parallel evaluation, automated gates, and DMN-driven routing</p>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>E2E Process Summary</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>E2E Process Summary</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1369,29 +1369,29 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="30">
   <h2>Mini RFP: Self-Service Vendor Pre-Screening (SP0)</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);">Before formal intake, requesters complete a lightweight 9-step wizard that identifies deal-killers early and pre-populates downstream forms. This eliminates wasted reviewer capacity on non-starters.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Before formal intake, requesters complete a lightweight 9-step wizard that identifies deal-killers early and pre-populates downstream forms. This eliminates wasted reviewer capacity on non-starters.</p>
   <div class="two-col" style="gap:16px;">
     <div>
       <h3 style="font-size:0.95rem;margin-top:0;">9-Step Pre-Screening Wizard</h3>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
-        <div style="background:var(--kpmg-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--kpmg-blue);font-size:0.85rem;display:block;">1</strong>Vendor Info</div>
-        <div style="background:var(--kpmg-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--kpmg-blue);font-size:0.85rem;display:block;">2</strong>Business Case</div>
-        <div style="background:var(--kpmg-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--kpmg-blue);font-size:0.85rem;display:block;">3</strong>Risk Indicators</div>
-        <div style="background:var(--kpmg-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--kpmg-blue);font-size:0.85rem;display:block;">4</strong>Data Classification</div>
-        <div style="background:var(--kpmg-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--kpmg-blue);font-size:0.85rem;display:block;">5</strong>Compliance Screening</div>
-        <div style="background:var(--kpmg-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--kpmg-blue);font-size:0.85rem;display:block;">6</strong>Financial Overview</div>
-        <div style="background:var(--kpmg-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--kpmg-blue);font-size:0.85rem;display:block;">7</strong>Vendor Context</div>
-        <div style="background:var(--kpmg-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--kpmg-blue);font-size:0.85rem;display:block;">8</strong>AI Classification</div>
-        <div style="background:var(--kpmg-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--kpmg-blue);font-size:0.85rem;display:block;">9</strong>Review and Submit</div>
+        <div style="background:var(--brand-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--brand-blue);font-size:0.85rem;display:block;">1</strong>Vendor Info</div>
+        <div style="background:var(--brand-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--brand-blue);font-size:0.85rem;display:block;">2</strong>Business Case</div>
+        <div style="background:var(--brand-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--brand-blue);font-size:0.85rem;display:block;">3</strong>Risk Indicators</div>
+        <div style="background:var(--brand-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--brand-blue);font-size:0.85rem;display:block;">4</strong>Data Classification</div>
+        <div style="background:var(--brand-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--brand-blue);font-size:0.85rem;display:block;">5</strong>Compliance Screening</div>
+        <div style="background:var(--brand-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--brand-blue);font-size:0.85rem;display:block;">6</strong>Financial Overview</div>
+        <div style="background:var(--brand-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--brand-blue);font-size:0.85rem;display:block;">7</strong>Vendor Context</div>
+        <div style="background:var(--brand-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--brand-blue);font-size:0.85rem;display:block;">8</strong>AI Classification</div>
+        <div style="background:var(--brand-light-gray);border-radius:6px;padding:8px;text-align:center;font-size:0.68rem;"><strong style="color:var(--brand-blue);font-size:0.85rem;display:block;">9</strong>Review and Submit</div>
       </div>
       <div style="margin-top:10px;">
         <h3 style="font-size:0.95rem;">Deal-Killer Detection (OB-DMN-7)</h3>
         <p style="font-size:0.78rem;">Real-time alerts flag non-starters before any reviewer time is consumed:</p>
         <ul style="font-size:0.72rem;">
-          <li><span style="color:var(--kpmg-rose);font-weight:700;">&#9679;</span> Active regulatory sanctions against the vendor</li>
-          <li><span style="color:var(--kpmg-rose);font-weight:700;">&#9679;</span> Unresolvable data residency conflicts</li>
-          <li><span style="color:var(--kpmg-rose);font-weight:700;">&#9679;</span> Prohibited AI use case categories (EU AI Act)</li>
-          <li><span style="color:var(--kpmg-rose);font-weight:700;">&#9679;</span> Missing mandatory certifications for data tier</li>
+          <li><span style="color:var(--brand-rose);font-weight:700;">&#9679;</span> Active regulatory sanctions against the vendor</li>
+          <li><span style="color:var(--brand-rose);font-weight:700;">&#9679;</span> Unresolvable data residency conflicts</li>
+          <li><span style="color:var(--brand-rose);font-weight:700;">&#9679;</span> Prohibited AI use case categories (EU AI Act)</li>
+          <li><span style="color:var(--brand-rose);font-weight:700;">&#9679;</span> Missing mandatory certifications for data tier</li>
         </ul>
       </div>
     </div>
@@ -1399,27 +1399,27 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <h3 style="font-size:0.95rem;margin-top:0;">Pre-Screening to Formal Intake Flow</h3>
       <div style="background:white;border-radius:8px;padding:14px;box-shadow:0 2px 8px rgba(0,51,141,0.08);">
         <div style="display:flex;flex-direction:column;gap:0;align-items:center;">
-          <div style="background:var(--kpmg-light-blue);color:white;border-radius:6px;padding:8px 16px;font-size:0.78rem;font-weight:600;text-align:center;width:80%;">SP0: Requester Mini RFP Wizard</div>
-          <div style="color:var(--kpmg-medium-gray);font-size:1.2rem;">&#9660;</div>
-          <div style="background:var(--kpmg-gold);color:white;border-radius:6px;padding:6px 12px;font-size:0.72rem;font-weight:600;">OB-DMN-7: Deal-Killer Gate</div>
+          <div style="background:var(--brand-light-blue);color:white;border-radius:6px;padding:8px 16px;font-size:0.78rem;font-weight:600;text-align:center;width:80%;">SP0: Requester Mini RFP Wizard</div>
+          <div style="color:var(--brand-medium-gray);font-size:1.2rem;">&#9660;</div>
+          <div style="background:var(--brand-gold);color:white;border-radius:6px;padding:6px 12px;font-size:0.72rem;font-weight:600;">OB-DMN-7: Deal-Killer Gate</div>
           <div style="display:flex;gap:20px;margin-top:4px;width:80%;justify-content:center;">
             <div style="text-align:center;">
-              <div style="color:var(--kpmg-emerald);font-size:1rem;">&#9660;</div>
-              <div style="background:var(--kpmg-emerald);color:white;border-radius:6px;padding:6px 12px;font-size:0.68rem;font-weight:600;">Pass</div>
+              <div style="color:var(--brand-emerald);font-size:1rem;">&#9660;</div>
+              <div style="background:var(--brand-emerald);color:white;border-radius:6px;padding:6px 12px;font-size:0.68rem;font-weight:600;">Pass</div>
             </div>
             <div style="text-align:center;">
-              <div style="color:var(--kpmg-rose);font-size:1rem;">&#9660;</div>
-              <div style="background:var(--kpmg-rose);color:white;border-radius:6px;padding:6px 12px;font-size:0.68rem;font-weight:600;">Fail</div>
+              <div style="color:var(--brand-rose);font-size:1rem;">&#9660;</div>
+              <div style="background:var(--brand-rose);color:white;border-radius:6px;padding:6px 12px;font-size:0.68rem;font-weight:600;">Fail</div>
             </div>
           </div>
           <div style="display:flex;gap:20px;width:80%;justify-content:center;margin-top:4px;">
             <div style="text-align:center;flex:1;">
-              <div style="color:var(--kpmg-medium-gray);font-size:1rem;">&#9660;</div>
-              <div style="background:var(--kpmg-blue);color:white;border-radius:6px;padding:8px 12px;font-size:0.72rem;font-weight:600;">SP1: Formal Intake<br><span style="font-weight:400;font-size:0.65rem;">Variables pre-populated</span></div>
+              <div style="color:var(--brand-medium-gray);font-size:1rem;">&#9660;</div>
+              <div style="background:var(--brand-blue);color:white;border-radius:6px;padding:8px 12px;font-size:0.72rem;font-weight:600;">SP1: Formal Intake<br><span style="font-weight:400;font-size:0.65rem;">Variables pre-populated</span></div>
             </div>
             <div style="text-align:center;flex:1;">
-              <div style="color:var(--kpmg-medium-gray);font-size:1rem;">&#9660;</div>
-              <div style="background:var(--kpmg-light-gray);color:var(--kpmg-rose);border-radius:6px;padding:8px 12px;font-size:0.72rem;font-weight:600;border:1px solid var(--kpmg-rose);">Request Rejected<br><span style="font-weight:400;font-size:0.65rem;color:var(--kpmg-medium-gray);">Before reviewer time spent</span></div>
+              <div style="color:var(--brand-medium-gray);font-size:1rem;">&#9660;</div>
+              <div style="background:var(--brand-light-gray);color:var(--brand-rose);border-radius:6px;padding:8px 12px;font-size:0.72rem;font-weight:600;border:1px solid var(--brand-rose);">Request Rejected<br><span style="font-weight:400;font-size:0.65rem;color:var(--brand-medium-gray);">Before reviewer time spent</span></div>
             </div>
           </div>
         </div>
@@ -1430,7 +1430,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Mini RFP Pre-Screening</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Mini RFP Pre-Screening</span></div>
 </div>
 
 <!-- SLIDE 40: RACI Matrix -->
@@ -1438,7 +1438,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <div class="slide" data-slide="31">
   <h2>RACI Matrix by Governance Topic</h2>
   <table class="styled-table" style="font-size:0.68rem;">
-    <thead><tr><th>Topic</th><th>Business</th><th>Governance</th><th style="background:var(--kpmg-gold);color:white;">Finance</th><th>Procurement</th><th>Contracting</th><th>Technical</th><th>AI Review</th><th>Compliance</th><th>Oversight</th><th>Automation</th><th>Vendor</th></tr></thead>
+    <thead><tr><th>Topic</th><th>Business</th><th>Governance</th><th style="background:var(--brand-gold);color:white;">Finance</th><th>Procurement</th><th>Contracting</th><th>Technical</th><th>AI Review</th><th>Compliance</th><th>Oversight</th><th>Automation</th><th>Vendor</th></tr></thead>
     <tbody>
       <tr><td><strong>Intake</strong></td><td style="background:#e8f0fe;font-weight:700;">R/A</td><td>C</td><td style="background:#fef9e7;">C</td><td>-</td><td>-</td><td>-</td><td>-</td><td>C</td><td>-</td><td>-</td><td>-</td></tr>
       <tr><td><strong>Prioritization</strong></td><td>C</td><td style="background:#e8f0fe;font-weight:700;">R/A</td><td style="background:#fef9e7;">C</td><td>-</td><td>-</td><td>C</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
@@ -1453,8 +1453,8 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <tr><td><strong>TPRM</strong></td><td>-</td><td style="background:#e8f0fe;font-weight:700;">R/A</td><td style="background:#fef9e7;">-</td><td>C</td><td>C</td><td>C</td><td>-</td><td>C</td><td>C</td><td>C</td><td>C</td></tr>
     </tbody>
   </table>
-  <p style="font-size:0.75rem;color:var(--kpmg-medium-gray);margin-top:6px;">R = Responsible | A = Accountable | C = Consulted | I = Informed&nbsp;&nbsp;|&nbsp;&nbsp;<span style="background:#fef3cd;padding:1px 6px;border-radius:2px;">Finance</span> = new functional area (split from Governance per discovery findings)</p>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>RACI Matrix</span></div>
+  <p style="font-size:0.75rem;color:var(--brand-medium-gray);margin-top:6px;">R = Responsible | A = Accountable | C = Consulted | I = Informed&nbsp;&nbsp;|&nbsp;&nbsp;<span style="background:#fef3cd;padding:1px 6px;border-radius:2px;">Finance</span> = new functional area (split from Governance per discovery findings)</p>
+  <div class="slide-footer"><span>Confidential</span><span>RACI Matrix</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1462,7 +1462,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="32">
   <h2>Governance Topic Coverage Across Onboarding Phases</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);margin-bottom:0.75rem;">Hover over any cell to see the tasks that address each governance topic in that phase.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);margin-bottom:0.75rem;">Hover over any cell to see the tasks that address each governance topic in that phase.</p>
   <div class="heatmap-wrap">
     <table class="heatmap">
       <thead>
@@ -1580,11 +1580,11 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     </table>
   </div>
   <div class="hm-legend">
-    <span><span class="hm-legend-box" style="background:var(--kpmg-blue);"></span>Primary (2+ tasks)</span>
+    <span><span class="hm-legend-box" style="background:var(--brand-blue);"></span>Primary (2+ tasks)</span>
     <span><span class="hm-legend-box" style="background:#93a5c0;"></span>Secondary (1 task)</span>
     <span><span class="hm-legend-box" style="background:#fafbfc;border:1px solid #e0e0e0;"></span>No coverage</span>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Governance Topic Coverage Matrix</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Governance Topic Coverage Matrix</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1596,9 +1596,9 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <div class="dmn-header">
         <h4>OB-DMN-1: Risk Tier Classification</h4>
         <span class="dmn-badge">UNIQUE</span>
-        <span class="dmn-badge" style="background:var(--kpmg-medium-blue);">Phase 2</span>
+        <span class="dmn-badge" style="background:var(--brand-medium-blue);">Phase 2</span>
       </div>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin-bottom:4px;">5 risk dimensions (1-10) assign one of 4 tiers. Unacceptable terminates immediately.</p>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin-bottom:4px;">5 risk dimensions (1-10) assign one of 4 tiers. Unacceptable terminates immediately.</p>
       <table class="dmn-table">
     <thead>
       <tr>
@@ -1612,21 +1612,21 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       </tr>
     </thead>
     <tbody>
-      <tr><td>&ge; 9</td><td>&ge; 9</td><td>-</td><td>-</td><td>-</td><td style="color:var(--kpmg-rose);font-weight:700;">Unacceptable</td><td style="color:var(--kpmg-rose);">No</td></tr>
-      <tr><td>&ge; 9</td><td>-</td><td>&ge; 9</td><td>-</td><td>-</td><td style="color:var(--kpmg-rose);font-weight:700;">Unacceptable</td><td style="color:var(--kpmg-rose);">No</td></tr>
-      <tr><td>-</td><td>&ge; 9</td><td>&ge; 9</td><td>-</td><td>-</td><td style="color:var(--kpmg-rose);font-weight:700;">Unacceptable</td><td style="color:var(--kpmg-rose);">No</td></tr>
-      <tr><td>&ge; 9</td><td>-</td><td>-</td><td>&ge; 8</td><td>-</td><td style="color:var(--kpmg-rose);font-weight:700;">Unacceptable</td><td style="color:var(--kpmg-rose);">No</td></tr>
-      <tr><td>-</td><td>-</td><td>-</td><td>&ge; 9</td><td>&ge; 9</td><td style="color:var(--kpmg-rose);font-weight:700;">Unacceptable</td><td style="color:var(--kpmg-rose);">No</td></tr>
-      <tr><td>&ge; 7</td><td>&ge; 7</td><td>-</td><td>-</td><td>-</td><td style="color:var(--kpmg-amber);font-weight:700;">High</td><td style="color:var(--kpmg-amber);">No</td></tr>
-      <tr><td>&ge; 7</td><td>-</td><td>&ge; 7</td><td>-</td><td>-</td><td style="color:var(--kpmg-amber);font-weight:700;">High</td><td style="color:var(--kpmg-amber);">No</td></tr>
-      <tr><td>-</td><td>&ge; 7</td><td>-</td><td>&ge; 6</td><td>-</td><td style="color:var(--kpmg-amber);font-weight:700;">High</td><td style="color:var(--kpmg-amber);">No</td></tr>
-      <tr><td>-</td><td>-</td><td>&ge; 7</td><td>-</td><td>&ge; 7</td><td style="color:var(--kpmg-amber);font-weight:700;">High</td><td style="color:var(--kpmg-amber);">No</td></tr>
-      <tr><td>[4..7)</td><td>[4..7)</td><td>-</td><td>-</td><td>-</td><td style="color:var(--kpmg-medium-blue);font-weight:700;">Limited</td><td style="color:var(--kpmg-emerald);">Yes</td></tr>
-      <tr><td>[4..7)</td><td>-</td><td>[4..7)</td><td>-</td><td>-</td><td style="color:var(--kpmg-medium-blue);font-weight:700;">Limited</td><td style="color:var(--kpmg-emerald);">Yes</td></tr>
-      <tr><td>-</td><td>[4..7)</td><td>[4..7)</td><td>-</td><td>-</td><td style="color:var(--kpmg-medium-blue);font-weight:700;">Limited</td><td style="color:var(--kpmg-emerald);">Yes</td></tr>
-      <tr><td>-</td><td>-</td><td>[4..7)</td><td>[3..6)</td><td>[4..7)</td><td style="color:var(--kpmg-medium-blue);font-weight:700;">Limited</td><td style="color:var(--kpmg-emerald);">Yes</td></tr>
-      <tr><td>&lt; 4</td><td>&lt; 4</td><td>&lt; 4</td><td>&lt; 3</td><td>-</td><td style="color:var(--kpmg-emerald);font-weight:700;">Minimal</td><td style="color:var(--kpmg-emerald);">Yes</td></tr>
-      <tr><td>&lt; 4</td><td>&lt; 4</td><td>&lt; 4</td><td>-</td><td>&lt; 4</td><td style="color:var(--kpmg-emerald);font-weight:700;">Minimal</td><td style="color:var(--kpmg-emerald);">Yes</td></tr>
+      <tr><td>&ge; 9</td><td>&ge; 9</td><td>-</td><td>-</td><td>-</td><td style="color:var(--brand-rose);font-weight:700;">Unacceptable</td><td style="color:var(--brand-rose);">No</td></tr>
+      <tr><td>&ge; 9</td><td>-</td><td>&ge; 9</td><td>-</td><td>-</td><td style="color:var(--brand-rose);font-weight:700;">Unacceptable</td><td style="color:var(--brand-rose);">No</td></tr>
+      <tr><td>-</td><td>&ge; 9</td><td>&ge; 9</td><td>-</td><td>-</td><td style="color:var(--brand-rose);font-weight:700;">Unacceptable</td><td style="color:var(--brand-rose);">No</td></tr>
+      <tr><td>&ge; 9</td><td>-</td><td>-</td><td>&ge; 8</td><td>-</td><td style="color:var(--brand-rose);font-weight:700;">Unacceptable</td><td style="color:var(--brand-rose);">No</td></tr>
+      <tr><td>-</td><td>-</td><td>-</td><td>&ge; 9</td><td>&ge; 9</td><td style="color:var(--brand-rose);font-weight:700;">Unacceptable</td><td style="color:var(--brand-rose);">No</td></tr>
+      <tr><td>&ge; 7</td><td>&ge; 7</td><td>-</td><td>-</td><td>-</td><td style="color:var(--brand-amber);font-weight:700;">High</td><td style="color:var(--brand-amber);">No</td></tr>
+      <tr><td>&ge; 7</td><td>-</td><td>&ge; 7</td><td>-</td><td>-</td><td style="color:var(--brand-amber);font-weight:700;">High</td><td style="color:var(--brand-amber);">No</td></tr>
+      <tr><td>-</td><td>&ge; 7</td><td>-</td><td>&ge; 6</td><td>-</td><td style="color:var(--brand-amber);font-weight:700;">High</td><td style="color:var(--brand-amber);">No</td></tr>
+      <tr><td>-</td><td>-</td><td>&ge; 7</td><td>-</td><td>&ge; 7</td><td style="color:var(--brand-amber);font-weight:700;">High</td><td style="color:var(--brand-amber);">No</td></tr>
+      <tr><td>[4..7)</td><td>[4..7)</td><td>-</td><td>-</td><td>-</td><td style="color:var(--brand-medium-blue);font-weight:700;">Limited</td><td style="color:var(--brand-emerald);">Yes</td></tr>
+      <tr><td>[4..7)</td><td>-</td><td>[4..7)</td><td>-</td><td>-</td><td style="color:var(--brand-medium-blue);font-weight:700;">Limited</td><td style="color:var(--brand-emerald);">Yes</td></tr>
+      <tr><td>-</td><td>[4..7)</td><td>[4..7)</td><td>-</td><td>-</td><td style="color:var(--brand-medium-blue);font-weight:700;">Limited</td><td style="color:var(--brand-emerald);">Yes</td></tr>
+      <tr><td>-</td><td>-</td><td>[4..7)</td><td>[3..6)</td><td>[4..7)</td><td style="color:var(--brand-medium-blue);font-weight:700;">Limited</td><td style="color:var(--brand-emerald);">Yes</td></tr>
+      <tr><td>&lt; 4</td><td>&lt; 4</td><td>&lt; 4</td><td>&lt; 3</td><td>-</td><td style="color:var(--brand-emerald);font-weight:700;">Minimal</td><td style="color:var(--brand-emerald);">Yes</td></tr>
+      <tr><td>&lt; 4</td><td>&lt; 4</td><td>&lt; 4</td><td>-</td><td>&lt; 4</td><td style="color:var(--brand-emerald);font-weight:700;">Minimal</td><td style="color:var(--brand-emerald);">Yes</td></tr>
     </tbody>
   </table>
     </div>
@@ -1634,9 +1634,9 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <div class="dmn-header">
         <h4>OB-DMN-4: SLA Breach Escalation</h4>
         <span class="dmn-badge">FIRST</span>
-        <span class="dmn-badge" style="background:var(--kpmg-medium-blue);">Cross-Cutting</span>
+        <span class="dmn-badge" style="background:var(--brand-medium-blue);">Cross-Cutting</span>
       </div>
-      <p style="font-size:0.68rem;color:var(--kpmg-medium-gray);margin-bottom:4px;">4-level escalation ladder triggered by SLA timer boundary events.</p>
+      <p style="font-size:0.68rem;color:var(--brand-medium-gray);margin-bottom:4px;">4-level escalation ladder triggered by SLA timer boundary events.</p>
       <table class="dmn-table">
     <thead>
       <tr>
@@ -1649,21 +1649,21 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       </tr>
     </thead>
     <tbody>
-      <tr><td>Phase3, Phase4</td><td>&ge; 15</td><td>High</td><td style="color:var(--kpmg-rose);font-weight:700;">Auto-Reject</td><td>Board + Sponsor</td><td>Terminate process</td></tr>
-      <tr><td>Phase3, Phase4</td><td>&ge; 10</td><td>High</td><td style="color:var(--kpmg-rose);font-weight:700;">Board-Alert</td><td>Advisory Board</td><td>Escalation meeting</td></tr>
-      <tr><td>Any</td><td>&ge; 10</td><td>Limited</td><td style="color:var(--kpmg-amber);font-weight:700;">Escalate-Governance</td><td>Governance Lead</td><td>Priority reassignment</td></tr>
-      <tr><td>Phase1, Phase2</td><td>&ge; 5</td><td>High</td><td style="color:var(--kpmg-amber);font-weight:700;">Escalate-Governance</td><td>Governance Lead</td><td>Priority reassignment</td></tr>
-      <tr><td>Any</td><td>&ge; 5</td><td>Limited</td><td style="color:var(--kpmg-gold);font-weight:700;">Notify-Sponsor</td><td>Business Sponsor</td><td>Status update</td></tr>
-      <tr><td>Phase5</td><td>&ge; 5</td><td>-</td><td style="color:var(--kpmg-gold);font-weight:700;">Notify-Sponsor</td><td>Business Sponsor</td><td>Status update</td></tr>
+      <tr><td>Phase3, Phase4</td><td>&ge; 15</td><td>High</td><td style="color:var(--brand-rose);font-weight:700;">Auto-Reject</td><td>Board + Sponsor</td><td>Terminate process</td></tr>
+      <tr><td>Phase3, Phase4</td><td>&ge; 10</td><td>High</td><td style="color:var(--brand-rose);font-weight:700;">Board-Alert</td><td>Advisory Board</td><td>Escalation meeting</td></tr>
+      <tr><td>Any</td><td>&ge; 10</td><td>Limited</td><td style="color:var(--brand-amber);font-weight:700;">Escalate-Governance</td><td>Governance Lead</td><td>Priority reassignment</td></tr>
+      <tr><td>Phase1, Phase2</td><td>&ge; 5</td><td>High</td><td style="color:var(--brand-amber);font-weight:700;">Escalate-Governance</td><td>Governance Lead</td><td>Priority reassignment</td></tr>
+      <tr><td>Any</td><td>&ge; 5</td><td>Limited</td><td style="color:var(--brand-gold);font-weight:700;">Notify-Sponsor</td><td>Business Sponsor</td><td>Status update</td></tr>
+      <tr><td>Phase5</td><td>&ge; 5</td><td>-</td><td style="color:var(--brand-gold);font-weight:700;">Notify-Sponsor</td><td>Business Sponsor</td><td>Status update</td></tr>
       <tr><td>Phase1, Phase2</td><td>&ge; 3</td><td>Minimal</td><td style="font-weight:700;">Notify-Sponsor</td><td>Business Sponsor</td><td>Email reminder</td></tr>
-      <tr><td>Phase3</td><td>&ge; 7</td><td>-</td><td style="color:var(--kpmg-amber);font-weight:700;">Escalate-Governance</td><td>Governance Lead</td><td>Vendor follow-up</td></tr>
+      <tr><td>Phase3</td><td>&ge; 7</td><td>-</td><td style="color:var(--brand-amber);font-weight:700;">Escalate-Governance</td><td>Governance Lead</td><td>Vendor follow-up</td></tr>
       <tr><td>Phase4</td><td>&ge; 5</td><td>Minimal</td><td style="font-weight:700;">Notify-Sponsor</td><td>Business Sponsor</td><td>Committee scheduling</td></tr>
       <tr><td>Any</td><td>&ge; 2</td><td>-</td><td>Monitor</td><td>Process Owner</td><td>Dashboard alert</td></tr>
     </tbody>
   </table>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>OB-DMN-1 and OB-DMN-4</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>OB-DMN-1 and OB-DMN-4</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1676,18 +1676,18 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <div class="dmn-header">
         <h4>OB-DMN-2: Pathway Routing</h4>
         <span class="dmn-badge">UNIQUE</span>
-        <span class="dmn-badge" style="background:var(--kpmg-medium-blue);">Phase 1</span>
+        <span class="dmn-badge" style="background:var(--brand-medium-blue);">Phase 1</span>
       </div>
-      <p style="font-size:0.72rem;color:var(--kpmg-medium-gray);margin-bottom:6px;">Routes to Fast-Track, Standard-Buy, Standard-Build, or Hybrid based on 6 inputs.</p>
+      <p style="font-size:0.72rem;color:var(--brand-medium-gray);margin-bottom:6px;">Routes to Fast-Track, Standard-Buy, Standard-Build, or Hybrid based on 6 inputs.</p>
       <table class="dmn-table">
         <thead><tr><th class="input-col">Reuse</th><th class="input-col">Build/Buy</th><th class="input-col">Capacity</th><th class="input-col">Strategic</th><th class="input-col">TtV</th><th class="input-col">Vendor?</th><th class="output-col">Pathway</th></tr></thead>
         <tbody>
-          <tr><td>&ge;8</td><td>"Buy"</td><td>-</td><td>-</td><td>&ge;7</td><td>true</td><td style="font-weight:700;color:var(--kpmg-emerald);">Fast-Track</td></tr>
-          <tr><td>&ge;7</td><td>"Buy"</td><td>-</td><td>&ge;7</td><td>&ge;7</td><td>true</td><td style="font-weight:700;color:var(--kpmg-emerald);">Fast-Track</td></tr>
-          <tr><td>-</td><td>"Buy"</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="font-weight:700;color:var(--kpmg-medium-blue);">Standard-Buy</td></tr>
-          <tr><td>-</td><td>"Build"</td><td>&ge;6</td><td>-</td><td>-</td><td>-</td><td style="font-weight:700;color:var(--kpmg-blue);">Standard-Build</td></tr>
-          <tr><td>-</td><td>"Hybrid"</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="font-weight:700;color:var(--kpmg-gold);">Hybrid</td></tr>
-          <tr><td>-</td><td>"Build"</td><td>&lt;6</td><td>-</td><td>-</td><td>-</td><td style="font-weight:700;color:var(--kpmg-gold);">Hybrid</td></tr>
+          <tr><td>&ge;8</td><td>"Buy"</td><td>-</td><td>-</td><td>&ge;7</td><td>true</td><td style="font-weight:700;color:var(--brand-emerald);">Fast-Track</td></tr>
+          <tr><td>&ge;7</td><td>"Buy"</td><td>-</td><td>&ge;7</td><td>&ge;7</td><td>true</td><td style="font-weight:700;color:var(--brand-emerald);">Fast-Track</td></tr>
+          <tr><td>-</td><td>"Buy"</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="font-weight:700;color:var(--brand-medium-blue);">Standard-Buy</td></tr>
+          <tr><td>-</td><td>"Build"</td><td>&ge;6</td><td>-</td><td>-</td><td>-</td><td style="font-weight:700;color:var(--brand-blue);">Standard-Build</td></tr>
+          <tr><td>-</td><td>"Hybrid"</td><td>-</td><td>-</td><td>-</td><td>-</td><td style="font-weight:700;color:var(--brand-gold);">Hybrid</td></tr>
+          <tr><td>-</td><td>"Build"</td><td>&lt;6</td><td>-</td><td>-</td><td>-</td><td style="font-weight:700;color:var(--brand-gold);">Hybrid</td></tr>
         </tbody>
       </table>
     </div>
@@ -1695,18 +1695,18 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <div class="dmn-header">
         <h4>OB-DMN-3: Governance Routing</h4>
         <span class="dmn-badge">UNIQUE</span>
-        <span class="dmn-badge" style="background:var(--kpmg-medium-blue);">Phase 4</span>
+        <span class="dmn-badge" style="background:var(--brand-medium-blue);">Phase 4</span>
       </div>
-      <p style="font-size:0.72rem;color:var(--kpmg-medium-gray);margin-bottom:6px;">Routes governance review to Advisory Board, Committee, Fast Path, or Auto-Approve based on risk tier and pathway.</p>
+      <p style="font-size:0.72rem;color:var(--brand-medium-gray);margin-bottom:6px;">Routes governance review to Advisory Board, Committee, Fast Path, or Auto-Approve based on risk tier and pathway.</p>
       <table class="dmn-table">
         <thead><tr><th class="input-col">Risk Tier</th><th class="input-col">Pathway</th><th class="output-col">Review Body</th><th class="output-col">SLA</th></tr></thead>
         <tbody>
-          <tr><td>Unacceptable</td><td>-</td><td style="color:var(--kpmg-rose);font-weight:700;">Rejected</td><td>-</td></tr>
+          <tr><td>Unacceptable</td><td>-</td><td style="color:var(--brand-rose);font-weight:700;">Rejected</td><td>-</td></tr>
           <tr><td>High</td><td>-</td><td style="font-weight:700;">Advisory Board</td><td>7 days</td></tr>
           <tr><td>Limited</td><td>Standard-*</td><td style="font-weight:700;">Committee</td><td>5 days</td></tr>
-          <tr><td>Limited</td><td>Fast-Track</td><td style="font-weight:700;color:var(--kpmg-emerald);">Fast Path</td><td>2 days</td></tr>
-          <tr><td>Minimal</td><td>Fast-Track</td><td style="font-weight:700;color:var(--kpmg-emerald);">Auto-Approve</td><td>1 day</td></tr>
-          <tr><td>Minimal</td><td>Standard-*</td><td style="font-weight:700;color:var(--kpmg-emerald);">Fast Path</td><td>2 days</td></tr>
+          <tr><td>Limited</td><td>Fast-Track</td><td style="font-weight:700;color:var(--brand-emerald);">Fast Path</td><td>2 days</td></tr>
+          <tr><td>Minimal</td><td>Fast-Track</td><td style="font-weight:700;color:var(--brand-emerald);">Auto-Approve</td><td>1 day</td></tr>
+          <tr><td>Minimal</td><td>Standard-*</td><td style="font-weight:700;color:var(--brand-emerald);">Fast Path</td><td>2 days</td></tr>
         </tbody>
       </table>
     </div>
@@ -1718,18 +1718,18 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <div class="dmn-header">
         <h4>OB-DMN-5: Prioritization Scoring</h4>
         <span class="dmn-badge">FIRST</span>
-        <span class="dmn-badge" style="background:var(--kpmg-medium-blue);">Phase 2</span>
+        <span class="dmn-badge" style="background:var(--brand-medium-blue);">Phase 2</span>
       </div>
-      <p style="font-size:0.72rem;color:var(--kpmg-medium-gray);margin-bottom:6px;">Scores requests for backlog prioritization. 5 inputs produce a priority tier (P1/P2/P3) determining queue position.</p>
+      <p style="font-size:0.72rem;color:var(--brand-medium-gray);margin-bottom:6px;">Scores requests for backlog prioritization. 5 inputs produce a priority tier (P1/P2/P3) determining queue position.</p>
       <table class="dmn-table">
         <thead><tr><th class="input-col">Business Impact</th><th class="input-col">Strategic Align.</th><th class="input-col">Urgency</th><th class="input-col">Risk Tier</th><th class="input-col">Capacity</th><th class="output-col">Priority</th></tr></thead>
         <tbody>
-          <tr><td>&ge;8</td><td>&ge;8</td><td>&ge;8</td><td>High</td><td>-</td><td style="font-weight:700;color:var(--kpmg-rose);">P1</td></tr>
-          <tr><td>&ge;8</td><td>&ge;7</td><td>-</td><td>-</td><td>&ge;5</td><td style="font-weight:700;color:var(--kpmg-rose);">P1</td></tr>
-          <tr><td>&ge;5</td><td>&ge;5</td><td>&ge;5</td><td>Limited</td><td>-</td><td style="font-weight:700;color:var(--kpmg-amber);">P2</td></tr>
-          <tr><td>&ge;5</td><td>-</td><td>&ge;7</td><td>-</td><td>&ge;5</td><td style="font-weight:700;color:var(--kpmg-amber);">P2</td></tr>
-          <tr><td>&lt;5</td><td>&lt;5</td><td>&lt;5</td><td>Minimal</td><td>-</td><td style="font-weight:700;color:var(--kpmg-medium-blue);">P3</td></tr>
-          <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>&lt;3</td><td style="font-weight:700;color:var(--kpmg-medium-blue);">P3</td></tr>
+          <tr><td>&ge;8</td><td>&ge;8</td><td>&ge;8</td><td>High</td><td>-</td><td style="font-weight:700;color:var(--brand-rose);">P1</td></tr>
+          <tr><td>&ge;8</td><td>&ge;7</td><td>-</td><td>-</td><td>&ge;5</td><td style="font-weight:700;color:var(--brand-rose);">P1</td></tr>
+          <tr><td>&ge;5</td><td>&ge;5</td><td>&ge;5</td><td>Limited</td><td>-</td><td style="font-weight:700;color:var(--brand-amber);">P2</td></tr>
+          <tr><td>&ge;5</td><td>-</td><td>&ge;7</td><td>-</td><td>&ge;5</td><td style="font-weight:700;color:var(--brand-amber);">P2</td></tr>
+          <tr><td>&lt;5</td><td>&lt;5</td><td>&lt;5</td><td>Minimal</td><td>-</td><td style="font-weight:700;color:var(--brand-medium-blue);">P3</td></tr>
+          <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>&lt;3</td><td style="font-weight:700;color:var(--brand-medium-blue);">P3</td></tr>
         </tbody>
       </table>
     </div>
@@ -1737,26 +1737,26 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <div class="dmn-header">
         <h4>OB-DMN-6: Security Assessment Routing</h4>
         <span class="dmn-badge">UNIQUE</span>
-        <span class="dmn-badge" style="background:var(--kpmg-medium-blue);">Phase 3</span>
+        <span class="dmn-badge" style="background:var(--brand-medium-blue);">Phase 3</span>
       </div>
-      <p style="font-size:0.72rem;color:var(--kpmg-medium-gray);margin-bottom:6px;">Routes security review depth based on risk tier, data classification, and AI component presence.</p>
+      <p style="font-size:0.72rem;color:var(--brand-medium-gray);margin-bottom:6px;">Routes security review depth based on risk tier, data classification, and AI component presence.</p>
       <table class="dmn-table">
         <thead><tr><th class="input-col">Risk Tier</th><th class="input-col">Data Class.</th><th class="input-col">AI Component?</th><th class="output-col">Assessment</th><th class="output-col">SLA</th></tr></thead>
         <tbody>
-          <tr><td>High</td><td>Confidential</td><td>true</td><td style="font-weight:700;color:var(--kpmg-rose);">Major</td><td>10 days</td></tr>
-          <tr><td>High</td><td>Confidential</td><td>false</td><td style="font-weight:700;color:var(--kpmg-rose);">Major</td><td>10 days</td></tr>
-          <tr><td>High</td><td>Internal</td><td>true</td><td style="font-weight:700;color:var(--kpmg-amber);">Elevated</td><td>5 days</td></tr>
-          <tr><td>Limited</td><td>Confidential</td><td>-</td><td style="font-weight:700;color:var(--kpmg-amber);">Elevated</td><td>5 days</td></tr>
-          <tr><td>Limited</td><td>Internal</td><td>true</td><td style="font-weight:700;color:var(--kpmg-amber);">Elevated</td><td>5 days</td></tr>
-          <tr><td>Limited</td><td>Internal</td><td>false</td><td style="font-weight:700;color:var(--kpmg-emerald);">Baseline</td><td>Same-day</td></tr>
-          <tr><td>Minimal</td><td>-</td><td>false</td><td style="font-weight:700;color:var(--kpmg-emerald);">Baseline</td><td>Same-day</td></tr>
-          <tr><td>Minimal</td><td>-</td><td>true</td><td style="font-weight:700;color:var(--kpmg-amber);">Elevated</td><td>5 days</td></tr>
+          <tr><td>High</td><td>Confidential</td><td>true</td><td style="font-weight:700;color:var(--brand-rose);">Major</td><td>10 days</td></tr>
+          <tr><td>High</td><td>Confidential</td><td>false</td><td style="font-weight:700;color:var(--brand-rose);">Major</td><td>10 days</td></tr>
+          <tr><td>High</td><td>Internal</td><td>true</td><td style="font-weight:700;color:var(--brand-amber);">Elevated</td><td>5 days</td></tr>
+          <tr><td>Limited</td><td>Confidential</td><td>-</td><td style="font-weight:700;color:var(--brand-amber);">Elevated</td><td>5 days</td></tr>
+          <tr><td>Limited</td><td>Internal</td><td>true</td><td style="font-weight:700;color:var(--brand-amber);">Elevated</td><td>5 days</td></tr>
+          <tr><td>Limited</td><td>Internal</td><td>false</td><td style="font-weight:700;color:var(--brand-emerald);">Baseline</td><td>Same-day</td></tr>
+          <tr><td>Minimal</td><td>-</td><td>false</td><td style="font-weight:700;color:var(--brand-emerald);">Baseline</td><td>Same-day</td></tr>
+          <tr><td>Minimal</td><td>-</td><td>true</td><td style="font-weight:700;color:var(--brand-amber);">Elevated</td><td>5 days</td></tr>
         </tbody>
       </table>
     </div>
   
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>OB-DMN-2, 3, 5, 6</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>OB-DMN-2, 3, 5, 6</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1768,7 +1768,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="35">
   <h2>Onboarding Bottleneck Analysis: Before vs. After</h2>
-  <p style="font-size:0.82rem;color:var(--kpmg-medium-gray);margin-bottom:0.5rem;">Key delay drivers identified during stakeholder interviews mapped against projected improvements from the proposed governance model.</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);margin-bottom:0.5rem;">Key delay drivers identified during stakeholder interviews mapped against projected improvements from the proposed governance model.</p>
   <div class="chart-container" id="chartOnboardingBottleneck"></div>
   <div class="card-grid" style="grid-template-columns:repeat(4,1fr);margin-top:0.75rem;">
     <div class="card emerald">
@@ -1788,7 +1788,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       <p>Backlog eliminated with dedicated AI governance lane and SR 11-7 framework</p>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Bottleneck Analysis</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Bottleneck Analysis</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1809,7 +1809,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     </tbody>
   </table>
   <div class="quote-block">"If we want this to really click... I can't have the architect review group being a critical portion with only two people."<cite>Risk Management Lead</cite></div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Staffing Model</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Staffing Model</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1821,21 +1821,21 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
   <table class="styled-table" style="font-size:0.78rem;">
     <thead><tr><th>Metric</th><th>Baseline (Current)</th><th>Day 120 Target</th></tr></thead>
     <tbody>
-      <tr><td>E2E cycle time (standard)</td><td style="color:var(--kpmg-rose);font-weight:600;">6-9 months</td><td style="color:var(--kpmg-emerald);font-weight:600;">60-90 days</td></tr>
-      <tr><td>E2E cycle time (Enable)</td><td style="color:var(--kpmg-rose);">Same as standard</td><td style="color:var(--kpmg-emerald);font-weight:600;">30 days</td></tr>
-      <tr><td>E2E cycle time (AI fast-track)</td><td style="color:var(--kpmg-rose);">Same as standard</td><td style="color:var(--kpmg-emerald);font-weight:600;">14 days</td></tr>
-      <tr><td>RAE completion</td><td style="color:var(--kpmg-rose);font-weight:600;">28-29 days</td><td style="color:var(--kpmg-emerald);font-weight:600;">14 days</td></tr>
-      <tr><td>DD internal review</td><td style="color:var(--kpmg-rose);font-weight:600;">75 days</td><td style="color:var(--kpmg-emerald);font-weight:600;">30 days</td></tr>
-      <tr><td>Security review (Baseline tier)</td><td>2 weeks</td><td style="color:var(--kpmg-emerald);font-weight:600;">Same-day (automated)</td></tr>
-      <tr><td>Form completion rate</td><td style="color:var(--kpmg-rose);">Unknown</td><td>90%+ first-pass</td></tr>
+      <tr><td>E2E cycle time (standard)</td><td style="color:var(--brand-rose);font-weight:600;">6-9 months</td><td style="color:var(--brand-emerald);font-weight:600;">60-90 days</td></tr>
+      <tr><td>E2E cycle time (Enable)</td><td style="color:var(--brand-rose);">Same as standard</td><td style="color:var(--brand-emerald);font-weight:600;">30 days</td></tr>
+      <tr><td>E2E cycle time (AI fast-track)</td><td style="color:var(--brand-rose);">Same as standard</td><td style="color:var(--brand-emerald);font-weight:600;">14 days</td></tr>
+      <tr><td>RAE completion</td><td style="color:var(--brand-rose);font-weight:600;">28-29 days</td><td style="color:var(--brand-emerald);font-weight:600;">14 days</td></tr>
+      <tr><td>DD internal review</td><td style="color:var(--brand-rose);font-weight:600;">75 days</td><td style="color:var(--brand-emerald);font-weight:600;">30 days</td></tr>
+      <tr><td>Security review (Baseline tier)</td><td>2 weeks</td><td style="color:var(--brand-emerald);font-weight:600;">Same-day (automated)</td></tr>
+      <tr><td>Form completion rate</td><td style="color:var(--brand-rose);">Unknown</td><td>90%+ first-pass</td></tr>
       <tr><td>Intake rejection (deal-killer)</td><td>0% (no pre-screen)</td><td>Measured</td></tr>
-      <tr><td>Contract cycle time</td><td style="color:var(--kpmg-rose);font-weight:600;">Varies (up to 1.5yr)</td><td style="color:var(--kpmg-emerald);font-weight:600;">90 days standard</td></tr>
-      <tr><td>Business Council decision</td><td>Monthly + email</td><td style="color:var(--kpmg-emerald);font-weight:600;">48-hour async SLA</td></tr>
-      <tr><td>Requester satisfaction</td><td style="color:var(--kpmg-rose);">Unmeasured</td><td>NPS baseline established</td></tr>
-      <tr><td>Queue transparency</td><td style="color:var(--kpmg-rose);">None</td><td style="color:var(--kpmg-emerald);font-weight:600;">Real-time dashboard</td></tr>
+      <tr><td>Contract cycle time</td><td style="color:var(--brand-rose);font-weight:600;">Varies (up to 1.5yr)</td><td style="color:var(--brand-emerald);font-weight:600;">90 days standard</td></tr>
+      <tr><td>Business Council decision</td><td>Monthly + email</td><td style="color:var(--brand-emerald);font-weight:600;">48-hour async SLA</td></tr>
+      <tr><td>Requester satisfaction</td><td style="color:var(--brand-rose);">Unmeasured</td><td>NPS baseline established</td></tr>
+      <tr><td>Queue transparency</td><td style="color:var(--brand-rose);">None</td><td style="color:var(--brand-emerald);font-weight:600;">Real-time dashboard</td></tr>
     </tbody>
   </table>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Measurement Dashboard</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Measurement Dashboard</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1856,27 +1856,27 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <button class="topic-pill" onclick="selectTopic('Commercial Counsel')">Commercial Counsel</button>
     <button class="topic-pill" onclick="selectTopic('TPRM')">TPRM</button>
   </div>
-  <div id="topicPlaceholder" style="background:var(--kpmg-light-gray);border-radius:8px;padding:24px;text-align:center;color:var(--kpmg-medium-gray);font-size:0.9rem;min-height:160px;display:flex;align-items:center;justify-content:center;">Select a topic above to explore its process mapping, RACI assignment, and regulatory references</div>
+  <div id="topicPlaceholder" style="background:var(--brand-light-gray);border-radius:8px;padding:24px;text-align:center;color:var(--brand-medium-gray);font-size:0.9rem;min-height:160px;display:flex;align-items:center;justify-content:center;">Select a topic above to explore its process mapping, RACI assignment, and regulatory references</div>
   <div id="topicPanel" style="display:none;">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
       <div>
-        <div id="topicDesc" style="background:white;border-left:4px solid var(--kpmg-blue);border-radius:4px;padding:10px 14px;font-size:0.8rem;color:var(--kpmg-dark-gray);margin-bottom:10px;"></div>
-        <div style="background:var(--kpmg-light-gray);border-radius:4px;padding:10px 14px;font-size:0.75rem;">
-          <strong style="color:var(--kpmg-dark-navy);display:block;margin-bottom:4px;">RACI</strong>
-          <div id="topicRaci" style="color:var(--kpmg-medium-gray);line-height:1.6;"></div>
+        <div id="topicDesc" style="background:white;border-left:4px solid var(--brand-blue);border-radius:4px;padding:10px 14px;font-size:0.8rem;color:var(--brand-dark-gray);margin-bottom:10px;"></div>
+        <div style="background:var(--brand-light-gray);border-radius:4px;padding:10px 14px;font-size:0.75rem;">
+          <strong style="color:var(--brand-dark-navy);display:block;margin-bottom:4px;">RACI</strong>
+          <div id="topicRaci" style="color:var(--brand-medium-gray);line-height:1.6;"></div>
         </div>
-        <div style="background:var(--kpmg-light-gray);border-radius:4px;padding:10px 14px;font-size:0.75rem;margin-top:8px;">
-          <strong style="color:var(--kpmg-dark-navy);display:block;margin-bottom:4px;">Regulatory References</strong>
-          <div id="topicRegs" style="color:var(--kpmg-medium-gray);line-height:1.6;"></div>
+        <div style="background:var(--brand-light-gray);border-radius:4px;padding:10px 14px;font-size:0.75rem;margin-top:8px;">
+          <strong style="color:var(--brand-dark-navy);display:block;margin-bottom:4px;">Regulatory References</strong>
+          <div id="topicRegs" style="color:var(--brand-medium-gray);line-height:1.6;"></div>
         </div>
       </div>
       <div>
-        <strong style="color:var(--kpmg-dark-navy);font-size:0.75rem;display:block;margin-bottom:6px;">Tasks by Sub-Process</strong>
+        <strong style="color:var(--brand-dark-navy);font-size:0.75rem;display:block;margin-bottom:6px;">Tasks by Sub-Process</strong>
         <div id="topicPhases" style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Interactive Topic Explorer</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Interactive Topic Explorer</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1920,7 +1920,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <div class="journey-phase active"><div class="jp-label">Contract</div><ul class="jp-tasks"><li>Refine Reqs</li><li>Perform PoC</li></ul></div>
     <div class="journey-phase inactive"><div class="jp-label">Go-Live</div></div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Topic Journeys: Intake, Prioritization, Funding, Sourcing</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journeys: Intake, Prioritization, Funding, Sourcing</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -1973,7 +1973,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <div class="journey-phase inactive"><div class="jp-label">Contract</div></div>
     <div class="journey-phase inactive"><div class="jp-label">Go-Live</div></div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Topic Journeys: Cyber, EA, Compliance, AI Gov, Privacy</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journeys: Cyber, EA, Compliance, AI Gov, Privacy</span></div>
 </div>
 
 <!-- ============================================================ -->
@@ -2009,7 +2009,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <div class="journey-footer-block"><strong>RACI</strong><span>R: Governance, Procurement, Compliance, Contracting, Oversight, Automation, Vendor | A: Governance / Procurement / Compliance / Contracting / Oversight</span></div>
     <div class="journey-footer-block"><strong>Regulations</strong><span>OCC 2023-17 | DORA | NIST CSF 2.0 | ISO 27001 | BCBS d577</span></div>
   </div>
-  <div class="slide-footer"><span>KPMG Confidential</span><span>Topic Journeys: Commercial Counsel and TPRM</span></div>
+  <div class="slide-footer"><span>Confidential</span><span>Topic Journeys: Commercial Counsel and TPRM</span></div>
 </div>
 
 </main>
@@ -2210,7 +2210,7 @@ function selectTopic(topic) {
   if (!d) return;
   document.getElementById('topicPlaceholder').style.display = 'none';
   document.getElementById('topicPanel').style.display = 'block';
-  document.getElementById('topicDesc').innerHTML = '<strong style="color:var(--kpmg-blue);">' + topic + '</strong><br>' + d.description;
+  document.getElementById('topicDesc').innerHTML = '<strong style="color:var(--brand-blue);">' + topic + '</strong><br>' + d.description;
   const raciParts = [];
   if (d.raci.responsible) raciParts.push('<strong>R:</strong> ' + d.raci.responsible);
   if (d.raci.accountable) raciParts.push('<strong>A:</strong> ' + d.raci.accountable);
@@ -2222,8 +2222,8 @@ function selectTopic(topic) {
   phasesDiv.innerHTML = '';
   Object.entries(d.phases).forEach(([phase, tasks]) => {
     const div = document.createElement('div');
-    div.style.cssText = 'background:white;border-radius:6px;padding:8px 12px;border-left:3px solid var(--kpmg-blue);';
-    div.innerHTML = '<strong style="font-size:0.72rem;color:var(--kpmg-blue);">' + phase + '</strong><ul style="margin:4px 0 0 14px;font-size:0.7rem;color:var(--kpmg-medium-gray);">' + tasks.map(t => '<li>' + t + '</li>').join('') + '</ul>';
+    div.style.cssText = 'background:white;border-radius:6px;padding:8px 12px;border-left:3px solid var(--brand-blue);';
+    div.innerHTML = '<strong style="font-size:0.72rem;color:var(--brand-blue);">' + phase + '</strong><ul style="margin:4px 0 0 14px;font-size:0.7rem;color:var(--brand-medium-gray);">' + tasks.map(t => '<li>' + t + '</li>').join('') + '</ul>';
     phasesDiv.appendChild(div);
   });
 }

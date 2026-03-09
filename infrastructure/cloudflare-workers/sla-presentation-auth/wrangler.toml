@@ -17,7 +17,7 @@ WORKER_DOMAIN = "https://sla.agentic-innovations.com"
 
 # Email restrictions are hardcoded in src/index.ts:
 # - ALLOWED_EMAILS = ['proth1@gmail.com']
-# - ALLOWED_DOMAINS = ['agentic-innovations.com', 'kpmg.com']
+# - ALLOWED_DOMAINS = ['agentic-innovations.com']
 
 # REQUIRED: Configure Cloudflare Rate Limiting Rule externally:
 # Path: /auth/send-otp, Method: POST, Limit: 5 req/min/IP, Action: Block
