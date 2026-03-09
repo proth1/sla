@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.98
+**Current Version**: 2026.03.99
 **Last Release**: 2026-03-09
-**Total Releases**: 98
+**Total Releases**: 99
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.99 | 2026-03-09 | #114 | Codify v11→v12 BPMN cleanup patterns into modeling standards (7 rules, Pattern A2) |
 | 2026.03.98 | 2026-03-09 | #112 | Onboarding v12 SP1 cleanup: gateway naming, candidateGroups, conditionExpressions, Build path fix |
 | 2026.03.97 | 2026-03-09 | #84-92 | Batch 1 compliance: 3 DMN tables (6,9,13), lane fixes, regulatory flags, oversight tasks, concentration risk |
 | 2026.03.89 | 2026-03-09 | #111 | Jira task label tagging with phase and process instance keys |
