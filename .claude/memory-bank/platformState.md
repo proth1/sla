@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.72
+**Current Version**: 2026.03.73
 **Last Release**: 2026-03-08
-**Total Releases**: 72
+**Total Releases**: 73
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.73 | 2026-03-08 | #83 | Fix Mini RFP flashing + renumber steps to 1-8 |
 | 2026.03.72 | 2026-03-08 | #82 | Security hardening: timing-safe, error sanitization, CORS/CSP, health check |
 | 2026.03.71 | 2026-03-08 | #80 | Webhook HMAC auth, persona UI dedup, single data source |
 | 2026.03.70 | 2026-03-08 | #81 | Document correct env var names for Camunda Wrangler secrets |

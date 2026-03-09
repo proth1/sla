@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026.03.73] - 2026-03-08
+
+### Fixed
+- Fix Mini RFP screen flashing caused by poll loop re-rendering same task every 2.5s (PR #83)
+- Renumber Mini RFP wizard steps from 1,2,2.5,3,4,5,6,7 to sequential 1-8 (PR #83)
+
 ## [2026.03.72] - 2026-03-08
 
 ### Security
