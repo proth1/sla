@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Industry Benchmarks — Software Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brand-blue: #00338D;
+  --brand-medium-blue: #005EB8;
+  --brand-light-blue: #0091DA;
+  --brand-dark-navy: #001D48;
+  --brand-white: #ffffff;
+  --brand-light-gray: #f5f5f5;
+  --brand-medium-gray: #666666;
+  --brand-dark-gray: #333333;
+  --brand-gold: #D4A843;
+  --brand-emerald: #00A86B;
+  --brand-rose: #C62828;
+  --brand-amber: #E67E22;
+  --font-heading: 'Open Sans Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Open Sans', Arial, Helvetica, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--brand-white);
+  color: var(--brand-dark-gray);
+  width: 1280px;
+  height: 720px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Slide container — 16:9 */
+.slide {
+  width: 1280px;
+  height: 720px;
+  padding: 48px 56px 36px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Header bar */
+.header-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--brand-blue) 0%, var(--brand-light-blue) 50%, var(--brand-gold) 100%);
+}
+
+h2 {
+  font-family: var(--font-heading);
+  font-size: 1.55rem;
+  color: var(--brand-blue);
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+.subtitle {
+  font-size: 0.72rem;
+  color: var(--brand-medium-gray);
+  margin-bottom: 18px;
+}
+
+/* Main layout: left hero metrics + right benchmark table */
+.layout {
+  display: flex;
+  gap: 28px;
+  flex: 1;
+}
+
+/* Left column: current state + target */
+.left-col {
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.state-card {
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.state-card.current {
+  background: linear-gradient(135deg, #fef2f2 0%, #fff 100%);
+  border: 1px solid #fecaca;
+}
+.state-card.target {
+  background: linear-gradient(135deg, #ecfdf5 0%, #fff 100%);
+  border: 1px solid #a7f3d0;
+}
+.state-card h3 {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.state-card.current h3 { color: var(--brand-rose); }
+.state-card.target h3 { color: var(--brand-emerald); }
+
+.big-metric {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.big-metric .num {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.big-metric .unit {
+  font-size: 0.8rem;
+  color: var(--brand-medium-gray);
+}
+.state-card.current .big-metric .num { color: var(--brand-rose); }
+.state-card.target .big-metric .num { color: var(--brand-emerald); }
+
+.stat-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.stat-pill {
+  background: rgba(0,0,0,0.04);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.62rem;
+  line-height: 1.4;
+  color: var(--brand-dark-gray);
+}
+.stat-pill strong {
+  font-weight: 700;
+}
+
+/* Reduction arrow */
+.reduction-banner {
+  background: var(--brand-blue);
+  color: white;
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.reduction-banner .arrow {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.reduction-banner .pct {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--brand-gold);
+}
+.reduction-banner .desc {
+  font-size: 0.68rem;
+  opacity: 0.9;
+}
+
+/* Right column: benchmark comparison table */
+.right-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Benchmark table */
+.bench-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.68rem;
+}
+.bench-table thead th {
+  background: var(--brand-blue);
+  color: white;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 7px 10px;
+  text-align: left;
+  font-size: 0.62rem;
+}
+.bench-table thead th:first-child { border-radius: 6px 0 0 0; }
+.bench-table thead th:last-child { border-radius: 0 6px 0 0; }
+.bench-table tbody td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+  line-height: 1.35;
+}
+.bench-table tbody tr:last-child td { border-bottom: none; }
+.bench-table tbody tr:nth-child(even) { background: #f9fafb; }
+.bench-table .metric-name { font-weight: 600; color: var(--brand-dark-gray); }
+.bench-table .src { font-size: 0.56rem; color: #999; font-style: italic; }
+
+/* Bar visualization */
+.bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 180px;
+}
+.bar {
+  height: 14px;
+  border-radius: 3px;
+  display: inline-block;
+}
+.bar.rose { background: var(--brand-rose); }
+.bar.amber { background: var(--brand-amber); }
+.bar.emerald { background: var(--brand-emerald); }
+.bar.blue { background: var(--brand-light-blue); }
+.bar-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Optimization stack */
+.stack-label {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  color: var(--brand-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.stack-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.stack-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.6rem;
+}
+.stack-row .layer-label {
+  width: 170px;
+  text-align: right;
+  color: var(--brand-medium-gray);
+  font-size: 0.58rem;
+}
+.stack-row .layer-bar {
+  height: 16px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  color: white;
+  font-weight: 700;
+  font-size: 0.56rem;
+  white-space: nowrap;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.56rem;
+  color: #aaa;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+.footer a, .src a {
+  color: var(--brand-light-blue);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--brand-light-blue);
+}
+.footer a:hover, .src a:hover {
+  color: var(--brand-blue);
+  border-bottom-style: solid;
+}
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="header-bar"></div>
+
+  <h2>Software Onboarding: Comparative Industry Benchmarks</h2>
+  <p class="subtitle">End-to-end cycle times across financial services, TPRM, and enterprise procurement &mdash; current state vs. industry vs. optimized target</p>
+
+  <div class="layout">
+    <!-- LEFT: Hero metrics -->
+    <div class="left-col">
+      <div class="state-card current">
+        <h3>Current State (Client-Measured)</h3>
+        <div class="big-metric"><span class="num">6&ndash;9</span><span class="unit">months end-to-end</span></div>
+        <div class="stat-row">
+          <span class="stat-pill"><strong>18</strong> sequential committees</span>
+          <span class="stat-pill"><strong>5+</strong> intake channels</span>
+          <span class="stat-pill"><strong>75d</strong> DD internal review</span>
+          <span class="stat-pill"><strong>2&ndash;3mo</strong> contracting</span>
+          <span class="stat-pill"><strong>60+</strong> AI queue items</span>
+          <span class="stat-pill"><strong>2 people</strong> / 30+ contracts/mo</span>
+        </div>
+      </div>
+
+      <div class="reduction-banner">
+        <span class="arrow">&#8595;</span>
+        <div>
+          <div class="pct">68&ndash;75% Reduction</div>
+          <div class="desc">Through parallel evaluation, workflow automation, front-loaded knowledge capture, and policy-as-code</div>
+        </div>
+      </div>
+
+      <div class="state-card target">
+        <h3>Optimized Target State</h3>
+        <div class="big-metric"><span class="num">29&ndash;45</span><span class="unit">days (standard risk)</span></div>
+        <div class="stat-row">
+          <span class="stat-pill"><strong>5</strong> parallel streams</span>
+          <span class="stat-pill"><strong>60%</strong> automation</span>
+          <span class="stat-pill"><strong>20d</strong> phase SLA total</span>
+          <span class="stat-pill"><strong>30%+</strong> reuse/redirect</span>
+          <span class="stat-pill"><strong>2wk</strong> AI fast-track</span>
+          <span class="stat-pill"><strong>13.5d</strong> minimal risk</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Benchmark comparison -->
+    <div class="right-col">
+      <table class="bench-table">
+        <thead>
+          <tr>
+            <th>Benchmark Metric</th>
+            <th>Industry / Peer Data</th>
+            <th style="width:200px;">Comparison</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="metric-name">End-to-End Onboarding</div>
+              <div class="src">PRD &sect;13.1; Risk Mgmt Lead; <a href="https://www.apqc.org/resources/benchmarking/open-standards-benchmarking/measures/average-cycle-time-days-set-supplier" target="_blank">APQC</a>; <a href="https://visotrust.com/resources/vendor-onboarding/" target="_blank">VISO TRUST</a></div>
+            </td>
+            <td>
+              <strong>90&ndash;120 days</strong> industry avg (standard risk)<br>
+              <strong>60&ndash;90 days</strong> competitor benchmark<br>
+              <strong>4&ndash;6 weeks</strong> medium-complexity vendor (APQC)
+            </td>
+            <td>
+              <div class="bar-wrap"><div class="bar rose" style="width:140px;"></div><span class="bar-label">180-270d (ours)</span></div>
+              <div class="bar-wrap"><div class="bar amber" style="width:80px;"></div><span class="bar-label">90-120d (industry)</span></div>
+              <div class="bar-wrap"><div class="bar emerald" style="width:30px;"></div><span class="bar-label">29-45d (target)</span></div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="metric-name">Due Diligence Review</div>
+              <div class="src">Risk Mgmt Lead; <a href="https://www.whistic.com/resources/blog/tprm-impact-report-midyear-update" target="_blank">Whistic 2025</a></div>
+            </td>
+            <td>
+              <strong>75 days</strong> internal review (down from 144d)<br>
+              <strong>37.3 assessments/mo</strong> avg vendor load<br>
+              <strong>335/yr</strong> completed (8-person team)
+            </td>
+            <td>
+              <div class="bar-wrap"><div class="bar rose" style="width:100px;"></div><span class="bar-label">75d (current)</span></div>
+              <div class="bar-wrap"><div class="bar amber" style="width:60px;"></div><span class="bar-label">~45d (industry est.)</span></div>
+              <div class="bar-wrap"><div class="bar emerald" style="width:22px;"></div><span class="bar-label">5d SLA (target)</span></div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="metric-name">Vendor Assessment</div>
+              <div class="src">Risk Mgmt Lead; <a href="https://www.riskrecon.com/ponemon-report-data-risk-in-the-third-party-ecosystem-study" target="_blank">Bitsight/Ponemon</a>; <a href="https://www.whistic.com/resources/blog/tprm-impact-report-midyear-update" target="_blank">Whistic 2025</a></div>
+            </td>
+            <td>
+              <strong>28&ndash;29 days</strong> RAE (target: 14d)<br>
+              <strong>75% reduction</strong> with automation (Bitsight)<br>
+              <strong>94%</strong> of firms under-assess (Whistic 2025)
+            </td>
+            <td>
+              <div class="bar-wrap"><div class="bar rose" style="width:70px;"></div><span class="bar-label">29d (current)</span></div>
+              <div class="bar-wrap"><div class="bar amber" style="width:35px;"></div><span class="bar-label">14d (internal tgt)</span></div>
+              <div class="bar-wrap"><div class="bar emerald" style="width:18px;"></div><span class="bar-label">7d (automated)</span></div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="metric-name">Contract Cycle Time</div>
+              <div class="src">Process Manager; <a href="https://www.sirion.ai/library/contract-insights/contract-management-roi-benchmarks/" target="_blank">Sirion CLM 2026</a></div>
+            </td>
+            <td>
+              <strong>2&ndash;3 months</strong> (up to 1.5yr security)<br>
+              <strong>55% faster</strong> with AI-driven CLM<br>
+              <strong>39% faster</strong> overall contract lifecycle
+            </td>
+            <td>
+              <div class="bar-wrap"><div class="bar rose" style="width:120px;"></div><span class="bar-label">60-90d (current)</span></div>
+              <div class="bar-wrap"><div class="bar amber" style="width:55px;"></div><span class="bar-label">30-45d (w/ CLM)</span></div>
+              <div class="bar-wrap"><div class="bar emerald" style="width:25px;"></div><span class="bar-label">7d SLA (target)</span></div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="metric-name">TPRM Team Size</div>
+              <div class="src"><a href="https://www.whistic.com/resources/blog/tprm-impact-report-midyear-update" target="_blank">Whistic 2025</a> / <a href="https://www.venminder.com/blog/highlights-state-of-third-party-risk-management-2025-survey" target="_blank">Venminder 2025 Survey</a></div>
+            </td>
+            <td>
+              <strong>8.5 FTEs</strong> industry avg (up from 5.6)<br>
+              <strong>97%</strong> would do deeper assessments if resourced<br>
+              <strong>179 hrs/mo</strong> per vendor on assessments
+            </td>
+            <td>
+              <div class="bar-wrap"><div class="bar blue" style="width:60px;"></div><span class="bar-label">8 FTEs (DD team)</span></div>
+              <div class="bar-wrap"><div class="bar amber" style="width:65px;"></div><span class="bar-label">8.5 avg (industry)</span></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Optimization stack -->
+      <div>
+        <div class="stack-label">Cycle Time Reduction Stack</div>
+        <div class="stack-bars">
+          <div class="stack-row">
+            <span class="layer-label">Baseline (Industry Avg)</span>
+            <div class="layer-bar" style="width:360px;background:var(--brand-rose);">90&ndash;120 days</div>
+          </div>
+          <div class="stack-row">
+            <span class="layer-label">+ BPMN Workflow Automation</span>
+            <div class="layer-bar" style="width:260px;background:var(--brand-amber);">65&ndash;85 days</div>
+          </div>
+          <div class="stack-row">
+            <span class="layer-label">+ Front-Loaded Knowledge Capture</span>
+            <div class="layer-bar" style="width:190px;background:#f59e0b;">50&ndash;65 days</div>
+          </div>
+          <div class="stack-row">
+            <span class="layer-label">+ Parallel Eval &amp; DMN Routing</span>
+            <div class="layer-bar" style="width:130px;background:#34d399;">35&ndash;50 days</div>
+          </div>
+          <div class="stack-row">
+            <span class="layer-label">+ Policy-as-Code / Compliance</span>
+            <div class="layer-bar" style="width:100px;background:var(--brand-emerald);">29&ndash;45 days</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: 14 stakeholder sessions (Feb&ndash;Mar 2026) &bull; PRD &sect;13 &bull; <a href="https://www.apqc.org/resources/benchmarking/open-standards-benchmarking/measures/average-cycle-time-days-set-supplier" target="_blank">APQC Open Standards</a> &bull; <a href="https://www.whistic.com/resources/blog/tprm-impact-report-midyear-update" target="_blank">Whistic TPRM 2025</a> / <a href="https://www.venminder.com/blog/highlights-state-of-third-party-risk-management-2025-survey" target="_blank">Venminder 2025 Survey</a> &bull; <a href="https://www.riskrecon.com/ponemon-report-data-risk-in-the-third-party-ecosystem-study" target="_blank">Bitsight/Ponemon</a> &bull; <a href="https://www.sirion.ai/library/contract-insights/contract-management-roi-benchmarks/" target="_blank">Sirion CLM 2026</a> &bull; <a href="https://visotrust.com/resources/vendor-onboarding/" target="_blank">VISO TRUST</a></span>
+    <span>Software Onboarding Transformation</span>
+  </div>
+</div>
+</body>
+</html>
