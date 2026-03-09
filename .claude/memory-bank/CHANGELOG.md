@@ -1,5 +1,15 @@
 # Changelog
 
+## [2026.03.101] - 2026-03-09
+
+### Added
+- Onboarding v13: Latest Camunda Desktop Modeler edits (PR #115)
+
+## [2026.03.100] - 2026-03-09
+
+### Added
+- Phases 2-6: Mandatory 4-step phase boundary pattern — completion gateway, quality gate BRT (DMN_AutomationTierAssignment), approval task (governance-lane), phase transition event (PR #113)
+
 ## [2026.03.99] - 2026-03-09
 
 ### Added
