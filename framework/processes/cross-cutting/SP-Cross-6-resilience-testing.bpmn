@@ -130,7 +130,7 @@
       <bpmn:incoming>Flow_Recovery_Escalation</bpmn:incoming>
     </bpmn:endEvent>
 
-    <bpmn:businessRuleTask id="Task_ClassifyFindings" name="Classify Test&#10;Findings" camunda:decisionRef="DMN_IncidentSeverityClassification" camunda:decisionRefBinding="latest" camunda:resultVariable="findingSeverity" camunda:mapDecisionResult="singleResult">
+    <bpmn:businessRuleTask id="Task_ClassifyFindings" name="Classify Test&#10;Findings" camunda:decisionRef="DMN_ChangeRiskScoring" camunda:decisionRefBinding="latest" camunda:resultVariable="findingSeverity" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_Recovery_Classify</bpmn:incoming>
       <bpmn:outgoing>Flow_Classify_Gateway</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -214,12 +214,12 @@
     <bpmndi:BPMNPlane id="BPMNPlane_SPCross6" bpmnElement="Collaboration_SPCross6">
 
       <bpmndi:BPMNShape id="Participant_EnterpriseGovernance_di" bpmnElement="Participant_EnterpriseGovernance" isHorizontal="true">
-        <dc:Bounds x="160" y="80" width="2200" height="400" />
+        <dc:Bounds x="160" y="80" width="2200" height="430" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
-        <dc:Bounds x="190" y="80" width="2170" height="400" />
+        <dc:Bounds x="190" y="80" width="2170" height="430" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
@@ -331,9 +331,9 @@
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="End_RemediationSLA_di" bpmnElement="End_RemediationSLA">
-        <dc:Bounds x="1552" y="332" width="36" height="36" />
+        <dc:Bounds x="1552" y="412" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1527" y="375" width="87" height="27" />
+          <dc:Bounds x="1527" y="455" width="87" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -464,8 +464,8 @@
 
       <bpmndi:BPMNEdge id="Flow_Remediation_Escalation_di" bpmnElement="Flow_Remediation_Escalation">
         <di:waypoint x="1530" y="216" />
-        <di:waypoint x="1530" y="350" />
-        <di:waypoint x="1552" y="350" />
+        <di:waypoint x="1530" y="430" />
+        <di:waypoint x="1552" y="430" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>
