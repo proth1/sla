@@ -12,8 +12,13 @@ const auth = createCamundaAuth();
 const CONFIG = auth.config;
 CONFIG.processId = 'Process_Onboarding_v8';
 
-// --- Personas ---
-const PERSONAS = JSON.parse(fs.readFileSync(path.join(__dirname, 'public', 'personas-data.json'), 'utf8'));
+// --- Personas (parsed from personas.js — single source of truth) ---
+const PERSONAS = (function() {
+  const src = fs.readFileSync(path.join(__dirname, 'public', 'personas.js'), 'utf8');
+  const match = src.match(/const PERSONAS\s*=\s*(\[[\s\S]*?\n\];)/);
+  if (!match) throw new Error('Could not parse PERSONAS from personas.js');
+  return (new Function('return ' + match[1]))();
+})();
 
 function getPersonaFromReq(req) {
   const id = req.headers['x-sla-persona'];
