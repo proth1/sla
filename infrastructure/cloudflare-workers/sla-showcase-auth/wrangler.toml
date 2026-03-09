@@ -26,7 +26,11 @@ WORKER_DOMAIN = "https://showcase.agentic-innovations.com"
 # - API_WORKER_URL (URL of deployed sla-showcase-api worker)
 
 # KV namespace for OTP verify rate limiting (per-email brute-force prevention)
-# KV namespace disabled until created — worker gracefully degrades (rate limiting skipped)
+# To enable (requires Cloudflare dashboard or API with KV permissions):
+#   1. Create namespace: Cloudflare Dashboard > Workers & Pages > KV > Create
+#   2. Name it "sla-showcase-rate-limit" and copy the ID
+#   3. Uncomment the binding below and paste the ID
+#   4. Redeploy: npx wrangler deploy
 # [[kv_namespaces]]
 # binding = "RATE_LIMIT_KV"
-# id = "TODO-create-kv-namespace-and-paste-id-here"
+# id = "paste-kv-namespace-id-here"

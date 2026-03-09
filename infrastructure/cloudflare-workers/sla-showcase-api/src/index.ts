@@ -37,6 +37,40 @@ const PERSONAS = [
 // Module-scope token cache (persists across requests in same isolate)
 const tokenCache: Record<string, TokenEntry> = {};
 
+// Timing-safe string comparison using double-HMAC pattern
+async function timingSafeCompare(a: string, b: string): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const keyData = crypto.getRandomValues(new Uint8Array(32));
+  const key = await crypto.subtle.importKey(
+    'raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const [sigA, sigB] = await Promise.all([
+    crypto.subtle.sign('HMAC', key, encoder.encode(a)),
+    crypto.subtle.sign('HMAC', key, encoder.encode(b)),
+  ]);
+  const bufA = new Uint8Array(sigA);
+  const bufB = new Uint8Array(sigB);
+  let diff = 0;
+  for (let i = 0; i < bufA.length; i++) diff |= bufA[i] ^ bufB[i];
+  return diff === 0;
+}
+
+// Fetch with timeout via AbortController
+async function fetchWithTimeout(url: string, opts: RequestInit, timeoutMs = 10000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...opts, signal: controller.signal });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+// Validate task/form IDs (alphanumeric + hyphens, max 50 chars)
+function isValidId(id: string): boolean {
+  return /^[0-9a-zA-Z_-]{1,50}$/.test(id);
+}
+
 function zeebeUrl(env: Env): string {
   return `https://${env.CAMUNDA_REGION}.zeebe.camunda.io/${env.CAMUNDA_CLUSTER_ID}`;
 }
@@ -49,7 +83,7 @@ async function getToken(audience: string, env: Env): Promise<string> {
   const cached = tokenCache[audience];
   if (cached && cached.expiresAt > Date.now()) return cached.token;
 
-  const res = await fetch(env.CAMUNDA_AUTH_URL, {
+  const res = await fetchWithTimeout(env.CAMUNDA_AUTH_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
@@ -58,11 +92,12 @@ async function getToken(audience: string, env: Env): Promise<string> {
       client_secret: env.CAMUNDA_CLIENT_SECRET,
       audience,
     }),
-  });
+  }, 5000);
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Token fetch failed (${res.status}): ${text}`);
+    console.error(`Token fetch failed (${res.status}):`, text);
+    throw new Error('Authentication service unavailable');
   }
 
   const data = await res.json() as { access_token: string; expires_in: number };
@@ -81,10 +116,11 @@ async function zeebeApi(method: string, apiPath: string, env: Env, body?: unknow
   };
   if (body) opts.body = JSON.stringify(body);
 
-  const res = await fetch(`${zeebeUrl(env)}${apiPath}`, opts);
+  const res = await fetchWithTimeout(`${zeebeUrl(env)}${apiPath}`, opts, 15000);
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Zeebe ${res.status}: ${text}`);
+    console.error(`Zeebe API error [${method} ${apiPath}]:`, res.status, text);
+    throw new Error(res.status === 404 ? 'Resource not found' : 'Process engine unavailable');
   }
   const text = await res.text();
   return text ? JSON.parse(text) : {};
@@ -98,10 +134,11 @@ async function tasklistApi(method: string, apiPath: string, env: Env, body?: unk
   };
   if (body) opts.body = JSON.stringify(body);
 
-  const res = await fetch(`${tasklistUrl(env)}${apiPath}`, opts);
+  const res = await fetchWithTimeout(`${tasklistUrl(env)}${apiPath}`, opts, 15000);
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Tasklist ${res.status}: ${text}`);
+    console.error(`Tasklist API error [${method} ${apiPath}]:`, res.status, text);
+    throw new Error(res.status === 404 ? 'Resource not found' : 'Task service unavailable');
   }
   return res.json();
 }
@@ -138,6 +175,8 @@ function isValidKey(key: string): boolean {
   return /^\d{1,19}$/.test(key);
 }
 
+const CORS_ORIGIN = 'https://showcase.agentic-innovations.com';
+
 function jsonResponse(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
@@ -146,6 +185,9 @@ function jsonResponse(data: unknown, status = 200): Response {
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'Cache-Control': 'no-store',
+      'Access-Control-Allow-Origin': CORS_ORIGIN,
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
     },
   });
 }
@@ -164,6 +206,16 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
   const segments = path.split('/').filter(Boolean); // ['api', ...]
 
   try {
+    // GET /api/health — canary check for Camunda connectivity
+    if (method === 'GET' && path === '/api/health') {
+      try {
+        await getToken('zeebe.camunda.io', env);
+        return jsonResponse({ status: 'ok', camunda: 'connected' });
+      } catch {
+        return jsonResponse({ status: 'degraded', camunda: 'unreachable' }, 503);
+      }
+    }
+
     // GET /api/personas
     if (method === 'GET' && path === '/api/personas') {
       return jsonResponse(PERSONAS);
@@ -246,6 +298,7 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     // GET /api/tasks/:id (must be after /completed and /search)
     if (method === 'GET' && segments[0] === 'api' && segments[1] === 'tasks' && segments.length === 3 && segments[2] !== 'completed') {
       const id = segments[2];
+      if (!isValidId(id)) return errorResponse('Invalid task ID', 400);
       const task = await tasklistApi('GET', `/v1/tasks/${id}`, env);
       return jsonResponse(task);
     }
@@ -253,14 +306,16 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     // GET /api/tasks/:id/form
     if (method === 'GET' && segments[0] === 'api' && segments[1] === 'tasks' && segments.length === 4 && segments[3] === 'form') {
       const id = segments[2];
+      if (!isValidId(id)) return errorResponse('Invalid task ID', 400);
       const processDefinitionKey = url.searchParams.get('processDefinitionKey') || '';
-      const form = await tasklistApi('GET', `/v1/forms/${id}?processDefinitionKey=${processDefinitionKey}`, env);
+      const form = await tasklistApi('GET', `/v1/forms/${id}?processDefinitionKey=${encodeURIComponent(processDefinitionKey)}`, env);
       return jsonResponse(form);
     }
 
     // GET /api/tasks/:id/variables
     if (method === 'GET' && segments[0] === 'api' && segments[1] === 'tasks' && segments.length === 4 && segments[3] === 'variables') {
       const id = segments[2];
+      if (!isValidId(id)) return errorResponse('Invalid task ID', 400);
       const vars = await tasklistApi('POST', `/v1/tasks/${id}/variables/search`, env, {});
       return jsonResponse(vars);
     }
@@ -268,6 +323,7 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     // POST /api/tasks/:id/assign
     if (method === 'POST' && segments[0] === 'api' && segments[1] === 'tasks' && segments.length === 4 && segments[3] === 'assign') {
       const id = segments[2];
+      if (!isValidId(id)) return errorResponse('Invalid task ID', 400);
       const persona = getPersonaFromHeaders(request.headers);
       const assignee = persona ? persona.id : 'showcase-user';
       const result = await tasklistApi('PATCH', `/v1/tasks/${id}/assign`, env, {
@@ -280,6 +336,7 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     // POST /api/tasks/:id/complete
     if (method === 'POST' && segments[0] === 'api' && segments[1] === 'tasks' && segments.length === 4 && segments[3] === 'complete') {
       const id = segments[2];
+      if (!isValidId(id)) return errorResponse('Invalid task ID', 400);
       const body = await request.json() as { variables?: unknown[] };
       const result = await tasklistApi('PATCH', `/v1/tasks/${id}/complete`, env, {
         variables: body.variables || [],
@@ -290,6 +347,7 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     // POST /api/tasks/:id/reassign
     if (method === 'POST' && segments[0] === 'api' && segments[1] === 'tasks' && segments.length === 4 && segments[3] === 'reassign') {
       const id = segments[2];
+      if (!isValidId(id)) return errorResponse('Invalid task ID', 400);
       const body = await request.json() as { assignee?: string };
       const assignee = typeof body.assignee === 'string' ? body.assignee.trim().slice(0, 200) : '';
       if (!assignee) return errorResponse('assignee is required', 400);
@@ -303,6 +361,7 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     // POST /api/tasks/:id/unassign
     if (method === 'POST' && segments[0] === 'api' && segments[1] === 'tasks' && segments.length === 4 && segments[3] === 'unassign') {
       const id = segments[2];
+      if (!isValidId(id)) return errorResponse('Invalid task ID', 400);
       const result = await tasklistApi('PATCH', `/v1/tasks/${id}/unassign`, env);
       return jsonResponse(result);
     }
@@ -310,8 +369,9 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
     // GET /api/forms/:formId
     if (method === 'GET' && segments[0] === 'api' && segments[1] === 'forms' && segments.length === 3) {
       const formId = segments[2];
+      if (!isValidId(formId)) return errorResponse('Invalid form ID', 400);
       const processDefinitionKey = url.searchParams.get('processDefinitionKey') || '';
-      const form = await tasklistApi('GET', `/v1/forms/${formId}?processDefinitionKey=${processDefinitionKey}`, env);
+      const form = await tasklistApi('GET', `/v1/forms/${formId}?processDefinitionKey=${encodeURIComponent(processDefinitionKey)}`, env);
       return jsonResponse(form);
     }
 
@@ -458,25 +518,48 @@ async function handleApiRequest(request: Request, url: URL, env: Env): Promise<R
 
     return errorResponse('Not found', 404);
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'Unknown error';
-    return errorResponse(message);
+    const internal = e instanceof Error ? e.message : 'Unknown error';
+    console.error(`API error [${method} ${path}]:`, internal);
+
+    // Return safe client-facing messages (don't leak Camunda details)
+    if (internal.includes('Authentication service unavailable')) {
+      return errorResponse('Service temporarily unavailable', 503);
+    }
+    if (internal.includes('Resource not found')) {
+      return errorResponse('Resource not found', 404);
+    }
+    if (internal.includes('unavailable')) {
+      return errorResponse('Service temporarily unavailable', 503);
+    }
+    if (e instanceof DOMException && e.name === 'AbortError') {
+      return errorResponse('Request timed out', 504);
+    }
+    return errorResponse('Internal server error', 500);
   }
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    // Validate proxy secret on every request
-    const proxyHeader = request.headers.get('X-SLA-API-Proxy');
-    if (proxyHeader !== env.PROXY_SECRET) {
+    // Handle CORS preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': CORS_ORIGIN,
+          'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, X-SLA-API-Proxy, X-SLA-Persona',
+          'Access-Control-Max-Age': '86400',
+        },
+      });
+    }
+
+    // Validate proxy secret on every request (timing-safe)
+    const proxyHeader = request.headers.get('X-SLA-API-Proxy') || '';
+    if (!await timingSafeCompare(proxyHeader, env.PROXY_SECRET)) {
       return errorResponse('Unauthorized', 401);
     }
 
     const url = new URL(request.url);
-
-    // Handle CORS preflight (shouldn't happen since same-origin, but defensive)
-    if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204 });
-    }
 
     return handleApiRequest(request, url, env);
   },

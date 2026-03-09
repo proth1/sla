@@ -98,7 +98,21 @@ async function validateSLASession(
   const data = `${email}|${expiryStr}`;
   const expected = await hmacSign(data, getSessionSecret(env));
 
-  if (signature !== expected) return { valid: false };
+  // Timing-safe comparison via double-HMAC
+  const encoder = new TextEncoder();
+  const keyData = crypto.getRandomValues(new Uint8Array(32));
+  const key = await crypto.subtle.importKey(
+    'raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const [sigA, sigB] = await Promise.all([
+    crypto.subtle.sign('HMAC', key, encoder.encode(signature)),
+    crypto.subtle.sign('HMAC', key, encoder.encode(expected)),
+  ]);
+  const bufA = new Uint8Array(sigA);
+  const bufB = new Uint8Array(sigB);
+  let diff = 0;
+  for (let i = 0; i < bufA.length; i++) diff |= bufA[i] ^ bufB[i];
+  if (diff !== 0) return { valid: false };
 
   return { valid: true, email };
 }
@@ -278,10 +292,17 @@ async function proxyToPages(request: Request, env: Env, url: URL): Promise<Respo
     redirect: 'manual',
   });
 
+  // Add security headers to proxied response
+  const secureHeaders = new Headers(response.headers);
+  secureHeaders.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  secureHeaders.set('X-Content-Type-Options', 'nosniff');
+  secureHeaders.set('X-Frame-Options', 'DENY');
+  secureHeaders.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
-    headers: response.headers,
+    headers: secureHeaders,
   });
 }
 
