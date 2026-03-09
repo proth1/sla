@@ -618,7 +618,9 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       </bpmn:textAnnotation>
       <bpmn:association id="Association_1qj2zph" associationDirection="None" sourceRef="SP2_Start" targetRef="TextAnnotation_05ffzwo" />
     </bpmn:subProcess>
-    <bpmn:sequenceFlow id="Flow_1iblw95" sourceRef="GW_TriageDecision" targetRef="SP_PlanningRouting" />
+    <bpmn:sequenceFlow id="Flow_1iblw95" name="Yes" sourceRef="GW_TriageDecision" targetRef="SP_PlanningRouting">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=triageDecision = "Approved"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_14" sourceRef="SP_UATGoLive" targetRef="GW_FinalDecision" />
     <bpmn:sequenceFlow id="Flow_v5_15" name="Yes" sourceRef="GW_FinalDecision" targetRef="End_SoftwareOnboarded">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
