@@ -363,6 +363,29 @@ y=460                                                           [SLA Breach End]
 - SLA escalation end events positioned BELOW the timer (~100px)
 - Vertical gap between levels: **160px**
 
+### Pattern A2: Multi-Way Screening with Convergence (SP1 v12 — Existing Solution Disposition)
+
+When a screening gateway has 4+ outcomes, some of which converge back to the main flow:
+
+```
+y=200    [Start] → [Review] → [GW Existing Solution?]
+                                    │ FullMatch ──→ [Leverage] → [End_Leveraged]
+                                    │ Partial ──→ [Pursue Exception] ──→ [Merge GW] ──→ [NDA?] → ...
+                                    │ NeedsGuidance ──→ [QB Assist] → [Pursue?] ──Yes──→ ↑
+                                    │                                      └──No──→ [End_Withdrawn]
+                                    │ NoMatch ──────────────────────────────────────→ ↑
+```
+
+Rules:
+- Each outgoing flow uses a **typed enum variable** (`existingSolutionDisposition`) with domain-meaningful values (`FullMatch`, `Partial`, `NeedsGuidance`, `NoMatch`)
+- Paths that rejoin the main flow converge at a **single merge gateway** (`Gateway_0js8zzn`)
+- The "NeedsGuidance" path includes an **exit ramp** (Pursue it? → No → Request Withdrawn)
+- The "FullMatch" path exits to its own end event (doesn't converge — different outcome)
+- Advisory tasks (Quarterback Assistance) are `userTask` with `candidateGroups="business-lane"`
+- The merge gateway has **NO name** (structural convergence only)
+
+**Key principle**: Not all branches need to converge. FullMatch exits independently because it has a different process outcome. The other three paths share a common continuation (proceed with new request processing).
+
 ### Pattern B: Bypass Below Main Flow (Internal Sub-Process Convention)
 
 In **internal sub-process diagrams**, bypass/skip flows route **BELOW** the main flow. This differs from the top-level pattern where bypasses route ABOVE. Internal diagrams have limited vertical space above the start event, and routing below keeps the main processing path as the topmost horizontal line.
@@ -669,5 +692,5 @@ Before saving any hierarchical BPMN file:
 
 ---
 
-**Version**: 1.2.0 | **Created**: 2026-03-05 | **Updated**: 2026-03-07
+**Version**: 1.3.0 | **Created**: 2026-03-05 | **Updated**: 2026-03-09
 **Source**: Extracted from user's manual Camunda Modeler edits to onboarding-to-be-ideal-state-v5.bpmn
