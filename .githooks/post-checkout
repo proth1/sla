@@ -1,0 +1,16 @@
+#!/bin/sh
+# SLA Post-Checkout Hook
+# Cleans up merged branches after branch switches
+
+# Only run on branch switches (not file checkouts)
+# $3 is 1 for branch checkout, 0 for file checkout
+if [ "$3" = "1" ]; then
+    # Find and list local branches that have been merged into the current branch
+    MERGED=$(git branch --merged HEAD | grep -v '^\*' | grep -vE '^\s*(main|master|develop)\s*$')
+    if [ -n "$MERGED" ]; then
+        echo "Merged branches that can be cleaned up:"
+        echo "$MERGED"
+        echo ""
+        echo "Run 'git branch -d <branch>' to remove them"
+    fi
+fi
