@@ -1,0 +1,257 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "ict-register-entry",
+  "components": [
+    {
+      "type": "group",
+      "label": "ICT Third-Party Service Provider Identification",
+      "id": "Field_ICT_G1_001",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "providerName",
+          "label": "Legal name of ICT service provider",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_ICT_G1_002"
+        },
+        {
+          "type": "textfield",
+          "key": "providerRegistrationId",
+          "label": "Registration / company number",
+          "id": "Field_ICT_G1_003"
+        },
+        {
+          "type": "select",
+          "key": "providerCountry",
+          "label": "Country of incorporation",
+          "values": [
+            {
+              "label": "US",
+              "value": "US"
+            },
+            {
+              "label": "EU",
+              "value": "EU"
+            },
+            {
+              "label": "UK",
+              "value": "UK"
+            },
+            {
+              "label": "APAC",
+              "value": "APAC"
+            }
+          ],
+          "id": "Field_ICT_G1_004"
+        },
+        {
+          "type": "textfield",
+          "key": "providerContactEmail",
+          "label": "Primary contact email",
+          "id": "Field_ICT_G1_005"
+        },
+        {
+          "type": "textarea",
+          "key": "ictServiceDescription",
+          "label": "Description of ICT service provided",
+          "id": "Field_ICT_G1_006"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Service Criticality Assessment",
+      "id": "Field_ICT_G2_001",
+      "components": [
+        {
+          "type": "select",
+          "key": "serviceCriticality",
+          "label": "DORA criticality classification",
+          "values": [
+            {
+              "label": "Critical",
+              "value": "Critical"
+            },
+            {
+              "label": "Important",
+              "value": "Important"
+            },
+            {
+              "label": "Standard",
+              "value": "Standard"
+            }
+          ],
+          "id": "Field_ICT_G2_002"
+        },
+        {
+          "type": "textfield",
+          "key": "criticalFunctionSupported",
+          "label": "Which critical or important function does this support?",
+          "id": "Field_ICT_G2_003"
+        },
+        {
+          "type": "select",
+          "key": "substituabilityAssessment",
+          "label": "Ease of switching providers",
+          "values": [
+            {
+              "label": "Easy",
+              "value": "Easy"
+            },
+            {
+              "label": "Moderate",
+              "value": "Moderate"
+            },
+            {
+              "label": "Difficult",
+              "value": "Difficult"
+            },
+            {
+              "label": "Not Substitutable",
+              "value": "NotSubstitutable"
+            }
+          ],
+          "id": "Field_ICT_G2_004"
+        },
+        {
+          "type": "textfield",
+          "key": "lastAssessmentDate",
+          "label": "Date of last criticality assessment (YYYY-MM-DD)",
+          "id": "Field_ICT_G2_005"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Data Processing and Locations",
+      "id": "Field_ICT_G3_001",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "dataProcessingLocations",
+          "label": "List of countries where data is processed",
+          "id": "Field_ICT_G3_002"
+        },
+        {
+          "type": "textarea",
+          "key": "dataStorageLocations",
+          "label": "List of countries where data is stored",
+          "id": "Field_ICT_G3_003"
+        },
+        {
+          "type": "select",
+          "key": "dataClassification",
+          "label": "Highest classification of data processed",
+          "values": [
+            {
+              "label": "Public",
+              "value": "Public"
+            },
+            {
+              "label": "Internal",
+              "value": "Internal"
+            },
+            {
+              "label": "Confidential",
+              "value": "Confidential"
+            },
+            {
+              "label": "Restricted",
+              "value": "Restricted"
+            }
+          ],
+          "id": "Field_ICT_G3_004"
+        },
+        {
+          "type": "checkbox",
+          "key": "personalDataProcessed",
+          "label": "Personal data (GDPR) is processed",
+          "id": "Field_ICT_G3_005"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Sub-Outsourcing and Supply Chain",
+      "id": "Field_ICT_G4_001",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "subOutsourcingChain",
+          "label": "Description of sub-outsourcing arrangements",
+          "id": "Field_ICT_G4_002"
+        },
+        {
+          "type": "number",
+          "key": "subOutsourcingDepth",
+          "label": "Number of sub-outsourcing levels (0-5)",
+          "id": "Field_ICT_G4_003"
+        },
+        {
+          "type": "textarea",
+          "key": "keySubContractors",
+          "label": "Names of key sub-contractors",
+          "id": "Field_ICT_G4_004"
+        },
+        {
+          "type": "checkbox",
+          "key": "subOutsourcingNotificationReceived",
+          "label": "Provider notifies of sub-outsourcing changes",
+          "id": "Field_ICT_G4_005"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Contractual and Exit Strategy",
+      "id": "Field_ICT_G5_001",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "contractStartDate",
+          "label": "Contract start date",
+          "id": "Field_ICT_G5_002"
+        },
+        {
+          "type": "textfield",
+          "key": "contractEndDate",
+          "label": "Contract end date",
+          "id": "Field_ICT_G5_003"
+        },
+        {
+          "type": "checkbox",
+          "key": "exitStrategyDocumented",
+          "label": "Exit strategy exists",
+          "id": "Field_ICT_G5_004"
+        },
+        {
+          "type": "textarea",
+          "key": "exitPlanSummary",
+          "label": "Brief description of exit / transition plan",
+          "id": "Field_ICT_G5_005"
+        },
+        {
+          "type": "checkbox",
+          "key": "dataReturnProvision",
+          "label": "Contract includes data return provisions",
+          "id": "Field_ICT_G5_006"
+        },
+        {
+          "type": "checkbox",
+          "key": "auditRightsIncluded",
+          "label": "Audit rights are contractually guaranteed",
+          "id": "Field_ICT_G5_007"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}
