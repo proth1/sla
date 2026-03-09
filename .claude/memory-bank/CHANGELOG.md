@@ -1,5 +1,20 @@
 # Changelog
 
+## [2026.03.97] - 2026-03-09
+
+### Fixed
+- Phase 4: Fix segregation of duties — reassign `Task_42_ReviewerAssignment` from governance-lane to compliance-lane (PR #84)
+- Phase 3: Fix lane misassignments — reassign `Task_36_ComplianceReview` to compliance-lane, `Task_37_PrivacyAssessment` to ai-review (PR #85)
+- Phase 2: Externalize AI threshold — replace embedded `aiComplexityScore >= 3` with DMN business rule task `Task_AIGovernanceClassification` (PR #90)
+
+### Added
+- DMN-9: AI Risk Tier Classification — 16 rules, FIRST hit policy for AI governance routing (PR #86)
+- DMN-13: Fast-Track Eligibility — 14 rules, FIRST hit policy for pathway pre-screening (PR #87)
+- DMN-6: Vendor Risk Tier Assignment — 25 rules, FIRST hit policy for vendor tier classification (PR #88)
+- Phase 1: Regulatory scoping flags via `camunda:properties` — GDPR, DORA, SOX, EU AI Act, SEC 17a-4, BCBS d577 (PR #89)
+- Phase 3: Concentration risk task (`Task_ConcentrationRisk`) and fourth-party assessment (`Task_FourthPartyRisk`) in parallel swarm (PR #91)
+- Phases 3-5: Oversight lane (3rd Line) audit tasks with boundary timer SLAs and parallel gateway integration (PR #92)
+
 ## [2026.03.89] - 2026-03-09
 
 ### Changed
