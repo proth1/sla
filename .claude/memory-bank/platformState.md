@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.101
+**Current Version**: 2026.03.102
 **Last Release**: 2026-03-09
-**Total Releases**: 101
+**Total Releases**: 102
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.102 | 2026-03-09 | #116 | Onboarding v14 — compliance remediation (regulatory flags, oversight, concentration risk) |
 | 2026.03.101 | 2026-03-09 | #115 | Onboarding v13 — Camunda Desktop Modeler edits |
 | 2026.03.100 | 2026-03-09 | #113 | Phase boundary pattern for Phases 2-6 |
 | 2026.03.99 | 2026-03-09 | #114 | Codify v11→v12 BPMN cleanup patterns into modeling standards (7 rules, Pattern A2) |

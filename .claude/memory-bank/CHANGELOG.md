@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026.03.102] - 2026-03-09
+
+### Added
+- Onboarding v14: Compliance remediation — regulatory scoping flags (GDPR, DORA, SOX, EU AI Act, SEC 17a-4, BCBS d577), oversight audit tasks with P2D SLA timers in SP3/SP4/SP5, concentration risk and fourth-party assessment in SP3 parallel swarm (9→12 branches) (PR #116)
+
 ## [2026.03.101] - 2026-03-09
 
 ### Added
