@@ -31,6 +31,7 @@
         <bpmn:flowNodeRef>Task_PhaseQualityGate</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Phase3Complete</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_QGSLAEscalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ConcentrationRisk</bpmn:flowNodeRef>
       </bpmn:lane>
 
       <bpmn:lane id="Lane_Contracting" name="Contracting">
@@ -60,6 +61,7 @@
 
       <bpmn:lane id="Lane_Oversight" name="Oversight">
         <bpmn:flowNodeRef>Task_OversightReview</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_FourthPartyRisk</bpmn:flowNodeRef>
       </bpmn:lane>
 
       <bpmn:lane id="Lane_Automation" name="Automation">
@@ -105,6 +107,8 @@
       <bpmn:outgoing>Flow_Split_Compliance</bpmn:outgoing>
       <bpmn:outgoing>Flow_Split_AICheck</bpmn:outgoing>
       <bpmn:outgoing>Flow_Split_Financial</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Split_ConcentrationRisk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Split_FourthPartyRisk</bpmn:outgoing>
     </bpmn:parallelGateway>
 
     <bpmn:serviceTask id="Task_33_SecurityAssessment" name="3.3 Security Assessment&#10;(Security Assessment Agent)" camunda:type="external" camunda:topic="security-assessment">
@@ -179,11 +183,37 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
 
+    <bpmn:userTask id="Task_ConcentrationRisk" name="Concentration Risk&#10;Assessment" camunda:candidateGroups="governance-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="regulation" value="OCC 2023-17: Concentration risk — single vendor dependency and sector-level exposure" />
+          <camunda:property name="regulation2" value="DORA Article 29: ICT concentration risk at entity and sector level" />
+          <camunda:property name="regulation3" value="BCBS d577: Systemic concentration risk across the financial system" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Split_ConcentrationRisk</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConcentrationRisk_Join</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_FourthPartyRisk" name="Fourth-Party&#10;Supply Chain Risk" camunda:candidateGroups="technical-assessment">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="regulation" value="OCC 2023-17 Section III.C: Sub-contractor and fourth-party risk oversight" />
+          <camunda:property name="regulation2" value="NIST SP 800-161r1: Cybersecurity supply chain risk management" />
+          <camunda:property name="regulation3" value="NIST CSF 2.0 GV.SC: Supply chain risk management" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Split_FourthPartyRisk</bpmn:incoming>
+      <bpmn:outgoing>Flow_FourthPartyRisk_Join</bpmn:outgoing>
+    </bpmn:userTask>
+
     <bpmn:parallelGateway id="Gateway_ParallelJoin">
       <bpmn:incoming>Flow_37_Join</bpmn:incoming>
       <bpmn:incoming>Flow_34_Join</bpmn:incoming>
       <bpmn:incoming>Flow_AIBranchMerge_Join</bpmn:incoming>
       <bpmn:incoming>Flow_36_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_ConcentrationRisk_Join</bpmn:incoming>
+      <bpmn:incoming>Flow_FourthPartyRisk_Join</bpmn:incoming>
       <bpmn:outgoing>Flow_Join_38</bpmn:outgoing>
     </bpmn:parallelGateway>
 
@@ -312,6 +342,10 @@
     <bpmn:sequenceFlow id="Flow_Split_Compliance" sourceRef="Gateway_ParallelSplit" targetRef="Task_34_ComplianceAssessment" />
     <bpmn:sequenceFlow id="Flow_Split_AICheck" sourceRef="Gateway_ParallelSplit" targetRef="Gateway_AIMLCheck" />
     <bpmn:sequenceFlow id="Flow_Split_Financial" sourceRef="Gateway_ParallelSplit" targetRef="Task_36_FinancialStabilityReview" />
+    <bpmn:sequenceFlow id="Flow_Split_ConcentrationRisk" sourceRef="Gateway_ParallelSplit" targetRef="Task_ConcentrationRisk" />
+    <bpmn:sequenceFlow id="Flow_Split_FourthPartyRisk" sourceRef="Gateway_ParallelSplit" targetRef="Task_FourthPartyRisk" />
+    <bpmn:sequenceFlow id="Flow_ConcentrationRisk_Join" sourceRef="Task_ConcentrationRisk" targetRef="Gateway_ParallelJoin" />
+    <bpmn:sequenceFlow id="Flow_FourthPartyRisk_Join" sourceRef="Task_FourthPartyRisk" targetRef="Gateway_ParallelJoin" />
     <bpmn:sequenceFlow id="Flow_33_37" sourceRef="Task_33_SecurityAssessment" targetRef="Task_37_OperationalResilienceVerification" />
     <bpmn:sequenceFlow id="Flow_37_Join" sourceRef="Task_37_OperationalResilienceVerification" targetRef="Gateway_ParallelJoin" />
     <bpmn:sequenceFlow id="Flow_34_Join" sourceRef="Task_34_ComplianceAssessment" targetRef="Gateway_ParallelJoin" />
@@ -558,6 +592,14 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
+      <bpmndi:BPMNShape id="Task_ConcentrationRisk_di" bpmnElement="Task_ConcentrationRisk">
+        <dc:Bounds x="730" y="194" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_FourthPartyRisk_di" bpmnElement="Task_FourthPartyRisk">
+        <dc:Bounds x="730" y="819" width="140" height="80" />
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="Gateway_ParallelJoin_di" bpmnElement="Gateway_ParallelJoin">
         <dc:Bounds x="1190" y="977" width="50" height="50" />
       </bpmndi:BPMNShape>
@@ -694,6 +736,30 @@
         <di:waypoint x="655" y="977" />
         <di:waypoint x="655" y="734" />
         <di:waypoint x="730" y="734" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Split_ConcentrationRisk_di" bpmnElement="Flow_Split_ConcentrationRisk">
+        <di:waypoint x="655" y="977" />
+        <di:waypoint x="655" y="234" />
+        <di:waypoint x="730" y="234" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Split_FourthPartyRisk_di" bpmnElement="Flow_Split_FourthPartyRisk">
+        <di:waypoint x="655" y="977" />
+        <di:waypoint x="655" y="859" />
+        <di:waypoint x="730" y="859" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ConcentrationRisk_Join_di" bpmnElement="Flow_ConcentrationRisk_Join">
+        <di:waypoint x="870" y="234" />
+        <di:waypoint x="1215" y="234" />
+        <di:waypoint x="1215" y="977" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_FourthPartyRisk_Join_di" bpmnElement="Flow_FourthPartyRisk_Join">
+        <di:waypoint x="870" y="859" />
+        <di:waypoint x="1215" y="859" />
+        <di:waypoint x="1215" y="977" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_36_Join_di" bpmnElement="Flow_36_Join">
