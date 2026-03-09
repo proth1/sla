@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN10-IncidentSeverityClassification-definitions"
+             name="DMN-10: Incident Severity Classification"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_IncidentSeverityClassification"
+            name="Incident Severity Classification"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-08 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: DORA Article 19, NIST CSF 2.0, OCC 2023-17, ISO 27001</description>
+    <decisionTable id="DMN_IncidentSeverityClassification-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-10: Incident Severity Classification
+        Phase: Cross-cutting — SP-Cross-3: Incident Response
+        Hit Policy: FIRST (most severe matching rule wins — evaluated top to bottom)
+        Description: Classifies security and operational incidents into severity levels (P1-P4)
+                     based on system tier, data exposure, regulatory impact, customer impact,
+                     and financial impact. Determines response SLA, notification requirements,
+                     and regulatory reporting obligations.
+        Regulatory Basis: DORA Article 19 (ICT incident reporting), NIST CSF 2.0 (incident response),
+                          OCC 2023-17 (third-party incident management), ISO 27001 (information security incidents)
+      -->
+
+      <input id="input-systemTier" label="System Tier">
+        <inputExpression id="inputExpr-systemTier" typeRef="string">
+          <text>systemTier</text>
+        </inputExpression>
+        <inputValues id="inputValues-systemTier">
+          <text>"Tier1-Critical","Tier2-High","Tier3-Standard","Tier4-Low"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-dataExposure" label="Data Exposure (PII/Sensitive)">
+        <inputExpression id="inputExpr-dataExposure" typeRef="boolean">
+          <text>dataExposure</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-regulatoryImpact" label="Regulatory Impact">
+        <inputExpression id="inputExpr-regulatoryImpact" typeRef="boolean">
+          <text>regulatoryImpact</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-customerImpact" label="Customer Impact">
+        <inputExpression id="inputExpr-customerImpact" typeRef="string">
+          <text>customerImpact</text>
+        </inputExpression>
+        <inputValues id="inputValues-customerImpact">
+          <text>"None","Limited","Widespread"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-financialImpact" label="Financial Impact (USD)">
+        <inputExpression id="inputExpr-financialImpact" typeRef="double">
+          <text>financialImpact</text>
+        </inputExpression>
+      </input>
+
+      <output id="output-severityLevel"
+              label="Severity Level"
+              name="severityLevel"
+              typeRef="string" />
+
+      <output id="output-responseTimeSLA"
+              label="Response Time SLA"
+              name="responseTimeSLA"
+              typeRef="string" />
+
+      <output id="output-notificationRequirements"
+              label="Notification Requirements"
+              name="notificationRequirements"
+              typeRef="string" />
+
+      <output id="output-regulatoryReportingRequired"
+              label="Regulatory Reporting Required"
+              name="regulatoryReportingRequired"
+              typeRef="boolean" />
+
+      <!--
+        P1 — CRITICAL (Rules 1-5)
+        Immediate response required. Board-level notification. Regulatory reporting mandatory for most.
+      -->
+
+      <rule id="rule-1">
+        <description>P1 Critical: Tier1 system with data exposure — highest severity; immediate board + regulator notification; DORA Article 19 major ICT incident reporting triggered</description>
+        <inputEntry id="ie-1-1"><text>"Tier1-Critical"</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>true</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"P1"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"PT1H"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>"Board + CISO + Regulators + Legal + affected customers"</text></outputEntry>
+        <outputEntry id="oe-1-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-2">
+        <description>P1 Critical: Tier1 system with regulatory impact — mandatory regulatory reporting; DORA initial notification within 4 hours</description>
+        <inputEntry id="ie-2-1"><text>"Tier1-Critical"</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>true</text></inputEntry>
+        <inputEntry id="ie-2-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"P1"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"PT1H"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"Board + CISO + Regulators + Legal"</text></outputEntry>
+        <outputEntry id="oe-2-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-3">
+        <description>P1 Critical: Any tier with data exposure and widespread customer impact — mass breach scenario; customer notification required per GDPR/CCPA</description>
+        <inputEntry id="ie-3-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>true</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-4"><text>"Widespread"</text></inputEntry>
+        <inputEntry id="ie-3-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"P1"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"PT1H"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"Board + CISO + Regulators + Legal + affected customers"</text></outputEntry>
+        <outputEntry id="oe-3-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-4">
+        <description>P1 Critical: Any tier with financial impact exceeding $1M — material financial event; SOX disclosure obligations may apply</description>
+        <inputEntry id="ie-4-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-5"><text>&gt; 1000000</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"P1"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"PT1H"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>"Board + CFO + CISO + Regulators"</text></outputEntry>
+        <outputEntry id="oe-4-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-5">
+        <description>P1 Critical: Tier1 system with widespread customer impact — critical service disruption; OCC 2023-17 significant incident reporting</description>
+        <inputEntry id="ie-5-1"><text>"Tier1-Critical"</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-4"><text>"Widespread"</text></inputEntry>
+        <inputEntry id="ie-5-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"P1"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"PT2H"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>"Board + CISO + Business Owner + affected customers"</text></outputEntry>
+        <outputEntry id="oe-5-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!--
+        P2 — HIGH (Rules 6-10)
+        Urgent response required. Senior leadership notification. Regulatory reporting for data/regulatory incidents.
+      -->
+
+      <rule id="rule-6">
+        <description>P2 High: Tier2 system with data exposure — privacy breach on high-criticality system; Privacy Officer and Compliance must assess regulatory reporting obligations</description>
+        <inputEntry id="ie-6-1"><text>"Tier2-High"</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>true</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"P2"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"PT4H"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>"CISO + Legal + Privacy Officer + Compliance"</text></outputEntry>
+        <outputEntry id="oe-6-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-7">
+        <description>P2 High: Tier2 system with widespread customer impact — significant service degradation; VP-level awareness required for customer communication</description>
+        <inputEntry id="ie-7-1"><text>"Tier2-High"</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-7-4"><text>"Widespread"</text></inputEntry>
+        <inputEntry id="ie-7-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"P2"</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"PT4H"</text></outputEntry>
+        <outputEntry id="oe-7-3"><text>"VP-level + CISO + Business Owner"</text></outputEntry>
+        <outputEntry id="oe-7-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8">
+        <description>P2 High: Tier1 system with limited customer impact — critical system partially affected; CISO and Engineering Lead coordinate remediation</description>
+        <inputEntry id="ie-8-1"><text>"Tier1-Critical"</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-8-4"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ie-8-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"P2"</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"PT4H"</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>"CISO + Business Owner + Engineering Lead"</text></outputEntry>
+        <outputEntry id="oe-8-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-9">
+        <description>P2 High: Any tier with regulatory impact — regulatory reporting obligation exists regardless of system tier; Compliance and Legal must coordinate response</description>
+        <inputEntry id="ie-9-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>true</text></inputEntry>
+        <inputEntry id="ie-9-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"P2"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"PT4H"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>"CISO + Compliance + Legal"</text></outputEntry>
+        <outputEntry id="oe-9-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-10">
+        <description>P2 High: Tier3 system with data exposure — data breach on standard system still requires privacy assessment and potential notification</description>
+        <inputEntry id="ie-10-1"><text>"Tier3-Standard"</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>true</text></inputEntry>
+        <inputEntry id="ie-10-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-10-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-10-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-10-1"><text>"P2"</text></outputEntry>
+        <outputEntry id="oe-10-2"><text>"PT4H"</text></outputEntry>
+        <outputEntry id="oe-10-3"><text>"CISO + Privacy Officer + Compliance"</text></outputEntry>
+        <outputEntry id="oe-10-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!--
+        P3 — MEDIUM (Rules 11-15)
+        Timely response required. Management notification. No regulatory reporting unless escalated.
+      -->
+
+      <rule id="rule-11">
+        <description>P3 Medium: Tier2 system with limited customer impact — moderate service impact; Engineering Manager leads resolution with Business Owner awareness</description>
+        <inputEntry id="ie-11-1"><text>"Tier2-High"</text></inputEntry>
+        <inputEntry id="ie-11-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-11-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-11-4"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ie-11-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-11-1"><text>"P3"</text></outputEntry>
+        <outputEntry id="oe-11-2"><text>"PT8H"</text></outputEntry>
+        <outputEntry id="oe-11-3"><text>"Engineering Manager + Business Owner"</text></outputEntry>
+        <outputEntry id="oe-11-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-12">
+        <description>P3 Medium: Tier3 system with limited customer impact — standard system with minor customer-facing effect; Engineering Manager handles</description>
+        <inputEntry id="ie-12-1"><text>"Tier3-Standard"</text></inputEntry>
+        <inputEntry id="ie-12-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-12-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-12-4"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ie-12-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>"P3"</text></outputEntry>
+        <outputEntry id="oe-12-2"><text>"PT8H"</text></outputEntry>
+        <outputEntry id="oe-12-3"><text>"Engineering Manager"</text></outputEntry>
+        <outputEntry id="oe-12-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-13">
+        <description>P3 Medium: Tier2 system with no customer impact but significant financial exposure — internal system issue with material cost; Finance must be notified</description>
+        <inputEntry id="ie-13-1"><text>"Tier2-High"</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-13-4"><text>"None"</text></inputEntry>
+        <inputEntry id="ie-13-5"><text>&gt; 100000</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"P3"</text></outputEntry>
+        <outputEntry id="oe-13-2"><text>"PT8H"</text></outputEntry>
+        <outputEntry id="oe-13-3"><text>"Engineering Manager + Finance"</text></outputEntry>
+        <outputEntry id="oe-13-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-14">
+        <description>P3 Medium: Tier1 system with no customer impact, no data exposure, no regulatory impact — internal degradation of critical system; CISO notification as precaution</description>
+        <inputEntry id="ie-14-1"><text>"Tier1-Critical"</text></inputEntry>
+        <inputEntry id="ie-14-2"><text>false</text></inputEntry>
+        <inputEntry id="ie-14-3"><text>false</text></inputEntry>
+        <inputEntry id="ie-14-4"><text>"None"</text></inputEntry>
+        <inputEntry id="ie-14-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-14-1"><text>"P3"</text></outputEntry>
+        <outputEntry id="oe-14-2"><text>"PT8H"</text></outputEntry>
+        <outputEntry id="oe-14-3"><text>"Engineering Lead + CISO notification"</text></outputEntry>
+        <outputEntry id="oe-14-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-15">
+        <description>P3 Medium: Tier3 system with widespread customer impact — standard system affecting many users; Business Owner must coordinate customer communication</description>
+        <inputEntry id="ie-15-1"><text>"Tier3-Standard"</text></inputEntry>
+        <inputEntry id="ie-15-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-15-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-15-4"><text>"Widespread"</text></inputEntry>
+        <inputEntry id="ie-15-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-15-1"><text>"P3"</text></outputEntry>
+        <outputEntry id="oe-15-2"><text>"PT8H"</text></outputEntry>
+        <outputEntry id="oe-15-3"><text>"Engineering Manager + Business Owner"</text></outputEntry>
+        <outputEntry id="oe-15-4"><text>false</text></outputEntry>
+      </rule>
+
+      <!--
+        P4 — LOW (Rules 16-19)
+        Scheduled response. Team-level notification. Standard incident management process.
+      -->
+
+      <rule id="rule-16">
+        <description>P4 Low: Tier3 system with no customer impact — internal issue on standard system; handled within engineering team</description>
+        <inputEntry id="ie-16-1"><text>"Tier3-Standard"</text></inputEntry>
+        <inputEntry id="ie-16-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-4"><text>"None"</text></inputEntry>
+        <inputEntry id="ie-16-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-16-1"><text>"P4"</text></outputEntry>
+        <outputEntry id="oe-16-2"><text>"P1D"</text></outputEntry>
+        <outputEntry id="oe-16-3"><text>"Engineering Team Lead"</text></outputEntry>
+        <outputEntry id="oe-16-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-17">
+        <description>P4 Low: Tier4 system with data exposure — low-tier system but PII involved; Privacy Officer notified for assessment even on non-critical systems</description>
+        <inputEntry id="ie-17-1"><text>"Tier4-Low"</text></inputEntry>
+        <inputEntry id="ie-17-2"><text>true</text></inputEntry>
+        <inputEntry id="ie-17-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-17-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-17-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-17-1"><text>"P4"</text></outputEntry>
+        <outputEntry id="oe-17-2"><text>"P1D"</text></outputEntry>
+        <outputEntry id="oe-17-3"><text>"Privacy Officer + Engineering Lead"</text></outputEntry>
+        <outputEntry id="oe-17-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-18">
+        <description>P4 Low: Tier4 system with limited customer impact — minor issue on low-criticality system; team lead handles with standard process</description>
+        <inputEntry id="ie-18-1"><text>"Tier4-Low"</text></inputEntry>
+        <inputEntry id="ie-18-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-18-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-18-4"><text>"Limited"</text></inputEntry>
+        <inputEntry id="ie-18-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-18-1"><text>"P4"</text></outputEntry>
+        <outputEntry id="oe-18-2"><text>"P1D"</text></outputEntry>
+        <outputEntry id="oe-18-3"><text>"Engineering Team Lead"</text></outputEntry>
+        <outputEntry id="oe-18-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-19">
+        <description>P4 Low: Tier4 system with no customer impact — minimal severity; team handles within normal sprint cycle</description>
+        <inputEntry id="ie-19-1"><text>"Tier4-Low"</text></inputEntry>
+        <inputEntry id="ie-19-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-19-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-19-4"><text>"None"</text></inputEntry>
+        <inputEntry id="ie-19-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-19-1"><text>"P4"</text></outputEntry>
+        <outputEntry id="oe-19-2"><text>"P2D"</text></outputEntry>
+        <outputEntry id="oe-19-3"><text>"Engineering Team"</text></outputEntry>
+        <outputEntry id="oe-19-4"><text>false</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 20: CATCH-ALL DEFAULT — P3 Medium (conservative)
+        Catches any input combination not matched by rules 1-19.
+        P3 is a conservative default ensuring CISO awareness for unclassified incidents.
+        Under FIRST hit policy, this only fires if no earlier rule matched.
+      -->
+
+      <rule id="rule-20">
+        <description>Default catch-all: Unclassified incident profile — assigned P3 Medium as conservative default; CISO notification ensures security awareness; manual triage required</description>
+        <inputEntry id="ie-20-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-20-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-20-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-20-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-20-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-20-1"><text>"P3"</text></outputEntry>
+        <outputEntry id="oe-20-2"><text>"PT8H"</text></outputEntry>
+        <outputEntry id="oe-20-3"><text>"Engineering Manager + CISO notification"</text></outputEntry>
+        <outputEntry id="oe-20-4"><text>false</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN10-diagram">
+      <dmndi:DMNShape id="DMN10-shape" dmnElementRef="DMN_IncidentSeverityClassification">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
