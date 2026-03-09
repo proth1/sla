@@ -1,0 +1,291 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "tprm-quarterly-report",
+  "components": [
+    {
+      "type": "group",
+      "label": "Report Period and Executive Summary",
+      "id": "Field_TPRM_G1",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "reportingPeriod",
+          "label": "Reporting period",
+          "description": "e.g., Q1 2026",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_TPRM_001"
+        },
+        {
+          "type": "textfield",
+          "key": "reportDate",
+          "label": "Report date",
+          "description": "Report preparation date",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_TPRM_002"
+        },
+        {
+          "type": "textfield",
+          "key": "preparedBy",
+          "label": "Prepared by",
+          "id": "Field_TPRM_003"
+        },
+        {
+          "type": "textarea",
+          "key": "executiveSummary",
+          "label": "Executive summary",
+          "description": "High-level summary for board members",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_TPRM_004"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Vendor Risk Summary",
+      "id": "Field_TPRM_G2",
+      "components": [
+        {
+          "type": "number",
+          "key": "totalActiveVendors",
+          "label": "Total active vendors",
+          "id": "Field_TPRM_005"
+        },
+        {
+          "type": "number",
+          "key": "criticalVendors",
+          "label": "Critical/high-risk vendors",
+          "id": "Field_TPRM_006"
+        },
+        {
+          "type": "number",
+          "key": "newVendorsThisQuarter",
+          "label": "New vendors onboarded this quarter",
+          "id": "Field_TPRM_007"
+        },
+        {
+          "type": "number",
+          "key": "vendorsTerminated",
+          "label": "Vendors terminated/offboarded",
+          "id": "Field_TPRM_008"
+        },
+        {
+          "type": "textarea",
+          "key": "vendorsByRiskTier",
+          "label": "Vendors by risk tier",
+          "description": "Breakdown by risk tier (High/Limited/Minimal)",
+          "id": "Field_TPRM_009"
+        },
+        {
+          "type": "textarea",
+          "key": "concentrationRiskAssessment",
+          "label": "Concentration risk assessment",
+          "description": "Top concentration risks and mitigations",
+          "id": "Field_TPRM_010"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "SLA Compliance",
+      "id": "Field_TPRM_G3",
+      "components": [
+        {
+          "type": "number",
+          "key": "overallSLACompliance",
+          "label": "Overall SLA compliance (%)",
+          "description": "Percentage of SLAs met across all vendors",
+          "id": "Field_TPRM_011"
+        },
+        {
+          "type": "number",
+          "key": "slaBreachCount",
+          "label": "SLA breach count",
+          "description": "Total SLA breaches this quarter",
+          "id": "Field_TPRM_012"
+        },
+        {
+          "type": "textarea",
+          "key": "criticalSLABreaches",
+          "label": "Critical SLA breaches",
+          "description": "Details of critical SLA breaches",
+          "id": "Field_TPRM_013"
+        },
+        {
+          "type": "textarea",
+          "key": "slaRemediationStatus",
+          "label": "SLA remediation status",
+          "description": "Status of breach remediation actions",
+          "id": "Field_TPRM_014"
+        },
+        {
+          "type": "textarea",
+          "key": "slaComplianceTrend",
+          "label": "SLA compliance trend",
+          "description": "Trend vs. prior quarters",
+          "id": "Field_TPRM_015"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Due Diligence and Assessments",
+      "id": "Field_TPRM_G4",
+      "components": [
+        {
+          "type": "number",
+          "key": "assessmentsCompleted",
+          "label": "Assessments completed",
+          "description": "Assessments completed this quarter",
+          "id": "Field_TPRM_016"
+        },
+        {
+          "type": "number",
+          "key": "assessmentsPending",
+          "label": "Assessments pending/overdue",
+          "id": "Field_TPRM_017"
+        },
+        {
+          "type": "number",
+          "key": "assessmentsScheduled",
+          "label": "Assessments scheduled next quarter",
+          "id": "Field_TPRM_018"
+        },
+        {
+          "type": "textarea",
+          "key": "materialFindings",
+          "label": "Material findings",
+          "description": "Significant findings from assessments",
+          "id": "Field_TPRM_019"
+        },
+        {
+          "type": "textarea",
+          "key": "findingsRemediationProgress",
+          "label": "Findings remediation progress",
+          "description": "Progress on open findings",
+          "id": "Field_TPRM_020"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Regulatory and Compliance",
+      "id": "Field_TPRM_G5",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "regulatoryExamFindings",
+          "label": "Regulatory exam findings",
+          "description": "Any regulator exam findings related to TPRM",
+          "id": "Field_TPRM_021"
+        },
+        {
+          "type": "textarea",
+          "key": "policyUpdates",
+          "label": "Policy updates",
+          "description": "TPRM policy/procedure updates made",
+          "id": "Field_TPRM_022"
+        },
+        {
+          "type": "textarea",
+          "key": "regulatoryChanges",
+          "label": "Regulatory changes",
+          "description": "Upcoming regulatory changes affecting TPRM",
+          "id": "Field_TPRM_023"
+        },
+        {
+          "type": "textarea",
+          "key": "complianceGaps",
+          "label": "Compliance gaps",
+          "description": "Identified compliance gaps and remediation plans",
+          "id": "Field_TPRM_024"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Key Risk Indicators",
+      "id": "Field_TPRM_G6",
+      "components": [
+        {
+          "type": "number",
+          "key": "avgOnboardingTime",
+          "label": "Avg onboarding time (days)",
+          "description": "Average days to onboard a vendor",
+          "id": "Field_TPRM_025"
+        },
+        {
+          "type": "number",
+          "key": "avgAssessmentCycleTime",
+          "label": "Avg assessment cycle time (days)",
+          "description": "Average days for due diligence",
+          "id": "Field_TPRM_026"
+        },
+        {
+          "type": "number",
+          "key": "vendorIncidents",
+          "label": "Vendor incidents",
+          "description": "Vendor-related incidents this quarter",
+          "id": "Field_TPRM_027"
+        },
+        {
+          "type": "textarea",
+          "key": "fourthPartyRisks",
+          "label": "Fourth-party risks",
+          "description": "Identified fourth-party/sub-outsourcing risks",
+          "id": "Field_TPRM_028"
+        },
+        {
+          "type": "textarea",
+          "key": "emergingRisks",
+          "label": "Emerging risks",
+          "description": "Emerging risks for board awareness",
+          "id": "Field_TPRM_029"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Recommendations and Actions",
+      "id": "Field_TPRM_G7",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "boardRecommendations",
+          "label": "Board recommendations",
+          "description": "Recommendations requiring board action",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_TPRM_030"
+        },
+        {
+          "type": "textarea",
+          "key": "nextQuarterPriorities",
+          "label": "Next quarter priorities",
+          "description": "Key priorities for next quarter",
+          "id": "Field_TPRM_031"
+        },
+        {
+          "type": "textarea",
+          "key": "resourceRequests",
+          "label": "Resource requests",
+          "description": "Resource/budget requests",
+          "id": "Field_TPRM_032"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

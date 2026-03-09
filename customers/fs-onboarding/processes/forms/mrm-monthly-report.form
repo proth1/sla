@@ -1,0 +1,266 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "mrm-monthly-report",
+  "components": [
+    {
+      "type": "group",
+      "label": "Report Period and Summary",
+      "id": "Field_MRM_G1",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "reportingMonth",
+          "label": "Reporting month",
+          "description": "e.g., March 2026",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_MRM_001"
+        },
+        {
+          "type": "textfield",
+          "key": "reportDate",
+          "label": "Report date",
+          "id": "Field_MRM_002"
+        },
+        {
+          "type": "textfield",
+          "key": "preparedBy",
+          "label": "Prepared by",
+          "id": "Field_MRM_003"
+        },
+        {
+          "type": "textarea",
+          "key": "executiveSummary",
+          "label": "Executive summary",
+          "description": "Monthly summary",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_MRM_004"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Model Inventory Status",
+      "id": "Field_MRM_G2",
+      "components": [
+        {
+          "type": "number",
+          "key": "totalModelsInProduction",
+          "label": "Total models in production",
+          "id": "Field_MRM_005"
+        },
+        {
+          "type": "number",
+          "key": "newModelsDeployed",
+          "label": "New models deployed this month",
+          "id": "Field_MRM_006"
+        },
+        {
+          "type": "number",
+          "key": "modelsRetired",
+          "label": "Models retired/decommissioned",
+          "id": "Field_MRM_007"
+        },
+        {
+          "type": "textarea",
+          "key": "modelsByRiskTier",
+          "label": "Models by risk tier",
+          "description": "Breakdown by risk classification",
+          "id": "Field_MRM_008"
+        },
+        {
+          "type": "number",
+          "key": "modelsAwaitingValidation",
+          "label": "Models awaiting validation",
+          "description": "Models pending initial/re-validation",
+          "id": "Field_MRM_009"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Model Validation Status",
+      "id": "Field_MRM_G3",
+      "components": [
+        {
+          "type": "number",
+          "key": "validationsCompleted",
+          "label": "Validations completed this month",
+          "id": "Field_MRM_010"
+        },
+        {
+          "type": "number",
+          "key": "validationsPending",
+          "label": "Validations pending/overdue",
+          "id": "Field_MRM_011"
+        },
+        {
+          "type": "number",
+          "key": "validationsScheduled",
+          "label": "Validations scheduled next month",
+          "id": "Field_MRM_012"
+        },
+        {
+          "type": "textarea",
+          "key": "validationFindings",
+          "label": "Validation findings",
+          "description": "Summary of material validation findings",
+          "id": "Field_MRM_013"
+        },
+        {
+          "type": "textarea",
+          "key": "findingsRemediationStatus",
+          "label": "Findings remediation status",
+          "description": "Open findings remediation progress",
+          "id": "Field_MRM_014"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Performance and Drift Monitoring",
+      "id": "Field_MRM_G4",
+      "components": [
+        {
+          "type": "number",
+          "key": "modelsInWatchStatus",
+          "label": "Models in Watch/Warning status",
+          "id": "Field_MRM_015"
+        },
+        {
+          "type": "number",
+          "key": "modelsRequiringAction",
+          "label": "Models requiring immediate action",
+          "id": "Field_MRM_016"
+        },
+        {
+          "type": "number",
+          "key": "driftAlerts",
+          "label": "Drift alerts triggered",
+          "description": "Drift alerts triggered this month",
+          "id": "Field_MRM_017"
+        },
+        {
+          "type": "textarea",
+          "key": "significantDriftDetails",
+          "label": "Significant drift details",
+          "description": "Details of significant drift events",
+          "id": "Field_MRM_018"
+        },
+        {
+          "type": "textarea",
+          "key": "performanceBenchmarks",
+          "label": "Performance benchmarks",
+          "description": "Models below performance thresholds",
+          "id": "Field_MRM_019"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Fairness and Ethics",
+      "id": "Field_MRM_G5",
+      "components": [
+        {
+          "type": "number",
+          "key": "biasTestsCompleted",
+          "label": "Bias/fairness tests completed",
+          "id": "Field_MRM_020"
+        },
+        {
+          "type": "number",
+          "key": "biasIssuesDetected",
+          "label": "Bias issues detected",
+          "id": "Field_MRM_021"
+        },
+        {
+          "type": "number",
+          "key": "ethicsCommitteeReviews",
+          "label": "Ethics committee reviews conducted",
+          "id": "Field_MRM_022"
+        },
+        {
+          "type": "textarea",
+          "key": "fairnessActions",
+          "label": "Fairness corrective actions",
+          "description": "Corrective actions taken",
+          "id": "Field_MRM_023"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Regulatory Compliance (SR 11-7)",
+      "id": "Field_MRM_G6",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "sr117Compliance",
+          "label": "SR 11-7 compliance status",
+          "id": "Field_MRM_024"
+        },
+        {
+          "type": "textarea",
+          "key": "modelRiskAppetite",
+          "label": "Model risk appetite",
+          "description": "Current vs. approved model risk appetite",
+          "id": "Field_MRM_025"
+        },
+        {
+          "type": "textarea",
+          "key": "regulatoryExamFindings",
+          "label": "Regulatory exam findings",
+          "description": "Exam findings related to MRM",
+          "id": "Field_MRM_026"
+        },
+        {
+          "type": "textarea",
+          "key": "policyExceptions",
+          "label": "Policy exceptions",
+          "description": "Active policy exceptions",
+          "id": "Field_MRM_027"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "Recommendations",
+      "id": "Field_MRM_G7",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "keyRisks",
+          "label": "Key model risks",
+          "description": "Key model risks for management attention",
+          "id": "Field_MRM_028"
+        },
+        {
+          "type": "textarea",
+          "key": "recommendations",
+          "label": "Recommendations",
+          "description": "Recommended actions",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_MRM_029"
+        },
+        {
+          "type": "textarea",
+          "key": "nextMonthPriorities",
+          "label": "Next month priorities",
+          "id": "Field_MRM_030"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}
