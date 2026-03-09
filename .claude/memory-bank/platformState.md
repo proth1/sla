@@ -27,7 +27,7 @@
 | Public | sla.agentic-innovations.com | OTP-protected |
 | Onboarding Auth | sla-onboarding-auth.proth1.workers.dev | Deployed |
 | Onboarding Pages | sla-onboarding.pages.dev | Deployed |
-| Onboarding Public | onboarding.agentic-innovations.com | OTP-protected (kpmg.com) |
+| Onboarding Public | onboarding.agentic-innovations.com | OTP-protected |
 | Showcase Auth | sla-showcase-auth.proth1.workers.dev | Deployed |
 | Showcase API | sla-showcase-api.proth1.workers.dev | Deployed |
 | Showcase Pages | sla-showcase.pages.dev | Deployed |

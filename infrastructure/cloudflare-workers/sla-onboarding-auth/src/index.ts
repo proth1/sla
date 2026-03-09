@@ -18,7 +18,7 @@ interface Env {
 
 // Allowed email addresses and domains
 const ALLOWED_EMAILS = ['proth1@gmail.com'];
-const ALLOWED_DOMAINS = ['kpmg.com'];
+const ALLOWED_DOMAINS = ['agentic-innovations.com'];
 
 // Descope session cookie names
 const SESSION_COOKIE = 'DS';

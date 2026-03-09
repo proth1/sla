@@ -18,11 +18,16 @@ interface Env {
   CF_ACCESS_CLIENT_SECRET: string;
   SESSION_SECRET: string;
   RATE_LIMIT_KV: KVNamespace;
+  VENDOR_TOKENS_KV: KVNamespace;
 }
+
+// Per-token rate limiting for vendor portal
+const VENDOR_RATE_LIMIT_MAX = 60; // requests per minute
+const VENDOR_RATE_LIMIT_WINDOW = 60; // seconds
 
 // Allowed email addresses and domains
 const ALLOWED_EMAILS = ['proth1@gmail.com'];
-const ALLOWED_DOMAINS = ['agentic-innovations.com', 'kpmg.com'];
+const ALLOWED_DOMAINS = ['agentic-innovations.com'];
 
 // Cookie names
 const SESSION_COOKIE = 'DS';
@@ -703,6 +708,49 @@ function renderLoginPage(env: Env, url: URL, request: Request): Response {
   });
 }
 
+// --- Vendor token validation ---
+
+async function validateVendorToken(
+  token: string,
+  url: URL,
+  env: Env
+): Promise<{ valid: boolean }> {
+  // Validate token format (already checked by caller regex, but defense-in-depth)
+  if (!token || token.length > 60) return { valid: false };
+
+  // Check KV for token metadata
+  if (env.VENDOR_TOKENS_KV) {
+    const raw = await env.VENDOR_TOKENS_KV.get(token);
+    if (!raw) return { valid: false }; // Token not found or expired (KV TTL)
+
+    try {
+      const data = JSON.parse(raw) as { status?: string };
+      // Allow 'active' and 'submitted' (submitted tokens can still view status)
+      if (data.status === 'expired') return { valid: false };
+    } catch {
+      return { valid: false };
+    }
+
+    // Per-token rate limiting
+    if (env.RATE_LIMIT_KV) {
+      const rateLimitKey = `vendor_rate:${token}`;
+      const existing = await env.RATE_LIMIT_KV.get(rateLimitKey);
+      const count = existing ? parseInt(existing, 10) : 0;
+      if (count >= VENDOR_RATE_LIMIT_MAX) {
+        return { valid: false }; // Rate limited
+      }
+      await env.RATE_LIMIT_KV.put(rateLimitKey, String(count + 1), {
+        expirationTtl: VENDOR_RATE_LIMIT_WINDOW,
+      });
+    }
+
+    return { valid: true };
+  }
+
+  // If KV not bound, accept any well-formatted token (demo mode)
+  return { valid: true };
+}
+
 // --- Main entry point ---
 
 export default {
@@ -714,6 +762,40 @@ export default {
     if (url.pathname === '/auth/send-otp' && request.method === 'POST') return handleSendOTP(request, env, url);
     if (url.pathname === '/auth/verify-otp' && request.method === 'POST') return handleVerifyOTP(request, env, url);
     if (url.pathname === '/auth/logout') return handleLogout(url);
+
+    // Vendor portal routes — token-based auth, bypass Descope OTP
+    if (url.pathname === '/vendor-portal.html' || url.pathname.startsWith('/api/vendor/')) {
+      const vendorToken = url.searchParams.get('token') || '';
+      if (vendorToken && /^vrfp-\d{1,19}-[0-9a-f]{24}$/.test(vendorToken)) {
+        const vendorAuth = await validateVendorToken(vendorToken, url, env);
+        if (vendorAuth.valid) {
+          if (url.pathname.startsWith('/api/vendor/')) {
+            return proxyToApi(request, env, url);
+          }
+          return proxyToPages(request, env, url);
+        }
+        // Invalid/expired token — show error page for HTML, 403 for API
+        if (url.pathname.startsWith('/api/')) {
+          return new Response(JSON.stringify({ error: 'Invalid or expired vendor token' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        // Redirect to vendor portal with error indication
+        return proxyToPages(request, env, url);
+      }
+
+      // Also serve vendor portal static assets (defaults-vendor.js)
+      if (url.pathname === '/vendor-portal.html') {
+        // No token or invalid format — let the page handle the error
+        return proxyToPages(request, env, url);
+      }
+    }
+
+    // Serve vendor defaults JS without auth (it's a static asset with no sensitive data)
+    if (url.pathname === '/defaults-vendor.js') {
+      return proxyToPages(request, env, url);
+    }
 
     // All other routes require authentication
     const session = await validateSession(request, env);

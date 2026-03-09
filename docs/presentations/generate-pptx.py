@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate KPMG-branded PowerPoint from v3 discovery presentation data."""
+"""Generate branded PowerPoint from v3 discovery presentation data."""
 
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
@@ -7,17 +7,17 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
-KPMG_BLUE = RGBColor(0x00, 0x33, 0x8D)
-KPMG_MEDIUM_BLUE = RGBColor(0x00, 0x5E, 0xB8)
-KPMG_LIGHT_BLUE = RGBColor(0x00, 0x91, 0xDA)
-KPMG_DARK_NAVY = RGBColor(0x00, 0x1D, 0x48)
-KPMG_WHITE = RGBColor(0xFF, 0xFF, 0xFF)
-KPMG_LIGHT_GRAY = RGBColor(0xF5, 0xF5, 0xF5)
-KPMG_DARK_GRAY = RGBColor(0x33, 0x33, 0x33)
-KPMG_GOLD = RGBColor(0xD4, 0xA8, 0x43)
-KPMG_EMERALD = RGBColor(0x00, 0xA8, 0x6B)
-KPMG_ROSE = RGBColor(0xC6, 0x28, 0x28)
-KPMG_AMBER = RGBColor(0xE6, 0x7E, 0x22)
+BRAND_BLUE = RGBColor(0x00, 0x33, 0x8D)
+BRAND_MEDIUM_BLUE = RGBColor(0x00, 0x5E, 0xB8)
+BRAND_LIGHT_BLUE = RGBColor(0x00, 0x91, 0xDA)
+BRAND_DARK_NAVY = RGBColor(0x00, 0x1D, 0x48)
+BRAND_WHITE = RGBColor(0xFF, 0xFF, 0xFF)
+BRAND_LIGHT_GRAY = RGBColor(0xF5, 0xF5, 0xF5)
+BRAND_DARK_GRAY = RGBColor(0x33, 0x33, 0x33)
+BRAND_GOLD = RGBColor(0xD4, 0xA8, 0x43)
+BRAND_EMERALD = RGBColor(0x00, 0xA8, 0x6B)
+BRAND_ROSE = RGBColor(0xC6, 0x28, 0x28)
+BRAND_AMBER = RGBColor(0xE6, 0x7E, 0x22)
 
 prs = Presentation()
 prs.slide_width = Inches(13.333)
@@ -43,7 +43,7 @@ def add_gradient_bg(slide, c1, c2):
 
 
 def add_text_box(slide, left, top, width, height, text, font_size=12,
-                 bold=False, color=KPMG_DARK_GRAY, font_name='Open Sans',
+                 bold=False, color=BRAND_DARK_GRAY, font_name='Open Sans',
                  alignment=PP_ALIGN.LEFT, word_wrap=True):
     txBox = slide.shapes.add_textbox(left, top, width, height)
     tf = txBox.text_frame
@@ -58,7 +58,7 @@ def add_text_box(slide, left, top, width, height, text, font_size=12,
     return txBox
 
 
-def add_footer(slide, text="KPMG Confidential", dark=False):
+def add_footer(slide, text="Confidential", dark=False):
     color = RGBColor(0x99, 0x99, 0x99) if not dark else RGBColor(0x99, 0xAA, 0xCC)
     add_text_box(slide, Inches(0.5), Inches(7.0), Inches(4), Inches(0.4),
                  text, font_size=8, color=color)
@@ -66,11 +66,11 @@ def add_footer(slide, text="KPMG Confidential", dark=False):
                  "March 2026", font_size=8, color=color, alignment=PP_ALIGN.RIGHT)
 
 
-def add_card(slide, left, top, width, height, title, body, accent_color=KPMG_BLUE):
+def add_card(slide, left, top, width, height, title, body, accent_color=BRAND_BLUE):
     # Card background
     shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, width, height)
     shape.fill.solid()
-    shape.fill.fore_color.rgb = KPMG_WHITE
+    shape.fill.fore_color.rgb = BRAND_WHITE
     shape.line.fill.background()
     shape.shadow.inherit = False
     # Accent bar
@@ -80,16 +80,16 @@ def add_card(slide, left, top, width, height, title, body, accent_color=KPMG_BLU
     bar.line.fill.background()
     # Title
     add_text_box(slide, left + Inches(0.2), top + Inches(0.1), width - Inches(0.3), Inches(0.35),
-                 title, font_size=11, bold=True, color=KPMG_BLUE)
+                 title, font_size=11, bold=True, color=BRAND_BLUE)
     # Body
     add_text_box(slide, left + Inches(0.2), top + Inches(0.45), width - Inches(0.3), height - Inches(0.55),
                  body, font_size=9, color=RGBColor(0x66, 0x66, 0x66))
 
 
-def add_metric(slide, left, top, value, label, value_color=KPMG_BLUE):
+def add_metric(slide, left, top, value, label, value_color=BRAND_BLUE):
     shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, Inches(2), Inches(1.1))
     shape.fill.solid()
-    shape.fill.fore_color.rgb = KPMG_WHITE
+    shape.fill.fore_color.rgb = BRAND_WHITE
     shape.line.fill.background()
     add_text_box(slide, left, top + Inches(0.1), Inches(2), Inches(0.5),
                  value, font_size=24, bold=True, color=value_color,
@@ -101,16 +101,16 @@ def add_metric(slide, left, top, value, label, value_color=KPMG_BLUE):
 
 def add_section_slide(title, subtitle=""):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_gradient_bg(slide, KPMG_MEDIUM_BLUE, KPMG_BLUE)
+    add_gradient_bg(slide, BRAND_MEDIUM_BLUE, BRAND_BLUE)
     add_text_box(slide, Inches(1), Inches(2.5), Inches(10), Inches(1.2),
-                 title, font_size=40, bold=True, color=KPMG_WHITE, font_name='Open Sans Condensed')
+                 title, font_size=40, bold=True, color=BRAND_WHITE, font_name='Open Sans Condensed')
     if subtitle:
         add_text_box(slide, Inches(1), Inches(3.8), Inches(9), Inches(0.8),
                      subtitle, font_size=14, color=RGBColor(0xCC, 0xDD, 0xFF))
     # Gold accent line
     line = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1), Inches(3.55), Inches(3), Inches(0.04))
     line.fill.solid()
-    line.fill.fore_color.rgb = KPMG_GOLD
+    line.fill.fore_color.rgb = BRAND_GOLD
     line.line.fill.background()
     add_footer(slide, dark=True)
     return slide
@@ -118,9 +118,9 @@ def add_section_slide(title, subtitle=""):
 
 def add_current_state_slide(title, findings, quote=None, quote_source=None, raci=""):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_bg(slide, KPMG_WHITE)
+    add_bg(slide, BRAND_WHITE)
     add_text_box(slide, Inches(0.6), Inches(0.4), Inches(12), Inches(0.6),
-                 title, font_size=24, bold=True, color=KPMG_BLUE, font_name='Open Sans Condensed')
+                 title, font_size=24, bold=True, color=BRAND_BLUE, font_name='Open Sans Condensed')
 
     cols = 2
     rows = (len(findings) + 1) // 2
@@ -129,17 +129,17 @@ def add_current_state_slide(title, findings, quote=None, quote_source=None, raci
         row = i // cols
         left = Inches(0.6 + col * 6.2)
         top = Inches(1.2 + row * 1.15)
-        accent = KPMG_EMERALD if is_positive else KPMG_ROSE
+        accent = BRAND_EMERALD if is_positive else BRAND_ROSE
         add_card(slide, left, top, Inches(5.9), Inches(1.0), ftitle, fbody, accent)
 
     if quote:
         y = Inches(1.2 + rows * 1.15 + 0.1)
         bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.6), y, Inches(0.06), Inches(0.7))
         bar.fill.solid()
-        bar.fill.fore_color.rgb = KPMG_GOLD
+        bar.fill.fore_color.rgb = BRAND_GOLD
         bar.line.fill.background()
         add_text_box(slide, Inches(0.8), y, Inches(11), Inches(0.5),
-                     f'"{quote}"', font_size=10, color=KPMG_DARK_GRAY)
+                     f'"{quote}"', font_size=10, color=BRAND_DARK_GRAY)
         if quote_source:
             add_text_box(slide, Inches(0.8), y + Inches(0.45), Inches(11), Inches(0.25),
                          f"-- {quote_source}", font_size=8, color=RGBColor(0x66, 0x66, 0x66))
@@ -153,9 +153,9 @@ def add_current_state_slide(title, findings, quote=None, quote_source=None, raci
 
 def add_recommendations_slide(title, recs, roadmap):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_bg(slide, KPMG_WHITE)
+    add_bg(slide, BRAND_WHITE)
     add_text_box(slide, Inches(0.6), Inches(0.4), Inches(12), Inches(0.6),
-                 title, font_size=24, bold=True, color=KPMG_BLUE, font_name='Open Sans Condensed')
+                 title, font_size=24, bold=True, color=BRAND_BLUE, font_name='Open Sans Condensed')
 
     for i, (rtitle, rbody, impact) in enumerate(recs[:4]):
         col = i % 2
@@ -163,11 +163,11 @@ def add_recommendations_slide(title, recs, roadmap):
         left = Inches(0.6 + col * 6.2)
         top = Inches(1.1 + row * 1.3)
         add_card(slide, left, top, Inches(5.9), Inches(1.15), rtitle,
-                 f"{rbody}\n{impact}", KPMG_EMERALD)
+                 f"{rbody}\n{impact}", BRAND_EMERALD)
 
     # Roadmap row
     y_road = Inches(3.9)
-    colors = [KPMG_EMERALD, KPMG_LIGHT_BLUE, KPMG_MEDIUM_BLUE, KPMG_BLUE]
+    colors = [BRAND_EMERALD, BRAND_LIGHT_BLUE, BRAND_MEDIUM_BLUE, BRAND_BLUE]
     labels = ["30 Days", "60 Days", "90 Days", "120 Days"]
     for i, (items, label) in enumerate(zip(roadmap, labels)):
         left = Inches(0.6 + i * 3.1)
@@ -177,7 +177,7 @@ def add_recommendations_slide(title, recs, roadmap):
         bar.fill.fore_color.rgb = colors[i]
         bar.line.fill.background()
         add_text_box(slide, left, y_road + Inches(0.08), Inches(2.9), Inches(0.3),
-                     label, font_size=10, bold=True, color=KPMG_BLUE)
+                     label, font_size=10, bold=True, color=BRAND_BLUE)
         text = "\n".join(f"  {item}" for item in items)
         add_text_box(slide, left, y_road + Inches(0.4), Inches(2.9), Inches(2.8),
                      text, font_size=8, color=RGBColor(0x66, 0x66, 0x66))
@@ -188,10 +188,10 @@ def add_recommendations_slide(title, recs, roadmap):
 
 # ===== SLIDE 0: HERO =====
 slide = prs.slides.add_slide(prs.slide_layouts[6])
-add_gradient_bg(slide, KPMG_BLUE, KPMG_MEDIUM_BLUE)
+add_gradient_bg(slide, BRAND_BLUE, BRAND_MEDIUM_BLUE)
 add_text_box(slide, Inches(1), Inches(1.5), Inches(10), Inches(1.5),
              "Software Onboarding\nProcess Transformation", font_size=44, bold=True,
-             color=KPMG_WHITE, font_name='Open Sans Condensed')
+             color=BRAND_WHITE, font_name='Open Sans Condensed')
 add_text_box(slide, Inches(1), Inches(3.3), Inches(10), Inches(0.6),
              "Discovery Findings, Recommendations, and Implementation Roadmap",
              font_size=18, bold=True, color=RGBColor(0xCC, 0xDD, 0xFF))
@@ -215,57 +215,57 @@ add_footer(slide, dark=True)
 
 # ===== SLIDE 1: EXECUTIVE SUMMARY =====
 slide = prs.slides.add_slide(prs.slide_layouts[6])
-add_bg(slide, KPMG_WHITE)
+add_bg(slide, BRAND_WHITE)
 add_text_box(slide, Inches(0.6), Inches(0.4), Inches(12), Inches(0.6),
-             "Executive Summary", font_size=28, bold=True, color=KPMG_BLUE, font_name='Open Sans Condensed')
+             "Executive Summary", font_size=28, bold=True, color=BRAND_BLUE, font_name='Open Sans Condensed')
 add_text_box(slide, Inches(0.6), Inches(1.0), Inches(12), Inches(0.7),
              "The software onboarding process spans 6 to 9 months end-to-end, driven by 18 sequential "
              "committees, 5+ disconnected intake channels, and critical resource bottlenecks in Security and Legal. "
              "The START initiative (9 months old) created centralized awareness but did not integrate underlying team processes.",
-             font_size=11, color=KPMG_DARK_GRAY)
+             font_size=11, color=BRAND_DARK_GRAY)
 
 # Metrics row
-metrics = [("6-9 mo", "Current E2E Cycle", KPMG_ROSE), ("18", "Committees", KPMG_ROSE),
-           ("335", "Assessments/Year", KPMG_BLUE), ("75 days", "DD Internal Review", KPMG_ROSE),
-           ("60+", "AI Queue Items", KPMG_ROSE)]
+metrics = [("6-9 mo", "Current E2E Cycle", BRAND_ROSE), ("18", "Committees", BRAND_ROSE),
+           ("335", "Assessments/Year", BRAND_BLUE), ("75 days", "DD Internal Review", BRAND_ROSE),
+           ("60+", "AI Queue Items", BRAND_ROSE)]
 for i, (val, lab, clr) in enumerate(metrics):
     add_metric(slide, Inches(0.6 + i * 2.5), Inches(1.8), val, lab, clr)
 
 add_text_box(slide, Inches(0.6), Inches(3.1), Inches(6), Inches(0.3),
-             "Biggest Challenges", font_size=14, bold=True, color=KPMG_DARK_NAVY, font_name='Open Sans Condensed')
+             "Biggest Challenges", font_size=14, bold=True, color=BRAND_DARK_NAVY, font_name='Open Sans Condensed')
 challenges = [
     ("Sequential Reviews", "Requesters present to ARB, TBC, AI Governance, and DART sequentially. Each committee 5+ weeks apart."),
     ("Requester Burden", "DART formation falls entirely on the requester, who must contact 5-6 teams independently."),
     ("Resource Crisis", "2 people negotiate 30+ contracts/month. Security is #1 SLA bottleneck. \"Half a person\" owns START."),
 ]
 for i, (ct, cb) in enumerate(challenges):
-    add_card(slide, Inches(0.6 + i * 4.1), Inches(3.45), Inches(3.9), Inches(1.1), ct, cb, KPMG_ROSE)
+    add_card(slide, Inches(0.6 + i * 4.1), Inches(3.45), Inches(3.9), Inches(1.1), ct, cb, BRAND_ROSE)
 
 add_text_box(slide, Inches(0.6), Inches(4.75), Inches(6), Inches(0.3),
-             "Highest-ROI Investment Areas", font_size=14, bold=True, color=KPMG_DARK_NAVY, font_name='Open Sans Condensed')
+             "Highest-ROI Investment Areas", font_size=14, bold=True, color=BRAND_DARK_NAVY, font_name='Open Sans Condensed')
 investments = [
     ("Parallel Evaluation", "Replace 18 sequential committees with 5 parallel evaluation streams."),
     ("Unified Intake + Deal-Killer", "Consolidate 5+ channels. Block non-starters at day 1."),
     ("Contract Automation", "Automate contract review for the 2-person team handling 30+/month."),
 ]
 for i, (it, ib) in enumerate(investments):
-    add_card(slide, Inches(0.6 + i * 4.1), Inches(5.1), Inches(3.9), Inches(1.0), it, ib, KPMG_EMERALD)
+    add_card(slide, Inches(0.6 + i * 4.1), Inches(5.1), Inches(3.9), Inches(1.0), it, ib, BRAND_EMERALD)
 
 add_footer(slide)
 
 # ===== SLIDE 2: E2E WORKFLOW =====
 slide = prs.slides.add_slide(prs.slide_layouts[6])
-add_bg(slide, KPMG_WHITE)
+add_bg(slide, BRAND_WHITE)
 add_text_box(slide, Inches(0.6), Inches(0.4), Inches(12), Inches(0.6),
              "End-to-End Workflow: Current Pain Points", font_size=24, bold=True,
-             color=KPMG_BLUE, font_name='Open Sans Condensed')
+             color=BRAND_BLUE, font_name='Open Sans Condensed')
 
 # Phase pipeline
-phases = [("1 Intake", "5+ channels", KPMG_ROSE), ("2 Prioritize", "No formula", KPMG_ROSE),
-          ("3 Funding", "Locked forms", KPMG_AMBER), ("4 Sourcing", "75d review", KPMG_ROSE),
-          ("5 Cyber", "#1 bottleneck", KPMG_ROSE), ("6 EA", "2wk ARB", KPMG_AMBER),
-          ("7 AI Gov", "60+ queue", KPMG_AMBER), ("8 Legal", "2 people", KPMG_ROSE),
-          ("9 Contract", "Up to 1.5yr", KPMG_AMBER)]
+phases = [("1 Intake", "5+ channels", BRAND_ROSE), ("2 Prioritize", "No formula", BRAND_ROSE),
+          ("3 Funding", "Locked forms", BRAND_AMBER), ("4 Sourcing", "75d review", BRAND_ROSE),
+          ("5 Cyber", "#1 bottleneck", BRAND_ROSE), ("6 EA", "2wk ARB", BRAND_AMBER),
+          ("7 AI Gov", "60+ queue", BRAND_AMBER), ("8 Legal", "2 people", BRAND_ROSE),
+          ("9 Contract", "Up to 1.5yr", BRAND_AMBER)]
 for i, (name, issue, color) in enumerate(phases):
     left = Inches(0.4 + i * 1.38)
     shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left, Inches(1.2), Inches(1.3), Inches(0.8))
@@ -273,13 +273,13 @@ for i, (name, issue, color) in enumerate(phases):
     shape.fill.fore_color.rgb = color
     shape.line.fill.background()
     add_text_box(slide, left, Inches(1.22), Inches(1.3), Inches(0.4),
-                 name, font_size=9, bold=True, color=KPMG_WHITE, alignment=PP_ALIGN.CENTER)
+                 name, font_size=9, bold=True, color=BRAND_WHITE, alignment=PP_ALIGN.CENTER)
     add_text_box(slide, left, Inches(1.58), Inches(1.3), Inches(0.3),
                  issue, font_size=7, color=RGBColor(0xFF, 0xDD, 0xDD), alignment=PP_ALIGN.CENTER)
 
 # Bottleneck table
 add_text_box(slide, Inches(0.6), Inches(2.3), Inches(6), Inches(0.3),
-             "Critical Bottlenecks", font_size=14, bold=True, color=KPMG_DARK_NAVY, font_name='Open Sans Condensed')
+             "Critical Bottlenecks", font_size=14, bold=True, color=BRAND_DARK_NAVY, font_name='Open Sans Condensed')
 bottlenecks = [
     "Contract Negotiation: 2 people / 30+ contracts monthly [CRITICAL]",
     "Security Review: \"Biggest bottleneck... reason our SLA takes 2 weeks\" [CRITICAL]",
@@ -290,45 +290,45 @@ bottlenecks = [
 ]
 for i, b in enumerate(bottlenecks):
     add_text_box(slide, Inches(0.8), Inches(2.7 + i * 0.32), Inches(6.5), Inches(0.3),
-                 b, font_size=9, color=KPMG_DARK_GRAY)
+                 b, font_size=9, color=BRAND_DARK_GRAY)
 
 # Strengths
 add_text_box(slide, Inches(7.5), Inches(2.3), Inches(5), Inches(0.3),
-             "What the Organization Does Well", font_size=14, bold=True, color=KPMG_DARK_NAVY, font_name='Open Sans Condensed')
+             "What the Organization Does Well", font_size=14, bold=True, color=BRAND_DARK_NAVY, font_name='Open Sans Condensed')
 strengths = [
     ("Architecture Governance", "Dedicated Facilitator pre-screens artifacts, manages follow-ups. Most disciplined team."),
     ("TPRM Due Diligence", "Reduced DD from 144 to 75 days. Output doubled to 335 assessments/year."),
     ("Acquisition 2.0", "Brings all teams together at start. Collective go/no-go at first tollgate."),
 ]
 for i, (st, sb) in enumerate(strengths):
-    add_card(slide, Inches(7.5), Inches(2.7 + i * 1.2), Inches(5.2), Inches(1.05), st, sb, KPMG_EMERALD)
+    add_card(slide, Inches(7.5), Inches(2.7 + i * 1.2), Inches(5.2), Inches(1.05), st, sb, BRAND_EMERALD)
 
 add_footer(slide)
 
 # ===== SLIDE 3: ROADMAP =====
 slide = prs.slides.add_slide(prs.slide_layouts[6])
-add_bg(slide, KPMG_WHITE)
+add_bg(slide, BRAND_WHITE)
 add_text_box(slide, Inches(0.6), Inches(0.4), Inches(12), Inches(0.6),
              "Implementation Roadmap: 30 / 60 / 90 / 120 Days", font_size=24, bold=True,
-             color=KPMG_BLUE, font_name='Open Sans Condensed')
+             color=BRAND_BLUE, font_name='Open Sans Condensed')
 
 roadmap_data = [
-    ("Days 1-30: Consolidate", KPMG_EMERALD, [
+    ("Days 1-30: Consolidate", BRAND_EMERALD, [
         "Unified intake form (replace 5+ channels)", "Deal-killer pre-screen gate",
         "Completeness quality gate", "Committee scope definition",
         "3-pathway routing: Buy/Build/Enable", "Prioritization scoring formula",
         "Status notification at transitions", "Concierge role definition"]),
-    ("Days 31-60: Automate", KPMG_LIGHT_BLUE, [
+    ("Days 31-60: Automate", BRAND_LIGHT_BLUE, [
         "Parallel evaluation (replace sequential)", "Automated DART formation",
         "Progressive forms", "Contract review automation pilot",
         "Security tiered assessment", "AI governance consolidation",
         "Finance rework loop", "Workload visibility dashboard"]),
-    ("Days 61-90: Optimize", KPMG_MEDIUM_BLUE, [
+    ("Days 61-90: Optimize", BRAND_MEDIUM_BLUE, [
         "AI fast-track pathway (2-week target)", "Enable pathway live",
         "Time-bound conditional approvals", "Mandatory ownership assignment",
         "NDA-first gate enforcement", "Automated security baselines",
         "Self-service mini-RFP tools", "SLA enforcement + escalation"]),
-    ("Days 91-120: Scale", KPMG_BLUE, [
+    ("Days 91-120: Scale", BRAND_BLUE, [
         "Pre-onboarding idea funnel", "Full workload dashboard",
         "Exception routing for rapid RA", "Post-onboarding utilization tracking",
         "Distributed pod model pilot", "Annual ownership validation",
@@ -343,7 +343,7 @@ for i, (title, color, items) in enumerate(roadmap_data):
     bar.fill.fore_color.rgb = color
     bar.line.fill.background()
     add_text_box(slide, left, Inches(1.3), Inches(2.95), Inches(0.35),
-                 title, font_size=11, bold=True, color=KPMG_BLUE)
+                 title, font_size=11, bold=True, color=BRAND_BLUE)
     text = "\n".join(f"  {item}" for item in items)
     add_text_box(slide, left, Inches(1.7), Inches(2.95), Inches(4.5),
                  text, font_size=8, color=RGBColor(0x66, 0x66, 0x66))
@@ -355,10 +355,10 @@ for i, (v, l) in enumerate(roi):
     left = Inches(0.6 + i * 3.15)
     shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, Inches(6.2), Inches(2.9), Inches(0.8))
     shape.fill.solid()
-    shape.fill.fore_color.rgb = KPMG_BLUE
+    shape.fill.fore_color.rgb = BRAND_BLUE
     shape.line.fill.background()
     add_text_box(slide, left, Inches(6.22), Inches(2.9), Inches(0.4),
-                 v, font_size=20, bold=True, color=KPMG_GOLD,
+                 v, font_size=20, bold=True, color=BRAND_GOLD,
                  font_name='Open Sans Condensed', alignment=PP_ALIGN.CENTER)
     add_text_box(slide, left, Inches(6.6), Inches(2.9), Inches(0.3),
                  l, font_size=9, color=RGBColor(0xCC, 0xDD, 0xFF), alignment=PP_ALIGN.CENTER)
@@ -712,9 +712,9 @@ for domain in domains:
         img_path = os.path.join(img_dir, domain["bpmn_image"])
         if os.path.exists(img_path):
             slide = prs.slides.add_slide(prs.slide_layouts[6])
-            add_bg(slide, KPMG_WHITE)
+            add_bg(slide, BRAND_WHITE)
             add_text_box(slide, Inches(0.6), Inches(0.3), Inches(12), Inches(0.5),
-                         domain["bpmn_title"], font_size=22, bold=True, color=KPMG_BLUE,
+                         domain["bpmn_title"], font_size=22, bold=True, color=BRAND_BLUE,
                          font_name='Open Sans Condensed')
             add_text_box(slide, Inches(0.6), Inches(0.8), Inches(11.5), Inches(0.4),
                          domain["bpmn_desc"], font_size=9, color=RGBColor(0x66, 0x66, 0x66))
@@ -754,10 +754,10 @@ add_section_slide("Decision Framework and Analytics",
 orch_path = os.path.join(img_dir, "orchestrator-painpoints.png")
 if os.path.exists(orch_path):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    add_bg(slide, KPMG_WHITE)
+    add_bg(slide, BRAND_WHITE)
     add_text_box(slide, Inches(0.6), Inches(0.3), Inches(12), Inches(0.5),
                  "BPMN: End-to-End Orchestrator with Pain Points", font_size=22, bold=True,
-                 color=KPMG_BLUE, font_name='Open Sans Condensed')
+                 color=BRAND_BLUE, font_name='Open Sans Condensed')
     add_text_box(slide, Inches(0.6), Inches(0.8), Inches(11.5), Inches(0.4),
                  "Hierarchical 5-phase model: Request and Triage, Planning and Routing, Evaluation and DD, Contracting and Build, UAT and Go-Live. 3 decision gateways, vendor pool with message flows.",
                  font_size=9, color=RGBColor(0x66, 0x66, 0x66))
@@ -772,10 +772,10 @@ if os.path.exists(orch_path):
 
 # --- E2E Process Flow slide ---
 slide = prs.slides.add_slide(prs.slide_layouts[6])
-add_bg(slide, KPMG_WHITE)
+add_bg(slide, BRAND_WHITE)
 add_text_box(slide, Inches(0.6), Inches(0.4), Inches(12), Inches(0.6),
              "End-to-End Onboarding Process Flow", font_size=24, bold=True,
-             color=KPMG_BLUE, font_name='Open Sans Condensed')
+             color=BRAND_BLUE, font_name='Open Sans Condensed')
 add_text_box(slide, Inches(0.6), Inches(1.0), Inches(11), Inches(0.4),
              "5-phase hierarchical BPMN 2.0 model with DMN-driven gateways, parallel evaluation, and SLA timers",
              font_size=10, color=RGBColor(0x66, 0x66, 0x66))
@@ -792,18 +792,18 @@ for i, (name, tasks, sla) in enumerate(phases):
     top = Inches(1.6)
     box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, Inches(2.2), Inches(1.4))
     box.fill.solid()
-    box.fill.fore_color.rgb = KPMG_WHITE
-    box.line.color.rgb = KPMG_BLUE
+    box.fill.fore_color.rgb = BRAND_WHITE
+    box.line.color.rgb = BRAND_BLUE
     box.line.width = Pt(2)
     add_text_box(slide, left + Inches(0.1), top + Inches(0.05), Inches(2), Inches(0.45),
-                 name, font_size=9, bold=True, color=KPMG_BLUE, alignment=PP_ALIGN.CENTER)
+                 name, font_size=9, bold=True, color=BRAND_BLUE, alignment=PP_ALIGN.CENTER)
     add_text_box(slide, left + Inches(0.1), top + Inches(0.5), Inches(2), Inches(0.5),
                  tasks, font_size=7, color=RGBColor(0x66, 0x66, 0x66), alignment=PP_ALIGN.CENTER)
     add_text_box(slide, left + Inches(0.1), top + Inches(1.05), Inches(2), Inches(0.25),
-                 sla, font_size=8, bold=True, color=KPMG_EMERALD, alignment=PP_ALIGN.CENTER)
+                 sla, font_size=8, bold=True, color=BRAND_EMERALD, alignment=PP_ALIGN.CENTER)
     if i < 4:
         add_text_box(slide, left + Inches(2.2), top + Inches(0.5), Inches(0.3), Inches(0.3),
-                     "\u25B6", font_size=14, color=KPMG_MEDIUM_BLUE, alignment=PP_ALIGN.CENTER)
+                     "\u25B6", font_size=14, color=BRAND_MEDIUM_BLUE, alignment=PP_ALIGN.CENTER)
 
 cards_data = [
     ("4 DMN Tables", "Risk Tier, Pathway, Governance, SLA Breach"),
@@ -813,7 +813,7 @@ cards_data = [
 ]
 for i, (ct, cb) in enumerate(cards_data):
     add_card(slide, Inches(0.5 + i * 3.15), Inches(3.3), Inches(2.9), Inches(0.9), ct, cb,
-             [KPMG_BLUE, KPMG_GOLD, KPMG_EMERALD, KPMG_LIGHT_BLUE][i])
+             [BRAND_BLUE, BRAND_GOLD, BRAND_EMERALD, BRAND_LIGHT_BLUE][i])
 
 # DMN flow description
 add_text_box(slide, Inches(0.6), Inches(4.5), Inches(12), Inches(2.5),
@@ -825,15 +825,15 @@ add_text_box(slide, Inches(0.6), Inches(4.5), Inches(12), Inches(2.5),
              "\u2022 OB-DMN-3 (Governance): Risk Tier + Pathway \u2192 Advisory Board (7d), Committee (5d), "
              "Fast Path (2d), or Auto-Approve (1d)\n"
              "\u2022 OB-DMN-4 (SLA Breach): Breached Phase + Days Beyond + Risk Tier \u2192 4-level escalation ladder",
-             font_size=9, color=KPMG_DARK_GRAY)
+             font_size=9, color=BRAND_DARK_GRAY)
 add_footer(slide)
 
 # --- RACI Matrix slide ---
 slide = prs.slides.add_slide(prs.slide_layouts[6])
-add_bg(slide, KPMG_WHITE)
+add_bg(slide, BRAND_WHITE)
 add_text_box(slide, Inches(0.6), Inches(0.4), Inches(12), Inches(0.6),
              "RACI Matrix by Governance Topic", font_size=24, bold=True,
-             color=KPMG_BLUE, font_name='Open Sans Condensed')
+             color=BRAND_BLUE, font_name='Open Sans Condensed')
 
 raci_headers = ["Topic", "Business", "Governance", "Finance", "Procurement", "Contracting",
                 "Technical", "AI Review", "Compliance", "Oversight", "Automation", "Vendor"]
@@ -863,10 +863,10 @@ for i, h in enumerate(raci_headers):
     for p in cell.text_frame.paragraphs:
         p.font.size = Pt(8)
         p.font.bold = True
-        p.font.color.rgb = KPMG_WHITE
+        p.font.color.rgb = BRAND_WHITE
         p.font.name = 'Open Sans'
     cell.fill.solid()
-    cell.fill.fore_color.rgb = KPMG_GOLD if i == 3 else KPMG_BLUE
+    cell.fill.fore_color.rgb = BRAND_GOLD if i == 3 else BRAND_BLUE
 
 for r, row in enumerate(raci_data):
     for c, val in enumerate(row):
@@ -875,10 +875,10 @@ for r, row in enumerate(raci_data):
         for p in cell.text_frame.paragraphs:
             p.font.size = Pt(8)
             p.font.name = 'Open Sans'
-            p.font.color.rgb = KPMG_DARK_GRAY
+            p.font.color.rgb = BRAND_DARK_GRAY
             if val in ("R/A", "R"):
                 p.font.bold = True
-                p.font.color.rgb = KPMG_BLUE
+                p.font.color.rgb = BRAND_BLUE
             if c == 0:
                 p.font.bold = True
 
@@ -889,18 +889,18 @@ add_footer(slide)
 
 # --- DMN-1 Risk Tier Classification slide ---
 slide = prs.slides.add_slide(prs.slide_layouts[6])
-add_bg(slide, KPMG_WHITE)
+add_bg(slide, BRAND_WHITE)
 add_text_box(slide, Inches(0.6), Inches(0.4), Inches(10), Inches(0.5),
              "OB-DMN-1: Risk Tier Classification", font_size=22, bold=True,
-             color=KPMG_BLUE, font_name='Open Sans Condensed')
+             color=BRAND_BLUE, font_name='Open Sans Condensed')
 
 # Hit policy badge
 badge = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(10.5), Inches(0.4), Inches(1.5), Inches(0.35))
 badge.fill.solid()
-badge.fill.fore_color.rgb = KPMG_BLUE
+badge.fill.fore_color.rgb = BRAND_BLUE
 badge.line.fill.background()
 add_text_box(slide, Inches(10.5), Inches(0.4), Inches(1.5), Inches(0.35),
-             "UNIQUE | Phase 2", font_size=8, bold=True, color=KPMG_WHITE, alignment=PP_ALIGN.CENTER)
+             "UNIQUE | Phase 2", font_size=8, bold=True, color=BRAND_WHITE, alignment=PP_ALIGN.CENTER)
 
 add_text_box(slide, Inches(0.6), Inches(0.9), Inches(11), Inches(0.4),
              "5 risk dimensions (1-10 scale each) determine risk tier. Unacceptable tiers terminate onboarding.",
@@ -934,14 +934,14 @@ for i, h in enumerate(dmn1_headers):
     for p in cell.text_frame.paragraphs:
         p.font.size = Pt(7)
         p.font.bold = True
-        p.font.color.rgb = KPMG_WHITE
+        p.font.color.rgb = BRAND_WHITE
         p.font.name = 'Open Sans'
     cell.fill.solid()
-    cell.fill.fore_color.rgb = KPMG_DARK_NAVY if i >= 5 else KPMG_MEDIUM_BLUE
+    cell.fill.fore_color.rgb = BRAND_DARK_NAVY if i >= 5 else BRAND_MEDIUM_BLUE
 
 tier_colors = {
-    "Unacceptable": KPMG_ROSE, "High": KPMG_AMBER,
-    "Limited": KPMG_MEDIUM_BLUE, "Minimal": KPMG_EMERALD
+    "Unacceptable": BRAND_ROSE, "High": BRAND_AMBER,
+    "Limited": BRAND_MEDIUM_BLUE, "Minimal": BRAND_EMERALD
 }
 for r, row in enumerate(dmn1_rows):
     for c, val in enumerate(row):
@@ -950,24 +950,24 @@ for r, row in enumerate(dmn1_rows):
         for p in cell.text_frame.paragraphs:
             p.font.size = Pt(7)
             p.font.name = 'Open Sans'
-            p.font.color.rgb = KPMG_DARK_GRAY
+            p.font.color.rgb = BRAND_DARK_GRAY
             if c == 5 and val in tier_colors:
                 p.font.bold = True
                 p.font.color.rgb = tier_colors[val]
             if c == 6:
-                p.font.color.rgb = KPMG_EMERALD if val == "Yes" else KPMG_ROSE
+                p.font.color.rgb = BRAND_EMERALD if val == "Yes" else BRAND_ROSE
 add_footer(slide)
 
 # --- DMN-2 + DMN-3 side by side ---
 slide = prs.slides.add_slide(prs.slide_layouts[6])
-add_bg(slide, KPMG_WHITE)
+add_bg(slide, BRAND_WHITE)
 add_text_box(slide, Inches(0.6), Inches(0.4), Inches(12), Inches(0.5),
              "OB-DMN-2: Pathway Routing  |  OB-DMN-3: Governance Routing", font_size=22, bold=True,
-             color=KPMG_BLUE, font_name='Open Sans Condensed')
+             color=BRAND_BLUE, font_name='Open Sans Condensed')
 
 # DMN-2 table (left half)
 add_text_box(slide, Inches(0.5), Inches(1.0), Inches(6), Inches(0.3),
-             "OB-DMN-2: Pathway Routing (UNIQUE, Phase 1)", font_size=10, bold=True, color=KPMG_DARK_NAVY)
+             "OB-DMN-2: Pathway Routing (UNIQUE, Phase 1)", font_size=10, bold=True, color=BRAND_DARK_NAVY)
 dmn2_h = ["Reuse", "Build/Buy", "Capacity", "Strategic", "TtV", "Vendor?", "Pathway"]
 dmn2_rows = [
     ["\u2265 8", "Buy", "-", "-", "\u2265 7", "true", "Fast-Track"],
@@ -984,12 +984,12 @@ for i, h in enumerate(dmn2_h):
     for p in cell.text_frame.paragraphs:
         p.font.size = Pt(7)
         p.font.bold = True
-        p.font.color.rgb = KPMG_WHITE
+        p.font.color.rgb = BRAND_WHITE
         p.font.name = 'Open Sans'
     cell.fill.solid()
-    cell.fill.fore_color.rgb = KPMG_DARK_NAVY if i == 6 else KPMG_MEDIUM_BLUE
-pathway_colors = {"Fast-Track": KPMG_EMERALD, "Standard-Buy": KPMG_MEDIUM_BLUE,
-                   "Standard-Build": KPMG_BLUE, "Hybrid": KPMG_GOLD}
+    cell.fill.fore_color.rgb = BRAND_DARK_NAVY if i == 6 else BRAND_MEDIUM_BLUE
+pathway_colors = {"Fast-Track": BRAND_EMERALD, "Standard-Buy": BRAND_MEDIUM_BLUE,
+                   "Standard-Build": BRAND_BLUE, "Hybrid": BRAND_GOLD}
 for r, row in enumerate(dmn2_rows):
     for c, val in enumerate(row):
         cell = t2.cell(r + 1, c)
@@ -997,14 +997,14 @@ for r, row in enumerate(dmn2_rows):
         for p in cell.text_frame.paragraphs:
             p.font.size = Pt(7)
             p.font.name = 'Open Sans'
-            p.font.color.rgb = KPMG_DARK_GRAY
+            p.font.color.rgb = BRAND_DARK_GRAY
             if c == 6 and val in pathway_colors:
                 p.font.bold = True
                 p.font.color.rgb = pathway_colors[val]
 
 # DMN-3 table (right half)
 add_text_box(slide, Inches(6.8), Inches(1.0), Inches(6), Inches(0.3),
-             "OB-DMN-3: Governance Routing (UNIQUE, Phase 4)", font_size=10, bold=True, color=KPMG_DARK_NAVY)
+             "OB-DMN-3: Governance Routing (UNIQUE, Phase 4)", font_size=10, bold=True, color=BRAND_DARK_NAVY)
 dmn3_h = ["Risk Tier", "Pathway", "Review Body", "SLA"]
 dmn3_rows = [
     ["Unacceptable", "-", "Rejected", "-"],
@@ -1021,10 +1021,10 @@ for i, h in enumerate(dmn3_h):
     for p in cell.text_frame.paragraphs:
         p.font.size = Pt(8)
         p.font.bold = True
-        p.font.color.rgb = KPMG_WHITE
+        p.font.color.rgb = BRAND_WHITE
         p.font.name = 'Open Sans'
     cell.fill.solid()
-    cell.fill.fore_color.rgb = KPMG_DARK_NAVY if i >= 2 else KPMG_MEDIUM_BLUE
+    cell.fill.fore_color.rgb = BRAND_DARK_NAVY if i >= 2 else BRAND_MEDIUM_BLUE
 for r, row in enumerate(dmn3_rows):
     for c, val in enumerate(row):
         cell = t3.cell(r + 1, c)
@@ -1032,14 +1032,14 @@ for r, row in enumerate(dmn3_rows):
         for p in cell.text_frame.paragraphs:
             p.font.size = Pt(8)
             p.font.name = 'Open Sans'
-            p.font.color.rgb = KPMG_DARK_GRAY
+            p.font.color.rgb = BRAND_DARK_GRAY
             if c == 2:
                 if val == "Rejected":
                     p.font.bold = True
-                    p.font.color.rgb = KPMG_ROSE
+                    p.font.color.rgb = BRAND_ROSE
                 elif val in ("Fast Path", "Auto-Approve"):
                     p.font.bold = True
-                    p.font.color.rgb = KPMG_EMERALD
+                    p.font.color.rgb = BRAND_EMERALD
 
 # DMN-4 description below
 add_text_box(slide, Inches(0.5), Inches(4.2), Inches(12), Inches(2.5),
@@ -1051,15 +1051,15 @@ add_text_box(slide, Inches(0.5), Inches(4.2), Inches(12), Inches(2.5),
              "  Level 4: Board-Alert / Auto-Reject \u2014 Advisory Board escalation or process termination (10-15 days beyond, High risk)\n\n"
              "Inputs: Breached Phase, Days Beyond SLA, Risk Tier\n"
              "Outputs: Escalation Action, Notification Target, Auto-Action",
-             font_size=9, color=KPMG_DARK_GRAY)
+             font_size=9, color=BRAND_DARK_GRAY)
 add_footer(slide)
 
 # --- Governance Heatmap slide ---
 slide = prs.slides.add_slide(prs.slide_layouts[6])
-add_bg(slide, KPMG_WHITE)
+add_bg(slide, BRAND_WHITE)
 add_text_box(slide, Inches(0.6), Inches(0.4), Inches(12), Inches(0.5),
              "Governance Topic Coverage Across Onboarding Phases", font_size=22, bold=True,
-             color=KPMG_BLUE, font_name='Open Sans Condensed')
+             color=BRAND_BLUE, font_name='Open Sans Condensed')
 
 hm_headers = ["Topic", "SP1: Request\n& Triage", "SP2: Planning\n& Routing", "SP3: Eval\n& DD",
               "SP4: Contract\n& Build", "SP5: UAT\n& Go-Live", "Vendor\nPool"]
@@ -1085,10 +1085,10 @@ for i, h in enumerate(hm_headers):
     for p in cell.text_frame.paragraphs:
         p.font.size = Pt(7)
         p.font.bold = True
-        p.font.color.rgb = KPMG_WHITE
+        p.font.color.rgb = BRAND_WHITE
         p.font.name = 'Open Sans'
     cell.fill.solid()
-    cell.fill.fore_color.rgb = KPMG_BLUE
+    cell.fill.fore_color.rgb = BRAND_BLUE
 
 for r, row in enumerate(hm_data):
     for c, val in enumerate(row):
@@ -1099,23 +1099,23 @@ for r, row in enumerate(hm_data):
                 p.font.size = Pt(8)
                 p.font.bold = True
                 p.font.name = 'Open Sans'
-                p.font.color.rgb = KPMG_DARK_NAVY
+                p.font.color.rgb = BRAND_DARK_NAVY
             cell.fill.solid()
-            cell.fill.fore_color.rgb = KPMG_LIGHT_GRAY
+            cell.fill.fore_color.rgb = BRAND_LIGHT_GRAY
         else:
             cell.text = "\u2713" if val > 0 else ""
             cell.fill.solid()
             if val >= 2:
-                cell.fill.fore_color.rgb = KPMG_BLUE
+                cell.fill.fore_color.rgb = BRAND_BLUE
                 for p in cell.text_frame.paragraphs:
-                    p.font.color.rgb = KPMG_WHITE
+                    p.font.color.rgb = BRAND_WHITE
                     p.font.size = Pt(9)
                     p.font.bold = True
                     p.alignment = PP_ALIGN.CENTER
             elif val == 1:
                 cell.fill.fore_color.rgb = RGBColor(0x93, 0xA5, 0xC0)
                 for p in cell.text_frame.paragraphs:
-                    p.font.color.rgb = KPMG_WHITE
+                    p.font.color.rgb = BRAND_WHITE
                     p.font.size = Pt(9)
                     p.font.bold = True
                     p.alignment = PP_ALIGN.CENTER
@@ -1132,23 +1132,23 @@ add_footer(slide)
 
 # --- Bottleneck Analysis slide ---
 slide = prs.slides.add_slide(prs.slide_layouts[6])
-add_bg(slide, KPMG_WHITE)
+add_bg(slide, BRAND_WHITE)
 add_text_box(slide, Inches(0.6), Inches(0.4), Inches(12), Inches(0.5),
              "Onboarding Bottleneck Analysis: Before vs. After", font_size=24, bold=True,
-             color=KPMG_BLUE, font_name='Open Sans Condensed')
+             color=BRAND_BLUE, font_name='Open Sans Condensed')
 
 bottlenecks = [
-    ("Vendor Evidence Collection", 15, 3, KPMG_ROSE),
-    ("Committee Scheduling", 20, 5, KPMG_AMBER),
-    ("Contract Review / Redlining", 18, 5, KPMG_MEDIUM_BLUE),
-    ("Security Assessment Queue", 12, 4, KPMG_LIGHT_BLUE),
-    ("AI Governance Backlog", 10, 3, KPMG_EMERALD),
+    ("Vendor Evidence Collection", 15, 3, BRAND_ROSE),
+    ("Committee Scheduling", 20, 5, BRAND_AMBER),
+    ("Contract Review / Redlining", 18, 5, BRAND_MEDIUM_BLUE),
+    ("Security Assessment Queue", 12, 4, BRAND_LIGHT_BLUE),
+    ("AI Governance Backlog", 10, 3, BRAND_EMERALD),
 ]
 
 for i, (label, before, after, color) in enumerate(bottlenecks):
     y = Inches(1.2 + i * 0.85)
     add_text_box(slide, Inches(0.5), y + Inches(0.05), Inches(3), Inches(0.35),
-                 label, font_size=10, color=KPMG_DARK_GRAY, alignment=PP_ALIGN.RIGHT)
+                 label, font_size=10, color=BRAND_DARK_GRAY, alignment=PP_ALIGN.RIGHT)
     max_width = Inches(8)
     scale = 20
     # Before bar
@@ -1181,11 +1181,11 @@ impact = [
 ]
 for i, (val, lbl) in enumerate(impact):
     add_card(slide, Inches(0.5 + i * 3.15), Inches(5.8), Inches(2.9), Inches(0.9), val, lbl,
-             [KPMG_EMERALD, KPMG_GOLD, KPMG_LIGHT_BLUE, KPMG_BLUE][i])
+             [BRAND_EMERALD, BRAND_GOLD, BRAND_LIGHT_BLUE, BRAND_BLUE][i])
 add_footer(slide)
 
 # Save
-output_path = "/Users/proth/repos/sla/docs/presentations/Software-Onboarding-Transformation-KPMG.pptx"
+output_path = "/Users/proth/repos/sla/docs/presentations/Software-Onboarding-Transformation.pptx"
 prs.save(output_path)
 print(f"Saved: {output_path}")
 print(f"Total slides: {len(prs.slides)}")
