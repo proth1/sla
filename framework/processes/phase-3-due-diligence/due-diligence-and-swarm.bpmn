@@ -62,6 +62,9 @@
       <bpmn:lane id="Lane_Oversight" name="Oversight">
         <bpmn:flowNodeRef>Task_OversightReview</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_FourthPartyRisk</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Phase3_OversightAudit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase3_OversightAuditComplete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase3_OversightSLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
 
       <bpmn:lane id="Lane_Automation" name="Automation">
@@ -71,6 +74,7 @@
         <bpmn:flowNodeRef>Gateway_ParallelSplit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_ParallelJoin</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_38_SwarmResultsAggregation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_OversightAuditSplit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_BuildPathway</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_310_TPRMBuildMapping</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_PathwayMerge</bpmn:flowNodeRef>
@@ -219,11 +223,43 @@
 
     <bpmn:serviceTask id="Task_38_SwarmResultsAggregation" name="3.8 Swarm Results&#10;Aggregation (Swarm Coordinator)" camunda:type="external" camunda:topic="swarm-aggregation">
       <bpmn:incoming>Flow_Join_38</bpmn:incoming>
-      <bpmn:outgoing>Flow_38_BuildGateway</bpmn:outgoing>
+      <bpmn:outgoing>Flow_38_OversightSplit</bpmn:outgoing>
     </bpmn:serviceTask>
 
+    <bpmn:parallelGateway id="Gateway_OversightAuditSplit">
+      <bpmn:incoming>Flow_38_OversightSplit</bpmn:incoming>
+      <bpmn:outgoing>Flow_OversightSplit_BuildGateway</bpmn:outgoing>
+      <bpmn:outgoing>Flow_OversightSplit_Audit</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="Task_Phase3_OversightAudit" name="DD Evidence&#10;Audit Review" camunda:candidateGroups="oversight-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="regulation" value="OCC 2023-17: Independent audit of due diligence evidence" />
+          <camunda:property name="regulation2" value="SOX: Internal audit validation of vendor assessment controls" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_OversightSplit_Audit</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase3_OversightAuditEnd</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_Phase3_OversightSLA" name="P5D&#10;SLA" attachedToRef="Task_Phase3_OversightAudit" cancelActivity="false">
+      <bpmn:outgoing>Flow_Phase3_OversightSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Phase3_OversightSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_Phase3_OversightAuditComplete" name="DD Audit&#10;Complete">
+      <bpmn:incoming>Flow_Phase3_OversightAuditEnd</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_Phase3_OversightSLAEscalated" name="Oversight SLA&#10;Escalated">
+      <bpmn:incoming>Flow_Phase3_OversightSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
     <bpmn:exclusiveGateway id="Gateway_BuildPathway" name="Build&#10;Pathway?" default="Flow_NoBuildPath">
-      <bpmn:incoming>Flow_38_BuildGateway</bpmn:incoming>
+      <bpmn:incoming>Flow_OversightSplit_BuildGateway</bpmn:incoming>
       <bpmn:outgoing>Flow_YesBuildPath</bpmn:outgoing>
       <bpmn:outgoing>Flow_NoBuildPath</bpmn:outgoing>
     </bpmn:exclusiveGateway>
@@ -357,7 +393,11 @@
     <bpmn:sequenceFlow id="Flow_AIBranchMerge_Join" sourceRef="Gateway_AIBranchMerge" targetRef="Gateway_ParallelJoin" />
     <bpmn:sequenceFlow id="Flow_36_Join" sourceRef="Task_36_FinancialStabilityReview" targetRef="Gateway_ParallelJoin" />
     <bpmn:sequenceFlow id="Flow_Join_38" sourceRef="Gateway_ParallelJoin" targetRef="Task_38_SwarmResultsAggregation" />
-    <bpmn:sequenceFlow id="Flow_38_BuildGateway" sourceRef="Task_38_SwarmResultsAggregation" targetRef="Gateway_BuildPathway" />
+    <bpmn:sequenceFlow id="Flow_38_OversightSplit" sourceRef="Task_38_SwarmResultsAggregation" targetRef="Gateway_OversightAuditSplit" />
+    <bpmn:sequenceFlow id="Flow_OversightSplit_BuildGateway" sourceRef="Gateway_OversightAuditSplit" targetRef="Gateway_BuildPathway" />
+    <bpmn:sequenceFlow id="Flow_OversightSplit_Audit" sourceRef="Gateway_OversightAuditSplit" targetRef="Task_Phase3_OversightAudit" />
+    <bpmn:sequenceFlow id="Flow_Phase3_OversightAuditEnd" sourceRef="Task_Phase3_OversightAudit" targetRef="EndEvent_Phase3_OversightAuditComplete" />
+    <bpmn:sequenceFlow id="Flow_Phase3_OversightSLAEscalate" sourceRef="Timer_Phase3_OversightSLA" targetRef="EndEvent_Phase3_OversightSLAEscalated" />
     <bpmn:sequenceFlow id="Flow_YesBuildPath" name="Yes" sourceRef="Gateway_BuildPathway" targetRef="Task_39_ArchitectureFeasibility">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${selectedPathway == 'BUILD' || selectedPathway == 'HYBRID'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -608,69 +648,98 @@
         <dc:Bounds x="1290" y="962" width="100" height="80" />
       </bpmndi:BPMNShape>
 
-      <bpmndi:BPMNShape id="Gateway_BuildPathway_di" bpmnElement="Gateway_BuildPathway" isMarkerVisible="true">
-        <dc:Bounds x="1440" y="977" width="50" height="50" />
+      <bpmndi:BPMNShape id="Gateway_OversightAuditSplit_di" bpmnElement="Gateway_OversightAuditSplit">
+        <dc:Bounds x="1400" y="977" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Phase3_OversightAudit_di" bpmnElement="Task_Phase3_OversightAudit">
+        <dc:Bounds x="1510" y="819" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_Phase3_OversightSLA_di" bpmnElement="Timer_Phase3_OversightSLA">
+        <dc:Bounds x="1542" y="881" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1428" y="1034" width="74" height="27" />
+          <dc:Bounds x="1586" y="885" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_Phase3_OversightAuditComplete_di" bpmnElement="EndEvent_Phase3_OversightAuditComplete">
+        <dc:Bounds x="1662" y="841" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1638" y="811" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_Phase3_OversightSLAEscalated_di" bpmnElement="EndEvent_Phase3_OversightSLAEscalated">
+        <dc:Bounds x="1640" y="900" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1684" y="904" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Gateway_BuildPathway_di" bpmnElement="Gateway_BuildPathway" isMarkerVisible="true">
+        <dc:Bounds x="1510" y="977" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1498" y="1034" width="74" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_39_ArchitectureFeasibility_di" bpmnElement="Task_39_ArchitectureFeasibility">
-        <dc:Bounds x="1540" y="444" width="100" height="80" />
+        <dc:Bounds x="1610" y="444" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Timer_39_SLA_di" bpmnElement="Timer_39_SLA">
-        <dc:Bounds x="1594" y="506" width="36" height="36" />
+        <dc:Bounds x="1664" y="506" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1638" y="510" width="46" height="27" />
+          <dc:Bounds x="1708" y="510" width="46" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_39SLAEscalated_di" bpmnElement="EndEvent_39SLAEscalated">
-        <dc:Bounds x="1692" y="424" width="36" height="36" />
+        <dc:Bounds x="1762" y="424" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1668" y="464" width="84" height="27" />
+          <dc:Bounds x="1738" y="464" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_310_TPRMBuildMapping_di" bpmnElement="Task_310_TPRMBuildMapping">
-        <dc:Bounds x="1690" y="962" width="100" height="80" />
+        <dc:Bounds x="1760" y="962" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_PathwayMerge_di" bpmnElement="Gateway_PathwayMerge" isMarkerVisible="true">
-        <dc:Bounds x="1840" y="977" width="50" height="50" />
+        <dc:Bounds x="1910" y="977" width="50" height="50" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_OversightReview_di" bpmnElement="Task_OversightReview">
-        <dc:Bounds x="1940" y="819" width="100" height="80" />
+        <dc:Bounds x="2010" y="819" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_ContractingReview_di" bpmnElement="Task_ContractingReview">
-        <dc:Bounds x="1990" y="319" width="100" height="80" />
+        <dc:Bounds x="2060" y="319" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_PhaseQualityGate_di" bpmnElement="Task_PhaseQualityGate">
-        <dc:Bounds x="2140" y="194" width="100" height="80" />
+        <dc:Bounds x="2210" y="194" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Timer_QualityGateSLA_di" bpmnElement="Timer_QualityGateSLA">
-        <dc:Bounds x="2194" y="256" width="36" height="36" />
+        <dc:Bounds x="2264" y="256" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2238" y="260" width="46" height="27" />
+          <dc:Bounds x="2308" y="260" width="46" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_QGSLAEscalated_di" bpmnElement="EndEvent_QGSLAEscalated">
-        <dc:Bounds x="2294" y="142" width="36" height="36" />
+        <dc:Bounds x="2364" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2270" y="115" width="84" height="27" />
+          <dc:Bounds x="2340" y="115" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Phase3Complete_di" bpmnElement="EndEvent_Phase3Complete">
-        <dc:Bounds x="2294" y="216" width="36" height="36" />
+        <dc:Bounds x="2364" y="216" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2270" y="259" width="84" height="27" />
+          <dc:Bounds x="2340" y="259" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -844,72 +913,92 @@
         <di:waypoint x="1290" y="1002" />
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_38_BuildGateway_di" bpmnElement="Flow_38_BuildGateway">
+      <bpmndi:BPMNEdge id="Flow_38_OversightSplit_di" bpmnElement="Flow_38_OversightSplit">
         <di:waypoint x="1390" y="1002" />
-        <di:waypoint x="1440" y="1002" />
+        <di:waypoint x="1400" y="1002" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_OversightSplit_BuildGateway_di" bpmnElement="Flow_OversightSplit_BuildGateway">
+        <di:waypoint x="1450" y="1002" />
+        <di:waypoint x="1510" y="1002" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_OversightSplit_Audit_di" bpmnElement="Flow_OversightSplit_Audit">
+        <di:waypoint x="1425" y="977" />
+        <di:waypoint x="1425" y="859" />
+        <di:waypoint x="1510" y="859" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase3_OversightAuditEnd_di" bpmnElement="Flow_Phase3_OversightAuditEnd">
+        <di:waypoint x="1610" y="859" />
+        <di:waypoint x="1662" y="859" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase3_OversightSLAEscalate_di" bpmnElement="Flow_Phase3_OversightSLAEscalate">
+        <di:waypoint x="1578" y="917" />
+        <di:waypoint x="1640" y="918" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_YesBuildPath_di" bpmnElement="Flow_YesBuildPath">
-        <di:waypoint x="1465" y="977" />
-        <di:waypoint x="1465" y="484" />
-        <di:waypoint x="1540" y="484" />
+        <di:waypoint x="1535" y="977" />
+        <di:waypoint x="1535" y="484" />
+        <di:waypoint x="1610" y="484" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1471" y="728" width="20" height="14" />
+          <dc:Bounds x="1541" y="728" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_NoBuildPath_di" bpmnElement="Flow_NoBuildPath">
-        <di:waypoint x="1490" y="1002" />
-        <di:waypoint x="1840" y="1002" />
+        <di:waypoint x="1560" y="1002" />
+        <di:waypoint x="1910" y="1002" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1638" y="959" width="36" height="14" />
+          <dc:Bounds x="1708" y="959" width="36" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_39_310_di" bpmnElement="Flow_39_310">
-        <di:waypoint x="1640" y="484" />
-        <di:waypoint x="1740" y="484" />
-        <di:waypoint x="1740" y="1002" />
-        <di:waypoint x="1690" y="1002" />
+        <di:waypoint x="1710" y="484" />
+        <di:waypoint x="1810" y="484" />
+        <di:waypoint x="1810" y="1002" />
+        <di:waypoint x="1760" y="1002" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_39SLAEscalate_di" bpmnElement="Flow_39SLAEscalate">
-        <di:waypoint x="1612" y="506" />
-        <di:waypoint x="1692" y="442" />
+        <di:waypoint x="1700" y="524" />
+        <di:waypoint x="1762" y="442" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_310_OversightMerge_di" bpmnElement="Flow_310_OversightMerge">
-        <di:waypoint x="1790" y="1002" />
-        <di:waypoint x="1840" y="1002" />
+        <di:waypoint x="1860" y="1002" />
+        <di:waypoint x="1910" y="1002" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_PathwayMerge_Oversight_di" bpmnElement="Flow_PathwayMerge_Oversight">
-        <di:waypoint x="1865" y="977" />
-        <di:waypoint x="1865" y="859" />
-        <di:waypoint x="1940" y="859" />
+        <di:waypoint x="1935" y="977" />
+        <di:waypoint x="1935" y="859" />
+        <di:waypoint x="2010" y="859" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Oversight_Contracting_di" bpmnElement="Flow_Oversight_Contracting">
-        <di:waypoint x="1990" y="819" />
-        <di:waypoint x="1990" y="359" />
-        <di:waypoint x="2090" y="359" />
+        <di:waypoint x="2060" y="819" />
+        <di:waypoint x="2060" y="359" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Contracting_QualityGate_di" bpmnElement="Flow_Contracting_QualityGate">
-        <di:waypoint x="2090" y="359" />
-        <di:waypoint x="2190" y="359" />
-        <di:waypoint x="2190" y="274" />
+        <di:waypoint x="2160" y="359" />
+        <di:waypoint x="2260" y="359" />
+        <di:waypoint x="2260" y="274" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QualityGate_End_di" bpmnElement="Flow_QualityGate_End">
-        <di:waypoint x="2240" y="234" />
-        <di:waypoint x="2294" y="234" />
+        <di:waypoint x="2310" y="234" />
+        <di:waypoint x="2364" y="234" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QGSLAEscalate_di" bpmnElement="Flow_QGSLAEscalate">
-        <di:waypoint x="2212" y="256" />
-        <di:waypoint x="2212" y="160" />
-        <di:waypoint x="2294" y="160" />
+        <di:waypoint x="2282" y="256" />
+        <di:waypoint x="2282" y="160" />
+        <di:waypoint x="2364" y="160" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_OCC_di" bpmnElement="Assoc_OCC">
