@@ -53,11 +53,15 @@
       </bpmn:lane>
 
       <bpmn:lane id="Lane_Oversight" name="Oversight">
+        <bpmn:flowNodeRef>Task_Phase5_OversightAudit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase5_OversightAuditComplete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Phase5_OversightSLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
 
       <bpmn:lane id="Lane_Automation" name="Automation">
         <bpmn:flowNodeRef>Task_54_RemediationAssignment</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_56_KnowledgeBaseUpdate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_OversightAuditSplit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_ProcessSLAEscalated</bpmn:flowNodeRef>
       </bpmn:lane>
 
@@ -125,11 +129,43 @@
 
     <bpmn:serviceTask id="Task_56_KnowledgeBaseUpdate" name="5.6 Knowledge Base Update&#10;(Lessons Learned,&#10;Governance Patterns)" camunda:type="external" camunda:topic="knowledge-base-update">
       <bpmn:incoming>Flow_ExitJoin_56</bpmn:incoming>
-      <bpmn:outgoing>Flow_56_QualityGate</bpmn:outgoing>
+      <bpmn:outgoing>Flow_56_OversightSplit</bpmn:outgoing>
     </bpmn:serviceTask>
 
+    <bpmn:parallelGateway id="Gateway_OversightAuditSplit">
+      <bpmn:incoming>Flow_56_OversightSplit</bpmn:incoming>
+      <bpmn:outgoing>Flow_OversightSplit_QualityGate</bpmn:outgoing>
+      <bpmn:outgoing>Flow_OversightSplit_Audit</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="Task_Phase5_OversightAudit" name="Contract Controls&#10;Audit" camunda:candidateGroups="oversight-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="regulation" value="OCC 2023-17: Audit of contractual risk management provisions" />
+          <camunda:property name="regulation2" value="DORA Article 30: Verification of ICT contractual provisions" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_OversightSplit_Audit</bpmn:incoming>
+      <bpmn:outgoing>Flow_Phase5_OversightAuditEnd</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_Phase5_OversightSLA" name="P5D&#10;SLA" attachedToRef="Task_Phase5_OversightAudit" cancelActivity="false">
+      <bpmn:outgoing>Flow_Phase5_OversightSLAEscalate</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Phase5_OversightSLA">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="EndEvent_Phase5_OversightAuditComplete" name="Contract Audit&#10;Complete">
+      <bpmn:incoming>Flow_Phase5_OversightAuditEnd</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_Phase5_OversightSLAEscalated" name="Oversight SLA&#10;Escalated">
+      <bpmn:incoming>Flow_Phase5_OversightSLAEscalate</bpmn:incoming>
+    </bpmn:endEvent>
+
     <bpmn:userTask id="Task_PhaseQualityGate" name="Phase 5&#10;Quality Gate" camunda:candidateGroups="governance-lane">
-      <bpmn:incoming>Flow_56_QualityGate</bpmn:incoming>
+      <bpmn:incoming>Flow_OversightSplit_QualityGate</bpmn:incoming>
       <bpmn:outgoing>Flow_QualityGate_End</bpmn:outgoing>
     </bpmn:userTask>
 
@@ -192,7 +228,11 @@
     <bpmn:sequenceFlow id="Flow_55a_ExitJoin" sourceRef="Task_55a_ExitPlanTechnical" targetRef="Gateway_ExitPlanJoin" />
     <bpmn:sequenceFlow id="Flow_55b_ExitJoin" sourceRef="Task_55b_ExitPlanBusiness" targetRef="Gateway_ExitPlanJoin" />
     <bpmn:sequenceFlow id="Flow_ExitJoin_56" sourceRef="Gateway_ExitPlanJoin" targetRef="Task_56_KnowledgeBaseUpdate" />
-    <bpmn:sequenceFlow id="Flow_56_QualityGate" sourceRef="Task_56_KnowledgeBaseUpdate" targetRef="Task_PhaseQualityGate" />
+    <bpmn:sequenceFlow id="Flow_56_OversightSplit" sourceRef="Task_56_KnowledgeBaseUpdate" targetRef="Gateway_OversightAuditSplit" />
+    <bpmn:sequenceFlow id="Flow_OversightSplit_QualityGate" sourceRef="Gateway_OversightAuditSplit" targetRef="Task_PhaseQualityGate" />
+    <bpmn:sequenceFlow id="Flow_OversightSplit_Audit" sourceRef="Gateway_OversightAuditSplit" targetRef="Task_Phase5_OversightAudit" />
+    <bpmn:sequenceFlow id="Flow_Phase5_OversightAuditEnd" sourceRef="Task_Phase5_OversightAudit" targetRef="EndEvent_Phase5_OversightAuditComplete" />
+    <bpmn:sequenceFlow id="Flow_Phase5_OversightSLAEscalate" sourceRef="Timer_Phase5_OversightSLA" targetRef="EndEvent_Phase5_OversightSLAEscalated" />
     <bpmn:sequenceFlow id="Flow_QualityGate_End" sourceRef="Task_PhaseQualityGate" targetRef="EndEvent_Phase5Complete" />
     <bpmn:sequenceFlow id="Flow_ContractNegotiationSLAEscalate" sourceRef="Timer_ContractNegotiationSLA" targetRef="EndEvent_ContractNegotiationSLAEscalated" />
     <bpmn:sequenceFlow id="Flow_ControlsSLAEscalate" sourceRef="Timer_ControlsSLA" targetRef="EndEvent_ControlsSLAEscalated" />
@@ -367,28 +407,57 @@
         <dc:Bounds x="1380" y="857" width="100" height="80" />
       </bpmndi:BPMNShape>
 
+      <bpmndi:BPMNShape id="Gateway_OversightAuditSplit_di" bpmnElement="Gateway_OversightAuditSplit">
+        <dc:Bounds x="1500" y="872" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Phase5_OversightAudit_di" bpmnElement="Task_Phase5_OversightAudit">
+        <dc:Bounds x="1580" y="767" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_Phase5_OversightSLA_di" bpmnElement="Timer_Phase5_OversightSLA">
+        <dc:Bounds x="1612" y="829" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1656" y="833" width="30" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_Phase5_OversightAuditComplete_di" bpmnElement="EndEvent_Phase5_OversightAuditComplete">
+        <dc:Bounds x="1732" y="789" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1708" y="759" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEvent_Phase5_OversightSLAEscalated_di" bpmnElement="EndEvent_Phase5_OversightSLAEscalated">
+        <dc:Bounds x="1710" y="829" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1754" y="833" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="Task_PhaseQualityGate_di" bpmnElement="Task_PhaseQualityGate">
-        <dc:Bounds x="1520" y="202" width="100" height="80" />
+        <dc:Bounds x="1620" y="202" width="100" height="80" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Timer_QualityGateSLA_di" bpmnElement="Timer_QualityGateSLA">
-        <dc:Bounds x="1552" y="264" width="36" height="36" />
+        <dc:Bounds x="1652" y="264" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1596" y="268" width="30" height="27" />
+          <dc:Bounds x="1696" y="268" width="30" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Phase5Complete_di" bpmnElement="EndEvent_Phase5Complete">
-        <dc:Bounds x="1680" y="224" width="36" height="36" />
+        <dc:Bounds x="1780" y="224" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1656" y="267" width="84" height="27" />
+          <dc:Bounds x="1756" y="267" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_QGSLAEscalated_di" bpmnElement="EndEvent_QGSLAEscalated">
-        <dc:Bounds x="1660" y="264" width="36" height="36" />
+        <dc:Bounds x="1760" y="264" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1636" y="307" width="84" height="27" />
+          <dc:Bounds x="1736" y="307" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -492,16 +561,37 @@
         <di:waypoint x="1380" y="897" />
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_56_QualityGate_di" bpmnElement="Flow_56_QualityGate">
+      <bpmndi:BPMNEdge id="Flow_56_OversightSplit_di" bpmnElement="Flow_56_OversightSplit">
         <di:waypoint x="1480" y="897" />
-        <di:waypoint x="1498" y="897" />
-        <di:waypoint x="1498" y="242" />
-        <di:waypoint x="1520" y="242" />
+        <di:waypoint x="1500" y="897" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_OversightSplit_QualityGate_di" bpmnElement="Flow_OversightSplit_QualityGate">
+        <di:waypoint x="1550" y="897" />
+        <di:waypoint x="1598" y="897" />
+        <di:waypoint x="1598" y="242" />
+        <di:waypoint x="1620" y="242" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_OversightSplit_Audit_di" bpmnElement="Flow_OversightSplit_Audit">
+        <di:waypoint x="1525" y="872" />
+        <di:waypoint x="1525" y="807" />
+        <di:waypoint x="1580" y="807" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase5_OversightAuditEnd_di" bpmnElement="Flow_Phase5_OversightAuditEnd">
+        <di:waypoint x="1680" y="807" />
+        <di:waypoint x="1732" y="807" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Phase5_OversightSLAEscalate_di" bpmnElement="Flow_Phase5_OversightSLAEscalate">
+        <di:waypoint x="1648" y="847" />
+        <di:waypoint x="1710" y="847" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QualityGate_End_di" bpmnElement="Flow_QualityGate_End">
-        <di:waypoint x="1620" y="242" />
-        <di:waypoint x="1680" y="242" />
+        <di:waypoint x="1720" y="242" />
+        <di:waypoint x="1780" y="242" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_ContractNegotiationSLAEscalate_di" bpmnElement="Flow_ContractNegotiationSLAEscalate">
@@ -515,8 +605,8 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_QGSLAEscalate_di" bpmnElement="Flow_QGSLAEscalate">
-        <di:waypoint x="1588" y="282" />
-        <di:waypoint x="1660" y="282" />
+        <di:waypoint x="1688" y="282" />
+        <di:waypoint x="1760" y="282" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_ProcessSLAEscalate_di" bpmnElement="Flow_ProcessSLAEscalate">
@@ -535,7 +625,7 @@
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Assoc_SOX_di" bpmnElement="Assoc_SOX">
-        <di:waypoint x="1570" y="282" />
+        <di:waypoint x="1670" y="282" />
         <di:waypoint x="2025" y="1167" />
       </bpmndi:BPMNEdge>
 
