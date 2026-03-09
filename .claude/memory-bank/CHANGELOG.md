@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026.03.87] - 2026-03-08
+
+### Changed
+- SP-Cross-3 (Incident Response): Add DORA Article 19 three-stage mandatory reporting — Initial Notification (PT4H), Intermediate Report (P3D), Final Report (P30D) with boundary timer SLAs, P1/P2 severity routing via gateway, compliance-lane assignment (PR #108)
+
 ## [2026.03.86] - 2026-03-08
 
 ### Added

@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.86
+**Current Version**: 2026.03.87
 **Last Release**: 2026-03-08
-**Total Releases**: 86
+**Total Releases**: 87
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.87 | 2026-03-08 | #108 | DORA Article 19 three-stage incident reporting in SP-Cross-3 |
 | 2026.03.86 | 2026-03-08 | #103-107 | Batch 2B: 3 new DMN tables (15,16,17), SP-Cross-6 resilience testing, evidence infrastructure design, 4 Camunda forms |
 | 2026.03.81 | 2026-03-08 | #102 | Presentation consolidation + KPMG debranding |
 | 2026.03.80 | 2026-03-08 | #101 | Add candidateUsers to Q&A Submit Question task |

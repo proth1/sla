@@ -13,7 +13,7 @@
 - PR #105 (SLA-74 GDPR DPIA DMN-17 + form): Merged
 - PR #106 (SLA-72 evidence infrastructure + DMN-15): Merged
 - PR #107 (SLA-76 SP-Cross-6 resilience testing): Merged
-- PR #108 (SLA-77 DORA 3-stage incident reporting): Review pending, merge pending
+- PR #108 (SLA-77 DORA 3-stage incident reporting): Merged
 - DMN count: 15 → 18 (3 new tables: DMN-15, DMN-16, DMN-17)
 - Cross-cutting subprocesses: 5 → 6 (SP-Cross-6 resilience testing)
 - New Camunda 8 forms: 4 (ICT register, DPIA assessment, TPRM quarterly, MRM monthly)
@@ -26,8 +26,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.86 |
-| Total PRs Merged | 107 |
+| Release Version | 2026.03.87 |
+| Total PRs Merged | 108 |
 | DMN Decision Tables | 18 |
 | Cross-Cutting Sub-Processes | 6 |
 | Camunda 8 Forms | 52+ |
