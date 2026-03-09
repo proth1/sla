@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.71
+**Current Version**: 2026.03.72
 **Last Release**: 2026-03-08
-**Total Releases**: 71
+**Total Releases**: 72
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.72 | 2026-03-08 | #82 | Security hardening: timing-safe, error sanitization, CORS/CSP, health check |
 | 2026.03.71 | 2026-03-08 | #80 | Webhook HMAC auth, persona UI dedup, single data source |
 | 2026.03.70 | 2026-03-08 | #81 | Document correct env var names for Camunda Wrangler secrets |
 | 2026.03.69 | 2026-03-08 | #79 | Personas, Jira webhook, shared auth, Cloudflare showcase deploy |

@@ -1,5 +1,22 @@
 # Changelog
 
+## [2026.03.72] - 2026-03-08
+
+### Security
+- Timing-safe secret comparisons (double-HMAC) in API Worker, Auth Worker, and Pages guard (PR #82)
+- API error message sanitization: generic client responses, Camunda details logged server-side (PR #82)
+- Fetch timeouts via AbortController on all Camunda API calls (5s token, 15s upstream) (PR #82)
+- CORS headers restricted to showcase.agentic-innovations.com (PR #82)
+- CSP headers on Pages responses (PR #82)
+- HSTS, X-Frame-Options, Referrer-Policy on proxied auth worker responses (PR #82)
+- Input validation on all task/form ID path parameters (PR #82)
+- Query parameter encoding for processDefinitionKey (PR #82)
+
+### Added
+- Health check endpoint: GET /api/health validates Camunda connectivity (PR #82)
+- Deployment script: scripts/deploy-showcase.sh (PR #82)
+- Smoke test script: scripts/smoke-test-showcase.sh (PR #82)
+
 ## [2026.03.71] - 2026-03-08
 
 ### Fixed
