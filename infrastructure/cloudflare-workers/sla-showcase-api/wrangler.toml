@@ -15,6 +15,6 @@ PROCESS_ID = "Process_Onboarding_v8"
 MINI_RFP_PROCESS_ID = "Process_MiniRFP"
 
 # Secrets (set via `wrangler secret put`):
-# - CAMUNDA_CLIENT_ID
-# - CAMUNDA_CLIENT_SECRET
+# - CAMUNDA_CLIENT_ID  (shell: $ZEEBE_CLIENT_ID — not $CAMUNDA_CLIENT_ID)
+# - CAMUNDA_CLIENT_SECRET  (shell: $ZEEBE_CLIENT_SECRET — not $CAMUNDA_CLIENT_SECRET)
 # - PROXY_SECRET
