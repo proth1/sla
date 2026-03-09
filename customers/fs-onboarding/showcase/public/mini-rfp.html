@@ -562,15 +562,21 @@ function renderVendorWait(task) {
           <span class="alert-icon">&#128279;</span>
           <div class="alert-content">
             <h4>Vendor Portal Link</h4>
-            <p style="margin-bottom:8px">Share this link with the vendor to complete the questionnaire:</p>
-            <div class="portal-link" onclick="copyPortalLink()" id="portalLink">${portalUrl}</div>
+            <p style="margin-bottom:8px">Share this secure link with the vendor to complete the questionnaire online:</p>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div class="portal-link" id="portalLink" style="flex:1;cursor:pointer;word-break:break-all" onclick="copyPortalLink()">${portalUrl}</div>
+              <button class="btn btn-secondary" onclick="copyPortalLink()" style="padding:8px 12px;white-space:nowrap;font-size:12px">${state.vendorToken ? '&#128203; Copy' : ''}</button>
+            </div>
+            ${state.vendorToken ? '<p style="margin-top:6px;font-size:11px;color:var(--text3)">Token expires in 14 days. Vendor can fill forms online or upload a SIG questionnaire.</p>' : ''}
           </div>
         </div>
       </div>
 
-      <div style="margin-top:20px;display:flex;gap:12px;justify-content:center">
+      <div style="margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        ${!state.vendorToken ? '<button class="btn btn-warn" onclick="generateVendorToken()">&#128273; Generate Vendor Portal Link</button>' : ''}
+        ${state.vendorToken ? '<button class="btn btn-primary" onclick="window.open(document.getElementById(\'portalLink\').textContent, \'_blank\')">&#128279; Open Vendor Portal</button>' : ''}
         <button class="btn btn-secondary" onclick="simulateVendorResponse()">Simulate Vendor Response</button>
-        <button class="btn btn-warn" onclick="generateVendorToken()">Generate Token</button>
+        ${state.vendorToken ? '<button class="btn btn-warn" onclick="generateVendorToken()" style="font-size:12px;padding:8px 16px">Regenerate Token</button>' : ''}
       </div>
     </div>
   `;
@@ -584,11 +590,19 @@ function copyPortalLink() {
 async function generateVendorToken() {
   if (!state.processKey) return;
   try {
-    const res = await fetch(`/api/mini-rfp/${state.processKey}/vendor-token`, { method: 'POST' });
+    // Collect vendor contact info from defaults (Step 5 form data was already submitted to Camunda)
+    const vendorName = DEFAULTS_MINI_RFP?.vendorContactName || '';
+    const vendorEmail = DEFAULTS_MINI_RFP?.vendorContactEmail || '';
+
+    const res = await fetch(`/api/mini-rfp/${state.processKey}/vendor-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vendorName, vendorEmail }),
+    });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     state.vendorToken = data.vendorToken;
-    toast('Vendor token generated', 'success');
+    toast('Vendor portal link generated — share with vendor', 'success');
     renderVendorWait(state.selectedTask);
   } catch (e) {
     toast(`Token error: ${e.message}`, 'error');

@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx playwright test",
+    "test:vendor": "npx playwright test vendor-portal",
+    "test:mini-rfp": "npx playwright test mini-rfp-vendor",
+    "test:report": "npx playwright show-report"
   },
   "keywords": [],
   "author": "",
@@ -11,5 +14,8 @@
   "description": "",
   "dependencies": {
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
   }
 }

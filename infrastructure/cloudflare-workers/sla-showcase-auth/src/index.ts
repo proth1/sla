@@ -764,7 +764,9 @@ export default {
     if (url.pathname === '/auth/logout') return handleLogout(url);
 
     // Vendor portal routes — token-based auth, bypass Descope OTP
-    if (url.pathname === '/vendor-portal.html' || url.pathname.startsWith('/api/vendor/')) {
+    // Match /vendor-portal.html, /vendor-portal (pretty URLs), and /api/vendor/*
+    const isVendorPage = url.pathname === '/vendor-portal.html' || url.pathname === '/vendor-portal';
+    if (isVendorPage || url.pathname.startsWith('/api/vendor/')) {
       const vendorToken = url.searchParams.get('token') || '';
       if (vendorToken && /^vrfp-\d{1,19}-[0-9a-f]{24}$/.test(vendorToken)) {
         const vendorAuth = await validateVendorToken(vendorToken, url, env);
@@ -785,9 +787,8 @@ export default {
         return proxyToPages(request, env, url);
       }
 
-      // Also serve vendor portal static assets (defaults-vendor.js)
-      if (url.pathname === '/vendor-portal.html') {
-        // No token or invalid format — let the page handle the error
+      // No token or invalid format — let the page handle the error
+      if (isVendorPage) {
         return proxyToPages(request, env, url);
       }
     }
