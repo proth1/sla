@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026.03.70] - 2026-03-08
+
+### Fixed
+- Document correct env var names for Camunda Wrangler secrets (PR #81)
+- `CAMUNDA_CLIENT_ID` secret must be set from `$ZEEBE_CLIENT_ID`, not `$CAMUNDA_CLIENT_ID`
+
 ## [2026.03.69] - 2026-03-08
 
 ### Added
