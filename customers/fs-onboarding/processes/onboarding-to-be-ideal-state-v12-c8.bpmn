@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_IdealState_v11" targetNamespace="http://sla.governance/bpmn/onboarding" exporter="Camunda Modeler" exporterVersion="5.44.0">
-  <bpmn:collaboration id="Collaboration_IdealState_v11">
-    <bpmn:participant id="Participant_Enterprise" name="Software Onboarding" processRef="Process_Onboarding_v11" />
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_IdealState_v12" targetNamespace="http://sla.governance/bpmn/onboarding" exporter="Camunda Modeler" exporterVersion="5.44.0">
+  <bpmn:collaboration id="Collaboration_IdealState_v12">
+    <bpmn:participant id="Participant_Enterprise" name="Software Onboarding" processRef="Process_Onboarding_v12" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_Onboarding_v11" name="Product Management — Software Onboarding v11 (Camunda 8)" isExecutable="true">
+  <bpmn:process id="Process_Onboarding_v12" name="Product Management — Software Onboarding v12 (Camunda 8)" isExecutable="true">
     <bpmn:exclusiveGateway id="GW_TriageDecision" name="Approved ?" default="Flow_v5_4">
       <bpmn:incoming>Flow_v5_2</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_4</bpmn:outgoing>
@@ -31,10 +31,10 @@
             <zeebe:property name="raci_c" value="Governance" />
           </zeebe:properties>
         </bpmn:extensionElements>
-        <bpmn:incoming>Flow_17ni7pj</bpmn:incoming>
+        <bpmn:incoming>Flow_SP1_1</bpmn:incoming>
         <bpmn:outgoing>Flow_0ccvusw</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:exclusiveGateway id="GW_BypassProcess" name="Initial Screening and Disposition">
+      <bpmn:exclusiveGateway id="GW_BypassProcess" name="Existing&#10;Solution ?">
         <bpmn:incoming>Flow_0ccvusw</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_Yes</bpmn:outgoing>
         <bpmn:outgoing>Flow_0p7pllp</bpmn:outgoing>
@@ -141,9 +141,9 @@
       <bpmn:endEvent id="SP1_End" name="Triage&#10;Complete">
         <bpmn:incoming>Flow_SP1_Notify</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="Flow_SP1_1" sourceRef="SP1_Start" targetRef="Gateway_0zxd1ql" />
-      <bpmn:sequenceFlow id="Flow_SP1_Yes" name="Already have a solution in house" sourceRef="GW_BypassProcess" targetRef="Task_LeverageExisting">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      <bpmn:sequenceFlow id="Flow_SP1_1" sourceRef="SP1_Start" targetRef="Task_ReviewExisting" />
+      <bpmn:sequenceFlow id="Flow_SP1_Yes" name="Yes" sourceRef="GW_BypassProcess" targetRef="Task_LeverageExisting">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=existingSolutionDisposition = "FullMatch"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_EndLev" sourceRef="Task_LeverageExisting" targetRef="End_Leveraged" />
       <bpmn:sequenceFlow id="Flow_SP1_3" sourceRef="Task_GatherDocs" targetRef="Task_SubmitRequest" />
@@ -427,14 +427,15 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_0ccvusw" sourceRef="Task_ReviewExisting" targetRef="GW_BypassProcess" />
       <bpmn:sequenceFlow id="Flow_01gazr0" sourceRef="Gateway_00gwx9a" targetRef="Task_GatherDocs" />
-      <bpmn:sequenceFlow id="Flow_0p7pllp" name="There is some existing software but..." sourceRef="GW_BypassProcess" targetRef="Activity_1l8ugqb" />
-      <bpmn:sequenceFlow id="Flow_15fp02f" name="Still think it&#39;s a good idea" sourceRef="GW_BypassProcess" targetRef="Activity_0netfvm" />
-      <bpmn:sequenceFlow id="Flow_0y548b1" name="Continue processing the Request" sourceRef="GW_BypassProcess" targetRef="Gateway_0js8zzn" />
-      <bpmn:exclusiveGateway id="Gateway_0zxd1ql">
-        <bpmn:incoming>Flow_SP1_1</bpmn:incoming>
-        <bpmn:outgoing>Flow_17ni7pj</bpmn:outgoing>
-      </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_17ni7pj" sourceRef="Gateway_0zxd1ql" targetRef="Task_ReviewExisting" />
+      <bpmn:sequenceFlow id="Flow_0p7pllp" name="Partial&#10;Match" sourceRef="GW_BypassProcess" targetRef="Activity_1l8ugqb">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=existingSolutionDisposition = "Partial"</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_15fp02f" name="Needs&#10;Guidance" sourceRef="GW_BypassProcess" targetRef="Activity_0netfvm">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=existingSolutionDisposition = "NeedsGuidance"</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_0y548b1" name="No" sourceRef="GW_BypassProcess" targetRef="Gateway_0js8zzn">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=existingSolutionDisposition = "NoMatch"</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
       <bpmn:exclusiveGateway id="Gateway_0js8zzn">
         <bpmn:incoming>Flow_0y548b1</bpmn:incoming>
         <bpmn:incoming>Flow_1q9y5tr</bpmn:incoming>
@@ -443,16 +444,26 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_0gutlqh" sourceRef="Gateway_0js8zzn" targetRef="Gateway_0etf7nm" />
       <bpmn:sequenceFlow id="Flow_1q9y5tr" sourceRef="Activity_1l8ugqb" targetRef="Gateway_0js8zzn" />
-      <bpmn:userTask id="Activity_0netfvm" name="Quarterback Assistance">
+      <bpmn:userTask id="Activity_0netfvm" name="Quarterback&#10;Assistance">
         <bpmn:extensionElements>
-          <zeebe:userTask />
+          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:properties>
+            <zeebe:property name="topics" value="Intake" />
+            <zeebe:property name="raci_r" value="Business" />
+            <zeebe:property name="raci_a" value="Business" />
+          </zeebe:properties>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_15fp02f</bpmn:incoming>
         <bpmn:outgoing>Flow_1kfzh2q</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:userTask id="Activity_1l8ugqb" name="Pursue an Exception with Quarterback">
+      <bpmn:userTask id="Activity_1l8ugqb" name="Pursue Exception&#10;with Quarterback">
         <bpmn:extensionElements>
-          <zeebe:userTask />
+          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:properties>
+            <zeebe:property name="topics" value="Intake" />
+            <zeebe:property name="raci_r" value="Business" />
+            <zeebe:property name="raci_a" value="Governance" />
+          </zeebe:properties>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0p7pllp</bpmn:incoming>
         <bpmn:outgoing>Flow_1q9y5tr</bpmn:outgoing>
@@ -462,17 +473,21 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <bpmn:outgoing>Flow_1fzbqt4</bpmn:outgoing>
         <bpmn:outgoing>Flow_0uvqte0</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_1fzbqt4" sourceRef="Gateway_1rppvq7" targetRef="Gateway_0js8zzn" />
+      <bpmn:sequenceFlow id="Flow_1fzbqt4" name="Yes" sourceRef="Gateway_1rppvq7" targetRef="Gateway_0js8zzn">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=pursueRequest = true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_1kfzh2q" sourceRef="Activity_0netfvm" targetRef="Gateway_1rppvq7" />
-      <bpmn:endEvent id="Event_0o39wbs" name="Kill it">
+      <bpmn:endEvent id="Event_0o39wbs" name="Request&#10;Withdrawn">
         <bpmn:incoming>Flow_0uvqte0</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="Flow_0uvqte0" sourceRef="Gateway_1rppvq7" targetRef="Event_0o39wbs" />
+      <bpmn:sequenceFlow id="Flow_0uvqte0" name="No" sourceRef="Gateway_1rppvq7" targetRef="Event_0o39wbs">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=pursueRequest = false</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_1xhs1a0" sourceRef="Start_SoftwareNeed" targetRef="SP_RequestTriage" />
     <bpmn:sequenceFlow id="Flow_v5_2" sourceRef="SP_RequestTriage" targetRef="GW_TriageDecision" />
     <bpmn:sequenceFlow id="Flow_v5_4" name="No" sourceRef="GW_TriageDecision" targetRef="End_Rejected" />
-    <bpmn:sequenceFlow id="Flow_v5_7" name="Build" sourceRef="GW_BuyVsBuild" targetRef="Event_1whn5yx" />
+    <bpmn:sequenceFlow id="Flow_v5_7" name="Build" sourceRef="GW_BuyVsBuild" targetRef="Activity_19ph1cx" />
     <bpmn:sequenceFlow id="Flow_v5_12" name="Yes" sourceRef="GW_EvalApproved" targetRef="SP_UATGoLive">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -992,11 +1007,9 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
     <bpmn:endEvent id="End_EvalRejected" name="Evaluation&#10;Failed">
       <bpmn:incoming>Flow_v5_11</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:endEvent id="Event_1whn5yx">
-      <bpmn:incoming>Flow_v5_7</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:subProcess id="Activity_19ph1cx" name="Deep Dive Risk Assessment &#38; Contracting">
       <bpmn:incoming>Flow_v5_10</bpmn:incoming>
+      <bpmn:incoming>Flow_v5_7</bpmn:incoming>
       <bpmn:outgoing>Flow_1wwkhh9</bpmn:outgoing>
       <bpmn:startEvent id="Event_0g0s5qf">
         <bpmn:outgoing>Flow_050ltwv</bpmn:outgoing>
@@ -1506,7 +1519,7 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Main">
-    <bpmndi:BPMNPlane id="BPMNPlane_Main" bpmnElement="Collaboration_IdealState_v11">
+    <bpmndi:BPMNPlane id="BPMNPlane_Main" bpmnElement="Collaboration_IdealState_v12">
       <bpmndi:BPMNShape id="Participant_Enterprise_di" bpmnElement="Participant_Enterprise" isHorizontal="true">
         <dc:Bounds x="160" y="80" width="1690" height="390" />
         <bpmndi:BPMNLabel />
@@ -1595,9 +1608,6 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
           <dc:Bounds x="1435" y="365" width="52" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1whn5yx_di" bpmnElement="Event_1whn5yx">
-        <dc:Bounds x="872" y="322" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_15px4y0" bpmnElement="Activity_19ph1cx" isExpanded="false">
         <dc:Bounds x="1170" y="210" width="100" height="80" />
         <bpmndi:BPMNLabel>
@@ -1629,9 +1639,10 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       <bpmndi:BPMNEdge id="Flow_v5_7_di" bpmnElement="Flow_v5_7">
         <di:waypoint x="790" y="275" />
         <di:waypoint x="790" y="340" />
-        <di:waypoint x="872" y="340" />
+        <di:waypoint x="1220" y="340" />
+        <di:waypoint x="1220" y="290" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="804" y="322" width="25" height="14" />
+          <dc:Bounds x="990" y="322" width="25" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_12_di" bpmnElement="Flow_v5_12">
@@ -1718,9 +1729,6 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <bpmndi:BPMNLabel>
           <dc:Bounds x="450" y="77" width="79" height="27" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0zxd1ql_di" bpmnElement="Gateway_0zxd1ql" isMarkerVisible="true">
-        <dc:Bounds x="225" y="115" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_LeverageExisting_di" bpmnElement="Task_LeverageExisting">
         <dc:Bounds x="600" y="300" width="100" height="80" />
@@ -1841,7 +1849,7 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP1_1_di" bpmnElement="Flow_SP1_1">
         <di:waypoint x="178" y="140" />
-        <di:waypoint x="225" y="140" />
+        <di:waypoint x="320" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ccvusw_di" bpmnElement="Flow_0ccvusw">
         <di:waypoint x="420" y="140" />
@@ -1989,10 +1997,6 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1148" y="242" width="18" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_17ni7pj_di" bpmnElement="Flow_17ni7pj">
-        <di:waypoint x="275" y="140" />
-        <di:waypoint x="320" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0gutlqh_di" bpmnElement="Flow_0gutlqh">
         <di:waypoint x="845" y="140" />
