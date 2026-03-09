@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026.03.89] - 2026-03-09
+
+### Changed
+- Jira sync: Add phase mapping (PHASE_MAP) and enriched labels (`pi-{instanceKey}`, `sp1`-`sp5`, `onboarding-v8`) to Camunda-synced Jira issues and SLA escalation issues for dashboard filtering (PR #111)
+
 ## [2026.03.88] - 2026-03-08
 
 ### Added

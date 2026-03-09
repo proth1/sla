@@ -84,6 +84,15 @@ function parseDuration(iso) {
   return ((days * 24 + hours) * 3600 + mins * 60 + secs) * 1000;
 }
 
+// --- Phase Map (derived from task definition IDs) ---
+const PHASE_MAP = {
+  Task_ReviewExisting: 'sp1', Task_LeverageExisting: 'sp1', Task_GatherDocs: 'sp1', Task_SubmitRequest: 'sp1', Task_InitialTriage: 'sp1', Task_ClassifyRequest: 'sp1', Task_DealKillerCheck: 'sp1',
+  Task_PrelimAnalysis: 'sp2', Task_BacklogPrioritization: 'sp2', Task_PathwayRouting: 'sp2', Task_PrioritizationScoring: 'sp2',
+  Task_TechArchReview: 'sp3', Task_SecurityAssessment: 'sp3', Task_RiskCompliance: 'sp3', Task_FinancialAnalysis: 'sp3', Task_AssessVendorLandscape: 'sp3', Task_VendorDD: 'sp3', Task_EvaluateResponse: 'sp3', Task_AIGovernanceReview: 'sp3', Receive_VendorResponse: 'sp3', Task_DARTFormation: 'sp3', Task_CreateOneTrustAssessment: 'sp3', Task_SecurityTierRouting: 'sp3', Task_BaselineScan: 'sp3', Task_RetrieveOneTrustResults: 'sp3',
+  Task_RefineRequirements: 'sp4', Task_PerformPoC: 'sp4', Task_TechRiskEval: 'sp4', Task_NegotiateContract: 'sp4', Task_FinalizeContract: 'sp4', Task_DefineBuildReqs: 'sp4', Receive_SignedContract: 'sp4', Task_ComplianceReview: 'sp4', Task_EnableContractExec: 'sp4', Task_ContractDeviation: 'sp4', Task_CodingCorrection: 'sp4',
+  Task_PerformUAT: 'sp5', Task_FinalApproval: 'sp5', Task_OnboardSoftware: 'sp5', Activity_0zf4l0g: 'sp5', Task_CloseRequest: 'sp5', Task_AssignOwnership: 'sp5', Task_ConditionVerification: 'sp5',
+};
+
 // --- Sync State ---
 const syncMap = new Map();
 const eventLog = [];
@@ -196,7 +205,13 @@ async function outboundSync() {
         issuetype: { name: config.jira.issueType },
         summary: `[Camunda] ${(task.name || task.taskDefinitionId).replace(/\n/g, ' ')}`,
         description: buildRaciDescription(candidateGroup, task),
-        labels: [label, 'camunda-synced'],
+        labels: [
+          label,
+          'camunda-synced',
+          `pi-${task.processInstanceKey}`,
+          PHASE_MAP[task.taskDefinitionId] || 'unknown-phase',
+          'onboarding-v8',
+        ],
       };
 
       const component = getComponentForGroup(candidateGroup);
@@ -213,6 +228,8 @@ async function outboundSync() {
         slaDeadlineMs: now + slaDurationMs,
         candidateGroup,
         processInstanceKey: task.processInstanceKey,
+        taskDefinitionId: task.taskDefinitionId,
+        phase: PHASE_MAP[task.taskDefinitionId] || 'unknown',
         warned: false,
         escalated: false,
       });
@@ -361,7 +378,7 @@ async function slaMonitor() {
                 { type: 'text', text: `\nPer REQ-NFR-006: Escalation to next governance level required.` },
               ]}],
             },
-            labels: [targetLabel, 'sla-escalation', 'camunda-synced'],
+            labels: [targetLabel, 'sla-escalation', 'camunda-synced', `pi-${piKey}`, 'onboarding-v8'],
           },
         });
 
@@ -422,6 +439,7 @@ async function recoverSyncMap() {
       const createdAt = new Date(issue.fields.created).getTime();
 
       const labels = issue.fields.labels || [];
+      const phaseLabel = labels.find(l => /^sp[1-5]$/.test(l)) || 'unknown';
       syncMap.set(taskKeyMatch[1], {
         jiraIssueKey: issue.key,
         status: 'synced',
@@ -429,6 +447,7 @@ async function recoverSyncMap() {
         slaDeadlineMs: createdAt + slaDurationMs,
         candidateGroup,
         processInstanceKey: piMatch ? piMatch[1] : 'unknown',
+        phase: phaseLabel,
         warned: labels.includes('sla-at-risk'),
         escalated: labels.includes('sla-breached'),
       });
@@ -470,6 +489,19 @@ async function resolveProcessDefinitionKey() {
 // --- Express Server ---
 const app = express();
 app.use(express.json());
+
+// CORS for dashboard cross-port requests (dashboard on :3847, jira-sync on :3848)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && (origin.includes('127.0.0.1:3847') || origin.includes('localhost:3847'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  }
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Webhook endpoint: Jira -> Camunda (HMAC-SHA256 verified)

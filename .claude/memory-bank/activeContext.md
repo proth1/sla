@@ -4,7 +4,7 @@
 
 **Date**: 2026-03-08
 **Branch**: main
-**Release Version**: 2026.03.88
+**Release Version**: 2026.03.89
 
 ### Secure Vendor Portal for Mini RFP (SLA-60, PR #109)
 - New vendor-facing questionnaire portal at `/vendor-portal.html`
@@ -19,8 +19,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.88 |
-| Total PRs Merged | 109 |
+| Release Version | 2026.03.89 |
+| Total PRs Merged | 111 |
 | DMN Decision Tables | 18 |
 | Cross-Cutting Sub-Processes | 6 |
 | Camunda 8 Forms | 52+ |
