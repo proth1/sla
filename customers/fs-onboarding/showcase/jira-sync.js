@@ -483,7 +483,9 @@ app.post('/webhook/jira', (req, res) => {
     }
     const raw = JSON.stringify(req.body);
     const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(raw).digest('hex');
-    if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) {
+    const sigBuf = Buffer.from(sig);
+    const expBuf = Buffer.from(expected);
+    if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
       logEvent('error', null, null, 'Webhook rejected: invalid HMAC signature');
       return res.status(401).json({ error: 'Invalid signature' });
     }
