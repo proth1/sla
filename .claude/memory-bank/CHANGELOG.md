@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026.03.105] - 2026-03-09
+
+### Added
+- PPTX version of industry benchmarks slide with deterministic python-pptx generator script, matching HTML layout with hyperlinked external sources (PR #122)
+
 ## [2026.03.104] - 2026-03-09
 
 ### Added
