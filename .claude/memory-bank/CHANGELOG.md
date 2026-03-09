@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026.03.88] - 2026-03-08
+
+### Added
+- Secure Vendor Portal (vendor-portal.html): 10-category questionnaire UI for external vendors with token-based auth, dark theme, category navigation, progress tracking, auto-fill demo, and Camunda message correlation on submit (PR #109)
+- Vendor defaults (defaults-vendor.js): Demo auto-fill data for Acme Analytics scenario across all 10 questionnaire categories (PR #109)
+- Playwright E2E test suite: 27 tests covering vendor portal access control, page structure, form rendering, navigation, progress tracking, and security isolation (PR #109)
+- API Worker vendor routes: GET /api/vendor/status, GET /api/vendor/questionnaire, POST /api/vendor/submit with CSPRNG token generation, KV storage (14-day TTL), and single-use enforcement (PR #109)
+- Auth Worker vendor token bypass: Token-validated access to vendor portal bypasses Descope OTP, with per-token rate limiting (60 req/min) and pretty URL support (PR #109)
+
+### Changed
+- Mini RFP Step 5 vendor wait screen: Updated with "Generate Vendor Portal Link" button, copy-to-clipboard, "Open Vendor Portal" link, and conditional button visibility (PR #109)
+
 ## [2026.03.87] - 2026-03-08
 
 ### Changed

@@ -4,30 +4,23 @@
 
 **Date**: 2026-03-08
 **Branch**: main
-**Release Version**: 2026.03.86
+**Release Version**: 2026.03.88
 
-### Regulatory Compliance Gap Remediation — Batch 2B (SLA-72 through SLA-77)
-- 6 parallel worktree agents launched for Batch 2B implementation
-- PR #103 (SLA-73 DORA ICT register + DMN-16): Merged
-- PR #104 (SLA-75 board reporting forms): Merged
-- PR #105 (SLA-74 GDPR DPIA DMN-17 + form): Merged
-- PR #106 (SLA-72 evidence infrastructure + DMN-15): Merged
-- PR #107 (SLA-76 SP-Cross-6 resilience testing): Merged
-- PR #108 (SLA-77 DORA 3-stage incident reporting): Merged
-- DMN count: 15 → 18 (3 new tables: DMN-15, DMN-16, DMN-17)
-- Cross-cutting subprocesses: 5 → 6 (SP-Cross-6 resilience testing)
-- New Camunda 8 forms: 4 (ICT register, DPIA assessment, TPRM quarterly, MRM monthly)
-- New design doc: evidence-infrastructure-design.md
-
-### Batch 2A (previously completed)
-- PRs #95-100: 4 new DMN tables (10,11,12,14) + DMN-7/8 enhancements
+### Secure Vendor Portal for Mini RFP (SLA-60, PR #109)
+- New vendor-facing questionnaire portal at `/vendor-portal.html`
+- Token-based auth (CSPRNG 96-bit, 14-day TTL, single-use enforcement)
+- Auth Worker bypass for vendor paths (no Descope OTP required)
+- API Worker: 4 vendor routes (token generation, status, questionnaire, submit)
+- Camunda message correlation (`MiniRFPResponseMessage`) for BPMN receive task
+- 27 Playwright E2E tests passing against live Cloudflare deployment
+- Deployed to showcase.agentic-innovations.com
 
 ## Platform Stats
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.87 |
-| Total PRs Merged | 108 |
+| Release Version | 2026.03.88 |
+| Total PRs Merged | 109 |
 | DMN Decision Tables | 18 |
 | Cross-Cutting Sub-Processes | 6 |
 | Camunda 8 Forms | 52+ |
@@ -35,8 +28,7 @@
 
 ## Recommended Next Steps
 
-1. **Merge PR #108** (SLA-77 DORA incident reporting) after review completes
-2. **Clean up worktrees** for all 6 Batch 2B items
-3. **Transition Jira issues** SLA-72 through SLA-77 to Done
-4. Epic 5 (SLA-36-39): Vendor Response Collection & Review
-5. Epic 6 (SLA-40-45): Intake Transfer & Engagement Prediction
+1. **KV namespace binding**: Create `VENDOR_TOKENS_KV` in Cloudflare dashboard and bind to Auth + API workers
+2. **Phase B: SIG Excel Upload**: Add vendor file upload support (SIG Lite parser)
+3. Epic 5 (SLA-36-39): Vendor Response Collection & Review
+4. Epic 6 (SLA-40-45): Intake Transfer & Engagement Prediction
