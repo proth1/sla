@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN14-DataResidencyRouting-definitions"
+             name="DMN-14: Data Residency Routing"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_DataResidencyRouting"
+            name="Data Residency Routing"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-08 | Approving Authority: Governance Review Board | Review Cycle: Annual | Regulatory Basis: GDPR Articles 44-49, CCPA/CPRA, PIPL, UK GDPR, DORA</description>
+    <decisionTable id="DMN_DataResidencyRouting-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-14: Data Residency Routing
+        Phase: 2 (Planning) and Phase 3 (Due Diligence) — data residency requirements
+        Hit Policy: FIRST (most restrictive rule wins — evaluated top to bottom)
+        Regulatory: GDPR Articles 44-49, CCPA/CPRA, PIPL, UK GDPR, DORA
+        Description: Routes data storage, encryption, and transfer mechanism requirements
+                     based on data classification, regulatory regime, and data type.
+                     Rules ordered from most restrictive (Restricted) to least restrictive (Public),
+                     with a catch-all default at the end.
+      -->
+
+      <input id="input-dataClassification" label="Data Classification">
+        <inputExpression id="inputExpr-dataClassification" typeRef="string">
+          <text>dataClassification</text>
+        </inputExpression>
+        <inputValues id="inputValues-dataClassification">
+          <text>"Public","Internal","Confidential","Restricted"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-regulatoryRegime" label="Regulatory Regime">
+        <inputExpression id="inputExpr-regulatoryRegime" typeRef="string">
+          <text>regulatoryRegime</text>
+        </inputExpression>
+        <inputValues id="inputValues-regulatoryRegime">
+          <text>"US","EU","UK","APAC"</text>
+        </inputValues>
+      </input>
+
+      <input id="input-dataType" label="Data Type">
+        <inputExpression id="inputExpr-dataType" typeRef="string">
+          <text>dataType</text>
+        </inputExpression>
+        <inputValues id="inputValues-dataType">
+          <text>"PII","PHI","Financial","General"</text>
+        </inputValues>
+      </input>
+
+      <output id="output-allowedRegions"
+              label="Allowed Regions"
+              name="allowedRegions"
+              typeRef="string" />
+
+      <output id="output-encryptionRequirement"
+              label="Encryption Requirement"
+              name="encryptionRequirement"
+              typeRef="string" />
+
+      <output id="output-transferMechanism"
+              label="Transfer Mechanism"
+              name="transferMechanism"
+              typeRef="string" />
+
+      <output id="output-additionalControls"
+              label="Additional Controls"
+              name="additionalControls"
+              typeRef="string" />
+
+      <!--
+        RULE GROUP 1: RESTRICTED — Most restrictive data classification (rules 1-4)
+        Restricted data requires jurisdiction-locked storage, maximum encryption,
+        and prohibits cross-border transfers without explicit regulatory approval.
+      -->
+
+      <rule id="rule-1">
+        <description>Restricted + EU + PII: Maximum restrictions — EU-only storage, field-level encryption, no cross-border transfer</description>
+        <inputEntry id="ie-1-1"><text>"Restricted"</text></inputEntry>
+        <inputEntry id="ie-1-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-1-3"><text>"PII"</text></inputEntry>
+        <outputEntry id="oe-1-1"><text>"EU-only (Frankfurt, Ireland, Paris)"</text></outputEntry>
+        <outputEntry id="oe-1-2"><text>"AES-256 at rest + TLS 1.3 in transit + field-level encryption"</text></outputEntry>
+        <outputEntry id="oe-1-3"><text>"Prohibited — no cross-border transfer"</text></outputEntry>
+        <outputEntry id="oe-1-4"><text>"Data sovereignty audit quarterly, access logging, DPO approval for any processing change"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-2">
+        <description>Restricted + EU + Financial: EU-only with SOX and DORA compliance requirements</description>
+        <inputEntry id="ie-2-1"><text>"Restricted"</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>"Financial"</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"EU-only"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"AES-256 at rest + TLS 1.3 in transit"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"Prohibited — no cross-border transfer"</text></outputEntry>
+        <outputEntry id="oe-2-4"><text>"SOX controls, DORA compliance, quarterly sovereignty audit"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-3">
+        <description>Restricted + US + PII: US-only storage with GLBA safeguards and field-level encryption</description>
+        <inputEntry id="ie-3-1"><text>"Restricted"</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>"PII"</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"US-only (us-east-1, us-west-2)"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"AES-256 at rest + TLS 1.3 in transit + field-level encryption for SSN/financial"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"None — domestic only"</text></outputEntry>
+        <outputEntry id="oe-3-4"><text>"GLBA safeguards, state privacy law compliance, access logging"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-4">
+        <description>Restricted + APAC + PII: Jurisdiction-locked with local DPA approval required for any transfer</description>
+        <inputEntry id="ie-4-1"><text>"Restricted"</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>"APAC"</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>"PII"</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Jurisdiction-specific (data must remain in originating country)"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"AES-256 at rest + TLS 1.3 in transit"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>"Prohibited — no cross-border without local DPA approval"</text></outputEntry>
+        <outputEntry id="oe-4-4"><text>"PIPL compliance if China, PDPA if Singapore, APPs if Australia"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 2: CONFIDENTIAL — High sensitivity requiring controlled transfers (rules 5-8)
+        Confidential data allows transfers to adequacy-approved jurisdictions with
+        appropriate safeguards (SCCs, IDTA, DPF) and requires enhanced encryption.
+      -->
+
+      <rule id="rule-5">
+        <description>Confidential + EU + PII: EU or adequacy-approved with SCCs, DPIA required</description>
+        <inputEntry id="ie-5-1"><text>"Confidential"</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>"PII"</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"EU or Adequacy-approved countries"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"AES-256 at rest + TLS 1.2+ in transit"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>"SCCs for non-adequacy transfers"</text></outputEntry>
+        <outputEntry id="oe-5-4"><text>"DPIA required, encryption key management in EU, annual residency audit"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-6">
+        <description>Confidential + EU + PHI: EU-only with pseudonymization and Article 9 GDPR safeguards</description>
+        <inputEntry id="ie-6-1"><text>"Confidential"</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>"PHI"</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"EU-only"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"AES-256 at rest + TLS 1.3 in transit + pseudonymization"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>"Prohibited for non-EU without explicit consent"</text></outputEntry>
+        <outputEntry id="oe-6-4"><text>"Health data processing agreement, Article 9 GDPR safeguards, DPO oversight"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-7">
+        <description>Confidential + US + Financial: US-only or SOC 2 certified with DPF for EU-origin data</description>
+        <inputEntry id="ie-7-1"><text>"Confidential"</text></inputEntry>
+        <inputEntry id="ie-7-2"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-7-3"><text>"Financial"</text></inputEntry>
+        <outputEntry id="oe-7-1"><text>"US-only or SOC 2 Type II certified regions"</text></outputEntry>
+        <outputEntry id="oe-7-2"><text>"AES-256 at rest + TLS 1.2+ in transit"</text></outputEntry>
+        <outputEntry id="oe-7-3"><text>"DPF for EU-origin financial data"</text></outputEntry>
+        <outputEntry id="oe-7-4"><text>"SOX audit trail, GLBA safeguards, quarterly access review"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8">
+        <description>Confidential + UK + PII: UK adequacy-approved with IDTA transfer mechanism</description>
+        <inputEntry id="ie-8-1"><text>"Confidential"</text></inputEntry>
+        <inputEntry id="ie-8-2"><text>"UK"</text></inputEntry>
+        <inputEntry id="ie-8-3"><text>"PII"</text></inputEntry>
+        <outputEntry id="oe-8-1"><text>"UK or UK Adequacy-approved countries"</text></outputEntry>
+        <outputEntry id="oe-8-2"><text>"AES-256 at rest + TLS 1.2+ in transit"</text></outputEntry>
+        <outputEntry id="oe-8-3"><text>"UK International Data Transfer Agreement (IDTA) or Addendum"</text></outputEntry>
+        <outputEntry id="oe-8-4"><text>"UK DPIA, ICO registration, annual residency review"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 3: INTERNAL — Moderate sensitivity with standard controls (rules 9-12)
+        Internal data allows broader regional storage with standard encryption
+        and contractual transfer mechanisms.
+      -->
+
+      <rule id="rule-9">
+        <description>Internal + EU + any data type: EU or adequacy-approved with SCCs for transfers</description>
+        <inputEntry id="ie-9-1"><text>"Internal"</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"EU or Adequacy-approved countries"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"AES-256 at rest + TLS 1.2+ in transit"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>"SCCs for non-adequacy transfers"</text></outputEntry>
+        <outputEntry id="oe-9-4"><text>"Standard GDPR controls, data inventory maintenance"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-10">
+        <description>Internal + US + any data type: US or allied jurisdictions with standard controls</description>
+        <inputEntry id="ie-10-1"><text>"Internal"</text></inputEntry>
+        <inputEntry id="ie-10-2"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-10-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-10-1"><text>"US or allied jurisdictions (Five Eyes)"</text></outputEntry>
+        <outputEntry id="oe-10-2"><text>"AES-256 at rest + TLS 1.2+ in transit"</text></outputEntry>
+        <outputEntry id="oe-10-3"><text>"DPF or contractual clauses for EU-origin data"</text></outputEntry>
+        <outputEntry id="oe-10-4"><text>"Standard access controls, SOC 2 compliance"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-11">
+        <description>Internal + UK + any data type: UK or adequacy-approved with IDTA transfers</description>
+        <inputEntry id="ie-11-1"><text>"Internal"</text></inputEntry>
+        <inputEntry id="ie-11-2"><text>"UK"</text></inputEntry>
+        <inputEntry id="ie-11-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-11-1"><text>"UK or Adequacy-approved"</text></outputEntry>
+        <outputEntry id="oe-11-2"><text>"AES-256 at rest + TLS 1.2+ in transit"</text></outputEntry>
+        <outputEntry id="oe-11-3"><text>"IDTA for non-adequate transfers"</text></outputEntry>
+        <outputEntry id="oe-11-4"><text>"Standard UK GDPR controls"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-12">
+        <description>Internal + APAC + any data type: Within originating jurisdiction with local compliance</description>
+        <inputEntry id="ie-12-1"><text>"Internal"</text></inputEntry>
+        <inputEntry id="ie-12-2"><text>"APAC"</text></inputEntry>
+        <inputEntry id="ie-12-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-12-1"><text>"Within originating APAC jurisdiction or approved processing locations"</text></outputEntry>
+        <outputEntry id="oe-12-2"><text>"AES-256 at rest + TLS 1.2+ in transit"</text></outputEntry>
+        <outputEntry id="oe-12-3"><text>"Contractual clauses per local law"</text></outputEntry>
+        <outputEntry id="oe-12-4"><text>"Local DPA compliance, data inventory"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 4: PUBLIC — Minimal restrictions (rules 13-15)
+        Public data allows any region storage with transit encryption only.
+        Verify no PII embedded in public datasets.
+      -->
+
+      <rule id="rule-13">
+        <description>Public + EU + any data type: Any region with transit encryption, verify no embedded PII</description>
+        <inputEntry id="ie-13-1"><text>"Public"</text></inputEntry>
+        <inputEntry id="ie-13-2"><text>"EU"</text></inputEntry>
+        <inputEntry id="ie-13-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-13-1"><text>"Any region"</text></outputEntry>
+        <outputEntry id="oe-13-2"><text>"TLS 1.2+ in transit (encryption at rest recommended)"</text></outputEntry>
+        <outputEntry id="oe-13-3"><text>"None required"</text></outputEntry>
+        <outputEntry id="oe-13-4"><text>"Verify no PII embedded in public datasets, GDPR Article 6 basis documented"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-14">
+        <description>Public + US + any data type: Any region with transit encryption, verify no PII/PHI</description>
+        <inputEntry id="ie-14-1"><text>"Public"</text></inputEntry>
+        <inputEntry id="ie-14-2"><text>"US"</text></inputEntry>
+        <inputEntry id="ie-14-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-14-1"><text>"Any region"</text></outputEntry>
+        <outputEntry id="oe-14-2"><text>"TLS 1.2+ in transit"</text></outputEntry>
+        <outputEntry id="oe-14-3"><text>"None required"</text></outputEntry>
+        <outputEntry id="oe-14-4"><text>"Verify no PII/PHI embedded, standard access controls"</text></outputEntry>
+      </rule>
+
+      <rule id="rule-15">
+        <description>Public + any regime + any data type: Minimal restrictions with periodic classification review</description>
+        <inputEntry id="ie-15-1"><text>"Public"</text></inputEntry>
+        <inputEntry id="ie-15-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-15-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-15-1"><text>"Any region"</text></outputEntry>
+        <outputEntry id="oe-15-2"><text>"TLS 1.2+ in transit"</text></outputEntry>
+        <outputEntry id="oe-15-3"><text>"None required"</text></outputEntry>
+        <outputEntry id="oe-15-4"><text>"Periodic classification review to ensure no reclassification needed"</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 16: CATCH-ALL DEFAULT — Most restrictive pending classification
+        Catches any input combination not matched by rules 1-15.
+        Assigns maximum restrictions until proper classification is completed.
+        Under FIRST hit policy, this only fires if no earlier rule matched.
+      -->
+
+      <rule id="rule-16">
+        <description>Default catch-all: Unclassified combination — restricted to originating jurisdiction pending classification review</description>
+        <inputEntry id="ie-16-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-16-3"><text>-</text></inputEntry>
+        <outputEntry id="oe-16-1"><text>"Restricted to originating jurisdiction pending classification"</text></outputEntry>
+        <outputEntry id="oe-16-2"><text>"AES-256 at rest + TLS 1.3 in transit"</text></outputEntry>
+        <outputEntry id="oe-16-3"><text>"Prohibited until classified"</text></outputEntry>
+        <outputEntry id="oe-16-4"><text>"Immediate data classification required before any processing or transfer"</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN14-diagram">
+      <dmndi:DMNShape id="DMN14-shape" dmnElementRef="DMN_DataResidencyRouting">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
