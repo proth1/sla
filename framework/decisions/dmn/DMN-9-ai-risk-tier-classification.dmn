@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="DMN9-AIRiskTierClassification-definitions"
+             name="DMN-9: AI Risk Tier Classification"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="DMN_AIRiskTierClassification"
+            name="AI Risk Tier Classification"
+            camunda:historyTimeToLive="180">
+    <description>Version: 1.0.0 | Effective Date: 2026-03-08 | Approving Authority: AI Governance Board | Review Cycle: Annual | Regulatory Basis: SR 11-7 (Model Risk Management), EU AI Act (AI System Risk Classification)</description>
+    <decisionTable id="DMN_AIRiskTierClassification-table" hitPolicy="FIRST">
+
+      <!--
+        DMN-9: AI Risk Tier Classification
+        Phase: 2 (Planning and Inherent Risk Scoping) — AI Review Lane
+        Hit Policy: FIRST (most specific rule wins — evaluated top to bottom)
+        Regulatory: SR 11-7 (Model Risk Management), EU AI Act (AI System Risk Classification)
+        Description: Classifies AI model risk into Tier1 (highest) / Tier2 (moderate) / Tier3 (lowest)
+                     based on five model-specific attribute scores (each 1-10).
+                     This is SEPARATE from the initiative-level risk tier (DMN-1).
+                     Tier1 aligns with EU AI Act High-Risk, Tier2 with Limited, Tier3 with Minimal.
+        Input dimensions:
+          Decision Materiality:    How material are the model's decisions (10 = credit/capital)
+          Credit/Capital Impact:   Does output affect credit decisions or capital calculations
+          Model Complexity:        Architecture complexity (10 = deep learning/LLM)
+          Data Sensitivity:        Sensitivity of training/input data (10 = PII/NPI/protected class)
+          Autonomy Level:          Degree of autonomous decision-making (10 = fully autonomous)
+        FIRST hit policy: rules ordered from most restrictive (Tier1) to least
+        restrictive (Tier3), with a catch-all default at the end.
+      -->
+
+      <input id="input-decisionMateriality" label="Decision Materiality (1-10)">
+        <inputExpression id="inputExpr-decisionMateriality" typeRef="integer">
+          <text>decisionMateriality</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-creditCapitalImpact" label="Credit/Capital Impact (1-10)">
+        <inputExpression id="inputExpr-creditCapitalImpact" typeRef="integer">
+          <text>creditCapitalImpact</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-modelComplexity" label="Model Complexity (1-10)">
+        <inputExpression id="inputExpr-modelComplexity" typeRef="integer">
+          <text>modelComplexity</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-dataSensitivity" label="Data Sensitivity (1-10)">
+        <inputExpression id="inputExpr-dataSensitivity" typeRef="integer">
+          <text>dataSensitivity</text>
+        </inputExpression>
+      </input>
+
+      <input id="input-autonomyLevel" label="Autonomy Level (1-10)">
+        <inputExpression id="inputExpr-autonomyLevel" typeRef="integer">
+          <text>autonomyLevel</text>
+        </inputExpression>
+      </input>
+
+      <output id="output-aiRiskTier"
+              label="AI Risk Tier"
+              name="aiRiskTier"
+              typeRef="string" />
+
+      <output id="output-validationRequirements"
+              label="Validation Requirements"
+              name="validationRequirements"
+              typeRef="string" />
+
+      <output id="output-monitoringFrequency"
+              label="Monitoring Frequency"
+              name="monitoringFrequency"
+              typeRef="string" />
+
+      <output id="output-independentReviewRequired"
+              label="Independent Review Required"
+              name="independentReviewRequired"
+              typeRef="boolean" />
+
+      <!--
+        RULE GROUP 1: TIER 1 — Any single input >= 9
+        Any individual dimension at 9 or 10 represents an extreme AI risk factor that
+        immediately classifies the model as Tier1 regardless of other scores.
+        Five rules, one per dimension.
+      -->
+
+      <rule id="rule-1a">
+        <description>Decision Materiality >= 9: Tier1 — model directly drives material business decisions</description>
+        <inputEntry id="ie-1a-1"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-1a-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-1a-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-1a-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1a-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1a-1"><text>"Tier1"</text></outputEntry>
+        <outputEntry id="oe-1a-2"><text>"Full independent validation with challenger model"</text></outputEntry>
+        <outputEntry id="oe-1a-3"><text>"Continuous + monthly formal review"</text></outputEntry>
+        <outputEntry id="oe-1a-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-1b">
+        <description>Credit/Capital Impact >= 9: Tier1 — model directly affects credit or capital calculations</description>
+        <inputEntry id="ie-1b-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1b-2"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-1b-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-1b-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1b-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1b-1"><text>"Tier1"</text></outputEntry>
+        <outputEntry id="oe-1b-2"><text>"Full independent validation with challenger model"</text></outputEntry>
+        <outputEntry id="oe-1b-3"><text>"Continuous + monthly formal review"</text></outputEntry>
+        <outputEntry id="oe-1b-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-1c">
+        <description>Model Complexity >= 9: Tier1 — extreme model complexity (deep learning/LLM)</description>
+        <inputEntry id="ie-1c-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1c-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1c-3"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-1c-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-1c-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1c-1"><text>"Tier1"</text></outputEntry>
+        <outputEntry id="oe-1c-2"><text>"Full independent validation with challenger model"</text></outputEntry>
+        <outputEntry id="oe-1c-3"><text>"Continuous + monthly formal review"</text></outputEntry>
+        <outputEntry id="oe-1c-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-1d">
+        <description>Data Sensitivity >= 9: Tier1 — extreme data sensitivity (PII/NPI/protected class)</description>
+        <inputEntry id="ie-1d-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1d-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1d-3"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1d-4"><text>&gt;= 9</text></inputEntry>
+        <inputEntry id="ie-1d-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-1d-1"><text>"Tier1"</text></outputEntry>
+        <outputEntry id="oe-1d-2"><text>"Full independent validation with challenger model"</text></outputEntry>
+        <outputEntry id="oe-1d-3"><text>"Continuous + monthly formal review"</text></outputEntry>
+        <outputEntry id="oe-1d-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-1e">
+        <description>Autonomy Level >= 9: Tier1 — near-fully autonomous decision-making</description>
+        <inputEntry id="ie-1e-1"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1e-2"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1e-3"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1e-4"><text>[1..8]</text></inputEntry>
+        <inputEntry id="ie-1e-5"><text>&gt;= 9</text></inputEntry>
+        <outputEntry id="oe-1e-1"><text>"Tier1"</text></outputEntry>
+        <outputEntry id="oe-1e-2"><text>"Full independent validation with challenger model"</text></outputEntry>
+        <outputEntry id="oe-1e-3"><text>"Continuous + monthly formal review"</text></outputEntry>
+        <outputEntry id="oe-1e-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 2: TIER 1 — High-risk combinations (all individual scores [1..8])
+        These rules capture multi-dimensional risk patterns that warrant Tier1 classification
+        even when no single score reaches 9.
+      -->
+
+      <rule id="rule-2">
+        <description>Tier1: Decision Materiality >= 7 AND Credit/Capital Impact >= 7 — high material + financial impact per SR 11-7</description>
+        <inputEntry id="ie-2-1"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-2-2"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-2-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-2-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-2-1"><text>"Tier1"</text></outputEntry>
+        <outputEntry id="oe-2-2"><text>"Independent validation required pre-deployment"</text></outputEntry>
+        <outputEntry id="oe-2-3"><text>"Weekly automated + quarterly formal"</text></outputEntry>
+        <outputEntry id="oe-2-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-3">
+        <description>Tier1: Autonomy >= 8 AND Data Sensitivity >= 7 — high autonomous use of sensitive data</description>
+        <inputEntry id="ie-3-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-3-4"><text>[7..8]</text></inputEntry>
+        <inputEntry id="ie-3-5"><text>8</text></inputEntry>
+        <outputEntry id="oe-3-1"><text>"Tier1"</text></outputEntry>
+        <outputEntry id="oe-3-2"><text>"Enhanced validation with bias and fairness testing"</text></outputEntry>
+        <outputEntry id="oe-3-3"><text>"Weekly automated + quarterly formal"</text></outputEntry>
+        <outputEntry id="oe-3-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-4">
+        <description>Tier1: Model Complexity >= 8 AND Decision Materiality >= 6 — complex model with material decisions requires explainability</description>
+        <inputEntry id="ie-4-1"><text>[6..8]</text></inputEntry>
+        <inputEntry id="ie-4-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-3"><text>8</text></inputEntry>
+        <inputEntry id="ie-4-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-4-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-4-1"><text>"Tier1"</text></outputEntry>
+        <outputEntry id="oe-4-2"><text>"Explainability assessment and validation"</text></outputEntry>
+        <outputEntry id="oe-4-3"><text>"Monthly automated + quarterly formal"</text></outputEntry>
+        <outputEntry id="oe-4-4"><text>true</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 3: TIER 2 — Moderate risk combinations
+        Models with elevated but not extreme risk profiles requiring structured oversight.
+      -->
+
+      <rule id="rule-5">
+        <description>Tier2: Decision Materiality >= 5 AND Credit/Capital Impact >= 5 — moderate material + financial impact</description>
+        <inputEntry id="ie-5-1"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-5-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-5-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-5-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-5-1"><text>"Tier2"</text></outputEntry>
+        <outputEntry id="oe-5-2"><text>"Validation by model risk team"</text></outputEntry>
+        <outputEntry id="oe-5-3"><text>"Monthly automated + semi-annual formal"</text></outputEntry>
+        <outputEntry id="oe-5-4"><text>true</text></outputEntry>
+      </rule>
+
+      <rule id="rule-6">
+        <description>Tier2: Autonomy >= 5 AND Data Sensitivity >= 5 — moderate autonomous use of moderately sensitive data</description>
+        <inputEntry id="ie-6-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-6-4"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-6-5"><text>[5..8]</text></inputEntry>
+        <outputEntry id="oe-6-1"><text>"Tier2"</text></outputEntry>
+        <outputEntry id="oe-6-2"><text>"Bias testing and monitoring plan required"</text></outputEntry>
+        <outputEntry id="oe-6-3"><text>"Monthly automated + semi-annual formal"</text></outputEntry>
+        <outputEntry id="oe-6-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-7a">
+        <description>Tier2: Model Complexity >= 6 AND Decision Materiality >= 4 — moderately complex model with moderate materiality</description>
+        <inputEntry id="ie-7a-1"><text>[4..8]</text></inputEntry>
+        <inputEntry id="ie-7a-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-7a-3"><text>[6..8]</text></inputEntry>
+        <inputEntry id="ie-7a-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-7a-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-7a-1"><text>"Tier2"</text></outputEntry>
+        <outputEntry id="oe-7a-2"><text>"Standard model validation"</text></outputEntry>
+        <outputEntry id="oe-7a-3"><text>"Quarterly automated + annual formal"</text></outputEntry>
+        <outputEntry id="oe-7a-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-7b">
+        <description>Tier2: Model Complexity >= 6 AND Data Sensitivity >= 4 — moderately complex model with moderate data sensitivity</description>
+        <inputEntry id="ie-7b-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-7b-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-7b-3"><text>[6..8]</text></inputEntry>
+        <inputEntry id="ie-7b-4"><text>[4..8]</text></inputEntry>
+        <inputEntry id="ie-7b-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-7b-1"><text>"Tier2"</text></outputEntry>
+        <outputEntry id="oe-7b-2"><text>"Standard model validation"</text></outputEntry>
+        <outputEntry id="oe-7b-3"><text>"Quarterly automated + annual formal"</text></outputEntry>
+        <outputEntry id="oe-7b-4"><text>false</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE GROUP 4: TIER 2 — Any single input >= 5
+        Catches remaining cases where at least one dimension is moderately elevated.
+        Five rules, one per dimension. Under FIRST hit policy, these only fire
+        if no earlier (more specific) rule matched.
+      -->
+
+      <rule id="rule-8a">
+        <description>Tier2: Decision Materiality >= 5 — moderate materiality warrants structured oversight</description>
+        <inputEntry id="ie-8a-1"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-8a-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-8a-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-8a-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-8a-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-8a-1"><text>"Tier2"</text></outputEntry>
+        <outputEntry id="oe-8a-2"><text>"Peer review and documentation"</text></outputEntry>
+        <outputEntry id="oe-8a-3"><text>"Quarterly automated + annual formal"</text></outputEntry>
+        <outputEntry id="oe-8a-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8b">
+        <description>Tier2: Credit/Capital Impact >= 5 — moderate financial impact warrants oversight</description>
+        <inputEntry id="ie-8b-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8b-2"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-8b-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-8b-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-8b-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-8b-1"><text>"Tier2"</text></outputEntry>
+        <outputEntry id="oe-8b-2"><text>"Peer review and documentation"</text></outputEntry>
+        <outputEntry id="oe-8b-3"><text>"Quarterly automated + annual formal"</text></outputEntry>
+        <outputEntry id="oe-8b-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8c">
+        <description>Tier2: Model Complexity >= 5 — moderate complexity warrants documentation</description>
+        <inputEntry id="ie-8c-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8c-2"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8c-3"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-8c-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-8c-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-8c-1"><text>"Tier2"</text></outputEntry>
+        <outputEntry id="oe-8c-2"><text>"Peer review and documentation"</text></outputEntry>
+        <outputEntry id="oe-8c-3"><text>"Quarterly automated + annual formal"</text></outputEntry>
+        <outputEntry id="oe-8c-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8d">
+        <description>Tier2: Data Sensitivity >= 5 — moderate data sensitivity warrants oversight</description>
+        <inputEntry id="ie-8d-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8d-2"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8d-3"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8d-4"><text>[5..8]</text></inputEntry>
+        <inputEntry id="ie-8d-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-8d-1"><text>"Tier2"</text></outputEntry>
+        <outputEntry id="oe-8d-2"><text>"Peer review and documentation"</text></outputEntry>
+        <outputEntry id="oe-8d-3"><text>"Quarterly automated + annual formal"</text></outputEntry>
+        <outputEntry id="oe-8d-4"><text>false</text></outputEntry>
+      </rule>
+
+      <rule id="rule-8e">
+        <description>Tier2: Autonomy Level >= 5 — moderate autonomy warrants human oversight plan</description>
+        <inputEntry id="ie-8e-1"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8e-2"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8e-3"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8e-4"><text>[1..4]</text></inputEntry>
+        <inputEntry id="ie-8e-5"><text>[5..8]</text></inputEntry>
+        <outputEntry id="oe-8e-1"><text>"Tier2"</text></outputEntry>
+        <outputEntry id="oe-8e-2"><text>"Peer review and documentation"</text></outputEntry>
+        <outputEntry id="oe-8e-3"><text>"Quarterly automated + annual formal"</text></outputEntry>
+        <outputEntry id="oe-8e-4"><text>false</text></outputEntry>
+      </rule>
+
+      <!--
+        RULE 9: CATCH-ALL DEFAULT — Tier3 (lowest risk)
+        All scores [1..4] — low-risk AI model with minimal governance burden.
+        Under FIRST hit policy, this only fires if no earlier rule matched.
+      -->
+
+      <rule id="rule-9">
+        <description>Default: Tier3 — low-risk AI model, self-assessment with annual review</description>
+        <inputEntry id="ie-9-1"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-2"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-3"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-4"><text>-</text></inputEntry>
+        <inputEntry id="ie-9-5"><text>-</text></inputEntry>
+        <outputEntry id="oe-9-1"><text>"Tier3"</text></outputEntry>
+        <outputEntry id="oe-9-2"><text>"Self-assessment with documentation"</text></outputEntry>
+        <outputEntry id="oe-9-3"><text>"Annual review"</text></outputEntry>
+        <outputEntry id="oe-9-4"><text>false</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMN9-diagram">
+      <dmndi:DMNShape id="DMN9-shape" dmnElementRef="DMN_AIRiskTierClassification">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
