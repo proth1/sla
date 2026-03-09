@@ -43,11 +43,13 @@ test.describe('Vendor Portal — Access Control', () => {
     await expect(page.locator('.header h1')).toContainText('Vendor Questionnaire Portal', { timeout: 10000 });
   });
 
-  test('serves vendor-portal.html without requiring Descope login', async ({ page }) => {
+  test('serves vendor-portal without requiring Descope login', async ({ page }) => {
     // Direct access should NOT redirect to /auth/login
-    const resp = await page.goto(`${BASE}/vendor-portal.html?token=${fakeToken()}&instance=12345678901234`);
-    expect(page.url()).toContain('vendor-portal.html');
-    expect(page.url()).not.toContain('/auth/login');
+    await page.goto(`${BASE}/vendor-portal.html?token=${fakeToken()}&instance=12345678901234`);
+    // Cloudflare Pages may strip .html (pretty URLs) so check for both forms
+    const currentUrl = page.url();
+    expect(currentUrl).toMatch(/vendor-portal/);
+    expect(currentUrl).not.toContain('/auth/login');
   });
 
   test('serves defaults-vendor.js without auth', async ({ page }) => {
