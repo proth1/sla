@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_SPCross6"
+                  targetNamespace="http://sla.governance/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.25.0">
+
+  <bpmn:collaboration id="Collaboration_SPCross6">
+    <bpmn:participant id="Participant_EnterpriseGovernance" name="Enterprise Governance" processRef="Process_SPCross6_ResilienceTesting" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_SPCross6_ResilienceTesting" name="SP-Cross-6: Resilience Testing (DORA Article 26)" isExecutable="false" camunda:historyTimeToLive="180">
+
+    <bpmn:laneSet id="LaneSet_SPCross6">
+      <bpmn:lane id="Lane_Oversight" name="Oversight">
+        <bpmn:flowNodeRef>Start_AnnualResilience</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_TestPlanning</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ThreatLedPenTest</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ScenarioTest</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RecoveryTest</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ClassifyFindings</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_SeverityRouting</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ImmediateRemediation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ConsolidateFindings</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_Merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RemediationTracking</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_BoardReport</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_ResilienceComplete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_PlanningSLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_PenTestSLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_ScenarioSLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_RecoverySLA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_RemediationSLA</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="Start_AnnualResilience" name="Annual&#10;Resilience&#10;Test Cycle">
+      <bpmn:outgoing>Flow_Start_Planning</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Annual">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/P1Y</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_TestPlanning" name="Plan Resilience&#10;Test Program" camunda:candidateGroups="oversight-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="regulation" value="DORA Article 26: Digital operational resilience testing" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Start_Planning</bpmn:incoming>
+      <bpmn:outgoing>Flow_Planning_PenTest</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_TestPlanningSLA" name="5 Day&#10;SLA" cancelActivity="false" attachedToRef="Task_TestPlanning">
+      <bpmn:outgoing>Flow_Planning_Escalation</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Planning">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="End_PlanningSLA" name="Planning SLA&#10;Escalation">
+      <bpmn:incoming>Flow_Planning_Escalation</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_ThreatLedPenTest" name="Threat-Led&#10;Penetration Test" camunda:candidateGroups="oversight-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="regulation" value="DORA Article 26(2): TLPT for critical ICT systems" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Planning_PenTest</bpmn:incoming>
+      <bpmn:outgoing>Flow_PenTest_Scenario</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_PenTestSLA" name="30 Day&#10;SLA" cancelActivity="false" attachedToRef="Task_ThreatLedPenTest">
+      <bpmn:outgoing>Flow_PenTest_Escalation</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_PenTest">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P30D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="End_PenTestSLA" name="Pen Test SLA&#10;Escalation">
+      <bpmn:incoming>Flow_PenTest_Escalation</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_ScenarioTest" name="Scenario-Based&#10;Testing" camunda:candidateGroups="oversight-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="regulation" value="DORA Article 26(1): Scenario-based testing" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_PenTest_Scenario</bpmn:incoming>
+      <bpmn:outgoing>Flow_Scenario_Recovery</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_ScenarioSLA" name="15 Day&#10;SLA" cancelActivity="false" attachedToRef="Task_ScenarioTest">
+      <bpmn:outgoing>Flow_Scenario_Escalation</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Scenario">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P15D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="End_ScenarioSLA" name="Scenario SLA&#10;Escalation">
+      <bpmn:incoming>Flow_Scenario_Escalation</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_RecoveryTest" name="Recovery and&#10;Continuity Test" camunda:candidateGroups="oversight-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="regulation" value="DORA Article 26(1)(d): Business continuity testing" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Scenario_Recovery</bpmn:incoming>
+      <bpmn:outgoing>Flow_Recovery_Classify</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_RecoverySLA" name="10 Day&#10;SLA" cancelActivity="false" attachedToRef="Task_RecoveryTest">
+      <bpmn:outgoing>Flow_Recovery_Escalation</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Recovery">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P10D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="End_RecoverySLA" name="Recovery SLA&#10;Escalation">
+      <bpmn:incoming>Flow_Recovery_Escalation</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:businessRuleTask id="Task_ClassifyFindings" name="Classify Test&#10;Findings" camunda:decisionRef="DMN_ChangeRiskScoring" camunda:decisionRefBinding="latest" camunda:resultVariable="findingSeverity" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_Recovery_Classify</bpmn:incoming>
+      <bpmn:outgoing>Flow_Classify_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+
+    <bpmn:exclusiveGateway id="GW_SeverityRouting" name="Critical&#10;Findings?" default="Flow_No_Standard">
+      <bpmn:incoming>Flow_Classify_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Yes_Critical</bpmn:outgoing>
+      <bpmn:outgoing>Flow_No_Standard</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_ImmediateRemediation" name="Immediate&#10;Remediation" camunda:candidateGroups="oversight-lane">
+      <bpmn:incoming>Flow_Yes_Critical</bpmn:incoming>
+      <bpmn:outgoing>Flow_Remediation_Merge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Timer_RemediationSLA" name="5 Day&#10;SLA" cancelActivity="false" attachedToRef="Task_ImmediateRemediation">
+      <bpmn:outgoing>Flow_Remediation_Escalation</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerDef_Remediation">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:endEvent id="End_RemediationSLA" name="Remediation SLA&#10;Escalation">
+      <bpmn:incoming>Flow_Remediation_Escalation</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_ConsolidateFindings" name="Consolidate&#10;Findings Report" camunda:candidateGroups="oversight-lane">
+      <bpmn:incoming>Flow_No_Standard</bpmn:incoming>
+      <bpmn:outgoing>Flow_Consolidate_Merge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="GW_Merge">
+      <bpmn:incoming>Flow_Remediation_Merge</bpmn:incoming>
+      <bpmn:incoming>Flow_Consolidate_Merge</bpmn:incoming>
+      <bpmn:outgoing>Flow_Merge_Tracking</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_RemediationTracking" name="Track&#10;Remediation" camunda:candidateGroups="oversight-lane">
+      <bpmn:incoming>Flow_Merge_Tracking</bpmn:incoming>
+      <bpmn:outgoing>Flow_Tracking_Board</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_BoardReport" name="Board Resilience&#10;Report" camunda:candidateGroups="oversight-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="regulation" value="DORA Article 26(8): Report to management body" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Tracking_Board</bpmn:incoming>
+      <bpmn:outgoing>Flow_Board_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_ResilienceComplete" name="Resilience Test&#10;Cycle Complete">
+      <bpmn:incoming>Flow_Board_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_Start_Planning" sourceRef="Start_AnnualResilience" targetRef="Task_TestPlanning" />
+    <bpmn:sequenceFlow id="Flow_Planning_PenTest" sourceRef="Task_TestPlanning" targetRef="Task_ThreatLedPenTest" />
+    <bpmn:sequenceFlow id="Flow_PenTest_Scenario" sourceRef="Task_ThreatLedPenTest" targetRef="Task_ScenarioTest" />
+    <bpmn:sequenceFlow id="Flow_Scenario_Recovery" sourceRef="Task_ScenarioTest" targetRef="Task_RecoveryTest" />
+    <bpmn:sequenceFlow id="Flow_Recovery_Classify" sourceRef="Task_RecoveryTest" targetRef="Task_ClassifyFindings" />
+    <bpmn:sequenceFlow id="Flow_Classify_Gateway" sourceRef="Task_ClassifyFindings" targetRef="GW_SeverityRouting" />
+    <bpmn:sequenceFlow id="Flow_Yes_Critical" name="Yes" sourceRef="GW_SeverityRouting" targetRef="Task_ImmediateRemediation">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${findingSeverity == 'P1' || findingSeverity == 'P2'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_No_Standard" name="No" sourceRef="GW_SeverityRouting" targetRef="Task_ConsolidateFindings" />
+    <bpmn:sequenceFlow id="Flow_Remediation_Merge" sourceRef="Task_ImmediateRemediation" targetRef="GW_Merge" />
+    <bpmn:sequenceFlow id="Flow_Consolidate_Merge" sourceRef="Task_ConsolidateFindings" targetRef="GW_Merge" />
+    <bpmn:sequenceFlow id="Flow_Merge_Tracking" sourceRef="GW_Merge" targetRef="Task_RemediationTracking" />
+    <bpmn:sequenceFlow id="Flow_Tracking_Board" sourceRef="Task_RemediationTracking" targetRef="Task_BoardReport" />
+    <bpmn:sequenceFlow id="Flow_Board_End" sourceRef="Task_BoardReport" targetRef="End_ResilienceComplete" />
+    <bpmn:sequenceFlow id="Flow_Planning_Escalation" sourceRef="Timer_TestPlanningSLA" targetRef="End_PlanningSLA" />
+    <bpmn:sequenceFlow id="Flow_PenTest_Escalation" sourceRef="Timer_PenTestSLA" targetRef="End_PenTestSLA" />
+    <bpmn:sequenceFlow id="Flow_Scenario_Escalation" sourceRef="Timer_ScenarioSLA" targetRef="End_ScenarioSLA" />
+    <bpmn:sequenceFlow id="Flow_Recovery_Escalation" sourceRef="Timer_RecoverySLA" targetRef="End_RecoverySLA" />
+    <bpmn:sequenceFlow id="Flow_Remediation_Escalation" sourceRef="Timer_RemediationSLA" targetRef="End_RemediationSLA" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SPCross6">
+    <bpmndi:BPMNPlane id="BPMNPlane_SPCross6" bpmnElement="Collaboration_SPCross6">
+
+      <bpmndi:BPMNShape id="Participant_EnterpriseGovernance_di" bpmnElement="Participant_EnterpriseGovernance" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="2200" height="430" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Lane_Oversight_di" bpmnElement="Lane_Oversight" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="2170" height="430" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Start_AnnualResilience_di" bpmnElement="Start_AnnualResilience">
+        <dc:Bounds x="220" y="198" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="206" y="241" width="65" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_TestPlanning_di" bpmnElement="Task_TestPlanning">
+        <dc:Bounds x="310" y="178" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_TestPlanningSLA_di" bpmnElement="Timer_TestPlanningSLA">
+        <dc:Bounds x="392" y="240" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="436" y="244" width="33" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_PlanningSLA_di" bpmnElement="End_PlanningSLA">
+        <dc:Bounds x="432" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="414" y="375" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_ThreatLedPenTest_di" bpmnElement="Task_ThreatLedPenTest">
+        <dc:Bounds x="510" y="178" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_PenTestSLA_di" bpmnElement="Timer_PenTestSLA">
+        <dc:Bounds x="592" y="240" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="636" y="244" width="40" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_PenTestSLA_di" bpmnElement="End_PenTestSLA">
+        <dc:Bounds x="632" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="612" y="375" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_ScenarioTest_di" bpmnElement="Task_ScenarioTest">
+        <dc:Bounds x="710" y="178" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_ScenarioSLA_di" bpmnElement="Timer_ScenarioSLA">
+        <dc:Bounds x="792" y="240" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="836" y="244" width="40" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_ScenarioSLA_di" bpmnElement="End_ScenarioSLA">
+        <dc:Bounds x="832" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="814" y="375" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_RecoveryTest_di" bpmnElement="Task_RecoveryTest">
+        <dc:Bounds x="910" y="178" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_RecoverySLA_di" bpmnElement="Timer_RecoverySLA">
+        <dc:Bounds x="992" y="240" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1036" y="244" width="40" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_RecoverySLA_di" bpmnElement="End_RecoverySLA">
+        <dc:Bounds x="1032" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1012" y="375" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_ClassifyFindings_di" bpmnElement="Task_ClassifyFindings">
+        <dc:Bounds x="1110" y="178" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_SeverityRouting_di" bpmnElement="GW_SeverityRouting" isMarkerVisible="true">
+        <dc:Bounds x="1315" y="193" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1310" y="156" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_ImmediateRemediation_di" bpmnElement="Task_ImmediateRemediation">
+        <dc:Bounds x="1430" y="118" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_RemediationSLA_di" bpmnElement="Timer_RemediationSLA">
+        <dc:Bounds x="1512" y="180" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1556" y="184" width="33" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_RemediationSLA_di" bpmnElement="End_RemediationSLA">
+        <dc:Bounds x="1552" y="412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1527" y="455" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_ConsolidateFindings_di" bpmnElement="Task_ConsolidateFindings">
+        <dc:Bounds x="1430" y="278" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_Merge_di" bpmnElement="GW_Merge" isMarkerVisible="true">
+        <dc:Bounds x="1635" y="193" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_RemediationTracking_di" bpmnElement="Task_RemediationTracking">
+        <dc:Bounds x="1750" y="178" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_BoardReport_di" bpmnElement="Task_BoardReport">
+        <dc:Bounds x="1950" y="178" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_ResilienceComplete_di" bpmnElement="End_ResilienceComplete">
+        <dc:Bounds x="2152" y="198" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2131" y="241" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Start_Planning_di" bpmnElement="Flow_Start_Planning">
+        <di:waypoint x="256" y="216" />
+        <di:waypoint x="310" y="218" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Planning_PenTest_di" bpmnElement="Flow_Planning_PenTest">
+        <di:waypoint x="450" y="218" />
+        <di:waypoint x="510" y="218" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PenTest_Scenario_di" bpmnElement="Flow_PenTest_Scenario">
+        <di:waypoint x="650" y="218" />
+        <di:waypoint x="710" y="218" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Scenario_Recovery_di" bpmnElement="Flow_Scenario_Recovery">
+        <di:waypoint x="850" y="218" />
+        <di:waypoint x="910" y="218" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Recovery_Classify_di" bpmnElement="Flow_Recovery_Classify">
+        <di:waypoint x="1050" y="218" />
+        <di:waypoint x="1110" y="218" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Classify_Gateway_di" bpmnElement="Flow_Classify_Gateway">
+        <di:waypoint x="1250" y="218" />
+        <di:waypoint x="1315" y="218" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Yes_Critical_di" bpmnElement="Flow_Yes_Critical">
+        <di:waypoint x="1340" y="193" />
+        <di:waypoint x="1340" y="158" />
+        <di:waypoint x="1430" y="158" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1370" y="140" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_No_Standard_di" bpmnElement="Flow_No_Standard">
+        <di:waypoint x="1340" y="243" />
+        <di:waypoint x="1340" y="318" />
+        <di:waypoint x="1430" y="318" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1370" y="300" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Remediation_Merge_di" bpmnElement="Flow_Remediation_Merge">
+        <di:waypoint x="1570" y="158" />
+        <di:waypoint x="1660" y="158" />
+        <di:waypoint x="1660" y="193" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Consolidate_Merge_di" bpmnElement="Flow_Consolidate_Merge">
+        <di:waypoint x="1570" y="318" />
+        <di:waypoint x="1660" y="318" />
+        <di:waypoint x="1660" y="243" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Merge_Tracking_di" bpmnElement="Flow_Merge_Tracking">
+        <di:waypoint x="1685" y="218" />
+        <di:waypoint x="1750" y="218" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Tracking_Board_di" bpmnElement="Flow_Tracking_Board">
+        <di:waypoint x="1890" y="218" />
+        <di:waypoint x="1950" y="218" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Board_End_di" bpmnElement="Flow_Board_End">
+        <di:waypoint x="2090" y="218" />
+        <di:waypoint x="2152" y="216" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Planning_Escalation_di" bpmnElement="Flow_Planning_Escalation">
+        <di:waypoint x="410" y="276" />
+        <di:waypoint x="410" y="350" />
+        <di:waypoint x="432" y="350" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PenTest_Escalation_di" bpmnElement="Flow_PenTest_Escalation">
+        <di:waypoint x="610" y="276" />
+        <di:waypoint x="610" y="350" />
+        <di:waypoint x="632" y="350" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Scenario_Escalation_di" bpmnElement="Flow_Scenario_Escalation">
+        <di:waypoint x="810" y="276" />
+        <di:waypoint x="810" y="350" />
+        <di:waypoint x="832" y="350" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Recovery_Escalation_di" bpmnElement="Flow_Recovery_Escalation">
+        <di:waypoint x="1010" y="276" />
+        <di:waypoint x="1010" y="350" />
+        <di:waypoint x="1032" y="350" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Remediation_Escalation_di" bpmnElement="Flow_Remediation_Escalation">
+        <di:waypoint x="1530" y="216" />
+        <di:waypoint x="1530" y="430" />
+        <di:waypoint x="1552" y="430" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>
