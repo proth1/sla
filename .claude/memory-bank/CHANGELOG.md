@@ -1,5 +1,12 @@
 # Changelog
 
+## [2026.03.99] - 2026-03-09
+
+### Added
+- BPMN modeling standards v1.2.0: 7 new mandatory rules codified from v11→v12 cleanup — multi-outcome gateway conditions, guidance-then-decision pattern, task type requirements, end event naming, redundant gateway elimination, orphaned element detection, text annotation hygiene (PR #114)
+- BPMN hierarchical subprocess v1.3.0: Pattern A2 — multi-way screening with convergence for SP1 existing solution disposition (PR #114)
+- 6 new validation checklist items for process logic (PR #114)
+
 ## [2026.03.98] - 2026-03-09
 
 ### Changed

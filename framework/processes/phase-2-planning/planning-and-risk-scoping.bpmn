@@ -606,7 +606,7 @@
 
       <bpmndi:BPMNEdge id="Flow_Phase2Complete_QualityGate_di" bpmnElement="Flow_Phase2Complete_QualityGate">
         <di:waypoint x="2020" y="242" />
-        <di:waypoint x="2070" y="239" />
+        <di:waypoint x="2070" y="242" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Phase2QualityGate_Approval_di" bpmnElement="Flow_Phase2QualityGate_Approval">

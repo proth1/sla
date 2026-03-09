@@ -567,7 +567,7 @@
       <bpmndi:BPMNShape id="Gateway_GovernanceDecision_di" bpmnElement="Gateway_GovernanceDecision" isMarkerVisible="true">
         <dc:Bounds x="1970" y="1222" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1612" y="1279" width="86" height="27" />
+          <dc:Bounds x="1952" y="1279" width="86" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
@@ -588,7 +588,7 @@
       <bpmndi:BPMNShape id="EndEvent_Rejected_di" bpmnElement="EndEvent_Rejected">
         <dc:Bounds x="2332" y="909" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1968" y="952" width="84" height="27" />
+          <dc:Bounds x="2308" y="952" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 

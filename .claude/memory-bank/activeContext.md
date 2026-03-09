@@ -19,8 +19,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.98 |
-| Total PRs Merged | 112 |
+| Release Version | 2026.03.99 |
+| Total PRs Merged | 114 |
 | DMN Decision Tables | 18 |
 | Cross-Cutting Sub-Processes | 6 |
 | Camunda 8 Forms | 52+ |

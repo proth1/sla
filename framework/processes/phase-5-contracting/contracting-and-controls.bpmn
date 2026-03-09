@@ -484,21 +484,21 @@
       <bpmndi:BPMNShape id="Timer_QualityGateSLA_di" bpmnElement="Timer_QualityGateSLA">
         <dc:Bounds x="2024" y="264" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1696" y="268" width="30" height="27" />
+          <dc:Bounds x="2068" y="268" width="30" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_Phase5Complete_di" bpmnElement="EndEvent_Phase5Complete">
         <dc:Bounds x="2200" y="224" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1756" y="267" width="84" height="27" />
+          <dc:Bounds x="2176" y="267" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="EndEvent_QGSLAEscalated_di" bpmnElement="EndEvent_QGSLAEscalated">
         <dc:Bounds x="2200" y="264" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1736" y="307" width="84" height="27" />
+          <dc:Bounds x="2176" y="307" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 

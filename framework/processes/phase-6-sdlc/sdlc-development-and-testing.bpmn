@@ -30,7 +30,7 @@
         <bpmn:flowNodeRef>BoundaryEvent_SP6F_SLA</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_SP6F_SLAEscalated</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_Phase6Loop_Merge</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_Phase6_QualityGateBRT</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Phase6_QualityGate</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_Phase6_Approval</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_Phase6Transition</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_Phase6Complete</bpmn:flowNodeRef>
@@ -201,7 +201,7 @@
       <bpmn:outgoing>Flow_QGRetry</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <bpmn:businessRuleTask id="Task_Phase6_QualityGateBRT" name="Phase 6&#10;Quality Gate" camunda:decisionRef="DMN_AutomationTierAssignment" camunda:decisionRefBinding="latest" camunda:resultVariable="qualityGateResult" camunda:mapDecisionResult="singleResult">
+    <bpmn:businessRuleTask id="Task_Phase6_QualityGate" name="Phase 6&#10;Quality Gate" camunda:decisionRef="DMN_AutomationTierAssignment" camunda:decisionRefBinding="latest" camunda:resultVariable="qualityGateResult" camunda:mapDecisionResult="singleResult">
       <bpmn:incoming>Flow_QGPassed</bpmn:incoming>
       <bpmn:outgoing>Flow_Phase6QualityGate_Approval</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -248,11 +248,11 @@
     <bpmn:sequenceFlow id="Flow_SP6E_SP6F" sourceRef="SubProcess_6E_ComplianceGates" targetRef="SubProcess_6F_SprintReview" />
     <bpmn:sequenceFlow id="Flow_SP6F_SLA_End" sourceRef="BoundaryEvent_SP6F_SLA" targetRef="EndEvent_SP6F_SLAEscalated" />
     <bpmn:sequenceFlow id="Flow_SP6F_QG" sourceRef="SubProcess_6F_SprintReview" targetRef="Gateway_QualityGate" />
-    <bpmn:sequenceFlow id="Flow_QGPassed" name="Yes" sourceRef="Gateway_QualityGate" targetRef="Task_Phase6_QualityGateBRT" />
+    <bpmn:sequenceFlow id="Flow_QGPassed" name="Yes" sourceRef="Gateway_QualityGate" targetRef="Task_Phase6_QualityGate" />
     <bpmn:sequenceFlow id="Flow_QGRetry" name="Loop: Retry Sprint" sourceRef="Gateway_QualityGate" targetRef="Gateway_Phase6Loop_Merge">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${qualityGatePassed == false}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_Phase6QualityGate_Approval" sourceRef="Task_Phase6_QualityGateBRT" targetRef="Task_Phase6_Approval" />
+    <bpmn:sequenceFlow id="Flow_Phase6QualityGate_Approval" sourceRef="Task_Phase6_QualityGate" targetRef="Task_Phase6_Approval" />
     <bpmn:sequenceFlow id="Flow_Phase6Approval_Transition" sourceRef="Task_Phase6_Approval" targetRef="Event_Phase6Transition" />
     <bpmn:sequenceFlow id="Flow_Phase6Transition_End" sourceRef="Event_Phase6Transition" targetRef="EndEvent_Phase6Complete" />
 
@@ -723,7 +723,7 @@
       </bpmndi:BPMNShape>
 
 
-      <bpmndi:BPMNShape id="Task_Phase6_QualityGateBRT_di" bpmnElement="Task_Phase6_QualityGateBRT">
+      <bpmndi:BPMNShape id="Task_Phase6_QualityGate_di" bpmnElement="Task_Phase6_QualityGate">
         <dc:Bounds x="1725" y="187" width="140" height="80" />
       </bpmndi:BPMNShape>
 
@@ -741,7 +741,7 @@
       <bpmndi:BPMNShape id="EndEvent_Phase6Complete_di" bpmnElement="EndEvent_Phase6Complete">
         <dc:Bounds x="2225" y="94" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1732" y="137" width="86" height="40" />
+          <dc:Bounds x="2201" y="137" width="86" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
