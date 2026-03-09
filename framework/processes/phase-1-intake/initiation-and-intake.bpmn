@@ -57,6 +57,16 @@
 
     <bpmn:userTask id="Task_1_1_InitiativeRequest" name="1.1 Initiative&#10;Request Submission"
         camunda:candidateGroups="business-lane">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="regulatoryFlag_SOX" value="SOX: Determine if initiative affects financial reporting systems (Section 404 ITGC scope)" />
+          <camunda:property name="regulatoryFlag_GLBA" value="GLBA: Flag if vendor will access nonpublic personal information (NPI) — triggers Safeguards Rule assessment" />
+          <camunda:property name="regulatoryFlag_PCI" value="PCI DSS v4.0: Flag if initiative involves cardholder data (CHD) — triggers TPSP oversight requirements" />
+          <camunda:property name="regulatoryFlag_BSA_AML" value="BSA/AML: Flag if software touches transaction monitoring, KYC, SAR filing, or payment processing" />
+          <camunda:property name="regulatoryFlag_jurisdiction" value="Jurisdictional applicability: US-only, EU-only, or Dual (triggers DORA overlay when EU applies)" />
+          <camunda:property name="regulatoryFlag_CFPB" value="CFPB: Flag if software is consumer-facing (mobile banking, lending, servicing) — triggers UDAAP assessment" />
+        </camunda:properties>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_StartEvent_Task_1_1</bpmn:incoming>
       <bpmn:outgoing>Flow_Task_1_1_Task_1_2</bpmn:outgoing>
     </bpmn:userTask>
@@ -157,6 +167,11 @@
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_Regulatory" sourceRef="Task_1_2_AIPreScreening" targetRef="Annotation_Regulatory" />
 
+    <bpmn:textAnnotation id="TextAnnotation_RegFlags">
+      <bpmn:text>Regulatory Scoping: GLBA Safeguards Rule, PCI DSS v4.0, BSA/AML, CFPB, SOX Section 404, Jurisdictional (US/EU/Dual per OCC 2023-17 + DORA)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_RegFlags" sourceRef="Task_1_1_InitiativeRequest" targetRef="TextAnnotation_RegFlags" />
+
     <bpmn:textAnnotation id="Annotation_Automation">
       <bpmn:text>Automation Target: 75% | Phase SLA: Standard/High Risk 1-2 days | Minimal Risk 0.5 days | Activities 1.2-1.6: Fully automated (AI Agent, Rule Engine, Registry Query, BPM+API Integration, DMN Table)</bpmn:text>
     </bpmn:textAnnotation>
@@ -253,6 +268,15 @@
           <dc:Bounds x="1759" y="1009" width="83" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="TextAnnotation_RegFlags_di" bpmnElement="TextAnnotation_RegFlags">
+        <dc:Bounds x="500" y="-30" width="550" height="55" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Assoc_RegFlags_di" bpmnElement="Assoc_RegFlags">
+        <di:waypoint x="440" y="69" />
+        <di:waypoint x="500" y="25" />
+      </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNShape id="Annotation_Automation_di" bpmnElement="Annotation_Automation">
         <dc:Bounds x="230" y="1060" width="600" height="55" />
