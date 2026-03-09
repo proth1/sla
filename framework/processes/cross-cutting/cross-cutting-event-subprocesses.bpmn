@@ -328,11 +328,86 @@
         <bpmn:incoming>Flow_SP3_P2_Merge</bpmn:incoming>
         <bpmn:incoming>Flow_SP3_P3_Merge</bpmn:incoming>
         <bpmn:incoming>Flow_SP3_P4_Merge</bpmn:incoming>
-        <bpmn:outgoing>Flow_SP3_Merge_Contain</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP3_Merge_DORAGateway</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+
+      <bpmn:exclusiveGateway id="SP3_GW_DORAReporting" name="DORA Reporting&#10;Required?" default="Flow_SP3_DORA_No">
+        <bpmn:incoming>Flow_SP3_Merge_DORAGateway</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_DORA_Yes</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP3_DORA_No</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+
+      <bpmn:userTask id="SP3_Task_InitialNotification" name="Initial&#10;Notification" camunda:candidateGroups="compliance-lane">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="regulation" value="DORA Article 19(4)(a): Initial notification to competent authority" />
+          </camunda:properties>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SP3_DORA_Yes</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_InitNotif_IntRpt</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:boundaryEvent id="SP3_Timer_InitialNotif" name="4 Hour&#10;SLA" attachedToRef="SP3_Task_InitialNotification" cancelActivity="false">
+        <bpmn:outgoing>Flow_SP3_InitNotifSLA</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP3_TimerDef_InitialNotif">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT4H</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+
+      <bpmn:endEvent id="SP3_End_InitNotifEscalated" name="Initial Notif&#10;SLA Breach">
+        <bpmn:incoming>Flow_SP3_InitNotifSLA</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:userTask id="SP3_Task_IntermediateReport" name="Intermediate&#10;Report" camunda:candidateGroups="compliance-lane">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="regulation" value="DORA Article 19(4)(b): Intermediate report within 72 hours" />
+          </camunda:properties>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SP3_InitNotif_IntRpt</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_IntRpt_FinalRpt</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:boundaryEvent id="SP3_Timer_IntermediateRpt" name="72 Hour&#10;SLA" attachedToRef="SP3_Task_IntermediateReport" cancelActivity="false">
+        <bpmn:outgoing>Flow_SP3_IntRptSLA</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP3_TimerDef_IntermediateRpt">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+
+      <bpmn:endEvent id="SP3_End_IntRptEscalated" name="Intermediate Rpt&#10;SLA Breach">
+        <bpmn:incoming>Flow_SP3_IntRptSLA</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:userTask id="SP3_Task_FinalReport" name="Final&#10;Report" camunda:candidateGroups="compliance-lane">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="regulation" value="DORA Article 19(4)(c): Final report within 1 month" />
+          </camunda:properties>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SP3_IntRpt_FinalRpt</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_FinalRpt_DORAMerge</bpmn:outgoing>
+      </bpmn:userTask>
+
+      <bpmn:boundaryEvent id="SP3_Timer_FinalRpt" name="30 Day&#10;SLA" attachedToRef="SP3_Task_FinalReport" cancelActivity="false">
+        <bpmn:outgoing>Flow_SP3_FinalRptSLA</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP3_TimerDef_FinalRpt">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P30D</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+
+      <bpmn:endEvent id="SP3_End_FinalRptEscalated" name="Final Report&#10;SLA Breach">
+        <bpmn:incoming>Flow_SP3_FinalRptSLA</bpmn:incoming>
+      </bpmn:endEvent>
+
+      <bpmn:exclusiveGateway id="SP3_Gateway_DORAMerge">
+        <bpmn:incoming>Flow_SP3_FinalRpt_DORAMerge</bpmn:incoming>
+        <bpmn:incoming>Flow_SP3_DORA_No</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_DORAMerge_Contain</bpmn:outgoing>
       </bpmn:exclusiveGateway>
 
       <bpmn:userTask id="SP3_Task_Containment" name="Containment" camunda:candidateGroups="technical-assessment">
-        <bpmn:incoming>Flow_SP3_Merge_Contain</bpmn:incoming>
+        <bpmn:incoming>Flow_SP3_DORAMerge_Contain</bpmn:incoming>
         <bpmn:outgoing>Flow_SP3_Contain_Investigate</bpmn:outgoing>
       </bpmn:userTask>
 
@@ -373,14 +448,25 @@
       <bpmn:sequenceFlow id="Flow_SP3_P2_Merge" sourceRef="SP3_Task_P2Response" targetRef="SP3_Gateway_Merge" />
       <bpmn:sequenceFlow id="Flow_SP3_P3_Merge" sourceRef="SP3_Task_P3Response" targetRef="SP3_Gateway_Merge" />
       <bpmn:sequenceFlow id="Flow_SP3_P4_Merge" sourceRef="SP3_Task_P4Response" targetRef="SP3_Gateway_Merge" />
-      <bpmn:sequenceFlow id="Flow_SP3_Merge_Contain" sourceRef="SP3_Gateway_Merge" targetRef="SP3_Task_Containment" />
+      <bpmn:sequenceFlow id="Flow_SP3_Merge_DORAGateway" sourceRef="SP3_Gateway_Merge" targetRef="SP3_GW_DORAReporting" />
+      <bpmn:sequenceFlow id="Flow_SP3_DORA_Yes" name="Yes" sourceRef="SP3_GW_DORAReporting" targetRef="SP3_Task_InitialNotification">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{severity == 'P1' || severity == 'P2'}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_SP3_DORA_No" name="No" sourceRef="SP3_GW_DORAReporting" targetRef="SP3_Gateway_DORAMerge" />
+      <bpmn:sequenceFlow id="Flow_SP3_InitNotif_IntRpt" sourceRef="SP3_Task_InitialNotification" targetRef="SP3_Task_IntermediateReport" />
+      <bpmn:sequenceFlow id="Flow_SP3_InitNotifSLA" sourceRef="SP3_Timer_InitialNotif" targetRef="SP3_End_InitNotifEscalated" />
+      <bpmn:sequenceFlow id="Flow_SP3_IntRpt_FinalRpt" sourceRef="SP3_Task_IntermediateReport" targetRef="SP3_Task_FinalReport" />
+      <bpmn:sequenceFlow id="Flow_SP3_IntRptSLA" sourceRef="SP3_Timer_IntermediateRpt" targetRef="SP3_End_IntRptEscalated" />
+      <bpmn:sequenceFlow id="Flow_SP3_FinalRpt_DORAMerge" sourceRef="SP3_Task_FinalReport" targetRef="SP3_Gateway_DORAMerge" />
+      <bpmn:sequenceFlow id="Flow_SP3_FinalRptSLA" sourceRef="SP3_Timer_FinalRpt" targetRef="SP3_End_FinalRptEscalated" />
+      <bpmn:sequenceFlow id="Flow_SP3_DORAMerge_Contain" sourceRef="SP3_Gateway_DORAMerge" targetRef="SP3_Task_Containment" />
       <bpmn:sequenceFlow id="Flow_SP3_Contain_Investigate" sourceRef="SP3_Task_Containment" targetRef="SP3_Task_Investigation" />
       <bpmn:sequenceFlow id="Flow_SP3_Investigate_Resolve" sourceRef="SP3_Task_Investigation" targetRef="SP3_Task_Resolution" />
       <bpmn:sequenceFlow id="Flow_SP3_Resolve_PostMortem" sourceRef="SP3_Task_Resolution" targetRef="SP3_Task_PostMortem" />
       <bpmn:sequenceFlow id="Flow_SP3_PostMortem_End" sourceRef="SP3_Task_PostMortem" targetRef="SP3_End_Resolved" />
 
       <bpmn:textAnnotation id="SP3_Annotation_SLA">
-        <bpmn:text>Incident SLA Matrix: P1=15min | P2=1hr | P3=4hr | P4=24hr. OCC 2023-17: Third-party incident notification. DORA: Major ICT incident reporting within 4 hours. SOX: Incident impact on financial controls.</bpmn:text>
+        <bpmn:text>Incident SLA Matrix: P1=15min | P2=1hr | P3=4hr | P4=24hr. OCC 2023-17: Third-party incident notification. DORA Article 19: Three-stage reporting for major ICT incidents — Initial notification (4h), Intermediate report (72h), Final report (1 month). P1/P2 severity triggers mandatory DORA reporting. SOX: Incident impact on financial controls.</bpmn:text>
       </bpmn:textAnnotation>
       <bpmn:association id="SP3_Assoc_SLA" sourceRef="SP3_Task_Triage" targetRef="SP3_Annotation_SLA" />
     </bpmn:subProcess>
@@ -1160,35 +1246,103 @@
         <dc:Bounds x="675" y="75" width="50" height="50" />
       </bpmndi:BPMNShape>
 
+      <bpmndi:BPMNShape id="SP3_GW_DORAReporting_di" bpmnElement="SP3_GW_DORAReporting" isMarkerVisible="true">
+        <dc:Bounds x="790" y="75" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="770" y="132" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_InitialNotification_di" bpmnElement="SP3_Task_InitialNotification">
+        <dc:Bounds x="910" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Timer_InitialNotif_di" bpmnElement="SP3_Timer_InitialNotif">
+        <dc:Bounds x="942" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="986" y="126" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_End_InitNotifEscalated_di" bpmnElement="SP3_End_InitNotifEscalated">
+        <dc:Bounds x="942" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="918" y="225" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_IntermediateReport_di" bpmnElement="SP3_Task_IntermediateReport">
+        <dc:Bounds x="1070" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Timer_IntermediateRpt_di" bpmnElement="SP3_Timer_IntermediateRpt">
+        <dc:Bounds x="1102" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1146" y="126" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_End_IntRptEscalated_di" bpmnElement="SP3_End_IntRptEscalated">
+        <dc:Bounds x="1102" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1074" y="225" width="92" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Task_FinalReport_di" bpmnElement="SP3_Task_FinalReport">
+        <dc:Bounds x="1230" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Timer_FinalRpt_di" bpmnElement="SP3_Timer_FinalRpt">
+        <dc:Bounds x="1262" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1306" y="126" width="46" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_End_FinalRptEscalated_di" bpmnElement="SP3_End_FinalRptEscalated">
+        <dc:Bounds x="1262" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1238" y="225" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP3_Gateway_DORAMerge_di" bpmnElement="SP3_Gateway_DORAMerge" isMarkerVisible="true">
+        <dc:Bounds x="1395" y="75" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="SP3_Task_Containment_di" bpmnElement="SP3_Task_Containment">
-        <dc:Bounds x="790" y="60" width="100" height="80" />
+        <dc:Bounds x="1510" y="60" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SP3_Task_Investigation_di" bpmnElement="SP3_Task_Investigation">
-        <dc:Bounds x="950" y="60" width="100" height="80" />
+        <dc:Bounds x="1670" y="60" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SP3_Task_Resolution_di" bpmnElement="SP3_Task_Resolution">
-        <dc:Bounds x="1110" y="60" width="100" height="80" />
+        <dc:Bounds x="1830" y="60" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SP3_Task_PostMortem_di" bpmnElement="SP3_Task_PostMortem">
-        <dc:Bounds x="1270" y="60" width="100" height="80" />
+        <dc:Bounds x="1990" y="60" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SP3_End_Resolved_di" bpmnElement="SP3_End_Resolved">
-        <dc:Bounds x="1432" y="82" width="36" height="36" />
+        <dc:Bounds x="2152" y="82" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1410" y="125" width="80" height="27" />
+          <dc:Bounds x="2130" y="125" width="80" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="SP3_Annotation_SLA_di" bpmnElement="SP3_Annotation_SLA">
-        <dc:Bounds x="240" y="680" width="700" height="55" />
+        <dc:Bounds x="240" y="680" width="900" height="55" />
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Flow_SP3_Start_Triage_di" bpmnElement="Flow_SP3_Start_Triage">
@@ -1269,29 +1423,82 @@
         <di:waypoint x="700" y="125" />
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_SP3_Merge_Contain_di" bpmnElement="Flow_SP3_Merge_Contain">
+      <bpmndi:BPMNEdge id="Flow_SP3_Merge_DORAGateway_di" bpmnElement="Flow_SP3_Merge_DORAGateway">
         <di:waypoint x="725" y="100" />
         <di:waypoint x="790" y="100" />
       </bpmndi:BPMNEdge>
 
+      <bpmndi:BPMNEdge id="Flow_SP3_DORA_Yes_di" bpmnElement="Flow_SP3_DORA_Yes">
+        <di:waypoint x="840" y="100" />
+        <di:waypoint x="910" y="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="855" y="82" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_DORA_No_di" bpmnElement="Flow_SP3_DORA_No">
+        <di:waypoint x="815" y="125" />
+        <di:waypoint x="815" y="280" />
+        <di:waypoint x="1420" y="280" />
+        <di:waypoint x="1420" y="125" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="825" y="262" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_InitNotif_IntRpt_di" bpmnElement="Flow_SP3_InitNotif_IntRpt">
+        <di:waypoint x="1010" y="100" />
+        <di:waypoint x="1070" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_InitNotifSLA_di" bpmnElement="Flow_SP3_InitNotifSLA">
+        <di:waypoint x="960" y="158" />
+        <di:waypoint x="960" y="182" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_IntRpt_FinalRpt_di" bpmnElement="Flow_SP3_IntRpt_FinalRpt">
+        <di:waypoint x="1170" y="100" />
+        <di:waypoint x="1230" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_IntRptSLA_di" bpmnElement="Flow_SP3_IntRptSLA">
+        <di:waypoint x="1120" y="158" />
+        <di:waypoint x="1120" y="182" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_FinalRpt_DORAMerge_di" bpmnElement="Flow_SP3_FinalRpt_DORAMerge">
+        <di:waypoint x="1330" y="100" />
+        <di:waypoint x="1395" y="100" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_FinalRptSLA_di" bpmnElement="Flow_SP3_FinalRptSLA">
+        <di:waypoint x="1280" y="158" />
+        <di:waypoint x="1280" y="182" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SP3_DORAMerge_Contain_di" bpmnElement="Flow_SP3_DORAMerge_Contain">
+        <di:waypoint x="1445" y="100" />
+        <di:waypoint x="1510" y="100" />
+      </bpmndi:BPMNEdge>
+
       <bpmndi:BPMNEdge id="Flow_SP3_Contain_Investigate_di" bpmnElement="Flow_SP3_Contain_Investigate">
-        <di:waypoint x="890" y="100" />
-        <di:waypoint x="950" y="100" />
+        <di:waypoint x="1610" y="100" />
+        <di:waypoint x="1670" y="100" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP3_Investigate_Resolve_di" bpmnElement="Flow_SP3_Investigate_Resolve">
-        <di:waypoint x="1050" y="100" />
-        <di:waypoint x="1110" y="100" />
+        <di:waypoint x="1770" y="100" />
+        <di:waypoint x="1830" y="100" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP3_Resolve_PostMortem_di" bpmnElement="Flow_SP3_Resolve_PostMortem">
-        <di:waypoint x="1210" y="100" />
-        <di:waypoint x="1270" y="100" />
+        <di:waypoint x="1930" y="100" />
+        <di:waypoint x="1990" y="100" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_SP3_PostMortem_End_di" bpmnElement="Flow_SP3_PostMortem_End">
-        <di:waypoint x="1370" y="100" />
-        <di:waypoint x="1432" y="100" />
+        <di:waypoint x="2090" y="100" />
+        <di:waypoint x="2152" y="100" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="SP3_Assoc_SLA_di" bpmnElement="SP3_Assoc_SLA">
