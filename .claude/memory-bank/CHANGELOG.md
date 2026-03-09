@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026.03.98] - 2026-03-09
+
+### Changed
+- Onboarding v12: SP1 screening cleanup — restore gateway name ("Existing Solution?"), add candidateGroups to Quarterback tasks, add conditionExpressions to all decision flows, fix Build path routing to Deep Dive SP, remove orphaned end event, rename "Kill it" to "Request Withdrawn" (PR #112)
+
 ## [2026.03.97] - 2026-03-09
 
 ### Fixed

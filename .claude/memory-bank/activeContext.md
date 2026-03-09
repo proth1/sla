@@ -2,25 +2,25 @@
 
 ## Last Session Summary
 
-**Date**: 2026-03-08
+**Date**: 2026-03-09
 **Branch**: main
-**Release Version**: 2026.03.89
+**Release Version**: 2026.03.98
 
-### Secure Vendor Portal for Mini RFP (SLA-60, PR #109)
-- New vendor-facing questionnaire portal at `/vendor-portal.html`
-- Token-based auth (CSPRNG 96-bit, 14-day TTL, single-use enforcement)
-- Auth Worker bypass for vendor paths (no Descope OTP required)
-- API Worker: 4 vendor routes (token generation, status, questionnaire, submit)
-- Camunda message correlation (`MiniRFPResponseMessage`) for BPMN receive task
-- 27 Playwright E2E tests passing against live Cloudflare deployment
-- Deployed to showcase.agentic-innovations.com
+### Onboarding v12 — SP1 Cleanup (SLA-61, PR #112)
+- Created v12 from v11 with SP1 screening cleanup
+- Restored gateway name "Existing Solution?" (was overwritten by Modeler)
+- Added candidateGroups to Quarterback Assistance and Pursue Exception tasks
+- Added conditionExpressions to all decision gateway flows (GW_BypassProcess, Gateway_1rppvq7, GW_TriageDecision)
+- Fixed Build path: now routes to Deep Dive SP instead of orphaned end event
+- Removed orphaned Event_1whn5yx, removed unnecessary single-flow gateway
+- Renamed "Kill it" to "Request Withdrawn"
 
 ## Platform Stats
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.89 |
-| Total PRs Merged | 111 |
+| Release Version | 2026.03.98 |
+| Total PRs Merged | 112 |
 | DMN Decision Tables | 18 |
 | Cross-Cutting Sub-Processes | 6 |
 | Camunda 8 Forms | 52+ |
