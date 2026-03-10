@@ -1,5 +1,18 @@
 # Changelog
 
+## [2026.03.107] - 2026-03-10
+
+### Changed
+- Onboarding v15 BPMN: renamed gateway to "Continue working the Request?", end event to "Request Cancelled", added "Continue with Request?" gateway + "Deal Killed" end event in SP1 (PR #126)
+
+### Added
+- Models in PowerPoint PPTX for customer presentations (PR #126)
+
+## [2026.03.106] - 2026-03-10
+
+### Added
+- SLA-79: ADF-inspired UI enhancements for showcase apps — Task Worker filter pills (My Tasks/All Open/Completed), sort dropdown, collapsible metadata header, persona-aware comments, contextual SVG empty states; Dashboard color-coded age badges, vertical task timeline, illustrated empty states; backend in-memory comment endpoints (PR #125)
+
 ## [2026.03.105] - 2026-03-09
 
 ### Added
