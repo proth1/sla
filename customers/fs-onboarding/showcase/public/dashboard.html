@@ -117,6 +117,30 @@ tbody td{padding:10px 16px;vertical-align:middle}
 .btn-view:hover{background:rgba(59,130,246,0.2);border-color:var(--accent)}
 .empty-state{text-align:center;padding:48px 20px;color:var(--text3)}
 .empty-state h3{font-size:16px;color:var(--text2);margin-bottom:6px}
+.empty-state-icon{margin:0 auto 12px;opacity:.35}
+.empty-state-icon svg{width:56px;height:56px}
+.empty-state p{font-size:13px;line-height:1.5;max-width:280px;margin:0 auto}
+.empty-state .btn-start{margin-top:12px;display:inline-block;padding:8px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;font-family:inherit;transition:all .2s}
+.empty-state .btn-start:hover{background:#2563eb}
+.age-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace}
+.age-badge.age-green{background:rgba(34,197,94,0.12);color:#4ade80}
+.age-badge.age-yellow{background:rgba(245,158,11,0.12);color:#fbbf24}
+.age-badge.age-red{background:rgba(239,68,68,0.12);color:#f87171}
+
+/* --- TASK TIMELINE --- */
+.timeline{padding:12px 20px}
+.timeline-item{display:flex;gap:12px;position:relative;padding-bottom:20px}
+.timeline-item:last-child{padding-bottom:0}
+.timeline-item::before{content:'';position:absolute;left:11px;top:24px;bottom:0;width:2px;background:var(--border)}
+.timeline-item:last-child::before{display:none}
+.timeline-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;z-index:1}
+.timeline-dot.tl-completed{background:rgba(34,197,94,0.15);color:var(--success);border:2px solid var(--success)}
+.timeline-dot.tl-active{background:rgba(59,130,246,0.15);color:var(--accent);border:2px solid var(--accent);animation:pulse 2s infinite}
+.timeline-dot.tl-pending{background:var(--surface2);color:var(--text3);border:2px solid var(--border)}
+.timeline-body{flex:1;min-width:0}
+.timeline-body .tl-name{font-size:13px;font-weight:500;color:var(--text)}
+.timeline-body .tl-info{font-size:11px;color:var(--text3);display:flex;gap:8px;margin-top:2px;flex-wrap:wrap}
+.timeline-body .tl-duration{font-family:'JetBrains Mono',monospace;font-size:11px}
 
 /* --- TASK QUEUE --- */
 .bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -683,7 +707,13 @@ function renderInstanceTable() {
   });
 
   if (data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><h3>No instances found</h3><p>No process instances match the current filter.</p></div></td></tr>`;
+    const isFiltered = state.filter !== 'all';
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state">
+      <div class="empty-state-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">${isFiltered ? '<path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>' : '<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>'}</svg></div>
+      <h3>${isFiltered ? 'No matching instances' : 'No process instances yet'}</h3>
+      <p>${isFiltered ? 'No instances match the "' + capitalize(state.filter) + '" filter.' : 'Start a new onboarding process from the Showcase to see it here.'}</p>
+      ${!isFiltered ? '<a href="/" class="btn-start">Open Showcase</a>' : ''}
+    </div></td></tr>`;
     return;
   }
 
@@ -731,7 +761,11 @@ function renderTaskQueue() {
   count.textContent = state.tasks.length;
 
   if (state.tasks.length === 0) {
-    list.innerHTML = '<div class="empty-state" style="padding:32px"><p>No pending tasks</p></div>';
+    list.innerHTML = `<div class="empty-state" style="padding:32px">
+      <div class="empty-state-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+      <h3>All caught up!</h3>
+      <p>No pending tasks in the queue.</p>
+    </div>`;
     return;
   }
 
@@ -751,7 +785,7 @@ function renderTaskQueue() {
       const name = (task.name || 'Unnamed').replace(/\n/g, ' ');
       const age = task.creationDate ? timeSince(new Date(task.creationDate)) : '--';
       const ageMs = task.creationDate ? Date.now() - new Date(task.creationDate).getTime() : 0;
-      const ageCls = ageMs > 86400000 ? 'critical' : ageMs > 3600000 ? 'stale' : '';
+      const ageBadgeCls = ageMs > 14400000 ? 'age-red' : ageMs > 3600000 ? 'age-yellow' : 'age-green';
       const assignee = task.assignee || '';
       const groups = (task.candidateGroups || []).join(', ');
       html += `<div class="queue-item">
@@ -765,7 +799,7 @@ function renderTaskQueue() {
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <button class="btn-reassign-inline" title="Reassign task" onclick="openReassignModal('${task.id}', '${esc(name).replace(/'/g, "\\&#39;")}', '${(assignee || '').replace(/'/g, "\\&#39;")}', '${(groups || '').replace(/'/g, "\\&#39;")}')">&#9998;</button>
-          <div class="queue-age ${ageCls}">${age}</div>
+          <span class="age-badge ${ageBadgeCls}">${age}</span>
         </div>
       </div>`;
     }
@@ -816,7 +850,10 @@ function renderActivity() {
   const recent = activities.slice(0, 20);
 
   if (recent.length === 0) {
-    list.innerHTML = '<div class="empty-state" style="padding:32px"><p>No recent activity</p></div>';
+    list.innerHTML = `<div class="empty-state" style="padding:32px">
+      <div class="empty-state-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+      <p>No recent activity to display</p>
+    </div>`;
     return;
   }
 
@@ -957,25 +994,61 @@ function openDetailPanel(instanceKey) {
     if (inst.phase) html += metaRow('Current Phase', `<span class="phase-badge ${PHASE_CSS[inst.phase]}">${inst.phase}: ${PHASE_NAMES[inst.phase]}</span>`);
     html += `</div>`;
 
-    // Pending tasks
-    html += `<div class="detail-section-title">Pending Tasks (${pendingTasks.length})</div>`;
-    if (pendingTasks.length === 0) {
-      html += `<div style="padding:16px 20px;font-size:12px;color:var(--text3)">No pending tasks</div>`;
-    } else {
-      for (const task of pendingTasks) {
-        html += renderDetailTask(task, 'pending');
-      }
+    // Task Timeline
+    html += `<div class="detail-section-title">Task Timeline (${completedTasks.length + pendingTasks.length})</div>`;
+    html += '<div class="timeline">';
+
+    // Combine and sort: completed first (by completion time), then pending
+    const completedSorted = [...completedTasks].sort((a, b) => {
+      const ta = a.completionDate || a.creationDate || '';
+      const tb = b.completionDate || b.creationDate || '';
+      return ta.localeCompare(tb);
+    });
+    const pendingSorted = [...pendingTasks].sort((a, b) => (a.creationDate || '').localeCompare(b.creationDate || ''));
+
+    for (const task of completedSorted) {
+      const name = (task.name || 'Unnamed').replace(/\n/g, ' ');
+      const startTime = task.creationDate ? formatDate(task.creationDate) : '--';
+      const endTime = task.completionDate ? formatDate(task.completionDate) : '--';
+      const durationMs = task.creationDate && task.completionDate ? new Date(task.completionDate) - new Date(task.creationDate) : 0;
+      const duration = durationMs > 0 ? formatDuration(durationMs) : '--';
+      const assignee = task.assignee || 'Unassigned';
+      html += `<div class="timeline-item">
+        <div class="timeline-dot tl-completed"><svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M13.485 3.515a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-3.5-3.5a1 1 0 011.414-1.414L5.75 9.793l6.293-6.278a1 1 0 011.414 0z"/></svg></div>
+        <div class="timeline-body">
+          <div class="tl-name">${esc(name)}</div>
+          <div class="tl-info">
+            <span>${esc(assignee)}</span>
+            <span class="tl-duration">${duration}</span>
+            <span>${startTime}</span>
+          </div>
+        </div>
+      </div>`;
     }
 
-    // Completed tasks
-    html += `<div class="detail-section-title">Completed Tasks (${completedTasks.length})</div>`;
-    if (completedTasks.length === 0) {
-      html += `<div style="padding:16px 20px;font-size:12px;color:var(--text3)">No completed tasks</div>`;
-    } else {
-      for (const task of completedTasks) {
-        html += renderDetailTask(task, 'completed');
-      }
+    for (const task of pendingSorted) {
+      const name = (task.name || 'Unnamed').replace(/\n/g, ' ');
+      const startTime = task.creationDate ? formatDate(task.creationDate) : '--';
+      const age = task.creationDate ? formatDuration(Date.now() - new Date(task.creationDate).getTime()) : '--';
+      const assignee = task.assignee || 'Unassigned';
+      html += `<div class="timeline-item">
+        <div class="timeline-dot tl-active"><svg width="10" height="10" fill="currentColor" viewBox="0 0 16 16"><circle cx="8" cy="8" r="4"/></svg></div>
+        <div class="timeline-body">
+          <div class="tl-name">${esc(name)}</div>
+          <div class="tl-info">
+            <span>${esc(assignee)}</span>
+            <span class="tl-duration">Active ${age}</span>
+            <span>${startTime}</span>
+            <button class="btn-reassign" onclick="openReassignModal('${task.id}', '${esc(name).replace(/'/g, "\\&#39;")}', '${(task.assignee || '').replace(/'/g, "\\&#39;")}', '${(task.candidateGroups || []).join(', ').replace(/'/g, "\\&#39;")}')">Reassign</button>
+          </div>
+        </div>
+      </div>`;
     }
+
+    if (completedTasks.length === 0 && pendingTasks.length === 0) {
+      html += `<div style="padding:16px 0;font-size:12px;color:var(--text3);text-align:center">No task history available</div>`;
+    }
+    html += '</div>';
 
     // Operate link
     const operateUrl = `https://ric-1.operate.camunda.io/425f10fa-c898-4b4b-b303-eac095286716/#/instances/${inst.key}`;
