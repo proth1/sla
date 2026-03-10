@@ -1,5 +1,12 @@
 # Changelog
 
+## [2026.03.108] - 2026-03-10
+
+### Fixed
+- Onboarding v16 BPMN: add missing conditionExpressions on Gateway_1pkm06o (deepDiveApproved) and Gateway_1kdy51y (continueWithRequest) with default attributes — fixes Zeebe runtime failures (PR #128)
+- Fix GW_TriageDecision condition variable semantic mismatch (triageDecision → continueWorkingRequest)
+- Rename "Deep Dive Not Approved" → "Deep Dive Rejected" (past-tense end event convention)
+
 ## [2026.03.107] - 2026-03-10
 
 ### Changed
