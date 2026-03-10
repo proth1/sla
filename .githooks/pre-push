@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Pre-push hook: Block direct pushes to main/master.
+set -euo pipefail
+while read -r local_ref local_sha remote_ref remote_sha; do
+    if [[ "${remote_ref}" == "refs/heads/main" || "${remote_ref}" == "refs/heads/master" ]]; then
+        if [[ "${ALLOW_MAIN_PUSH:-}" == "1" ]]; then continue; fi
+        echo ""
+        echo "PUSH BLOCKED: Direct pushes to '${remote_ref##*/}' are not allowed."
+        echo ""
+        echo "Use the SDLC workflow:"
+        echo "  1. git push -u origin feature/{issue}-{description}"
+        echo "  2. gh pr create"
+        echo "  3. gh pr merge"
+        echo ""
+        echo "Escape hatch: ALLOW_MAIN_PUSH=1 git push ..."
+        echo ""
+        exit 1
+    fi
+done
+exit 0
