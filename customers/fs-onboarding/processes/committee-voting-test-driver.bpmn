@@ -104,7 +104,7 @@
         <di:waypoint x="315" y="120" />
         <di:waypoint x="390" y="120" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="323" y="96" width="27" height="27" />
+          <dc:Bounds x="336" y="89" width="28" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ManualMode_di" bpmnElement="Flow_ManualMode">
