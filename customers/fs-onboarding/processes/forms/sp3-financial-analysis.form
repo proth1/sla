@@ -74,6 +74,30 @@
           "key": "tco5Year",
           "label": "Total Cost of Ownership (5-year)",
           "id": "Field_011"
+        },
+        {
+          "type": "select",
+          "key": "expenseClassification",
+          "label": "Expense Classification",
+          "description": "SaaS/subscription = OPEX; Custom development = CAPEX; Hybrid = Split",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "CAPEX",
+              "value": "CAPEX"
+            },
+            {
+              "label": "OPEX",
+              "value": "OPEX"
+            },
+            {
+              "label": "Split",
+              "value": "Split"
+            }
+          ],
+          "id": "Field_026"
         }
       ]
     },

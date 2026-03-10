@@ -28,6 +28,14 @@ SLA (Software Lifecycle Automation) is an **Enterprise Software Governance** fra
 - `scripts/validators/` — JavaScript BPMN validators
 - `infrastructure/cloudflare-workers/sla-presentation-auth/` — Cloudflare Worker for OTP-protected presentation
 
+## Setup
+
+After cloning, enable git hooks (branch protection + commit message validation):
+```bash
+git config core.hooksPath .githooks
+```
+This is done automatically by Claude Code's SessionStart hook.
+
 ## Commands
 
 ### Validate BPMN files

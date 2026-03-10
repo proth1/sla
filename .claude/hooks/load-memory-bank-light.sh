@@ -4,6 +4,12 @@
 
 MEMORY_DIR="$CLAUDE_PROJECT_DIR/.claude/memory-bank"
 
+# Ensure git hooks are active (idempotent)
+CURRENT_HOOKS_PATH=$(git -C "$CLAUDE_PROJECT_DIR" config core.hooksPath 2>/dev/null || echo "")
+if [ "$CURRENT_HOOKS_PATH" != ".githooks" ] && [ -d "$CLAUDE_PROJECT_DIR/.githooks" ]; then
+  git -C "$CLAUDE_PROJECT_DIR" config core.hooksPath .githooks
+fi
+
 # Auto-pull latest from origin (silent, non-blocking)
 BRANCH=$(git -C "$CLAUDE_PROJECT_DIR" branch --show-current 2>/dev/null || echo "unknown")
 PULL_STATUS=""

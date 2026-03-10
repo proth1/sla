@@ -716,8 +716,31 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
           </zeebe:properties>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_SP3_P4</bpmn:incoming>
-        <bpmn:outgoing>Flow_SP3_P4J</bpmn:outgoing>
+        <bpmn:outgoing>Flow_SP3_FA_to_BRT</bpmn:outgoing>
       </bpmn:userTask>
+      <bpmn:boundaryEvent id="Timer_FinancialSLA" name="3 Day&#10;SLA" cancelActivity="false" attachedToRef="Task_FinancialAnalysis">
+        <bpmn:outgoing>Flow_FinancialSLA</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_FinSLA">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:boundaryEvent>
+      <bpmn:endEvent id="End_FinancialSLABreach" name="Financial&#10;SLA Breach">
+        <bpmn:incoming>Flow_FinancialSLA</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_FinancialSLA" sourceRef="Timer_FinancialSLA" targetRef="End_FinancialSLABreach" />
+      <bpmn:businessRuleTask id="Task_FinancialApprovalRouting" name="Approval&#10;Authority Check">
+        <bpmn:extensionElements>
+          <zeebe:calledDecision decisionId="OB_DMN_FinancialApprovalAuthority" resultVariable="financialApprovalResult" />
+          <zeebe:properties>
+            <zeebe:property name="topics" value="Funding" />
+            <zeebe:property name="raci_r" value="Finance" />
+            <zeebe:property name="raci_a" value="Finance" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_SP3_FA_to_BRT</bpmn:incoming>
+        <bpmn:outgoing>Flow_SP3_P4J</bpmn:outgoing>
+      </bpmn:businessRuleTask>
+      <bpmn:sequenceFlow id="Flow_SP3_FA_to_BRT" sourceRef="Task_FinancialAnalysis" targetRef="Task_FinancialApprovalRouting" />
       <bpmn:userTask id="Task_AssessVendorLandscape" name="Assess Vendor&#10;Landscape">
         <bpmn:documentation>Conduct a comprehensive assessment of the vendor landscape for the Buy pathway. Identify potential vendors through market research, analyst reports, peer benchmarking, and the organization's approved vendor registry. Evaluate vendor capabilities against requirements, assess market positioning, and develop a shortlist of qualified vendors to invite for formal proposal. Consider concentration risk with existing vendor portfolio.</bpmn:documentation>
         <bpmn:extensionElements>
@@ -832,7 +855,7 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP3_P2J" sourceRef="Task_SecurityAssessment" targetRef="GW_MergeSecurityAssessment" />
       <bpmn:sequenceFlow id="Flow_SP3_P2J_Merged" sourceRef="GW_MergeSecurityAssessment" targetRef="GW_ParallelJoin" />
-      <bpmn:sequenceFlow id="Flow_SP3_P4J" sourceRef="Task_FinancialAnalysis" targetRef="GW_ParallelJoin" />
+      <bpmn:sequenceFlow id="Flow_SP3_P4J" sourceRef="Task_FinancialApprovalRouting" targetRef="GW_ParallelJoin" />
       <bpmn:sequenceFlow id="Flow_SP3_P5J" sourceRef="Task_AssessVendorLandscape" targetRef="GW_ParallelJoin" />
       <bpmn:sequenceFlow id="Flow_16tnf77" sourceRef="Task_RiskCompliance" targetRef="GW_ParallelJoin" />
       <bpmn:sequenceFlow id="Flow_0vzcnuh" sourceRef="GW_ParallelSplit" targetRef="Task_RiskCompliance">
@@ -2149,6 +2172,21 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       <bpmndi:BPMNShape id="Task_FinancialAnalysis_di" bpmnElement="Task_FinancialAnalysis">
         <dc:Bounds x="828" y="829" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_FinancialSLA_di" bpmnElement="Timer_FinancialSLA">
+        <dc:Bounds x="860" y="891" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="894" y="925" width="29" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_FinancialSLABreach_di" bpmnElement="End_FinancialSLABreach">
+        <dc:Bounds x="960" y="940" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="944" y="983" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FinancialApprovalRouting_di" bpmnElement="Task_FinancialApprovalRouting">
+        <dc:Bounds x="1000" y="829" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_AssessVendorLandscape_di" bpmnElement="Task_AssessVendorLandscape">
         <dc:Bounds x="828" y="938" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -2268,10 +2306,19 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <di:waypoint x="1360" y="220" />
         <di:waypoint x="1360" y="565" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP3_P4J_di" bpmnElement="Flow_SP3_P4J">
+      <bpmndi:BPMNEdge id="Flow_SP3_FA_to_BRT_di" bpmnElement="Flow_SP3_FA_to_BRT">
         <di:waypoint x="928" y="869" />
+        <di:waypoint x="1000" y="869" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP3_P4J_di" bpmnElement="Flow_SP3_P4J">
+        <di:waypoint x="1100" y="869" />
         <di:waypoint x="1360" y="869" />
         <di:waypoint x="1360" y="615" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_FinancialSLA_di" bpmnElement="Flow_FinancialSLA">
+        <di:waypoint x="878" y="927" />
+        <di:waypoint x="878" y="958" />
+        <di:waypoint x="960" y="958" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP3_P5J_di" bpmnElement="Flow_SP3_P5J">
         <di:waypoint x="928" y="978" />

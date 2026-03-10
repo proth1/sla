@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="OB-DMN11-FinancialApprovalAuthority-definitions"
+             name="OB-DMN-11: Financial Approval Authority"
+             namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="OB_DMN_FinancialApprovalAuthority"
+            name="Financial Approval Authority"
+            camunda:historyTimeToLive="180">
+    <decisionTable id="OB_DMN_FinancialApprovalAuthority-table" hitPolicy="FIRST">
+
+      <input id="ob11-input-budgetRange" label="Budget Range">
+        <inputExpression id="ob11-inputExpr-budgetRange" typeRef="string">
+          <text>budgetRange</text>
+        </inputExpression>
+        <inputValues id="ob11-inputVals-budgetRange">
+          <text>"under_25k","25k_100k","100k_500k","over_500k"</text>
+        </inputValues>
+      </input>
+
+      <input id="ob11-input-costCenter" label="Cost Center">
+        <inputExpression id="ob11-inputExpr-costCenter" typeRef="string">
+          <text>costCenter</text>
+        </inputExpression>
+      </input>
+
+      <input id="ob11-input-businessUnit" label="Business Unit">
+        <inputExpression id="ob11-inputExpr-businessUnit" typeRef="string">
+          <text>businessUnit</text>
+        </inputExpression>
+      </input>
+
+      <output id="ob11-output-requiredApprovalLevel"
+              label="Required Approval Level"
+              name="requiredApprovalLevel"
+              typeRef="string" />
+
+      <output id="ob11-output-approvalThreshold"
+              label="Approval Threshold"
+              name="approvalThreshold"
+              typeRef="integer" />
+
+      <!-- R1: Over $500K requires CFO approval -->
+      <rule id="ob11-rule-1">
+        <description>Over $500K requires CFO approval</description>
+        <inputEntry id="ob11-ie-1-1"><text>"over_500k"</text></inputEntry>
+        <inputEntry id="ob11-ie-1-2"><text>-</text></inputEntry>
+        <inputEntry id="ob11-ie-1-3"><text>-</text></inputEntry>
+        <outputEntry id="ob11-oe-1-1"><text>"CFO"</text></outputEntry>
+        <outputEntry id="ob11-oe-1-2"><text>500000</text></outputEntry>
+      </rule>
+
+      <!-- R2: $100K-$500K requires VP approval -->
+      <rule id="ob11-rule-2">
+        <description>$100K-$500K requires VP approval</description>
+        <inputEntry id="ob11-ie-2-1"><text>"100k_500k"</text></inputEntry>
+        <inputEntry id="ob11-ie-2-2"><text>-</text></inputEntry>
+        <inputEntry id="ob11-ie-2-3"><text>-</text></inputEntry>
+        <outputEntry id="ob11-oe-2-1"><text>"VP"</text></outputEntry>
+        <outputEntry id="ob11-oe-2-2"><text>100000</text></outputEntry>
+      </rule>
+
+      <!-- R3: $25K-$100K requires Director approval -->
+      <rule id="ob11-rule-3">
+        <description>$25K-$100K requires Director approval</description>
+        <inputEntry id="ob11-ie-3-1"><text>"25k_100k"</text></inputEntry>
+        <inputEntry id="ob11-ie-3-2"><text>-</text></inputEntry>
+        <inputEntry id="ob11-ie-3-3"><text>-</text></inputEntry>
+        <outputEntry id="ob11-oe-3-1"><text>"Director"</text></outputEntry>
+        <outputEntry id="ob11-oe-3-2"><text>25000</text></outputEntry>
+      </rule>
+
+      <!-- R4: Under $25K requires Manager approval -->
+      <rule id="ob11-rule-4">
+        <description>Under $25K requires Manager approval</description>
+        <inputEntry id="ob11-ie-4-1"><text>"under_25k"</text></inputEntry>
+        <inputEntry id="ob11-ie-4-2"><text>-</text></inputEntry>
+        <inputEntry id="ob11-ie-4-3"><text>-</text></inputEntry>
+        <outputEntry id="ob11-oe-4-1"><text>"Manager"</text></outputEntry>
+        <outputEntry id="ob11-oe-4-2"><text>0</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="OB-DMN11-diagram">
+      <dmndi:DMNShape id="OB-DMN11-shape" dmnElementRef="OB_DMN_FinancialApprovalAuthority">
+        <dc:Bounds x="100" y="100" width="380" height="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

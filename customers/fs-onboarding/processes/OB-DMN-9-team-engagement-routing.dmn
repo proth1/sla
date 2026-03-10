@@ -249,6 +249,38 @@
         <outputEntry id="ob9-oe-10-4"><text>"Multiple certification gaps require full security assessment"</text></outputEntry>
       </rule>
 
+      <!-- R12: Standard finance review ($25K-$500K) -->
+      <rule id="ob9-rule-12">
+        <description>Mid-range budget requires standard finance review</description>
+        <inputEntry id="ob9-ie-12-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-12-2"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-12-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-12-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-12-5"><text>"25k_100k","100k_500k"</text></inputEntry>
+        <inputEntry id="ob9-ie-12-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-12-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-12-1"><text>"finance-lane"</text></outputEntry>
+        <outputEntry id="ob9-oe-12-2"><text>"standard"</text></outputEntry>
+        <outputEntry id="ob9-oe-12-3"><text>3</text></outputEntry>
+        <outputEntry id="ob9-oe-12-4"><text>"Mid-range budget requires standard finance review"</text></outputEntry>
+      </rule>
+
+      <!-- R13: Full finance review (over $500K) -->
+      <rule id="ob9-rule-13">
+        <description>High-value budget requires full finance review</description>
+        <inputEntry id="ob9-ie-13-1"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-13-2"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-13-3"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-13-4"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-13-5"><text>"over_500k"</text></inputEntry>
+        <inputEntry id="ob9-ie-13-6"><text>-</text></inputEntry>
+        <inputEntry id="ob9-ie-13-7"><text>-</text></inputEntry>
+        <outputEntry id="ob9-oe-13-1"><text>"finance-lane"</text></outputEntry>
+        <outputEntry id="ob9-oe-13-2"><text>"full"</text></outputEntry>
+        <outputEntry id="ob9-oe-13-3"><text>5</text></outputEntry>
+        <outputEntry id="ob9-oe-13-4"><text>"High-value budget requires full finance review"</text></outputEntry>
+      </rule>
+
       <!-- R11: EU AI Act compliance review -->
       <rule id="ob9-rule-11">
         <description>AI system in EU-regulated scope requires EU AI Act compliance review</description>
