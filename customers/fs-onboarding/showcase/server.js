@@ -423,6 +423,31 @@ app.post('/api/mini-rfp/:key/transfer', async (req, res) => {
   }
 });
 
+// ========================
+// Task Comments (in-memory)
+// ========================
+const taskComments = new Map();
+
+app.get('/api/tasks/:id/comments', (req, res) => {
+  res.json(taskComments.get(req.params.id) || []);
+});
+
+app.post('/api/tasks/:id/comments', (req, res) => {
+  const { author, persona, text } = req.body;
+  if (!text || typeof text !== 'string' || text.trim().length === 0) {
+    return res.status(400).json({ error: 'text is required' });
+  }
+  const comment = {
+    author: typeof author === 'string' ? author.slice(0, 200) : 'Anonymous',
+    persona: typeof persona === 'string' ? persona.slice(0, 100) : '',
+    text: text.trim().slice(0, 2000),
+    timestamp: new Date().toISOString(),
+  };
+  if (!taskComments.has(req.params.id)) taskComments.set(req.params.id, []);
+  taskComments.get(req.params.id).push(comment);
+  res.json(taskComments.get(req.params.id));
+});
+
 // Deploy BPMN + forms to cluster
 app.post('/api/deploy', async (req, res) => {
   try {

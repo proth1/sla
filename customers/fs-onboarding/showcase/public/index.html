@@ -156,6 +156,52 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .var-name{color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:11px}
 .var-value{color:var(--text);font-family:'JetBrains Mono',monospace;font-weight:500;word-break:break-all}
 
+/* --- FILTER BAR --- */
+.filter-bar{display:flex;gap:6px;padding:12px 24px;border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
+.filter-pill{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;font-family:inherit}
+.filter-pill:hover{color:var(--text);border-color:var(--text3)}
+.filter-pill.active{color:var(--accent);border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.filter-pill .pill-count{background:var(--surface3);color:var(--text3);font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;min-width:18px;text-align:center;transition:all .2s}
+.filter-pill.active .pill-count{background:rgba(59,130,246,0.2);color:var(--accent)}
+.sort-select{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px;color:var(--text3);cursor:pointer;font-family:inherit;outline:none;margin-left:auto}
+.sort-select:focus{border-color:var(--accent)}
+
+/* --- TASK METADATA HEADER --- */
+.task-meta-header{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:16px}
+.task-meta-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.task-meta-toggle h4{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.task-meta-toggle .chevron{color:var(--text3);font-size:16px;transition:transform .2s}
+.task-meta-toggle .chevron.collapsed{transform:rotate(-90deg)}
+.task-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-top:12px}
+.task-meta-item{display:flex;flex-direction:column;gap:2px}
+.task-meta-item .meta-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+.task-meta-item .meta-value{font-size:13px;color:var(--text);font-weight:500}
+
+/* --- EMPTY STATES --- */
+.empty-state-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 32px;text-align:center;gap:16px}
+.empty-state-icon{width:80px;height:80px;display:flex;align-items:center;justify-content:center;opacity:.4}
+.empty-state-icon svg{width:64px;height:64px}
+.empty-state-card h3{font-size:18px;font-weight:600;color:var(--text2)}
+.empty-state-card p{color:var(--text3);font-size:13px;max-width:320px;line-height:1.6}
+.empty-state-card .btn{margin-top:8px}
+
+/* --- COMMENTS --- */
+.comments-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-top:20px}
+.comments-section h3{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.comment-thread{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;max-height:300px;overflow-y:auto}
+.comment-item{display:flex;gap:10px;animation:fadeIn .3s ease}
+.comment-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+.comment-body{flex:1;min-width:0}
+.comment-author{font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.comment-author .comment-time{font-weight:400;color:var(--text3);font-size:11px}
+.comment-text{font-size:13px;color:var(--text2);line-height:1.5;margin-top:2px;word-break:break-word}
+.comment-input-row{display:flex;gap:10px;align-items:flex-end}
+.comment-input-row textarea{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;resize:none;min-height:40px;max-height:100px;outline:none;transition:border-color .2s}
+.comment-input-row textarea:focus{border-color:var(--accent)}
+.comment-input-row button{padding:10px 16px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s}
+.comment-input-row button:hover{background:#2563eb}
+.comment-empty{font-size:12px;color:var(--text3);text-align:center;padding:16px}
+
 /* --- SCROLLBAR --- */
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -199,6 +245,17 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     <div class="sidebar-header">
       <h2>Tasks</h2>
       <span class="task-count" id="taskCount">0</span>
+    </div>
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-pill active" data-filter="my-tasks" onclick="setTaskFilter('my-tasks',this)">My Tasks <span class="pill-count" id="filterMyCount">0</span></button>
+      <button class="filter-pill" data-filter="all-open" onclick="setTaskFilter('all-open',this)">All Open <span class="pill-count" id="filterAllCount">0</span></button>
+      <button class="filter-pill" data-filter="completed" onclick="setTaskFilter('completed',this)">Completed <span class="pill-count" id="filterDoneCount">0</span></button>
+      <select class="sort-select" id="taskSort" onchange="setTaskSort(this.value)">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="lane">By Lane</option>
+        <option value="phase">By Phase</option>
+      </select>
     </div>
     <ul class="task-list" id="taskList"></ul>
   </div>
@@ -301,6 +358,8 @@ let state = {
   selectedTask: null,
   pollTimer: null,
   currentPhase: -1,
+  activeFilter: 'my-tasks',
+  sortBy: 'newest',
 };
 
 function renderFlowBar() {
@@ -430,13 +489,92 @@ function getLaneBadge(groups) {
   return `<span class="task-badge ${cls}">${label}</span>`;
 }
 
+function getMyTasks(tasks) {
+  const personaId = localStorage.getItem('sla-persona');
+  if (!personaId) return tasks; // All Tasks persona sees everything
+  const persona = getPersonaById(personaId);
+  if (!persona || !persona.groups.length) return tasks;
+  return tasks.filter(t => {
+    const tGroups = t.candidateGroups || [];
+    return tGroups.some(g => persona.groups.includes(g));
+  });
+}
+
+function getTaskPhase(task) {
+  const defId = task.taskDefinitionId;
+  for (let i = 0; i < PHASES.length; i++) {
+    if (PHASES[i].tasks.includes(defId)) return i;
+  }
+  return 99;
+}
+
+function setTaskFilter(filter, btn) {
+  state.activeFilter = filter;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderTaskList();
+}
+
+function setTaskSort(value) {
+  state.sortBy = value;
+  renderTaskList();
+}
+
+function updateFilterCounts() {
+  const myTasks = getMyTasks(state.tasks);
+  document.getElementById('filterMyCount').textContent = myTasks.length;
+  document.getElementById('filterAllCount').textContent = state.tasks.length;
+  document.getElementById('filterDoneCount').textContent = state.completedTasks.length;
+}
+
 function renderTaskList() {
   const list = document.getElementById('taskList');
   const count = document.getElementById('taskCount');
-  const allTasks = [...state.completedTasks.map(t => ({...t, done: true})), ...state.tasks.map(t => ({...t, done: false}))];
+  updateFilterCounts();
+
+  let displayTasks;
+  if (state.activeFilter === 'my-tasks') {
+    displayTasks = getMyTasks(state.tasks).map(t => ({...t, done: false}));
+  } else if (state.activeFilter === 'completed') {
+    displayTasks = state.completedTasks.map(t => ({...t, done: true}));
+  } else {
+    displayTasks = [...state.completedTasks.map(t => ({...t, done: true})), ...state.tasks.map(t => ({...t, done: false}))];
+  }
+
+  // Sort
+  if (state.sortBy === 'oldest') {
+    displayTasks.sort((a, b) => (a.creationDate || '').localeCompare(b.creationDate || ''));
+  } else if (state.sortBy === 'lane') {
+    displayTasks.sort((a, b) => ((a.candidateGroups || [])[0] || '').localeCompare((b.candidateGroups || [])[0] || ''));
+  } else if (state.sortBy === 'phase') {
+    displayTasks.sort((a, b) => getTaskPhase(a) - getTaskPhase(b));
+  }
+  // 'newest' is default order from API
+
   count.textContent = state.tasks.length;
   list.innerHTML = '';
-  allTasks.forEach(task => {
+
+  if (displayTasks.length === 0) {
+    const isFiltered = state.activeFilter === 'my-tasks';
+    const isCompleted = state.activeFilter === 'completed';
+    list.innerHTML = `<li class="empty-state-card">
+      <div class="empty-state-icon">
+        <svg fill="none" stroke="var(--text3)" stroke-width="1.5" viewBox="0 0 24 24">
+          ${isCompleted
+            ? '<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+            : isFiltered
+              ? '<path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>'
+              : '<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>'
+          }
+        </svg>
+      </div>
+      <h3>${isCompleted ? 'No completed tasks yet' : isFiltered ? 'No matching tasks' : 'All caught up!'}</h3>
+      <p>${isCompleted ? 'Complete tasks to see them here.' : isFiltered ? 'No tasks match your persona. Try switching to "All Open" or changing your role.' : 'There are no pending tasks right now.'}</p>
+    </li>`;
+    return;
+  }
+
+  displayTasks.forEach(task => {
     const li = document.createElement('li');
     li.className = `task-item ${task.done ? 'completed' : ''} ${state.selectedTask?.id === task.id ? 'active' : ''}`;
     const name = (task.name || 'Unnamed Task').replace(/\n/g, ' ');
@@ -486,6 +624,32 @@ function renderTaskDetail(task, formSchema, variables) {
   const name = (task.name || 'Unnamed').replace(/\n/g, ' ');
   const groups = task.candidateGroups || [];
 
+  // Metadata header
+  const createdDate = task.creationDate ? new Date(task.creationDate).toLocaleString() : '--';
+  const assignee = task.assignee || 'Unassigned';
+  const group = groups.join(', ') || '--';
+  const processKey = task.processInstanceKey || '--';
+  const taskDefId = task.taskDefinitionId || '--';
+  const phaseIdx = PHASES.findIndex(p => p.tasks.includes(task.taskDefinitionId));
+  const phaseName = phaseIdx >= 0 ? PHASES[phaseIdx].name.replace('\n',' ') : '--';
+
+  const metaHtml = `
+    <div class="task-meta-header">
+      <div class="task-meta-toggle" onclick="const g=this.nextElementSibling;const c=this.querySelector('.chevron');g.style.display=g.style.display==='none'?'grid':'none';c.classList.toggle('collapsed')">
+        <h4>Task Details</h4>
+        <span class="chevron">&#9660;</span>
+      </div>
+      <div class="task-meta-grid">
+        <div class="task-meta-item"><span class="meta-label">Assignee</span><span class="meta-value">${assignee}</span></div>
+        <div class="task-meta-item"><span class="meta-label">Candidate Group</span><span class="meta-value">${group}</span></div>
+        <div class="task-meta-item"><span class="meta-label">Created</span><span class="meta-value">${createdDate}</span></div>
+        <div class="task-meta-item"><span class="meta-label">Phase</span><span class="meta-value">${phaseName}</span></div>
+        <div class="task-meta-item"><span class="meta-label">Process Instance</span><span class="meta-value" style="font-family:'JetBrains Mono',monospace;font-size:12px">${processKey}</span></div>
+        <div class="task-meta-item"><span class="meta-label">Task Definition</span><span class="meta-value" style="font-family:'JetBrains Mono',monospace;font-size:12px">${taskDefId}</span></div>
+      </div>
+    </div>
+  `;
+
   let formHtml = '';
   if (formSchema && formSchema.components) {
     formHtml = renderFormComponents(formSchema.components);
@@ -526,6 +690,7 @@ function renderTaskDetail(task, formSchema, variables) {
           <div class="meta-chip"><span class="icon">#</span> ${task.id}</div>
         </div>
       </div>
+      ${metaHtml}
       <div class="form-container" id="formContainer">
         ${formHtml}
         <div class="form-actions">
@@ -533,9 +698,74 @@ function renderTaskDetail(task, formSchema, variables) {
           <button class="btn btn-primary" onclick="completeTask('${task.id}')" id="completeBtn">Complete Task &rarr;</button>
         </div>
       </div>
+      <div class="comments-section" id="commentsSection">
+        <h3><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> Comments</h3>
+        <div class="comment-thread" id="commentThread"><div class="comment-empty">No comments yet. Be the first to add one.</div></div>
+        <div class="comment-input-row">
+          <textarea id="commentInput" placeholder="Add a comment..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addComment('${task.id}')}"></textarea>
+          <button onclick="addComment('${task.id}')">Post</button>
+        </div>
+      </div>
       ${varsHtml}
     </div>
   `;
+
+  // Load existing comments
+  loadComments(task.id);
+}
+
+async function loadComments(taskId) {
+  try {
+    const res = await fetch('/api/tasks/' + taskId + '/comments');
+    const comments = await res.json();
+    renderComments(comments);
+  } catch(e) { /* ignore */ }
+}
+
+function renderComments(comments) {
+  const thread = document.getElementById('commentThread');
+  if (!thread) return;
+  if (!comments || comments.length === 0) {
+    thread.innerHTML = '<div class="comment-empty">No comments yet. Be the first to add one.</div>';
+    return;
+  }
+  thread.innerHTML = comments.map(c => {
+    const persona = getPersonaById(c.persona) || { initials: 'U', color: '#64748b', name: c.author };
+    const time = new Date(c.timestamp).toLocaleString();
+    return `<div class="comment-item">
+      <div class="comment-avatar" style="background:${persona.color}">${persona.initials}</div>
+      <div class="comment-body">
+        <div class="comment-author">${escHtml(c.author)} <span class="comment-time">${time}</span></div>
+        <div class="comment-text">${escHtml(c.text)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+async function addComment(taskId) {
+  const input = document.getElementById('commentInput');
+  const text = (input.value || '').trim();
+  if (!text) return;
+  const personaId = localStorage.getItem('sla-persona');
+  const persona = getPersonaById(personaId) || ALL_TASKS_PERSONA;
+  try {
+    const res = await fetch('/api/tasks/' + taskId + '/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ author: persona.name, persona: persona.id, text }),
+    });
+    const comments = await res.json();
+    renderComments(comments);
+    input.value = '';
+  } catch(e) { toast('Failed to post comment', 'error'); }
 }
 
 function renderFormComponents(components) {
@@ -750,9 +980,9 @@ async function checkExistingTasks() {
   } catch (e) { /* ignore */ }
 }
 
-// --- Persona: hook selectPersona to reload tasks ---
+// --- Persona: hook selectPersona to re-render tasks ---
 const _baseSelect = selectPersona;
-selectPersona = (p) => _baseSelect(p, () => loadTasks());
+selectPersona = (p) => _baseSelect(p, () => { renderTaskList(); });
 
 // Initialize
 renderFlowBar();
