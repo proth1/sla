@@ -34,34 +34,17 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=finalDecision = "Approved"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_v5_16" name="No" sourceRef="GW_FinalDecision" targetRef="End_FinalRejected" />
-    <bpmn:sequenceFlow id="Flow_1wwkhh9" sourceRef="Activity_19ph1cx" targetRef="CA_GovernanceVoting" />
+    <bpmn:sequenceFlow id="Flow_1wwkhh9" sourceRef="Activity_19ph1cx" targetRef="Gateway_1pkm06o" />
     <bpmn:sequenceFlow id="Flow_v15_CA_to_GW" sourceRef="CA_GovernanceVoting" targetRef="GW_EvalApproved" />
     <bpmn:sequenceFlow id="Flow_v15_Merge_to_DDRC" sourceRef="GW_MergeBuildBuy" targetRef="Activity_19ph1cx" />
-    <bpmn:exclusiveGateway id="GW_TriageDecision" name="Approved ?" default="Flow_v5_4">
+    <bpmn:exclusiveGateway id="GW_TriageDecision" name="Continue working the Request ?" default="Flow_v5_4">
       <bpmn:incoming>Flow_v5_2</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_4</bpmn:outgoing>
       <bpmn:outgoing>Flow_1iblw95</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="End_Rejected" name="Request&#10;Rejected">
+    <bpmn:endEvent id="End_Rejected" name="Request Cancelled">
       <bpmn:incoming>Flow_v5_4</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:exclusiveGateway id="GW_MergeBuildBuy">
-      <bpmn:incoming>Flow_v5_7</bpmn:incoming>
-      <bpmn:incoming>Flow_v5_10</bpmn:incoming>
-      <bpmn:outgoing>Flow_v15_Merge_to_DDRC</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:callActivity id="CA_GovernanceVoting" name="Governance&#10;Committee">
-      <bpmn:extensionElements>
-        <zeebe:calledElement processId="Process_CommitteeVoting" propagateAllChildVariables="true" />
-        <zeebe:properties>
-          <zeebe:property name="topics" value="Governance" />
-          <zeebe:property name="raci_r" value="Governance" />
-          <zeebe:property name="raci_a" value="Oversight" />
-        </zeebe:properties>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1wwkhh9</bpmn:incoming>
-      <bpmn:outgoing>Flow_v15_CA_to_GW</bpmn:outgoing>
-    </bpmn:callActivity>
     <bpmn:endEvent id="End_VendorNotSelected" name="Vendor&#10;Not Selected">
       <bpmn:incoming>Flow_v5_9</bpmn:incoming>
     </bpmn:endEvent>
@@ -69,25 +52,6 @@
       <bpmn:incoming>Flow_v5_8</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_9</bpmn:outgoing>
       <bpmn:outgoing>Flow_v5_10</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="End_EvalRejected" name="Evaluation&#10;Failed">
-      <bpmn:incoming>Flow_v5_11</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:exclusiveGateway id="GW_FinalDecision" name="Approved?" default="Flow_v5_16">
-      <bpmn:incoming>Flow_v5_14</bpmn:incoming>
-      <bpmn:outgoing>Flow_v5_15</bpmn:outgoing>
-      <bpmn:outgoing>Flow_v5_16</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="End_SoftwareOnboarded" name="Software&#10;Onboarded">
-      <bpmn:incoming>Flow_v5_15</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:endEvent id="End_FinalRejected" name="Request&#10;Denied">
-      <bpmn:incoming>Flow_v5_16</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:exclusiveGateway id="GW_EvalApproved" name="Evaluation&#10;Approved?" default="Flow_v5_11">
-      <bpmn:incoming>Flow_v15_CA_to_GW</bpmn:incoming>
-      <bpmn:outgoing>Flow_v5_11</bpmn:outgoing>
-      <bpmn:outgoing>Flow_v5_12</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:exclusiveGateway id="GW_BuyVsBuild" name="Buy vs Build ?" default="Flow_v5_6">
       <bpmn:incoming>Flow_v5_5</bpmn:incoming>
@@ -162,7 +126,7 @@
           </zeebe:properties>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_SP1_CG_No</bpmn:incoming>
-        <bpmn:incoming>Flow_01gazr0</bpmn:incoming>
+        <bpmn:incoming>Flow_0adyz70</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_3</bpmn:outgoing>
       </bpmn:userTask>
       <bpmn:userTask id="Task_SubmitRequest" name="Submit software&#10;request">
@@ -514,7 +478,7 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <bpmn:outgoing>Flow_01gazr0</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_0ccvusw" sourceRef="Task_ReviewExisting" targetRef="GW_BypassProcess" />
-      <bpmn:sequenceFlow id="Flow_01gazr0" sourceRef="Gateway_00gwx9a" targetRef="Task_GatherDocs" />
+      <bpmn:sequenceFlow id="Flow_01gazr0" sourceRef="Gateway_00gwx9a" targetRef="Gateway_1kdy51y" />
       <bpmn:sequenceFlow id="Flow_0p7pllp" name="Partial&#10;Match" sourceRef="GW_BypassProcess" targetRef="Activity_1l8ugqb">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=existingSolutionDisposition = "Partial"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
@@ -571,6 +535,16 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       <bpmn:sequenceFlow id="Flow_0uvqte0" name="No" sourceRef="Gateway_1rppvq7" targetRef="Event_0o39wbs">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=pursueRequest = false</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
+      <bpmn:exclusiveGateway id="Gateway_1kdy51y" name="Continue with Request ?">
+        <bpmn:incoming>Flow_01gazr0</bpmn:incoming>
+        <bpmn:outgoing>Flow_0adyz70</bpmn:outgoing>
+        <bpmn:outgoing>Flow_1gno2cn</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_0adyz70" name="Yes" sourceRef="Gateway_1kdy51y" targetRef="Task_GatherDocs" />
+      <bpmn:endEvent id="Event_0z4wu9g" name="Deal Killed">
+        <bpmn:incoming>Flow_1gno2cn</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1gno2cn" sourceRef="Gateway_1kdy51y" targetRef="Event_0z4wu9g" />
     </bpmn:subProcess>
     <bpmn:subProcess id="SP_PlanningRouting" name="Review, Refine and Prioritize">
       <bpmn:incoming>Flow_1iblw95</bpmn:incoming>
@@ -1070,7 +1044,7 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
           <zeebe:assignmentDefinition candidateGroups="technical-assessment" />
           <zeebe:properties>
             <zeebe:property name="topics" value="TPRM, Cyber" />
-            <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 55: Fourth-party risk — evaluate the vendor's sub-contractor management practices and assess risks from critical fourth-party dependencies. (2) DORA Article 29: Sub-outsourcing provisions — verify contractual governance of sub-contractors. (3) NIST CSF 2.0 GV.SC: Supply chain risk management — assess cascading risks through the vendor's supply chain." />
+            <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 55: Fourth-party risk — evaluate the vendor&#39;s sub-contractor management practices and assess risks from critical fourth-party dependencies. (2) DORA Article 29: Sub-outsourcing provisions — verify contractual governance of sub-contractors. (3) NIST CSF 2.0 GV.SC: Supply chain risk management — assess cascading risks through the vendor&#39;s supply chain." />
             <zeebe:property name="raci_r" value="Technical Assessment" />
             <zeebe:property name="raci_a" value="Technical Assessment" />
             <zeebe:property name="raci_c" value="Governance" />
@@ -1118,6 +1092,7 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       <bpmn:sequenceFlow id="Flow_SP3_P12J" sourceRef="Task_SP3_OversightAudit" targetRef="GW_ParallelJoin" />
       <bpmn:sequenceFlow id="Flow_SP3_OversightSLA" sourceRef="Timer_SP3_OversightSLA" targetRef="End_SP3_OversightSLA" />
     </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_0d2qzv8" name="Yes" sourceRef="Gateway_1pkm06o" targetRef="CA_GovernanceVoting" />
     <bpmn:subProcess id="Activity_19ph1cx" name="Deep Dive Risk Assessment &#38; Contracting">
       <bpmn:incoming>Flow_v15_Merge_to_DDRC</bpmn:incoming>
       <bpmn:outgoing>Flow_1wwkhh9</bpmn:outgoing>
@@ -1474,6 +1449,51 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       <bpmn:sequenceFlow id="Flow_SP4_OversightDone" sourceRef="Task_SP4_OversightAudit" targetRef="Activity_1mgm488" />
       <bpmn:sequenceFlow id="Flow_SP4_OversightSLA" sourceRef="Timer_SP4_OversightSLA" targetRef="End_SP4_OversightSLA" />
     </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="GW_MergeBuildBuy">
+      <bpmn:incoming>Flow_v5_7</bpmn:incoming>
+      <bpmn:incoming>Flow_v5_10</bpmn:incoming>
+      <bpmn:outgoing>Flow_v15_Merge_to_DDRC</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0a1ycxw" name="No" sourceRef="Gateway_1pkm06o" targetRef="Event_0dh7yxn" />
+    <bpmn:callActivity id="CA_GovernanceVoting" name="Governance&#10;Committee">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="Process_CommitteeVoting" propagateAllChildVariables="true" />
+        <zeebe:properties>
+          <zeebe:property name="topics" value="Governance" />
+          <zeebe:property name="raci_r" value="Governance" />
+          <zeebe:property name="raci_a" value="Oversight" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0d2qzv8</bpmn:incoming>
+      <bpmn:outgoing>Flow_v15_CA_to_GW</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:exclusiveGateway id="Gateway_1pkm06o" name="Deep Dive Approved ?">
+      <bpmn:incoming>Flow_1wwkhh9</bpmn:incoming>
+      <bpmn:outgoing>Flow_0d2qzv8</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0a1ycxw</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Event_0dh7yxn" name="Deep Dive Not Approved">
+      <bpmn:incoming>Flow_0a1ycxw</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_EvalRejected" name="Evaluation&#10;Failed">
+      <bpmn:incoming>Flow_v5_11</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="GW_FinalDecision" name="Approved?" default="Flow_v5_16">
+      <bpmn:incoming>Flow_v5_14</bpmn:incoming>
+      <bpmn:outgoing>Flow_v5_15</bpmn:outgoing>
+      <bpmn:outgoing>Flow_v5_16</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_SoftwareOnboarded" name="Software&#10;Onboarded">
+      <bpmn:incoming>Flow_v5_15</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_FinalRejected" name="Request&#10;Denied">
+      <bpmn:incoming>Flow_v5_16</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="GW_EvalApproved" name="Evaluation&#10;Approved?" default="Flow_v5_11">
+      <bpmn:incoming>Flow_v15_CA_to_GW</bpmn:incoming>
+      <bpmn:outgoing>Flow_v5_11</bpmn:outgoing>
+      <bpmn:outgoing>Flow_v5_12</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
     <bpmn:subProcess id="SP_UATGoLive" name="UAT&#10;and Go-Live">
       <bpmn:incoming>Flow_v5_12</bpmn:incoming>
       <bpmn:outgoing>Flow_v5_14</bpmn:outgoing>
@@ -1670,28 +1690,25 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
   <bpmndi:BPMNDiagram id="BPMNDiagram_Main">
     <bpmndi:BPMNPlane id="BPMNPlane_Main" bpmnElement="Collaboration_IdealState_v15">
       <bpmndi:BPMNShape id="Participant_Enterprise_di" bpmnElement="Participant_Enterprise" isHorizontal="true">
-        <dc:Bounds x="160" y="80" width="1710" height="390" />
+        <dc:Bounds x="160" y="80" width="1810" height="390" />
         <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0k48wo5_di" bpmnElement="Start_SoftwareNeed">
+        <dc:Bounds x="240" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="224" y="275" width="73" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_TriageDecision_di" bpmnElement="GW_TriageDecision" isMarkerVisible="true">
         <dc:Bounds x="465" y="225" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="462" y="203" width="57" height="14" />
+          <dc:Bounds x="448" y="195" width="85" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_Rejected_di" bpmnElement="End_Rejected">
         <dc:Bounds x="532" y="322" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="529" y="365" width="44" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GW_MergeBuildBuy_di" bpmnElement="GW_MergeBuildBuy" isMarkerVisible="true">
-        <dc:Bounds x="1020" y="225" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="CA_GovernanceVoting_di" bpmnElement="CA_GovernanceVoting">
-        <dc:Bounds x="1230" y="210" width="100" height="80" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1236" y="234" width="88" height="27" />
+          <dc:Bounds x="527" y="365" width="49" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_VendorNotSelected_di" bpmnElement="End_VendorNotSelected">
@@ -1706,46 +1723,61 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
           <dc:Bounds x="957" y="196" width="49" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_EvalRejected_di" bpmnElement="End_EvalRejected">
-        <dc:Bounds x="1462" y="322" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1455" y="365" width="52" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GW_FinalDecision_di" bpmnElement="GW_FinalDecision" isMarkerVisible="true">
-        <dc:Bounds x="1615" y="225" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1614" y="203" width="54" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_SoftwareOnboarded_di" bpmnElement="End_SoftwareOnboarded">
-        <dc:Bounds x="1712" y="232" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1704" y="275" width="56" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_FinalRejected_di" bpmnElement="End_FinalRejected">
-        <dc:Bounds x="1712" y="322" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1710" y="365" width="41" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GW_EvalApproved_di" bpmnElement="GW_EvalApproved" isMarkerVisible="true">
-        <dc:Bounds x="1365" y="225" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1364" y="196" width="54" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_BuyVsBuild_di" bpmnElement="GW_BuyVsBuild" isMarkerVisible="true">
         <dc:Bounds x="705" y="225" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="695" y="201" width="70" height="14" />
+          <dc:Bounds x="695" y="285" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0k48wo5_di" bpmnElement="Start_SoftwareNeed">
-        <dc:Bounds x="240" y="232" width="36" height="36" />
+      <bpmndi:BPMNShape id="GW_MergeBuildBuy_di" bpmnElement="GW_MergeBuildBuy" isMarkerVisible="true">
+        <dc:Bounds x="1045" y="225" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CA_GovernanceVoting_di" bpmnElement="CA_GovernanceVoting">
+        <dc:Bounds x="1390" y="210" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="224" y="275" width="73" height="27" />
+          <dc:Bounds x="1396" y="234" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1pkm06o_di" bpmnElement="Gateway_1pkm06o" isMarkerVisible="true">
+        <dc:Bounds x="1285" y="225" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1282" y="195" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0dh7yxn_di" bpmnElement="Event_0dh7yxn">
+        <dc:Bounds x="1382" y="322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1364" y="365" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_EvalRejected_di" bpmnElement="End_EvalRejected">
+        <dc:Bounds x="1632" y="322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1625" y="365" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_FinalDecision_di" bpmnElement="GW_FinalDecision" isMarkerVisible="true">
+        <dc:Bounds x="1785" y="225" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1784" y="203" width="54" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SoftwareOnboarded_di" bpmnElement="End_SoftwareOnboarded">
+        <dc:Bounds x="1882" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1874" y="275" width="56" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_FinalRejected_di" bpmnElement="End_FinalRejected">
+        <dc:Bounds x="1882" y="322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1880" y="365" width="41" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_EvalApproved_di" bpmnElement="GW_EvalApproved" isMarkerVisible="true">
+        <dc:Bounds x="1535" y="225" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1534" y="196" width="54" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP_RequestTriage_di" bpmnElement="SP_RequestTriage" isExpanded="false">
@@ -1767,15 +1799,15 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_15px4y0" bpmnElement="Activity_19ph1cx" isExpanded="false">
-        <dc:Bounds x="1100" y="210" width="100" height="80" />
+        <dc:Bounds x="1140" y="210" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1106" y="234" width="88" height="27" />
+          <dc:Bounds x="1146" y="234" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP_UATGoLive_di" bpmnElement="SP_UATGoLive" isExpanded="false">
-        <dc:Bounds x="1470" y="210" width="100" height="80" />
+        <dc:Bounds x="1640" y="210" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1476" y="234" width="88" height="27" />
+          <dc:Bounds x="1646" y="234" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1xhs1a0_di" bpmnElement="Flow_1xhs1a0">
@@ -1796,18 +1828,18 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_7_di" bpmnElement="Flow_v5_7">
         <di:waypoint x="730" y="225" />
-        <di:waypoint x="730" y="160" />
-        <di:waypoint x="1045" y="160" />
-        <di:waypoint x="1045" y="225" />
+        <di:waypoint x="730" y="180" />
+        <di:waypoint x="1070" y="180" />
+        <di:waypoint x="1070" y="225" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="870" y="142" width="25" height="14" />
+          <dc:Bounds x="882" y="162" width="25" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_12_di" bpmnElement="Flow_v5_12">
-        <di:waypoint x="1415" y="250" />
-        <di:waypoint x="1470" y="250" />
+        <di:waypoint x="1585" y="250" />
+        <di:waypoint x="1640" y="250" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1414" y="232" width="18" height="14" />
+          <dc:Bounds x="1584" y="232" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_5_di" bpmnElement="Flow_v5_5">
@@ -1816,17 +1848,17 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_10_di" bpmnElement="Flow_v5_10">
         <di:waypoint x="1005" y="250" />
-        <di:waypoint x="1020" y="250" />
+        <di:waypoint x="1045" y="250" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1004" y="232" width="18" height="14" />
+          <dc:Bounds x="1017" y="232" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_11_di" bpmnElement="Flow_v5_11">
-        <di:waypoint x="1390" y="275" />
-        <di:waypoint x="1390" y="340" />
-        <di:waypoint x="1462" y="340" />
+        <di:waypoint x="1560" y="275" />
+        <di:waypoint x="1560" y="340" />
+        <di:waypoint x="1632" y="340" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1398" y="305" width="15" height="14" />
+          <dc:Bounds x="1568" y="305" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_9_di" bpmnElement="Flow_v5_9">
@@ -1856,35 +1888,50 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_14_di" bpmnElement="Flow_v5_14">
-        <di:waypoint x="1570" y="250" />
-        <di:waypoint x="1615" y="250" />
+        <di:waypoint x="1740" y="250" />
+        <di:waypoint x="1785" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_15_di" bpmnElement="Flow_v5_15">
-        <di:waypoint x="1665" y="250" />
-        <di:waypoint x="1712" y="250" />
+        <di:waypoint x="1835" y="250" />
+        <di:waypoint x="1882" y="250" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1680" y="233" width="18" height="14" />
+          <dc:Bounds x="1850" y="233" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v5_16_di" bpmnElement="Flow_v5_16">
-        <di:waypoint x="1640" y="275" />
-        <di:waypoint x="1640" y="340" />
-        <di:waypoint x="1712" y="340" />
+        <di:waypoint x="1810" y="275" />
+        <di:waypoint x="1810" y="340" />
+        <di:waypoint x="1882" y="340" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1648" y="301" width="15" height="14" />
+          <dc:Bounds x="1818" y="301" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1wwkhh9_di" bpmnElement="Flow_1wwkhh9">
-        <di:waypoint x="1200" y="250" />
-        <di:waypoint x="1230" y="250" />
+        <di:waypoint x="1240" y="250" />
+        <di:waypoint x="1285" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v15_CA_to_GW_di" bpmnElement="Flow_v15_CA_to_GW">
-        <di:waypoint x="1330" y="250" />
-        <di:waypoint x="1365" y="250" />
+        <di:waypoint x="1490" y="250" />
+        <di:waypoint x="1535" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_v15_Merge_to_DDRC_di" bpmnElement="Flow_v15_Merge_to_DDRC">
-        <di:waypoint x="1070" y="250" />
-        <di:waypoint x="1100" y="250" />
+        <di:waypoint x="1095" y="250" />
+        <di:waypoint x="1140" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0d2qzv8_di" bpmnElement="Flow_0d2qzv8">
+        <di:waypoint x="1335" y="250" />
+        <di:waypoint x="1390" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1354" y="232" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0a1ycxw_di" bpmnElement="Flow_0a1ycxw">
+        <di:waypoint x="1310" y="275" />
+        <di:waypoint x="1310" y="340" />
+        <di:waypoint x="1382" y="340" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1318" y="305" width="15" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -1894,301 +1941,331 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <dc:Bounds x="142" y="122" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_ReviewExisting_di" bpmnElement="Task_ReviewExisting">
-        <dc:Bounds x="320" y="100" width="100" height="80" />
+        <dc:Bounds x="220" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_BypassProcess_di" bpmnElement="GW_BypassProcess" isMarkerVisible="true">
-        <dc:Bounds x="465" y="115" width="50" height="50" />
+        <dc:Bounds x="365" y="115" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="450" y="77" width="79" height="27" />
+          <dc:Bounds x="365" y="77" width="49" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_LeverageExisting_di" bpmnElement="Task_LeverageExisting">
-        <dc:Bounds x="600" y="300" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_Leveraged_di" bpmnElement="End_Leveraged">
-        <dc:Bounds x="742" y="322" width="36" height="36" />
+      <bpmndi:BPMNShape id="Gateway_0etf7nm_di" bpmnElement="Gateway_0etf7nm" isMarkerVisible="true">
+        <dc:Bounds x="795" y="115" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="734" y="286" width="52" height="27" />
+          <dc:Bounds x="779" y="78" width="81" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_GatherDocs_di" bpmnElement="Task_GatherDocs">
-        <dc:Bounds x="1470" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_SubmitRequest_di" bpmnElement="Task_SubmitRequest">
-        <dc:Bounds x="1610" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_InitialTriage_di" bpmnElement="Task_InitialTriage">
-        <dc:Bounds x="2370" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_TriageSLAEscalation_di" bpmnElement="End_TriageSLAEscalation">
-        <dc:Bounds x="2522" y="222" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2512" y="266" width="55" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_ClassifyRequest_di" bpmnElement="Task_ClassifyRequest">
-        <dc:Bounds x="1980" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SendTask_SP1Complete_di" bpmnElement="SendTask_SP1Complete">
-        <dc:Bounds x="2520" y="100" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP1_End_di" bpmnElement="SP1_End">
-        <dc:Bounds x="2662" y="122" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2656" y="166" width="48" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_CompletenessGate_di" bpmnElement="Task_CompletenessGate">
-        <dc:Bounds x="1750" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GW_Complete_di" bpmnElement="GW_Complete" isMarkerVisible="true">
-        <dc:Bounds x="1885" y="115" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1884" y="93" width="54" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_DealKillerCheck_di" bpmnElement="Task_DealKillerCheck">
-        <dc:Bounds x="2130" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GW_DealKiller_di" bpmnElement="GW_DealKiller" isMarkerVisible="true">
-        <dc:Bounds x="2275" y="115" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2272" y="93" width="57" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_DealKiller_di" bpmnElement="End_DealKiller">
-        <dc:Bounds x="2352" y="222" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2344" y="266" width="53" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Gateway_0js8zzn_di" bpmnElement="Gateway_0js8zzn" isMarkerVisible="true">
+        <dc:Bounds x="695" y="115" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1lzqw2n" bpmnElement="Gateway_132net7" isMarkerVisible="true">
-        <dc:Bounds x="1005" y="115" width="50" height="50" />
+        <dc:Bounds x="885" y="115" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1004" y="77" width="51" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0m3ppk0" bpmnElement="Activity_0j7ifzh" isExpanded="false">
-        <dc:Bounds x="1110" y="100" width="100" height="80" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1116" y="124" width="88" height="27" />
+          <dc:Bounds x="884" y="77" width="51" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_18k4b9p" bpmnElement="Gateway_1r9b08g" isMarkerVisible="true">
-        <dc:Bounds x="1255" y="115" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0etf7nm_di" bpmnElement="Gateway_0etf7nm" isMarkerVisible="true">
-        <dc:Bounds x="895" y="115" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="879" y="78" width="81" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="1125" y="115" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_00gwx9a_di" bpmnElement="Gateway_00gwx9a" isMarkerVisible="true">
-        <dc:Bounds x="1365" y="115" width="50" height="50" />
+        <dc:Bounds x="1205" y="115" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0js8zzn_di" bpmnElement="Gateway_0js8zzn" isMarkerVisible="true">
-        <dc:Bounds x="795" y="115" width="50" height="50" />
+      <bpmndi:BPMNShape id="Task_LeverageExisting_di" bpmnElement="Task_LeverageExisting">
+        <dc:Bounds x="500" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Leveraged_di" bpmnElement="End_Leveraged">
+        <dc:Bounds x="642" y="292" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="634" y="256" width="52" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0efhz88_di" bpmnElement="Activity_0netfvm">
-        <dc:Bounds x="600" y="400" width="100" height="80" />
+        <dc:Bounds x="500" y="370" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0875jxf_di" bpmnElement="Activity_1l8ugqb">
-        <dc:Bounds x="600" y="200" width="100" height="80" />
+        <dc:Bounds x="500" y="170" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1rppvq7_di" bpmnElement="Gateway_1rppvq7" isMarkerVisible="true">
-        <dc:Bounds x="735" y="415" width="50" height="50" />
+        <dc:Bounds x="635" y="385" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="735" y="393" width="50" height="14" />
+          <dc:Bounds x="635" y="363" width="50" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0o39wbs_di" bpmnElement="Event_0o39wbs">
-        <dc:Bounds x="802" y="472" width="36" height="36" />
+        <dc:Bounds x="702" y="442" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="808" y="515" width="24" height="14" />
+          <dc:Bounds x="694" y="485" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GatherDocs_di" bpmnElement="Task_GatherDocs">
+        <dc:Bounds x="1380" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SubmitRequest_di" bpmnElement="Task_SubmitRequest">
+        <dc:Bounds x="1520" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InitialTriage_di" bpmnElement="Task_InitialTriage">
+        <dc:Bounds x="2280" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_TriageSLAEscalation_di" bpmnElement="End_TriageSLAEscalation">
+        <dc:Bounds x="2432" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2422" y="266" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ClassifyRequest_di" bpmnElement="Task_ClassifyRequest">
+        <dc:Bounds x="1890" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendTask_SP1Complete_di" bpmnElement="SendTask_SP1Complete">
+        <dc:Bounds x="2430" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP1_End_di" bpmnElement="SP1_End">
+        <dc:Bounds x="2572" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2566" y="166" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CompletenessGate_di" bpmnElement="Task_CompletenessGate">
+        <dc:Bounds x="1660" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_Complete_di" bpmnElement="GW_Complete" isMarkerVisible="true">
+        <dc:Bounds x="1795" y="115" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1794" y="93" width="54" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DealKillerCheck_di" bpmnElement="Task_DealKillerCheck">
+        <dc:Bounds x="2040" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_DealKiller_di" bpmnElement="GW_DealKiller" isMarkerVisible="true">
+        <dc:Bounds x="2185" y="115" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2182" y="93" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_DealKiller_di" bpmnElement="End_DealKiller">
+        <dc:Bounds x="2262" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2254" y="266" width="53" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1kdy51y_di" bpmnElement="Gateway_1kdy51y" isMarkerVisible="true">
+        <dc:Bounds x="1285" y="115" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1276" y="86" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0z4wu9g_di" bpmnElement="Event_0z4wu9g">
+        <dc:Bounds x="1382" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1374" y="275" width="53" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0m3ppk0" bpmnElement="Activity_0j7ifzh" isExpanded="false">
+        <dc:Bounds x="980" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="986" y="124" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0hzwlo8_di" bpmnElement="Timer_TriageSLA">
-        <dc:Bounds x="2452" y="162" width="36" height="36" />
+        <dc:Bounds x="2362" y="162" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2485" y="196" width="29" height="27" />
+          <dc:Bounds x="2395" y="196" width="29" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP1_Notify_di" bpmnElement="Flow_SP1_Notify">
-        <di:waypoint x="2620" y="140" />
-        <di:waypoint x="2662" y="140" />
+        <di:waypoint x="2530" y="140" />
+        <di:waypoint x="2572" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_1_di" bpmnElement="Flow_SP1_1">
         <di:waypoint x="178" y="140" />
-        <di:waypoint x="320" y="140" />
+        <di:waypoint x="220" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_Yes_di" bpmnElement="Flow_SP1_Yes">
-        <di:waypoint x="490" y="165" />
-        <di:waypoint x="490" y="340" />
-        <di:waypoint x="600" y="340" />
+        <di:waypoint x="390" y="165" />
+        <di:waypoint x="390" y="310" />
+        <di:waypoint x="500" y="310" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="498" y="306" width="83" height="27" />
+          <dc:Bounds x="431" y="293" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP1_EndLev_di" bpmnElement="Flow_SP1_EndLev">
-        <di:waypoint x="700" y="340" />
-        <di:waypoint x="742" y="340" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_3_di" bpmnElement="Flow_SP1_3">
-        <di:waypoint x="1570" y="140" />
-        <di:waypoint x="1610" y="140" />
+        <di:waypoint x="1480" y="140" />
+        <di:waypoint x="1520" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_4_di" bpmnElement="Flow_SP1_4">
-        <di:waypoint x="1710" y="140" />
-        <di:waypoint x="1750" y="140" />
+        <di:waypoint x="1620" y="140" />
+        <di:waypoint x="1660" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_CG1_di" bpmnElement="Flow_SP1_CG1">
-        <di:waypoint x="1850" y="140" />
-        <di:waypoint x="1885" y="140" />
+        <di:waypoint x="1760" y="140" />
+        <di:waypoint x="1795" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_CG_Yes_di" bpmnElement="Flow_SP1_CG_Yes">
-        <di:waypoint x="1935" y="140" />
-        <di:waypoint x="1980" y="140" />
+        <di:waypoint x="1845" y="140" />
+        <di:waypoint x="1890" y="140" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1950" y="122" width="18" height="14" />
+          <dc:Bounds x="1860" y="122" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_CG_No_di" bpmnElement="Flow_SP1_CG_No">
-        <di:waypoint x="1910" y="165" />
-        <di:waypoint x="1910" y="220" />
-        <di:waypoint x="1520" y="220" />
-        <di:waypoint x="1520" y="180" />
+        <di:waypoint x="1820" y="165" />
+        <di:waypoint x="1820" y="220" />
+        <di:waypoint x="1430" y="220" />
+        <di:waypoint x="1430" y="180" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1708" y="202" width="15" height="14" />
+          <dc:Bounds x="1618" y="202" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_6_di" bpmnElement="Flow_SP1_6">
-        <di:waypoint x="2080" y="140" />
-        <di:waypoint x="2130" y="140" />
+        <di:waypoint x="1990" y="140" />
+        <di:waypoint x="2040" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_DK1_di" bpmnElement="Flow_SP1_DK1">
-        <di:waypoint x="2230" y="140" />
-        <di:waypoint x="2275" y="140" />
+        <di:waypoint x="2140" y="140" />
+        <di:waypoint x="2185" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_DK_No_di" bpmnElement="Flow_SP1_DK_No">
-        <di:waypoint x="2325" y="140" />
-        <di:waypoint x="2370" y="140" />
+        <di:waypoint x="2235" y="140" />
+        <di:waypoint x="2280" y="140" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2340" y="122" width="15" height="14" />
+          <dc:Bounds x="2250" y="122" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_DK_Yes_di" bpmnElement="Flow_SP1_DK_Yes">
-        <di:waypoint x="2300" y="165" />
-        <di:waypoint x="2300" y="240" />
-        <di:waypoint x="2352" y="240" />
+        <di:waypoint x="2210" y="165" />
+        <di:waypoint x="2210" y="240" />
+        <di:waypoint x="2262" y="240" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2306" y="200" width="18" height="14" />
+          <dc:Bounds x="2216" y="200" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_5_di" bpmnElement="Flow_SP1_5">
-        <di:waypoint x="2470" y="140" />
-        <di:waypoint x="2520" y="140" />
+        <di:waypoint x="2380" y="140" />
+        <di:waypoint x="2430" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_SLA_di" bpmnElement="Flow_SP1_SLA">
-        <di:waypoint x="2470" y="198" />
-        <di:waypoint x="2470" y="240" />
-        <di:waypoint x="2522" y="240" />
+        <di:waypoint x="2380" y="198" />
+        <di:waypoint x="2380" y="240" />
+        <di:waypoint x="2432" y="240" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_04xv2ih" bpmnElement="Flow_0f1ym01">
-        <di:waypoint x="1055" y="140" />
-        <di:waypoint x="1110" y="140" />
+        <di:waypoint x="935" y="140" />
+        <di:waypoint x="980" y="140" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1074" y="123" width="18" height="14" />
+          <dc:Bounds x="949" y="123" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_14hijr3" bpmnElement="Flow_1c4ei9u">
-        <di:waypoint x="1210" y="140" />
-        <di:waypoint x="1255" y="140" />
+        <di:waypoint x="1080" y="140" />
+        <di:waypoint x="1125" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0kh8omi_di" bpmnElement="Flow_0kh8omi">
-        <di:waypoint x="1030" y="165" />
-        <di:waypoint x="1030" y="230" />
-        <di:waypoint x="1280" y="230" />
-        <di:waypoint x="1280" y="165" />
+        <di:waypoint x="910" y="165" />
+        <di:waypoint x="910" y="230" />
+        <di:waypoint x="1150" y="230" />
+        <di:waypoint x="1150" y="165" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1148" y="212" width="15" height="14" />
+          <dc:Bounds x="1023" y="212" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1wtaa9l_di" bpmnElement="Flow_1wtaa9l">
-        <di:waypoint x="1305" y="140" />
-        <di:waypoint x="1365" y="140" />
+        <di:waypoint x="1175" y="140" />
+        <di:waypoint x="1205" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0j4a2xs_di" bpmnElement="Flow_0j4a2xs">
-        <di:waypoint x="945" y="140" />
-        <di:waypoint x="1005" y="140" />
+        <di:waypoint x="845" y="140" />
+        <di:waypoint x="885" y="140" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="968" y="122" width="15" height="14" />
+          <dc:Bounds x="858" y="122" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1uwkw5j_di" bpmnElement="Flow_1uwkw5j">
-        <di:waypoint x="920" y="165" />
-        <di:waypoint x="920" y="260" />
-        <di:waypoint x="1390" y="260" />
-        <di:waypoint x="1390" y="165" />
+        <di:waypoint x="820" y="165" />
+        <di:waypoint x="820" y="260" />
+        <di:waypoint x="1230" y="260" />
+        <di:waypoint x="1230" y="165" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1148" y="242" width="18" height="14" />
+          <dc:Bounds x="1018" y="242" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ccvusw_di" bpmnElement="Flow_0ccvusw">
-        <di:waypoint x="420" y="140" />
-        <di:waypoint x="465" y="140" />
+        <di:waypoint x="320" y="140" />
+        <di:waypoint x="365" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_01gazr0_di" bpmnElement="Flow_01gazr0">
-        <di:waypoint x="1415" y="140" />
-        <di:waypoint x="1470" y="140" />
+        <di:waypoint x="1255" y="140" />
+        <di:waypoint x="1285" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0p7pllp_di" bpmnElement="Flow_0p7pllp">
-        <di:waypoint x="490" y="165" />
-        <di:waypoint x="490" y="240" />
-        <di:waypoint x="600" y="240" />
+        <di:waypoint x="390" y="165" />
+        <di:waypoint x="390" y="210" />
+        <di:waypoint x="500" y="210" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="499" y="190" width="82" height="40" />
+          <dc:Bounds x="424" y="176" width="32" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_15fp02f_di" bpmnElement="Flow_15fp02f">
-        <di:waypoint x="490" y="165" />
-        <di:waypoint x="490" y="440" />
-        <di:waypoint x="600" y="440" />
+        <di:waypoint x="390" y="165" />
+        <di:waypoint x="390" y="410" />
+        <di:waypoint x="500" y="410" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="505" y="406" width="70" height="27" />
+          <dc:Bounds x="416" y="376" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0y548b1_di" bpmnElement="Flow_0y548b1">
-        <di:waypoint x="515" y="140" />
-        <di:waypoint x="795" y="140" />
+        <di:waypoint x="415" y="140" />
+        <di:waypoint x="695" y="140" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="614" y="90" width="72" height="40" />
+          <dc:Bounds x="542" y="122" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0gutlqh_di" bpmnElement="Flow_0gutlqh">
-        <di:waypoint x="845" y="140" />
-        <di:waypoint x="895" y="140" />
+        <di:waypoint x="745" y="140" />
+        <di:waypoint x="795" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1q9y5tr_di" bpmnElement="Flow_1q9y5tr">
-        <di:waypoint x="700" y="240" />
-        <di:waypoint x="820" y="240" />
-        <di:waypoint x="820" y="165" />
+        <di:waypoint x="600" y="210" />
+        <di:waypoint x="720" y="210" />
+        <di:waypoint x="720" y="165" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1fzbqt4_di" bpmnElement="Flow_1fzbqt4">
-        <di:waypoint x="785" y="440" />
-        <di:waypoint x="820" y="440" />
-        <di:waypoint x="820" y="165" />
+        <di:waypoint x="685" y="410" />
+        <di:waypoint x="720" y="410" />
+        <di:waypoint x="720" y="165" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="694" y="360" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP1_EndLev_di" bpmnElement="Flow_SP1_EndLev">
+        <di:waypoint x="600" y="310" />
+        <di:waypoint x="642" y="310" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1kfzh2q_di" bpmnElement="Flow_1kfzh2q">
-        <di:waypoint x="700" y="440" />
-        <di:waypoint x="735" y="440" />
+        <di:waypoint x="600" y="410" />
+        <di:waypoint x="635" y="410" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0uvqte0_di" bpmnElement="Flow_0uvqte0">
-        <di:waypoint x="760" y="465" />
-        <di:waypoint x="760" y="490" />
-        <di:waypoint x="802" y="490" />
+        <di:waypoint x="660" y="435" />
+        <di:waypoint x="660" y="460" />
+        <di:waypoint x="702" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="668" y="438" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0adyz70_di" bpmnElement="Flow_0adyz70">
+        <di:waypoint x="1335" y="140" />
+        <di:waypoint x="1380" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1349" y="122" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gno2cn_di" bpmnElement="Flow_1gno2cn">
+        <di:waypoint x="1310" y="165" />
+        <di:waypoint x="1310" y="250" />
+        <di:waypoint x="1382" y="250" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -2212,16 +2289,12 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       <bpmndi:BPMNShape id="GW_MergeBacklog_di" bpmnElement="GW_MergeBacklog" isMarkerVisible="true">
         <dc:Bounds x="619" y="115" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0r9imfk_di" bpmnElement="Activity_0r9imfk">
-        <dc:Bounds x="710" y="100" width="100" height="80" />
+      <bpmndi:BPMNShape id="Task_PathwayRouting_di" bpmnElement="Task_PathwayRouting">
+        <dc:Bounds x="993" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_PrioritizationScoring_di" bpmnElement="Task_PrioritizationScoring">
         <dc:Bounds x="850" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_PathwayRouting_di" bpmnElement="Task_PathwayRouting">
-        <dc:Bounds x="993" y="100" width="100" height="80" />
-        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SendTask_SP2Complete_di" bpmnElement="SendTask_SP2Complete">
         <dc:Bounds x="1132" y="100" width="100" height="80" />
@@ -2229,10 +2302,14 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       <bpmndi:BPMNShape id="SP2_End_di" bpmnElement="SP2_End">
         <dc:Bounds x="1274" y="122" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_1qj2zph_di" bpmnElement="Association_1qj2zph">
-        <di:waypoint x="525" y="100" />
-        <di:waypoint x="525" y="80" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_0r9imfk_di" bpmnElement="Activity_0r9imfk">
+        <dc:Bounds x="710" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_05ffzwo_di" bpmnElement="TextAnnotation_05ffzwo">
+        <dc:Bounds x="475" y="50" width="100" height="30" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP2_Notify_di" bpmnElement="Flow_SP2_Notify">
         <di:waypoint x="1232" y="140" />
         <di:waypoint x="1274" y="140" />
@@ -2281,10 +2358,10 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <di:waypoint x="810" y="140" />
         <di:waypoint x="850" y="140" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="TextAnnotation_05ffzwo_di" bpmnElement="TextAnnotation_05ffzwo">
-        <dc:Bounds x="475" y="50" width="100" height="30" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_1qj2zph_di" bpmnElement="Association_1qj2zph">
+        <di:waypoint x="525" y="100" />
+        <di:waypoint x="525" y="80" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_SP3">
@@ -2364,6 +2441,27 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       <bpmndi:BPMNShape id="BPMNShape_10bbm41" bpmnElement="Activity_0mr2gdy">
         <dc:Bounds x="828" y="502" width="100" height="80" />
         <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConcentrationRisk_di" bpmnElement="Task_ConcentrationRisk">
+        <dc:Bounds x="828" y="1155" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FourthPartyRisk_di" bpmnElement="Task_FourthPartyRisk">
+        <dc:Bounds x="828" y="1265" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SP3_OversightAudit_di" bpmnElement="Task_SP3_OversightAudit">
+        <dc:Bounds x="828" y="1375" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SP3_OversightSLA_di" bpmnElement="End_SP3_OversightSLA">
+        <dc:Bounds x="972" y="1492" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="953" y="1535" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_SP3_OversightSLA_di" bpmnElement="Timer_SP3_OversightSLA">
+        <dc:Bounds x="910" y="1437" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="954" y="1441" width="32" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP3_DART_di" bpmnElement="Flow_SP3_DART">
         <di:waypoint x="660" y="590" />
@@ -2523,27 +2621,6 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <di:waypoint x="1360" y="542" />
         <di:waypoint x="1360" y="565" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Task_ConcentrationRisk_di" bpmnElement="Task_ConcentrationRisk">
-        <dc:Bounds x="828" y="1155" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_FourthPartyRisk_di" bpmnElement="Task_FourthPartyRisk">
-        <dc:Bounds x="828" y="1265" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_SP3_OversightAudit_di" bpmnElement="Task_SP3_OversightAudit">
-        <dc:Bounds x="828" y="1375" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Timer_SP3_OversightSLA_di" bpmnElement="Timer_SP3_OversightSLA">
-        <dc:Bounds x="910" y="1437" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="954" y="1441" width="32" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_SP3_OversightSLA_di" bpmnElement="End_SP3_OversightSLA">
-        <dc:Bounds x="972" y="1492" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="953" y="1535" width="74" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP3_P10_di" bpmnElement="Flow_SP3_P10">
         <di:waypoint x="744" y="615" />
         <di:waypoint x="744" y="1195" />
@@ -2598,21 +2675,6 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       <bpmndi:BPMNShape id="Activity_0zf4l0g_di" bpmnElement="Activity_0zf4l0g">
         <dc:Bounds x="1120" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_SP5_OversightAudit_di" bpmnElement="Task_SP5_OversightAudit">
-        <dc:Bounds x="1280" y="160" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Timer_SP5_OversightSLA_di" bpmnElement="Timer_SP5_OversightSLA">
-        <dc:Bounds x="1362" y="222" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1406" y="226" width="32" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_SP5_OversightSLA_di" bpmnElement="End_SP5_OversightSLA">
-        <dc:Bounds x="1412" y="282" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1393" y="325" width="74" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_AssignOwnership_di" bpmnElement="Task_AssignOwnership">
         <dc:Bounds x="1440" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -2639,6 +2701,21 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_MergeOnboard_di" bpmnElement="GW_MergeOnboard" isMarkerVisible="true">
         <dc:Bounds x="875" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SP5_OversightAudit_di" bpmnElement="Task_SP5_OversightAudit">
+        <dc:Bounds x="1280" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SP5_OversightSLA_di" bpmnElement="End_SP5_OversightSLA">
+        <dc:Bounds x="1412" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1393" y="325" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_SP5_OversightSLA_di" bpmnElement="Timer_SP5_OversightSLA">
+        <dc:Bounds x="1362" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1406" y="226" width="32" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP5_OWN_di" bpmnElement="Flow_SP5_OWN">
         <di:waypoint x="1540" y="200" />
@@ -2696,10 +2773,6 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <di:waypoint x="1220" y="200" />
         <di:waypoint x="1280" y="200" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP5_6_di" bpmnElement="Flow_SP5_6">
-        <di:waypoint x="1700" y="200" />
-        <di:waypoint x="1762" y="200" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP5_OversightDone_di" bpmnElement="Flow_SP5_OversightDone">
         <di:waypoint x="1380" y="200" />
         <di:waypoint x="1440" y="200" />
@@ -2708,6 +2781,10 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
         <di:waypoint x="1380" y="258" />
         <di:waypoint x="1380" y="300" />
         <di:waypoint x="1412" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SP5_6_di" bpmnElement="Flow_SP5_6">
+        <di:waypoint x="1700" y="200" />
+        <di:waypoint x="1762" y="200" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -3035,6 +3112,21 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
       <bpmndi:BPMNShape id="BPMNShape_1pjngf0" bpmnElement="Gateway_0mtas45" isMarkerVisible="true">
         <dc:Bounds x="1725" y="297" width="50" height="50" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SP4_OversightAudit_di" bpmnElement="Task_SP4_OversightAudit">
+        <dc:Bounds x="1892" y="282" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SP4_OversightSLA_di" bpmnElement="End_SP4_OversightSLA">
+        <dc:Bounds x="2024" y="404" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2005" y="447" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_SP4_OversightSLA_di" bpmnElement="Timer_SP4_OversightSLA">
+        <dc:Bounds x="1974" y="344" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2018" y="348" width="32" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_165jbk8" bpmnElement="Event_1nhjxn2">
         <dc:Bounds x="1122" y="344" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -3151,21 +3243,6 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
           <dc:Bounds x="1633" y="372" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Task_SP4_OversightAudit_di" bpmnElement="Task_SP4_OversightAudit">
-        <dc:Bounds x="1892" y="282" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Timer_SP4_OversightSLA_di" bpmnElement="Timer_SP4_OversightSLA">
-        <dc:Bounds x="1974" y="344" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2018" y="348" width="32" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_SP4_OversightSLA_di" bpmnElement="End_SP4_OversightSLA">
-        <dc:Bounds x="2024" y="404" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2005" y="447" width="74" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP4_OversightDone_di" bpmnElement="Flow_SP4_OversightDone">
         <di:waypoint x="1992" y="322" />
         <di:waypoint x="2052" y="322" />
