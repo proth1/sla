@@ -4,20 +4,19 @@
 
 **Date**: 2026-03-12
 **Branch**: main
-**Release Version**: 2026.03.115
+**Release Version**: 2026.03.116
 
-### V17 BPMN Cleanup & Fixes (SLA-88, PR #139)
-- Manual Camunda Desktop Modeler edits: task naming cleanup, SP0 deal-killer restructure, NDA expanded sub-process, SP3 branch consolidation
-- Claude fixes: Gateway dead ends (Gateway_0pj195r), missing conditionExpressions, default flow inversion, generic task promotion, invalid candidateGroups
-- Visual overlap checker enhanced to handle expanded sub-process parent-child containment
-- jira-sync.js: approval task auto-tagging
+### Rename business-lane to quarterback-lane (SLA-89, PR #141)
+- Replaced all `candidateGroups="business-lane"` with `quarterback-lane` in v17 onboarding BPMN (17 occurrences) and mini-rfp-pre-screen (6 occurrences)
+- Added user task inventory PPTX generator + output (51 tasks, 8 phases, KPMG-branded)
+- PPTX lane labels show "Quarterback" as responsible party
 
 ## Platform Stats
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.115 |
-| Total PRs Merged | 139 |
+| Release Version | 2026.03.116 |
+| Total PRs Merged | 141 |
 | DMN Decision Tables | 21 |
 | Cross-Cutting Sub-Processes | 6 |
 | Camunda 8 Forms | 52+ |

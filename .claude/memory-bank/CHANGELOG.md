@@ -1,5 +1,13 @@
 # Changelog
 
+## [2026.03.116] - 2026-03-12
+
+### Changed
+- Rename `business-lane` to `quarterback-lane` in v17 onboarding BPMN, mini-rfp-pre-screen BPMN, and user task inventory PPTX (PR #141)
+
+### Added
+- User task inventory PPTX generator script and output (51 tasks across 8 phases, KPMG-branded) (PR #141)
+
 ## [2026.03.115] - 2026-03-12
 
 ### Changed

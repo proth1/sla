@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.115
+**Current Version**: 2026.03.116
 **Last Release**: 2026-03-12
-**Total Releases**: 115
+**Total Releases**: 116
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.116 | 2026-03-12 | #141 | Rename business-lane to quarterback-lane in v17 BPMN + user task inventory PPTX |
 | 2026.03.115 | 2026-03-12 | #139 | V17 BPMN cleanup — task promotion, NDA enrichment, deal-killer restructure, overlap checker fix |
 | 2026.03.114 | 2026-03-12 | #137 | Fix stale v16 IDs in v17 BPMN, remove 20 orphaned v16 images |
 | 2026.03.113 | 2026-03-12 | #135 | Sync v17 BPMN from Web Modeler, re-render diagrams, update presentation |
