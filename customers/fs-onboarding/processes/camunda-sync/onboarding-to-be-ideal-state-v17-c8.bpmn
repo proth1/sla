@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_IdealState_v16" targetNamespace="http://sla.governance/bpmn/onboarding" exporter="Camunda Web Modeler" exporterVersion="0e2f930" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
-  <bpmn:collaboration id="Collaboration_IdealState_v16">
-    <bpmn:participant id="Participant_Enterprise" name="Software Onboarding" processRef="Process_Onboarding_v16" />
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_IdealState_v17" targetNamespace="http://sla.governance/bpmn/onboarding" exporter="Camunda Web Modeler" exporterVersion="0e2f930" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+  <bpmn:collaboration id="Collaboration_IdealState_v17">
+    <bpmn:participant id="Participant_Enterprise" name="Software Onboarding" processRef="Process_Onboarding_v17" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_Onboarding_v16" name="Product Management — Software Onboarding v16 (Camunda 8)" isExecutable="true">
+  <bpmn:process id="Process_Onboarding_v17" name="Product Management — Software Onboarding v17 (Camunda 8)" isExecutable="true">
     <bpmn:sequenceFlow id="Flow_1xhs1a0" sourceRef="Start_SoftwareNeed" targetRef="SP_RequestTriage" />
     <bpmn:sequenceFlow id="Flow_v5_2" sourceRef="SP_RequestTriage" targetRef="GW_TriageDecision" />
     <bpmn:sequenceFlow id="Flow_v5_4" name="No" sourceRef="GW_TriageDecision" targetRef="End_Rejected" />
@@ -1690,7 +1690,7 @@ If we need an NDA do we need to setup a vendor in the vendor management system</
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Main">
-    <bpmndi:BPMNPlane id="BPMNPlane_Main" bpmnElement="Collaboration_IdealState_v16">
+    <bpmndi:BPMNPlane id="BPMNPlane_Main" bpmnElement="Collaboration_IdealState_v17">
       <bpmndi:BPMNShape id="Participant_Enterprise_di" bpmnElement="Participant_Enterprise" isHorizontal="true">
         <dc:Bounds x="160" y="80" width="1880" height="280" />
         <bpmndi:BPMNLabel />
