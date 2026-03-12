@@ -7,16 +7,22 @@ const puppeteer = require('/opt/homebrew/lib/node_modules/puppeteer/node_modules
 const fs = require('fs');
 const path = require('path');
 
-const BPMN_FILE = path.resolve(__dirname, '../customers/fs-onboarding/processes/onboarding-to-be-ideal-state-v8-c8.bpmn');
+const BPMN_FILE = path.resolve(__dirname, '../customers/fs-onboarding/processes/onboarding-to-be-ideal-state-v16-c8.bpmn');
 const OUT_DIR = path.resolve(__dirname, '../docs/presentations/bpmn-images');
 
 const DIAGRAMS = [
-  { id: 'SP_RequestTriage', name: 'v8-sp1-request-triage' },
-  { id: 'SP_PlanningRouting', name: 'v8-sp2-planning-routing' },
-  { id: 'SP_EvalDD', name: 'v8-sp3-evaluation-dd' },
-  { id: 'SP_ContractBuild', name: 'v8-sp4-contracting-build' },
-  { id: 'SP_UATGoLive', name: 'v8-sp5-uat-golive' },
-  { id: 'SP_PDLC', name: 'v8-pdlc' },
+  // Top-level orchestrator (null id = default/main diagram)
+  { id: null, name: 'v16-orchestrator' },
+  // Phase sub-processes
+  { id: 'SP_RequestTriage', name: 'v16-sp1-refine-request' },
+  { id: 'Activity_0j7ifzh', name: 'v16-sp0-mini-rfp' },
+  { id: 'Activity_0mpg74s', name: 'v16-sp1-execute-nda' },
+  { id: 'SP_PlanningRouting', name: 'v16-sp2-planning-routing' },
+  { id: 'SP_EvalDD', name: 'v16-sp3-vendor-evaluation' },
+  { id: 'Activity_0tfteab', name: 'v16-sp3-vendor-sourcing' },
+  { id: 'Activity_19ph1cx', name: 'v16-sp4-risk-assessment-contracting' },
+  { id: 'Activity_1hbbnkw', name: 'v16-pdlc' },
+  { id: 'SP_UATGoLive', name: 'v16-sp5-uat-golive' },
 ];
 
 const BPMN_JS_CDN = 'https://unpkg.com/bpmn-js@18.6.1/dist/bpmn-navigated-viewer.production.min.js';
@@ -63,36 +69,40 @@ const BPMN_JS_CDN = 'https://unpkg.com/bpmn-js@18.6.1/dist/bpmn-navigated-viewer
   console.log('BPMN imported successfully');
 
   for (const diagram of DIAGRAMS) {
-    console.log(`Rendering ${diagram.id} → ${diagram.name}.png`);
+    console.log(`Rendering ${diagram.id || 'main'} → ${diagram.name}.png`);
 
-    // Navigate into the sub-process and fit viewport
+    // Navigate into the sub-process (or stay at root for orchestrator) and fit viewport
     const rendered = await page.evaluate(async (spId) => {
       const viewer = window._viewer;
       const canvas = viewer.get('canvas');
-      const elementRegistry = viewer.get('elementRegistry');
 
-      // Find the sub-process element
-      const element = elementRegistry.get(spId);
-      if (!element) return { success: false, error: `Element ${spId} not found` };
-
-      // Open the sub-process (drill down into it)
-      try {
-        canvas.setRootElement(canvas.findRoot(spId + '_plane') || canvas.findRoot(spId));
-      } catch (e) {
-        // Try alternative: find the root element for this sub-process
+      if (spId === null) {
+        // Main/orchestrator diagram — reset to default root
         const roots = canvas.getRootElements();
-        const spRoot = roots.find(r => r.id === spId || r.id === spId + '_plane' ||
-          (r.businessObject && r.businessObject.id === spId));
-        if (spRoot) {
-          canvas.setRootElement(spRoot);
-        } else {
-          return { success: false, error: `No root for ${spId}. Roots: ${roots.map(r => r.id).join(', ')}` };
+        const mainRoot = roots.find(r => r.id.includes('Collaboration') || r.id.includes('Process'))
+          || roots[0];
+        canvas.setRootElement(mainRoot);
+      } else {
+        const elementRegistry = viewer.get('elementRegistry');
+        const element = elementRegistry.get(spId);
+        if (!element) return { success: false, error: `Element ${spId} not found` };
+
+        try {
+          canvas.setRootElement(canvas.findRoot(spId + '_plane') || canvas.findRoot(spId));
+        } catch (e) {
+          const roots = canvas.getRootElements();
+          const spRoot = roots.find(r => r.id === spId || r.id === spId + '_plane' ||
+            (r.businessObject && r.businessObject.id === spId));
+          if (spRoot) {
+            canvas.setRootElement(spRoot);
+          } else {
+            return { success: false, error: `No root for ${spId}. Roots: ${roots.map(r => r.id).join(', ')}` };
+          }
         }
       }
 
       canvas.zoom('fit-viewport');
 
-      // Get the viewbox for proper sizing
       const viewbox = canvas.viewbox();
       return {
         success: true,
