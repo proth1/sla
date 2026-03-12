@@ -16,9 +16,9 @@ This analysis compares the SLA Governance platform — a BPMN 2.0 + DMN 1.3 solu
 
 | Component | Count | Status |
 |-----------|-------|--------|
-| BPMN process models (customer) | 5 versions (v8-v13), 3 supporting processes | Production on Camunda 8 Cloud |
+| BPMN process models (customer) | 13 versions (v4-v16), 5 supporting processes | v8 deployed to Camunda 8 Cloud; v16 latest |
 | BPMN framework models (IP) | 8 phase models + master orchestrator + 6 cross-cutting | Complete (Camunda 7 reference) |
-| DMN decision tables | 17 framework + 1 customer (OB_DMN_DealKillerPrescreen) | Production |
+| DMN decision tables | 22 framework + 4 customer (DealKiller, QuestionSelection, TeamEngagement, CommitteeVoting) | Production |
 | Camunda JSON forms | 76 forms across all phases and personas | Deployed to Tasklist |
 | Task Worker UI | Full process execution interface with dynamic form rendering | Production |
 | Process Owner Dashboard | 5 KPIs, phase distribution, SLA aging, task queue, 10s auto-refresh | Production |
@@ -44,7 +44,7 @@ This analysis compares the SLA Governance platform — a BPMN 2.0 + DMN 1.3 solu
 | Capability | SLA (Camunda 8) | ServiceNow Equivalent | Advantage |
 |-----------|-----------------|----------------------|-----------|
 | Process notation | BPMN 2.0 (ISO standard) | Proprietary Flow Designer / Playbooks | **SLA** — portable, auditable, standards-based |
-| Decision tables | DMN 1.3 with FEEL, hit policies, DRDs | Proprietary Decision Builder (no FEEL, no hit policies) | **SLA** — 17 versioned DMN tables vs. embedded rules |
+| Decision tables | DMN 1.3 with FEEL, hit policies, DRDs | Proprietary Decision Builder (no FEEL, no hit policies) | **SLA** — 26 versioned DMN tables vs. embedded rules |
 | Multi-lane modeling | 9+1 swim lanes with cross-lane routing | No lanes/pools concept in any designer | **SLA** — governance accountability is visual |
 | Multi-pool (vendor boundary) | Enterprise pool + Vendor pool with message flows | No equivalent — manual API integration | **SLA** — cross-org boundaries are first-class |
 | Parallel gateways | Full AND/OR/XOR with token semantics | Parallel tasks exist but no formal token model | **SLA** — 9 parallel eval tracks execute correctly |
@@ -97,7 +97,7 @@ This analysis compares the SLA Governance platform — a BPMN 2.0 + DMN 1.3 solu
 
 | Phase | Effort | Status |
 |-------|--------|--------|
-| Process modeling (BPMN/DMN) | 3-4 weeks | **Done** — v13 deployed |
+| Process modeling (BPMN/DMN) | 3-4 weeks | **Done** — v8 deployed, v16 latest |
 | Form development (76 forms) | 2-3 weeks | **Done** — all deployed |
 | Showcase apps (Task Worker, Dashboard, Mini RFP) | 4-5 weeks | **Done** — production |
 | OneTrust integration | 3-4 weeks | Discovery phase |
@@ -114,7 +114,7 @@ This analysis compares the SLA Governance platform — a BPMN 2.0 + DMN 1.3 solu
 | GRC module licensing & procurement | 4-8 weeks | Contract negotiation, module selection |
 | TPRM module configuration | 8-12 weeks | SAE migration, questionnaire templates, vendor portal |
 | Custom governance workflow (Flow Designer) | 12-16 weeks | Recreating 5-phase process without BPMN; no swim lanes; custom state machine |
-| Decision logic recreation | 4-6 weeks | 17 DMN tables into proprietary Decision Builder (loss of FEEL, hit policies, portability) |
+| Decision logic recreation | 4-6 weeks | 26 DMN tables into proprietary Decision Builder (loss of FEEL, hit policies, portability) |
 | Form development | 3-4 weeks | 76 forms in ServiceNow Form Designer |
 | Dashboard/reporting | 3-4 weeks | Performance Analytics configuration |
 | OneTrust integration | 4-6 weeks | No native spoke; custom REST integration |
@@ -125,7 +125,7 @@ This analysis compares the SLA Governance platform — a BPMN 2.0 + DMN 1.3 solu
 ### Why ServiceNow Takes 4-5x Longer
 
 1. **No BPMN equivalent**: Recreating the 5-phase, 9-lane governance process in Flow Designer requires decomposing it into dozens of smaller, disconnected flows — losing the holistic process view that regulators value
-2. **No DMN equivalent**: 17 decision tables must be rebuilt as proprietary constructs, losing versioning, portability, and FEEL expression power
+2. **No DMN equivalent**: 26 decision tables must be rebuilt as proprietary constructs, losing versioning, portability, and FEEL expression power
 3. **No multi-pool concept**: The vendor/enterprise boundary — a core BPMN concept — must be simulated with custom integration patterns
 4. **Platform customization trap**: "The further from OOTB templates, the longer and more expensive" — and this governance use case is far from OOTB
 5. **Certified consultant dependency**: ServiceNow GRC implementation requires ServiceNow-certified partners, adding procurement and scheduling overhead
@@ -161,7 +161,7 @@ This analysis compares the SLA Governance platform — a BPMN 2.0 + DMN 1.3 solu
 ## Where SLA Wins (Decisive Advantages)
 
 1. **Regulatory auditability**: The BPMN model IS the audit artifact — regulators can inspect the process independently
-2. **DMN decision transparency**: 17 versioned, portable, FEEL-based decision tables vs. proprietary rules
+2. **DMN decision transparency**: 26 versioned, portable, FEEL-based decision tables vs. proprietary rules
 3. **Process complexity handling**: 9 parallel evaluation tracks, multi-pool vendor flows, event sub-processes — impossible to model equivalently in ServiceNow
 4. **Time to production**: ~12-16 weeks remaining vs. 12-18 months for ServiceNow equivalent
 5. **Cost**: 3-5x lower over 3 years
@@ -185,7 +185,7 @@ Camunda explicitly markets complementary positioning (announced certified Servic
 
 This eliminates the "but we already have ServiceNow" objection by making ServiceNow a *participant* in the governance process, not a competitor.
 
-**The Camunda + ServiceNow connector** (January 2026) enables:
+**The Camunda + ServiceNow connector** (GA January 2026) enables:
 - Creating/updating ServiceNow records from BPMN service tasks
 - Triggering Camunda processes from ServiceNow events
 - Two-way sync without custom REST development
