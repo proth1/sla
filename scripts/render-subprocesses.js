@@ -7,22 +7,22 @@ const puppeteer = require('/opt/homebrew/lib/node_modules/puppeteer/node_modules
 const fs = require('fs');
 const path = require('path');
 
-const BPMN_FILE = path.resolve(__dirname, '../customers/fs-onboarding/processes/onboarding-to-be-ideal-state-v16-c8.bpmn');
+const BPMN_FILE = path.resolve(__dirname, '../customers/fs-onboarding/processes/onboarding-to-be-ideal-state-v17-c8.bpmn');
 const OUT_DIR = path.resolve(__dirname, '../docs/presentations/bpmn-images');
 
 const DIAGRAMS = [
   // Top-level orchestrator (null id = default/main diagram)
-  { id: null, name: 'v16-orchestrator' },
+  { id: null, name: 'v17-orchestrator' },
   // Phase sub-processes
-  { id: 'SP_RequestTriage', name: 'v16-sp1-refine-request' },
-  { id: 'Activity_0j7ifzh', name: 'v16-sp0-mini-rfp' },
-  { id: 'Activity_0mpg74s', name: 'v16-sp1-execute-nda' },
-  { id: 'SP_PlanningRouting', name: 'v16-sp2-planning-routing' },
-  { id: 'SP_EvalDD', name: 'v16-sp3-vendor-evaluation' },
-  { id: 'Activity_0tfteab', name: 'v16-sp3-vendor-sourcing' },
-  { id: 'Activity_19ph1cx', name: 'v16-sp4-risk-assessment-contracting' },
-  { id: 'Activity_1hbbnkw', name: 'v16-pdlc' },
-  { id: 'SP_UATGoLive', name: 'v16-sp5-uat-golive' },
+  { id: 'SP_RequestTriage', name: 'v17-sp1-refine-request' },
+  { id: 'Activity_0j7ifzh', name: 'v17-sp0-mini-rfp' },
+  { id: 'Activity_0mpg74s', name: 'v17-sp1-execute-nda' },
+  { id: 'SP_PlanningRouting', name: 'v17-sp2-planning-routing' },
+  { id: 'SP_EvalDD', name: 'v17-sp3-risk-sme-assessments' },
+  { id: 'Activity_02eupjn', name: 'v17-sp3-vendor-sourcing' },
+  { id: 'Activity_19ph1cx', name: 'v17-sp4-contracting' },
+  { id: 'Activity_1hbbnkw', name: 'v17-pdlc' },
+  { id: 'SP_UATGoLive', name: 'v17-sp5-uat-golive' },
 ];
 
 const BPMN_JS_CDN = 'https://unpkg.com/bpmn-js@18.6.1/dist/bpmn-navigated-viewer.production.min.js';
