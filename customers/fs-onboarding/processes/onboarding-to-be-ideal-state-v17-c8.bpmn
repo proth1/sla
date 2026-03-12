@@ -239,7 +239,7 @@
         <bpmn:documentation>Review the organization's existing software portfolio and backlog to determine whether current solutions can fulfill the identified business need. Search the enterprise software catalog, asset management system, and approved vendor registry for existing capabilities that overlap with the request. Assess whether existing licenses, modules, or configurations can be leveraged before initiating a new procurement or build effort.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:formDefinition formId="sp1-review-existing" />
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Intake" />
             <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 20: Inventory management — the organization must maintain an accurate inventory of all third-party relationships; this review ensures new requests are checked against the existing portfolio to avoid duplicate vendor relationships and unmanaged concentration risk. (2) NIST CSF 2.0 ID.AM (Asset Management): Verify existing software assets are cataloged, classified, and their capabilities documented to enable effective reuse analysis. (3) SOX Section 404: Ensure any software reuse decision is documented with rationale to maintain an auditable trail of technology decisions impacting financial controls. EVIDENCE COLLECTION: (a) Search results from enterprise software catalog showing existing solutions evaluated. (b) Portfolio overlap analysis documenting how existing tools were assessed against the new requirement. (c) Decision rationale document if existing solution is deemed sufficient (bypass path) or insufficient (proceed to formal process). (d) Asset management system query log showing search criteria used. DATA POINTS: Request description, business unit, existing software matches found (name, version, license status, utilization rate), gap analysis summary (what the existing solution covers vs. what is missing), requester assessment of fit (sufficient/insufficient), estimated cost avoidance if existing solution is leveraged." />
@@ -268,7 +268,7 @@
         <bpmn:documentation>Configure, extend, or activate existing software capabilities to meet the identified business need without initiating a new procurement. This may involve enabling dormant modules, adjusting configurations, requesting additional user licenses, or integrating existing tools in a new workflow. Document the reuse decision and update the software asset register to reflect the expanded usage scope.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:formDefinition formId="sp1-leverage-existing" />
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Intake" />
             <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 20: Even when leveraging existing software, the expanded scope of use must be evaluated for any change in risk profile — if the existing vendor relationship is being extended to new data types, business functions, or user populations, the third-party risk assessment may need updating. (2) NIST CSF 2.0 PR.DS (Data Security): Ensure data protection controls remain adequate for the expanded use case — new data flows or user populations may require additional access controls or encryption. (3) SOX Section 404: Document the decision to reuse existing software with clear rationale, cost avoidance calculation, and any changes to financial control configurations. EVIDENCE COLLECTION: (a) Reuse decision document with business justification and cost avoidance estimate. (b) Updated software asset register entry reflecting expanded scope. (c) License compliance verification confirming sufficient licenses for expanded use. (d) Configuration change request (if applicable) with approval chain. (e) Risk assessment delta — confirmation that expanded use does not change the vendor&#39;s risk tier. DATA POINTS: Existing software name and version, current license count vs. required, configuration changes needed, estimated cost avoidance vs. new procurement, risk tier impact assessment (no change/escalation needed), expanded user population scope, new data types introduced (if any)." />
@@ -287,7 +287,7 @@
         <bpmn:documentation>Form: vendor-intake-form.html Sections 1-2 (Request Basics + Governance) — business persona view. Assemble all documentation required to support a formal software request submission. Gather business requirements, use cases, stakeholder sign-offs, budget authorization, data classification assessment, and any preliminary market research. Ensure the request package is complete per the standardized intake template to prevent delays during triage. Information collected here is centralized and reused throughout the lifecycle.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:formDefinition formId="sp1-gather-documentation" />
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Intake, Funding, Privacy" />
             <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 25: Needs assessment documentation — the business case must articulate the need, alternatives considered, and alignment with the organization&#39;s strategic plan. This documentation becomes part of the regulatory examination file for third-party risk management. (2) GDPR Article 35/CCPA: If the software will process personal data, a preliminary Data Protection Impact Assessment (DPIA) screening should be initiated at this stage to identify high-risk processing activities early. (3) SOX Section 404: Budget authorization and financial justification must follow the organization&#39;s delegated authority matrix and be documented for audit trail purposes. (4) NIST CSF 2.0 GV.RM (Risk Management Strategy): Preliminary risk indicators should be captured to enable early risk tier estimation. EVIDENCE COLLECTION: (a) Completed software request intake form per standardized template. (b) Business requirements document with use cases and success criteria. (c) Stakeholder sign-off confirming business need and sponsorship. (d) Budget authorization or funding source identification. (e) Preliminary data classification assessment (what data types will the software process). (f) Market research or preliminary vendor identification (if available). (g) DPIA screening questionnaire (if personal data processing is involved). DATA POINTS: Business unit, cost center, budget amount authorized, expected user count, data types to be processed (PII, PHI, financial, public), deployment model preference (cloud/on-premise/hybrid), integration requirements with existing systems, urgency level, strategic alignment score, compliance requirements identified." />
@@ -304,7 +304,7 @@
         <bpmn:documentation>Form: vendor-intake-form.html Section 5 (Review and Submit). Submit the completed software request package to the Product Management team for formal triage and evaluation. The submission must include all required documentation per the intake template. Upon submission, the request is assigned a tracking number and enters the governance workflow with full audit trail from this point forward.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:formDefinition formId="sp1-submit-request" />
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Intake" />
             <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 25: Formal submission creates the official record of the third-party engagement request — this is the point at which the governance audit trail formally begins. The submission must be timestamped and immutable once submitted. (2) NIST CSF 2.0 GV.OC (Organizational Context): The request must capture sufficient context about the business need, data sensitivity, and operational criticality to enable accurate downstream risk assessment and pathway routing. (3) SOX Section 302: The submitting business owner certifies the accuracy and completeness of the request documentation, creating accountability for the information provided. EVIDENCE COLLECTION: (a) Submitted request package with timestamp, submitter identity, and completeness validation result. (b) Tracking number assignment confirmation. (c) Acknowledgment receipt from Product Management confirming request received. (d) Completeness check result (all required fields populated per intake template). (e) Submitter certification that information is accurate and complete. DATA POINTS: Request tracking number, submission timestamp, submitter name and role, business unit, completeness score (percentage of template fields populated), attachments list, priority requested by business, estimated annual cost, data classification summary." />
@@ -320,7 +320,7 @@
         <bpmn:documentation>Form: vendor-intake-form.html (read-only view of submitted data). Perform initial triage of the incoming software request to evaluate feasibility, strategic alignment, duplicate detection, and resource availability. Includes automated pre-screening for known vendor matches and existing capability overlap. Assign preliminary priority and determine whether the request should proceed, be rejected, or be returned for additional information. This is the first governance gate in the onboarding lifecycle.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:formDefinition formId="sp1-initial-triage" />
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Intake, Compliance, TPRM" />
             <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 25-30: Initial risk screening — determine whether the proposed software/vendor relationship would create concentration risk, introduce critical dependency, or fall within a high-risk category requiring enhanced due diligence. Early identification of critical/significant third-party relationships. (2) NIST CSF 2.0 GV.RM-01: Risk management strategy alignment — verify the request aligns with the organization&#39;s risk appetite and technology strategy. (3) SOX Section 404: Ensure the triage decision is documented with rationale, supporting the auditability of the intake process. Delegated authority verified for the approval to proceed. EVIDENCE COLLECTION: (a) Triage evaluation form with scoring across feasibility, strategic alignment, duplicate detection, and resource availability. (b) Duplicate detection results from software catalog and vendor registry search. (c) Preliminary risk screening result (concentration risk, criticality assessment). (d) Triage decision with documented rationale (approve/reject/return for info). (e) Priority assignment with justification. (f) Assigned governance analyst name and date. DATA POINTS: Request tracking number, triage score (composite), strategic alignment rating (1-5), duplicate match results (existing solutions found), preliminary risk indicators, resource availability assessment, triage decision (approve/reject/return), decision rationale, assigned analyst, triage completion timestamp, SLA compliance (within 2-day target)." />
@@ -441,7 +441,7 @@
         <bpmn:userTask id="Activity_1jd4o1m" name="Understand&#10;the Need">
           <bpmn:extensionElements>
             <zeebe:formDefinition formId="rfp-step1-understand-need" />
-            <zeebe:assignmentDefinition candidateGroups="business-lane" />
+            <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
             <zeebe:properties>
               <zeebe:property name="topics" value="Mini RFP" />
               <zeebe:property name="raci_r" value="Business" />
@@ -454,7 +454,7 @@
         <bpmn:userTask id="Activity_07qg27e" name="Understand Vendor&#10;Context">
           <bpmn:extensionElements>
             <zeebe:formDefinition formId="rfp-step2-vendor-context" />
-            <zeebe:assignmentDefinition candidateGroups="business-lane" />
+            <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
             <zeebe:properties>
               <zeebe:property name="topics" value="Mini RFP" />
               <zeebe:property name="raci_r" value="Business" />
@@ -493,7 +493,7 @@
         <bpmn:userTask id="Activity_0h9zvjd" name="Deal-Killer&#10;Results">
           <bpmn:extensionElements>
             <zeebe:formDefinition formId="rfp-step3-deal-killer" />
-            <zeebe:assignmentDefinition candidateGroups="business-lane" />
+            <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
             <zeebe:properties>
               <zeebe:property name="topics" value="Mini RFP, Deal Killer" />
               <zeebe:property name="raci_r" value="Business" />
@@ -513,7 +513,7 @@
         <bpmn:userTask id="Activity_15rnp82" name="Question&#10;Preview">
           <bpmn:extensionElements>
             <zeebe:formDefinition formId="rfp-step4-preview" />
-            <zeebe:assignmentDefinition candidateGroups="business-lane" />
+            <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
             <zeebe:properties>
               <zeebe:property name="topics" value="Mini RFP, Questions" />
               <zeebe:property name="raci_r" value="Business" />
@@ -526,7 +526,7 @@
         <bpmn:userTask id="Activity_1h2vsx3" name="Send to&#10;Vendor(s)">
           <bpmn:extensionElements>
             <zeebe:formDefinition formId="rfp-step5-send-vendor" />
-            <zeebe:assignmentDefinition candidateGroups="business-lane" />
+            <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
             <zeebe:properties>
               <zeebe:property name="topics" value="Mini RFP, Vendor Communication" />
               <zeebe:property name="raci_r" value="Business" />
@@ -555,7 +555,7 @@
         <bpmn:sequenceFlow id="Flow_1af0yvd" sourceRef="Activity_1h2vsx3" targetRef="Activity_16hgh8o" />
         <bpmn:userTask id="Activity_06e21v6" name="Identify additional solutions vendors">
           <bpmn:extensionElements>
-            <zeebe:assignmentDefinition candidateGroups="business-lane" />
+            <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           </bpmn:extensionElements>
           <bpmn:incoming>Flow_02obvfw</bpmn:incoming>
           <bpmn:outgoing>Flow_0b1b8po</bpmn:outgoing>
@@ -769,7 +769,7 @@
       <bpmn:sequenceFlow id="Flow_1q9y5tr" sourceRef="Activity_1l8ugqb" targetRef="Gateway_0js8zzn" />
       <bpmn:userTask id="Activity_0netfvm" name="Quarterback&#10;Assistance">
         <bpmn:extensionElements>
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Intake" />
             <zeebe:property name="raci_r" value="Business" />
@@ -781,7 +781,7 @@
       </bpmn:userTask>
       <bpmn:userTask id="Activity_1l8ugqb" name="Pursue Exception&#10;with Quarterback">
         <bpmn:extensionElements>
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Intake" />
             <zeebe:property name="raci_r" value="Business" />
@@ -1113,7 +1113,7 @@
         <bpmn:documentation>Refine and finalize requirements based on insights from the parallel evaluations and vendor due diligence. Incorporate feedback from Technical Architecture, Security, Risk and Compliance, and Financial analysis streams. Update requirements to address identified gaps, risks, and conditions. Produce the final requirements specification that will guide the Proof of Concept and subsequent contracting or build activities.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:formDefinition formId="sp4-refine-requirements" />
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Sourcing, Compliance, Privacy" />
             <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 40: Requirements refinement must incorporate all risk and compliance findings from the evaluation streams — security requirements, data protection requirements, audit rights, and regulatory compliance requirements must be explicitly captured in the final specification. (2) NIST CSF 2.0 PR (Protect): Refined requirements must include all identified security and privacy controls as mandatory requirements, not optional. (3) GDPR Article 25: Data protection by design — refined requirements must embed privacy requirements identified during the compliance evaluation. EVIDENCE COLLECTION: (a) Requirements change log documenting what was added, modified, or removed based on evaluation findings. (b) Traceability matrix linking evaluation findings to updated requirements. (c) Final requirements specification document (versioned and approved). (d) Sign-off from evaluation stream leads confirming their findings are reflected. DATA POINTS: Original requirements count, refined requirements count, requirements added from security stream, requirements added from compliance stream, requirements added from technical stream, critical requirements identified, requirements approval date, version number." />
@@ -1202,7 +1202,7 @@
         <bpmn:documentation>Define comprehensive build requirements for the Build pathway including functional specifications, non-functional requirements (performance, scalability, security, availability), architecture constraints, integration specifications, data model requirements, and acceptance criteria. Establish the product backlog, define MVP scope, and document technology stack decisions. Requirements must address security, compliance, and data protection from inception.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:formDefinition formId="sp4-define-build-reqs" />
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="EA, Privacy, Cyber" />
             <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 40: If the build involves third-party components, libraries, or cloud services, each must be evaluated under the third-party risk management framework. Open-source components require license compliance and vulnerability assessment. (2) NIST CSF 2.0 PR.PS (Platform Security): Security requirements must be defined as part of the build specification — secure coding standards, authentication requirements, encryption standards, and logging requirements. (3) GDPR Article 25: Data protection by design and by default — privacy requirements must be embedded in the build specifications from the outset, not retrofitted. Data minimization, purpose limitation, and retention policies must be defined. (4) SOX Section 404: If the build touches financial data or controls, segregation of duties, access controls, and audit logging requirements must be specified. EVIDENCE COLLECTION: (a) Functional requirements specification document with acceptance criteria. (b) Non-functional requirements document (performance targets, scalability requirements, availability SLA). (c) Security requirements checklist (authentication, authorization, encryption, logging, vulnerability management). (d) Architecture decision records (ADRs) for key technology choices. (e) Data protection requirements including DPIA results if applicable. (f) Third-party component inventory (libraries, frameworks, cloud services) with license types. DATA POINTS: Total requirements count (functional + non-functional), security requirements count, data types processed, technology stack selected, estimated development effort (story points or person-days), MVP scope definition, target deployment date, third-party component count, open-source license types, DPIA required (yes/no)." />
@@ -1371,7 +1371,7 @@
         <bpmn:documentation>Finance coding matrix correction for proper GL account assignment, cost center allocation, and budget line mapping.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:formDefinition formId="sp4-coding-correction" />
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="raci_r" value="Business" />
             <zeebe:property name="raci_a" value="Governance" />
@@ -1481,7 +1481,7 @@
         <bpmn:documentation>Conduct User Acceptance Testing (UAT) or a controlled pilot with representative business users to validate the solution meets business requirements in a production-like environment. Execute predefined UAT test scenarios covering all critical business workflows. Collect user feedback on usability, performance, and completeness. Document defects, change requests, and acceptance decision. UAT sign-off is a prerequisite for final governance approval.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:formDefinition formId="sp5-perform-uat" />
-          <zeebe:assignmentDefinition candidateGroups="business-lane" />
+          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Compliance" />
             <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 55: Business validation — the requesting business unit must confirm the solution meets the stated needs and operates as expected before governance approval. This creates accountability at the first line of defense. (2) SOX Section 404: For systems affecting financial controls, UAT must specifically validate control effectiveness — transaction accuracy, access controls, audit trail completeness, and segregation of duties. UAT evidence becomes part of the SOX compliance documentation. (3) GDPR Article 25: Validate privacy controls function as designed — data minimization, consent management, data subject rights (access, deletion, portability), and privacy notice accuracy. (4) NIST CSF 2.0 PR.AT: User training validation — confirm users can operate the system securely and understand their responsibilities. EVIDENCE COLLECTION: (a) UAT plan with test scenarios mapped to business requirements. (b) UAT execution results with pass/fail per scenario. (c) User feedback survey results. (d) Defect log with severity and resolution status. (e) UAT sign-off from business owner and key stakeholders. (f) Training completion records for UAT participants. (g) Change request log (if UAT identified needed modifications). DATA POINTS: UAT scenarios total, pass rate percentage, critical defects found, defects resolved before sign-off, defects deferred (with risk acceptance), user satisfaction score, pilot user count, pilot duration (days), business owner sign-off date, training completion rate." />

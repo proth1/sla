@@ -14,7 +14,7 @@
       <bpmn:documentation>Requester defines the business need, engagement type (new vendor, renewal, expansion), budget range, timeline urgency, and business criticality. This information drives downstream question selection via OB-DMN-8.</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="rfp-step1-understand-need" />
-        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
         <zeebe:properties>
           <zeebe:property name="topics" value="Mini RFP" />
           <zeebe:property name="raci_r" value="Business" />
@@ -28,7 +28,7 @@
       <bpmn:documentation>Requester provides vendor details: company name, headquarters jurisdiction, existing relationship status, data types to be shared, existing security assessments (SIG/SOC2/ISO), and cost center for budget tracking.</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="rfp-step2-vendor-context" />
-        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
         <zeebe:properties>
           <zeebe:property name="topics" value="Mini RFP" />
           <zeebe:property name="raci_r" value="Business" />
@@ -69,7 +69,7 @@
       <bpmn:documentation>Requester reviews the deal-killer pre-screen results from OB-DMN-7. If all checks pass, the process continues to question selection. Results show: sanctions status, budget freeze, concentration risk, and OFAC screening outcomes.</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="rfp-step3-deal-killer" />
-        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
         <zeebe:properties>
           <zeebe:property name="topics" value="Mini RFP, Deal Killer" />
           <zeebe:property name="raci_r" value="Business" />
@@ -90,7 +90,7 @@
       <bpmn:documentation>Requester previews the dynamically selected questions (based on OB-DMN-8 output) before they are sent to the vendor. Shows selected categories, question counts per category, and category weights.</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="rfp-step4-preview" />
-        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
         <zeebe:properties>
           <zeebe:property name="topics" value="Mini RFP, Questions" />
           <zeebe:property name="raci_r" value="Business" />
@@ -104,7 +104,7 @@
       <bpmn:documentation>Requester configures vendor contact details, sets response deadline (minimum 14 calendar days), and triggers questionnaire dispatch to the vendor. Includes evaluation criteria summary and cover letter.</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="rfp-step5-send-vendor" />
-        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
         <zeebe:properties>
           <zeebe:property name="topics" value="Mini RFP, Vendor Communication" />
           <zeebe:property name="raci_r" value="Business" />
@@ -203,7 +203,7 @@
       <bpmn:documentation>Requester monitors vendor response status, reviews reminder history, and decides next action: accept response, extend deadline, escalate, or close with no response.</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="rfp-step6-collect-responses" />
-        <zeebe:assignmentDefinition candidateGroups="business-lane" />
+        <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
         <zeebe:properties>
           <zeebe:property name="topics" value="Mini RFP, Collection" />
           <zeebe:property name="raci_r" value="Business" />
