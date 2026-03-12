@@ -247,6 +247,30 @@ function isBoundaryEvent(type) {
 }
 
 /**
+ * Check if bounds1 fully contains bounds2
+ */
+function fullyContains(outer, inner) {
+  return outer.x <= inner.x &&
+    outer.y <= inner.y &&
+    outer.x + outer.width >= inner.x + inner.width &&
+    outer.y + outer.height >= inner.y + inner.height;
+}
+
+/**
+ * Check if one shape is an expanded sub-process containing the other
+ * (parent-child containment is expected, not an overlap)
+ */
+function isExpandedSubProcessContainment(shape1, shape2) {
+  if (shape1.type === 'SubProcess' && fullyContains(shape1.bounds, shape2.bounds)) {
+    return true;
+  }
+  if (shape2.type === 'SubProcess' && fullyContains(shape2.bounds, shape1.bounds)) {
+    return true;
+  }
+  return false;
+}
+
+/**
  * Check for overlapping elements
  */
 function checkOverlaps(shapes, result) {
@@ -261,6 +285,11 @@ function checkOverlaps(shapes, result) {
 
       // Skip boundary events (they're supposed to overlap their parent)
       if (isBoundaryEvent(shape1.type) || isBoundaryEvent(shape2.type)) {
+        continue;
+      }
+
+      // Skip expanded sub-process containing its child elements
+      if (isExpandedSubProcessContainment(shape1, shape2)) {
         continue;
       }
 
