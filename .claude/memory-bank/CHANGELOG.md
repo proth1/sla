@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026.03.112] - 2026-03-12
+
+### Added
+- 4 new presentation slides: Mini RFP Pre-Screen BPMN, Execute NDA BPMN, Vendor Sourcing BPMN, PDLC BPMN (PR #133)
+- 20 new v16 BPMN diagram images (10 PNG + 10 SVG) rendered from v16 onboarding model (PR #133)
+
+### Changed
+- Replace v8 onboarding BPMN with v16 in `camunda-sync/` deployment directory (PR #133)
+- Update render script to target v16 with 10 diagrams (orchestrator + 9 sub-processes) (PR #133)
+- Presentation slides 21-27 updated with v16 BPMN diagram images (PR #133)
+- Presentation grows from 46 to 50 slides, TOC and nav bar renumbered (PR #133)
+
 ## [2026.03.111] - 2026-03-12
 
 ### Added
