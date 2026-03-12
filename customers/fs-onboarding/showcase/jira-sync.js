@@ -200,10 +200,11 @@ async function outboundSync() {
       const slaDurationMs = parseDuration(raci.sla);
       const now = Date.now();
 
+      const taskName = (task.name || task.taskDefinitionId).replace(/\n/g, ' ');
       const fields = {
         project: { key: config.jira.projectKey },
         issuetype: { name: config.jira.issueType },
-        summary: `[Camunda] ${(task.name || task.taskDefinitionId).replace(/\n/g, ' ')}`,
+        summary: `[Camunda] ${taskName}`,
         description: buildRaciDescription(candidateGroup, task),
         labels: [
           label,
@@ -211,6 +212,7 @@ async function outboundSync() {
           `pi-${task.processInstanceKey}`,
           PHASE_MAP[task.taskDefinitionId] || 'unknown-phase',
           'onboarding-v8',
+          ...(/approval/i.test(taskName) || /approval/i.test(task.taskDefinitionId) ? ['Approval'] : []),
         ],
       };
 
