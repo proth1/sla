@@ -1,5 +1,12 @@
 # Changelog
 
+## [2026.03.110] - 2026-03-12
+
+### Added
+- Competitive analysis: AI opportunity mapping across all 50 tasks in 5-phase onboarding (D/AI/H categorization), contracting lifecycle AI deep dive (7-step clause analysis flow), AI model flexibility comparison (Camunda open orchestration vs ServiceNow walled garden), virtual application layer framing (PR #131)
+- Expand "SLA" to "Software Lifecycle Automation (SLA)" throughout competitive analysis document headers
+- AI efficiency estimates (40-60% manual effort reduction) in effort/cost comparison
+
 ## [2026.03.109] - 2026-03-11
 
 ### Added
