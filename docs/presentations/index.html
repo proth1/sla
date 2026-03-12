@@ -290,14 +290,14 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
     <a onclick="goToSlide(19)">Legal</a>
     <a onclick="goToSlide(20)">TPRM</a>
     <a onclick="goToSlide(21)">Process</a>
-    <a onclick="goToSlide(30)">Mini RFP</a>
-    <a onclick="goToSlide(31)">RACI</a>
-    <a onclick="goToSlide(33)">DMN</a>
+    <a onclick="goToSlide(34)">Mini RFP</a>
+    <a onclick="goToSlide(35)">RACI</a>
+    <a onclick="goToSlide(37)">DMN</a>
   </div>
 </div>
 
 <div class="slide-indicator" id="slideIndicator"></div>
-<div class="slide-counter" id="slideCounter">1 / 46</div>
+<div class="slide-counter" id="slideCounter">1 / 50</div>
 
 <main class="slides-container" id="slidesContainer">
 
@@ -355,19 +355,19 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
       </ul>
       <h3>Future State Process Design</h3>
       <ul>
-        <li><a href="#" onclick="goToSlide(21);return false;">Process Story &amp; Forms</a> (slides 21-29)</li>
-        <li><a href="#" onclick="goToSlide(30);return false;">Mini RFP Pre-Screening (SP0)</a></li>
-        <li><a href="#" onclick="goToSlide(31);return false;">RACI Matrix</a></li>
-        <li><a href="#" onclick="goToSlide(33);return false;">DMN Decision Tables</a></li>
-        <li><a href="#" onclick="goToSlide(35);return false;">Bottleneck Analysis</a></li>
-        <li><a href="#" onclick="goToSlide(36);return false;">Staffing and Resource Model</a></li>
-        <li><a href="#" onclick="goToSlide(37);return false;">Measurement Dashboard</a></li>
+        <li><a href="#" onclick="goToSlide(21);return false;">Process Story &amp; Forms</a> (slides 21-33)</li>
+        <li><a href="#" onclick="goToSlide(34);return false;">Mini RFP Pre-Screening (SP0)</a></li>
+        <li><a href="#" onclick="goToSlide(35);return false;">RACI Matrix</a></li>
+        <li><a href="#" onclick="goToSlide(37);return false;">DMN Decision Tables</a></li>
+        <li><a href="#" onclick="goToSlide(39);return false;">Bottleneck Analysis</a></li>
+        <li><a href="#" onclick="goToSlide(40);return false;">Staffing and Resource Model</a></li>
+        <li><a href="#" onclick="goToSlide(41);return false;">Measurement Dashboard</a></li>
       </ul>
       <h3>Competitive Positioning</h3>
       <ul>
-        <li><a href="#" onclick="goToSlide(39);return false;">AI Opportunity Map</a></li>
-        <li><a href="#" onclick="goToSlide(40);return false;">Open AI Orchestration vs. Walled Garden</a></li>
-        <li><a href="#" onclick="goToSlide(41);return false;">Virtual Application Layer and 3-Year TCO</a></li>
+        <li><a href="#" onclick="goToSlide(43);return false;">AI Opportunity Map</a></li>
+        <li><a href="#" onclick="goToSlide(44);return false;">Open AI Orchestration vs. Walled Garden</a></li>
+        <li><a href="#" onclick="goToSlide(45);return false;">Virtual Application Layer and 3-Year TCO</a></li>
       </ul>
     </div>
   </div>
@@ -988,9 +988,9 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <div class="slide" data-slide="21">
   <h2>End-to-End Process Orchestrator</h2>
-  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Hierarchical 5-phase model with collapsed sub-processes, 5 decision gateways, vendor pool with message flows, NDA gate, and 3 request type routing (Defined Need, Forced Update, Speculative).</p>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Hierarchical model with 9 collapsed sub-processes, decision gateways, vendor pool with message flows, NDA gate, governance committee call activities, and 3 request type routing (Defined Need, Forced Update, Speculative).</p>
   <div style="background:white;border-radius:8px;padding:12px;box-shadow:0 2px 8px rgba(0,51,141,0.08);margin:0.5rem 0;overflow-x:auto;">
-    <img src="bpmn-images/v8-orchestrator.png" alt="End-to-End Orchestrator" style="display:block;max-width:100%;height:auto;margin:0 auto;">
+    <img src="bpmn-images/v16-orchestrator.png" alt="End-to-End Orchestrator" style="display:block;max-width:100%;height:auto;margin:0 auto;">
   </div>
   <div style="display:flex;gap:12px;margin-top:0.5rem;">
     <div style="flex:1;background:var(--brand-light-gray);border-radius:6px;padding:8px 12px;font-size:0.72rem;border-left:3px solid var(--brand-emerald);"><strong>64 Forms</strong> across 5 phases + vendor pool capture every data point, decision, and approval</div>
@@ -1009,7 +1009,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
-        <img src="bpmn-images/v8-sp1-request-triage.png" alt="Request and Triage" style="display:block;max-width:100%;height:auto;">
+        <img src="bpmn-images/v16-sp1-refine-request.png" alt="Refine Request" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
         <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">2-Day SLA</span>
@@ -1048,7 +1048,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
-        <img src="bpmn-images/v8-sp2-planning-routing.png" alt="Planning and Routing" style="display:block;max-width:100%;height:auto;">
+        <img src="bpmn-images/v16-sp2-planning-routing.png" alt="Planning and Routing" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
         <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">3-Day SLA</span>
@@ -1083,7 +1083,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
   <h2>Evaluation and Due Diligence</h2>
   <p style="font-size:0.82rem;color:var(--brand-medium-gray);">The most complex phase. Five parallel assessment streams evaluate simultaneously &mdash; eliminating the sequential bottleneck that currently takes 75 days.</p>
   <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;margin-bottom:8px;">
-    <img src="bpmn-images/v8-sp3-evaluation-dd.png" alt="Evaluation and Due Diligence" style="display:block;max-width:100%;height:auto;">
+    <img src="bpmn-images/v16-sp3-vendor-evaluation.png" alt="Vendor Evaluation" style="display:block;max-width:100%;height:auto;">
   </div>
   <div style="display:flex;gap:8px;margin-bottom:8px;">
     <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">5-Day SLA</span>
@@ -1176,12 +1176,12 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- SLIDE: Contracting and Build -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="26">
-  <h2>Contracting and Build</h2>
+  <h2>Deep Dive Risk Assessment and Contracting</h2>
   <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Two pathways converge here. <strong>Buy:</strong> refine requirements, proof of concept, contract negotiation. <strong>Build:</strong> define requirements, then the full Product Development Life Cycle (PDLC).</p>
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
-        <img src="bpmn-images/v8-sp4-contracting-build.png" alt="Contracting and Build" style="display:block;max-width:100%;height:auto;">
+        <img src="bpmn-images/v16-sp4-risk-assessment-contracting.png" alt="Deep Dive Risk Assessment and Contracting" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
         <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">7-Day SLA</span>
@@ -1223,7 +1223,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
   <div class="two-col" style="gap:16px;">
     <div>
       <div style="background:white;border-radius:8px;padding:8px;box-shadow:0 2px 8px rgba(0,51,141,0.08);overflow-x:auto;">
-        <img src="bpmn-images/v8-sp5-uat-golive.png" alt="UAT and Go-Live" style="display:block;max-width:100%;height:auto;">
+        <img src="bpmn-images/v16-sp5-uat-golive.png" alt="UAT and Go-Live" style="display:block;max-width:100%;height:auto;">
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;">
         <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">3-Day SLA</span>
@@ -1255,9 +1255,76 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE: Vendor Pool Journey -->
+<!-- SLIDE: Mini RFP Pre-Screen (BPMN) -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="28">
+  <h2>Mini RFP Pre-Screen Process</h2>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Self-service vendor pre-screening sub-process. Requesters complete a lightweight wizard that identifies deal-killers early, scores vendors, and pre-populates downstream forms before formal intake.</p>
+  <div style="background:white;border-radius:8px;padding:12px;box-shadow:0 2px 8px rgba(0,51,141,0.08);margin:0.5rem 0;overflow-x:auto;">
+    <img src="bpmn-images/v16-sp0-mini-rfp.png" alt="Mini RFP Pre-Screen" style="display:block;max-width:100%;height:auto;margin:0 auto;">
+  </div>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">SP0 Pre-Intake</span>
+    <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">DMN: Deal-Killer Pre-Screen</span>
+    <span style="background:var(--brand-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">9-Step Wizard</span>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Mini RFP Process</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE: Execute NDA(s) -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="29">
+  <h2>Execute NDA(s)</h2>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Legal prerequisite gate. Non-disclosure agreements are executed before sensitive vendor information is exchanged. Tracks NDA status, routes to legal for execution, and verifies completion before proceeding.</p>
+  <div style="background:white;border-radius:8px;padding:12px;box-shadow:0 2px 8px rgba(0,51,141,0.08);margin:0.5rem 0;overflow-x:auto;">
+    <img src="bpmn-images/v16-sp1-execute-nda.png" alt="Execute NDA(s)" style="display:block;max-width:100%;height:auto;margin:0 auto;">
+  </div>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">Legal Gate</span>
+    <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Contracting Lane</span>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Execute NDA(s)</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE: Vendor Sourcing -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="30">
+  <h2>Vendor Sourcing</h2>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Market research and vendor shortlisting sub-process. Evaluates the vendor landscape, scores candidates against requirements, and produces a shortlist for detailed due diligence evaluation.</p>
+  <div style="background:white;border-radius:8px;padding:12px;box-shadow:0 2px 8px rgba(0,51,141,0.08);margin:0.5rem 0;overflow-x:auto;">
+    <img src="bpmn-images/v16-sp3-vendor-sourcing.png" alt="Vendor Sourcing" style="display:block;max-width:100%;height:auto;margin:0 auto;">
+  </div>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">Phase 3</span>
+    <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Market Research</span>
+    <span style="background:var(--brand-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Vendor Shortlisting</span>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>Vendor Sourcing</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE: Product Development Life Cycle -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="31">
+  <h2>Product Development Life Cycle (PDLC)</h2>
+  <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Nested sub-process within Risk Assessment and Contracting. Covers the full Build pathway: architecture review, development, testing with retry loops, and integration verification before UAT.</p>
+  <div style="background:white;border-radius:8px;padding:12px;box-shadow:0 2px 8px rgba(0,51,141,0.08);margin:0.5rem 0;overflow-x:auto;">
+    <img src="bpmn-images/v16-pdlc.png" alt="Product Development Life Cycle" style="display:block;max-width:100%;height:auto;margin:0 auto;">
+  </div>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <span style="background:var(--brand-emerald);color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:12px;">Build Path</span>
+    <span style="background:var(--brand-medium-blue);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Nested Sub-Process</span>
+    <span style="background:var(--brand-gold);color:white;font-size:0.65rem;padding:2px 8px;border-radius:10px;">Test Retry Loop</span>
+  </div>
+  <div class="slide-footer"><span>Confidential</span><span>PDLC</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE: Vendor Pool Journey -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="32">
   <h2>Vendor Pool: The External Partner Journey</h2>
   <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Running in parallel with the enterprise process, vendors follow their own structured journey. 10 tasks span intake through deployment support, with message flows synchronizing handoffs at key milestones.</p>
   <div class="process-flow" style="margin:0.5rem 0;">
@@ -1303,7 +1370,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE: E2E Process Summary with Forms -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="29">
+<div class="slide" data-slide="33">
   <h2>End-to-End Process Flow</h2>
   <p style="font-size:0.82rem;color:var(--brand-medium-gray);">5-phase hierarchical process model with 6 DMN decision tables, 3 request type routing, Buy/Build/Enable pathways, and parallel evaluation streams.</p>
   <div class="process-flow">
@@ -1375,7 +1442,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE: Mini RFP Self-Service Pre-Screening (SP0) -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="30">
+<div class="slide" data-slide="34">
   <h2>Mini RFP: Self-Service Vendor Pre-Screening (SP0)</h2>
   <p style="font-size:0.82rem;color:var(--brand-medium-gray);">Before formal intake, requesters complete a lightweight 9-step wizard that identifies deal-killers early and pre-populates downstream forms. This eliminates wasted reviewer capacity on non-starters.</p>
   <div class="two-col" style="gap:16px;">
@@ -1444,7 +1511,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE: Mini RFP Self-Service Pre-Screening (SP0) -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="31">
+<div class="slide" data-slide="35">
   <h2>RACI Matrix by Governance Topic</h2>
   <table class="styled-table" style="font-size:0.68rem;">
     <thead><tr><th>Topic</th><th>Business</th><th>Governance</th><th style="background:var(--brand-gold);color:white;">Finance</th><th>Procurement</th><th>Contracting</th><th>Technical</th><th>AI Review</th><th>Compliance</th><th>Oversight</th><th>Automation</th><th>Vendor</th></tr></thead>
@@ -1469,7 +1536,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE 41: Governance Topic Heatmap -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="32">
+<div class="slide" data-slide="36">
   <h2>Governance Topic Coverage Across Onboarding Phases</h2>
   <p style="font-size:0.82rem;color:var(--brand-medium-gray);margin-bottom:0.75rem;">Hover over any cell to see the tasks that address each governance topic in that phase.</p>
   <div class="heatmap-wrap">
@@ -1598,7 +1665,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 
 <!-- ============================================================ -->
 <!-- SLIDE 42: DMN-1 Risk Tier Classification -->
-<div class="slide" data-slide="33">
+<div class="slide" data-slide="37">
   <h2>DMN Decision Tables: Risk Tier &amp; SLA Breach Escalation</h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
     <div>
@@ -1677,7 +1744,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 
 <!-- ============================================================ -->
 <!-- SLIDE 43: DMN-2 Pathway Routing + DMN-3 Governance Routing -->
-<div class="slide" data-slide="34">
+<div class="slide" data-slide="38">
   <h2>DMN Decision Tables: Pathway, Governance, Prioritization, Security</h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
     
@@ -1775,7 +1842,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE: Bottleneck Analysis (D3 Chart) -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="35">
+<div class="slide" data-slide="39">
   <h2>Onboarding Bottleneck Analysis: Before vs. After</h2>
   <p style="font-size:0.82rem;color:var(--brand-medium-gray);margin-bottom:0.5rem;">Key delay drivers identified during stakeholder interviews mapped against projected improvements from the proposed governance model.</p>
   <div class="chart-container" id="chartOnboardingBottleneck"></div>
@@ -1803,7 +1870,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE: Staffing and Resource Model -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="36">
+<div class="slide" data-slide="40">
   <h2>Staffing and Resource Model</h2>
   <p class="small muted">Cross-functional staffing gaps identified through stakeholder interviews. Automation investment is justified by these capacity constraints.</p>
   <table class="styled-table">
@@ -1824,7 +1891,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE: Measurement Dashboard -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="37">
+<div class="slide" data-slide="41">
   <h2>Measurement Dashboard: Day 120 Targets</h2>
   <p class="small muted">Key performance indicators with current baselines and Day 120 targets. These metrics enable data-driven proof of improvement.</p>
   <table class="styled-table" style="font-size:0.78rem;">
@@ -1850,7 +1917,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SECTION: Competitive Positioning & AI Strategy -->
 <!-- ============================================================ -->
-<div class="slide slide-section" data-slide="38">
+<div class="slide slide-section" data-slide="42">
   <h2>Competitive Positioning and AI Strategy</h2>
   <p style="font-size:1.1rem;opacity:0.9;max-width:700px;margin-top:1rem;">Why SLA on Camunda 8 — not ServiceNow or any single platform — is the right orchestration layer for this governance lifecycle</p>
   <div class="slide-footer"><span>Confidential</span><span>March 2026</span></div>
@@ -1859,7 +1926,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE: AI Opportunity Map -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="39">
+<div class="slide" data-slide="43">
   <h2>AI Opportunity Map: Where Intelligence Meets Process</h2>
   <p class="small muted">Every task in the 5-phase onboarding maps to one of three automation categories. Only 10% require human judgment.</p>
   <div class="card-grid" style="grid-template-columns:repeat(3,1fr);margin:0.5rem 0;">
@@ -1889,7 +1956,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE: Open AI Orchestration vs. Walled Garden -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="40">
+<div class="slide" data-slide="44">
   <h2>AI Model Flexibility: Open Orchestration vs. Walled Garden</h2>
   <p class="small muted">How AI integrates into the governance lifecycle depends on the platform's openness to external providers.</p>
   <table class="styled-table" style="font-size:0.78rem;">
@@ -1916,7 +1983,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE: Virtual Application Layer + TCO -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="41">
+<div class="slide" data-slide="45">
   <h2>The Virtual Application Layer and 3-Year TCO</h2>
   <p class="small muted">SLA does not replace any system — it provides the orchestration, compliance evidence, and visibility that no stovepipe system can deliver alone.</p>
   <div class="card-grid" style="grid-template-columns:repeat(3,1fr);margin:0.5rem 0;">
@@ -1947,7 +2014,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE: Interactive Governance Topic Explorer -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="42">
+<div class="slide" data-slide="46">
   <h2>Interactive Governance Topic Explorer</h2>
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;">
     <button class="topic-pill" onclick="selectTopic('Intake')">Intake</button>
@@ -1988,7 +2055,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE 47: Topic Journey Rails (Intake through Sourcing) -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="43">
+<div class="slide" data-slide="47">
   <h2 style="font-size:1.5rem;">Topic Journeys: Intake, Prioritization, Funding, Sourcing</h2>
 
   <h3 style="font-size:0.9rem;margin-top:0.5rem;">Intake</h3>
@@ -2032,7 +2099,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE 48: Topic Journey Rails (Cyber through Privacy) -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="44">
+<div class="slide" data-slide="48">
   <h2 style="font-size:1.5rem;">Topic Journeys: Cyber, EA, Compliance, AI Gov, Privacy</h2>
 
   <h3 style="font-size:0.9rem;margin-top:0.3rem;">Cyber</h3>
@@ -2085,7 +2152,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; }
 <!-- ============================================================ -->
 <!-- SLIDE 49: Topic Journey Rails (Commercial Counsel + TPRM) -->
 <!-- ============================================================ -->
-<div class="slide" data-slide="45">
+<div class="slide" data-slide="49">
   <h2 style="font-size:1.5rem;">Topic Journeys: Commercial Counsel and TPRM</h2>
 
   <h3 style="font-size:0.9rem;margin-top:0.5rem;">Commercial Counsel</h3>
