@@ -1,8 +1,8 @@
-# Competitive Analysis: SLA Governance (Camunda 8) vs. ServiceNow
+# Competitive Analysis: Software Lifecycle Automation (SLA) Governance on Camunda 8 vs. ServiceNow
 
 ## Context
 
-This analysis compares the SLA Governance platform — a BPMN 2.0 + DMN 1.3 solution built on Camunda 8 Cloud for financial services software onboarding — against building the same capability in ServiceNow. The customer already runs both ServiceNow and Camunda 8, along with 7+ other specialized systems that participate in the governance lifecycle.
+This analysis compares the Software Lifecycle Automation (SLA) Governance platform — a BPMN 2.0 + DMN 1.3 solution built on Camunda 8 Cloud for financial services software onboarding — against building the same capability in ServiceNow. The customer already runs both ServiceNow and Camunda 8, along with 7+ other specialized systems that participate in the governance lifecycle.
 
 ---
 
@@ -11,6 +11,8 @@ This analysis compares the SLA Governance platform — a BPMN 2.0 + DMN 1.3 solu
 **The SLA solution is an orchestration layer that connects the customer's existing systems — it doesn't replace any of them.** The customer's governance lifecycle already spans OneTrust (TPRM), Jira (technical SME and Product task management), Ariba (sourcing, procurement, NDAs, RFPs, vendor contracts), AppFox/Confluence (Enterprise Architecture approvals and technical content), iManage (legal contract drafting and redlining), Box (executed contract storage), Oracle (finance — currently with a manual Ariba-to-Oracle hand-off), and ServiceNow (ITSM). No single platform — including ServiceNow — can replace this ecosystem. SLA on Camunda 8 is purpose-built to orchestrate across all of them, with auditable BPMN process models and DMN decision transparency that regulators can inspect directly.
 
 Building equivalent orchestration in ServiceNow would require 16-23 months of heavy customization, custom integrations to each of these 8+ systems, loss of BPMN/DMN portability and auditability, and 3-5x more in licensing + implementation — while the customer already has the Camunda 8 engine running.
+
+Beyond orchestration, this analysis maps **where AI should be applied across every step of the 5-phase onboarding process** — distinguishing deterministic process automation (Camunda BPMN/DMN) from generative AI opportunities in document analysis, contract redlining, risk narrative generation, and vendor intelligence. Camunda's open, model-agnostic AI orchestration — where any LLM is just another service task — stands in contrast to ServiceNow's walled-garden approach with proprietary Now LLMs and consumption-based "assists" pricing.
 
 ---
 
@@ -111,9 +113,225 @@ That is what Camunda 8 does. It orchestrates the process while each system of re
 
 **The critical insight**: ServiceNow can integrate with *some* of these systems via IntegrationHub spokes, but it cannot *orchestrate* them within a single auditable process model. Each spoke is a point-to-point integration. Camunda models the entire 5-phase lifecycle as one BPMN process with each system interaction as a typed service task — visible, auditable, and version-controlled.
 
-### 3. Governance & Regulatory Compliance
+### 3. The Virtual Application Layer
 
-| Requirement | SLA Approach | ServiceNow Approach | Advantage |
+Software Lifecycle Automation (SLA) is the application that sits above all stovepipe systems — it doesn't replace any of them.
+
+People continue working in the systems they already know: Jira for technical SMEs, Ariba for procurement, iManage for legal, OneTrust for risk. SLA provides what no individual system can: **end-to-end visibility, SLA enforcement, and regulatory compliance evidence** spanning all 8+ systems in a single governed process.
+
+**What SLA uniquely delivers:**
+
+| Capability | How It Works | Why No Single System Can Do This |
+|-----------|-------------|----------------------------------|
+| End-to-end visibility | Single BPMN process orchestrates work across Jira, OneTrust, Ariba, Oracle, iManage, Box, Confluence, ServiceNow | Each system only sees its own slice of the lifecycle |
+| SLA enforcement | Boundary timer events on every phase, every hand-off, every vendor response | SLA timers that span systems (e.g., "vendor must respond to DD request within 5 days") require an orchestrator outside any single system |
+| Regulatory compliance evidence | BPMN process model + Camunda Operate history = proof that controls are in place and operating effectively | Regulators (OCC, DORA, SOX auditors) need the "evidence package" — what happened, when, who approved it, across the full lifecycle. No stovepipe system produces this alone |
+| Decision transparency | DMN tables document every routing decision, risk classification, and escalation rule — versioned, auditable, portable | Embedded rules in ServiceNow, OneTrust, or Ariba are platform-locked and opaque to auditors |
+| Audit trail | Every system interaction, every decision, every approval — timestamped and traceable in one process history | ServiceNow audit logs cover ServiceNow; Jira logs cover Jira; neither covers the hand-off between them |
+
+**The metaphor**: SLA is the nervous system that connects independently functioning organs. Each organ (Jira, OneTrust, Ariba, etc.) is optimized for its domain. SLA provides the coordination, the reflexes (SLA timers), the memory (audit trail), and the consciousness (dashboard) that turns independent systems into a governed lifecycle.
+
+### 4. AI Opportunity Map — Phase by Phase
+
+Every task in the 5-phase onboarding process falls into one of three automation categories:
+
+| Category | Label | When to Use | Example |
+|----------|-------|-------------|---------|
+| **Deterministic Automation** | **D** | Rule-based, repeatable, must be auditable and identical every time | DMN routing, SLA timers, notification dispatch, status updates |
+| **AI-Assisted** | **AI** | Content generation, analysis, classification, extraction where human reviews output | Contract redline analysis, risk narrative drafting, vendor response summarization |
+| **Human Judgment** | **H** | Regulatory sign-off, negotiation, exception handling, final approvals | Committee voting, contract negotiation, final governance approval |
+
+The critical distinction: **deterministic automation and AI are complementary, not competing**. DMN tables handle routing decisions that must be identical every time (auditable, repeatable). AI handles analysis tasks where the input is unstructured and the output requires human review. Camunda orchestrates both — a BPMN process can invoke a DMN table and an LLM in consecutive service tasks.
+
+#### SP1 — Refine Request & Triage
+
+| Task | Category | AI/Automation Opportunity |
+|------|----------|--------------------------|
+| Task_ReviewExisting (Review Existing Portfolio) | **AI** | Portfolio matching — LLM analyzes request against existing software inventory to find matches/partial matches (replaces manual portfolio search) |
+| Task_GatherDocs (Gather Requirements) | **AI** | Document extraction — LLM extracts structured metadata from uploaded requirement docs (purpose, data types, integration needs, regulatory scope) |
+| Task_InitialTriage (Initial Triage) | **AI** | Triage recommendation — LLM pre-scores request against triage criteria, suggests classification, human confirms |
+| Task_ClassifyRequest (Classify Request) | **AI** | Auto-classification — LLM suggests risk tier, data sensitivity, regulatory applicability based on request metadata |
+| Task_DealKillerCheck (Deal Killer Pre-Screen) | **D** | DMN table (OB_DMN_DealKillerPrescreen) — deterministic, auditable, must be identical every time |
+| Activity_0netfvm (Quarterback Assistance) | **AI** | Conversational guidance — LLM-powered assistant helps requesters navigate the process, answers policy questions, suggests next steps |
+| Activity_1l8ugqb (Pursue Exception with Quarterback) | **AI** | Exception analysis — LLM reviews partial-match cases, drafts exception justification narrative |
+| Mini RFP steps (9-step wizard) | **AI** | Vendor response analysis — LLM scores vendor proposals against evaluation criteria, extracts key terms, flags gaps in responses |
+| NDA check / Execute NDA | **D** | Automated NDA status check against Ariba; triggered execution via service task |
+| SLA timer events | **D** | Boundary timer events — deterministic escalation |
+
+#### SP2 — Planning & Routing
+
+| Task | Category | AI/Automation Opportunity |
+|------|----------|--------------------------|
+| Task_PrelimAnalysis (Preliminary Analysis) | **AI** | Business case drafting — LLM generates preliminary business case from intake data, comparable vendor analyses, market intelligence |
+| Task_Backlog (Backlog Prioritization) | **H** | Human prioritization decision (AI can suggest ranking based on risk/value/urgency scoring, but human decides) |
+| Task_PathwayRouting (Identify Required Domain SMEs) | **D** | DMN table (DMN_PathwayRouting) — deterministic routing to evaluation tracks |
+| Task_PrioritizationScoring (Prioritization Scoring) | **D** | DMN table — deterministic scoring |
+| Planning SLA timers | **D** | Boundary timer events — deterministic escalation |
+
+#### SP3 — Evaluation & Due Diligence (9 Parallel Tracks)
+
+| Task | Category | AI/Automation Opportunity |
+|------|----------|--------------------------|
+| Task_SecurityAssessment (Security Assessment) | **AI** | Questionnaire analysis — LLM pre-populates security assessment from vendor SOC 2 reports, identifies gaps against organizational standards |
+| Task_SecurityAssessmentRouting (Security Routing) | **D** | DMN table — deterministic routing (Baseline vs. Elevated/Major) |
+| Task_TechArchReview (Technical Architecture Review) | **AI** | Architecture fit analysis — LLM compares vendor tech stack against enterprise standards catalog (from Confluence/AppFox), flags incompatibilities |
+| Activity_0kq8o8j (Risk Assessment) | **AI** | Risk narrative generation — LLM drafts risk assessment narrative from OneTrust data, vendor questionnaire responses, and historical vendor performance |
+| Task_ComplianceReview (Compliance Review) | **AI** | Regulatory mapping — LLM maps vendor capabilities against applicable regulatory requirements (OCC 2023-17, DORA, GDPR), identifies gaps |
+| Activity_0mr2gdy (Privacy Assessment) | **AI** | DPIA generation — LLM drafts Data Protection Impact Assessment from data flow descriptions, flags cross-border transfer issues |
+| Activity_1htxinq (Vendor Due Diligence) | **AI** | Vendor intelligence — LLM aggregates public vendor data (financials, news, regulatory actions, peer reviews), generates vendor risk profile |
+| Task_LegalReview (Legal Review) | **AI** | Legal risk assessment — LLM reviews vendor legal structure, litigation history, regulatory sanctions against engagement criteria |
+| Task_FinancialAnalysis (Financial Analysis) | **AI** | TCO modeling — LLM extracts pricing from vendor proposals, builds comparative TCO model, flags hidden costs (from Oracle historical data) |
+| Task_VendorLandscape (Assess Vendor Landscape) | **AI** | Market analysis — LLM generates competitive landscape summary, identifies alternative vendors, benchmarks pricing against market |
+| Task_AIGovernanceReview (AI Governance Review) | **AI** | AI risk classification — LLM analyzes vendor AI components against EU AI Act risk tiers, SR 11-7 requirements, generates preliminary risk classification |
+| Task_ConcentrationRisk (Concentration Risk Analysis) | **AI** | Concentration analysis — LLM analyzes vendor portfolio dependencies, identifies single points of failure across vendor ecosystem |
+| Evaluation SLA timers | **D** | Boundary timer events — deterministic escalation across all 9 parallel tracks |
+| DD Join gateway | **D** | Parallel gateway — deterministic synchronization of all evaluation tracks |
+
+#### SP4 — Contracting & Build
+
+| Task | Category | AI/Automation Opportunity |
+|------|----------|--------------------------|
+| Activity_0brpj26 (Negotiate Contract) | **AI** | **Contract redline analysis** — the marquee AI use case (see deep dive below) |
+| Activity_0yw9qai (Contract Deviation Check) | **AI** | Deviation risk scoring — LLM scores contract deviations against compliance requirements (OCC 2023-17 §60, DORA Article 30), flags regulatory gaps |
+| Activity_0ssggoi (Finalize Contract) | **AI** | Contract completeness check — LLM verifies all required provisions are present (audit rights, termination, data protection, SLA schedules) |
+| SP_PDLC: Architecture Review | **AI** | Code/config analysis against enterprise standards |
+| SP_PDLC: Development | **H** | Human development (AI assists with code generation, but human owns implementation) |
+| SP_PDLC: Testing/QA | **D + AI** | Automated test execution (D); AI-generated test cases and coverage analysis (AI) |
+| SP_PDLC: Integration | **D + AI** | Deployment automation (D); integration risk assessment (AI) |
+| Contract SLA timers (D3/D7/D11 reminders) | **D** | Boundary timer events — deterministic vendor response reminders |
+| Await Vendor Response | **D** | Receive task with SLA boundary timer — deterministic wait with escalation |
+
+#### SP5 — UAT & Go-Live
+
+| Task | Category | AI/Automation Opportunity |
+|------|----------|--------------------------|
+| Task_PerformUAT (User Acceptance Testing) | **AI** | Test result analysis — LLM summarizes UAT findings, categorizes defects by severity, generates go/no-go recommendation |
+| Task_FinalApproval (Final Governance Approval) | **H** | Human governance decision (AI provides decision package with all evidence summarized) |
+| Task_OnboardSoftware (Onboard Software) | **D** | Automated provisioning and configuration via service tasks |
+| Task_AssignOwnership (Assign Ownership) | **AI** | Ownership recommendation — LLM suggests ownership based on organizational structure and software domain |
+| Task_NotifyRequester (Notify Requester) | **D** | Send task — automated notification |
+| Task_CloseRecord (Close Record) | **D** | Automated record closure and archival |
+
+#### Vendor Pool
+
+| Task | Category | AI/Automation Opportunity |
+|------|----------|--------------------------|
+| Vendor Proposal Submission | **AI** | Proposal analysis — LLM extracts structured data from vendor proposals (pricing, SLAs, architecture, team), scores against evaluation criteria |
+| Security Questionnaire Response | **AI** | Response validation — LLM cross-references vendor security responses against their SOC 2 report, flags inconsistencies |
+| Compliance Documentation | **AI** | Certificate validation — LLM verifies certification dates, coverage scope, identifies expired or insufficient attestations |
+| Vendor Contract Review | **AI** | Contract redline analysis (vendor side) — see contracting deep dive |
+| Vendor Deployment Support | **D + AI** | Deployment automation with AI-assisted runbook validation |
+| Vendor response SLA timers | **D** | Boundary timer events — deterministic escalation (Day 3, Day 7, Day 11) |
+
+#### AI Opportunity Summary
+
+| Phase | Total Tasks | Deterministic (D) | AI-Assisted (AI) | Human (H) | AI Reduction in Manual Effort |
+|-------|-------------|-------------------|-------------------|-----------|-------------------------------|
+| SP1 — Refine Request | 10 | 3 | 6 | 1 | ~60% |
+| SP2 — Planning | 5 | 3 | 1 | 1 | ~40% |
+| SP3 — Evaluation & DD | 14 | 3 | 10 | 1 | ~55% |
+| SP4 — Contracting & Build | 9 | 3 | 5 | 1 | ~50% |
+| SP5 — UAT & Go-Live | 6 | 3 | 2 | 1 | ~45% |
+| Vendor Pool | 6 | 2 | 4 | 0 | ~60% |
+| **Total** | **50** | **17 (34%)** | **28 (56%)** | **5 (10%)** | **~40-60%** |
+
+**Key insight**: Only 10% of tasks genuinely require human judgment — regulatory sign-offs, negotiation decisions, and final approvals. The remaining 90% can be either fully automated (deterministic DMN/timer/notification tasks) or AI-assisted (LLM generates draft output, human reviews and approves). This is the efficiency case for AI integration.
+
+### 5. The Contracting Lifecycle — AI Deep Dive
+
+Contract negotiation is the marquee AI use case in the onboarding lifecycle. It involves unstructured documents, domain expertise (legal + regulatory), high stakes (compliance risk), and significant manual effort — making it the highest-ROI AI opportunity.
+
+**Current state (manual)**: Legal team receives vendor redlined contract in iManage, manually reviews each clause against organizational playbook, manually identifies deviations, manually drafts counter-proposals, stores final executed contract in Box. This process takes 5-15 business days per contract.
+
+**AI-assisted state**:
+
+```
+Step 1: Vendor returns redlined contract (from iManage)
+    │
+    ▼
+Step 2: AI — Clause extraction and classification
+    → Immutable clauses (regulatory: audit rights, data protection, termination for breach)
+    → Flexible clauses (commercial: liability caps, indemnification limits, pricing)
+    → Standard clauses (industry-standard: force majeure, governing law)
+    │
+    ▼
+Step 3: AI — Deviation analysis against organizational playbook
+    → Flag each redlined clause: accept / reject / counter-propose
+    → Risk score per deviation (regulatory impact, financial exposure, operational risk)
+    → Regulatory cross-reference: OCC 2023-17 §60 (contract provisions), DORA Article 30
+    │
+    ▼
+Step 4: AI — Negotiation intelligence
+    → Historical success rates for similar clause negotiations
+    → Vendor-specific patterns (this vendor typically accepts X, resists Y)
+    → Market benchmark: how do these terms compare to industry standard?
+    │
+    ▼
+Step 5: Human Review — Legal team reviews AI analysis, makes final decisions
+    → AI-generated redline summary: "Vendor proposes X change to liability cap —
+       this deviates from standard by Y, risk level: HIGH, recommendation: reject/counter"
+    → Legal team accepts, modifies, or overrides each AI recommendation
+    │
+    ▼
+Step 6: AI — Generate counter-proposal draft
+    → Produces redlined response with legal team's decisions applied
+    → Maintains clause-level audit trail in Box (system of record)
+    │
+    ▼
+Step 7: Deterministic — Camunda tracks contract status, SLA timers, escalation
+    → D3/D7/D11 reminder boundary timer events on vendor response
+    → SLA breach end event if no response within contracted timeframe
+```
+
+**Estimated impact**: Reduces contract review cycle from 5-15 business days to 1-3 business days. Legal team spends time on decision-making (Steps 5), not analysis (Steps 2-4). AI handles the 80% of clauses that are standard or clearly non-negotiable; legal focuses on the 20% that require judgment.
+
+**System integration**: iManage (contract source) → LLM service task (analysis) → Camunda user task (human review) → LLM service task (counter-proposal generation) → Box (executed contract storage) → Camunda (audit trail, SLA enforcement). The BPMN process orchestrates this entire flow with full traceability.
+
+### 6. AI Model Flexibility — Open Orchestration vs. Walled Garden
+
+How AI integrates into the governance lifecycle depends entirely on the orchestration platform's openness to external AI providers.
+
+#### Camunda (Open Orchestration)
+
+- **AI is a service task** — same BPMN element type as any other system integration (Jira, OneTrust, Ariba)
+- **Model-agnostic**: Anthropic Claude, Azure OpenAI, AWS Bedrock, any OpenAI-compatible API, self-hosted models
+- **Native connectors**: AI Agent Task Connector + AI Agent Sub-process Connector (Camunda 8.8+)
+- **MCP support**: Model Context Protocol support published September 2025 — enables AI agents to interact with external tools and data sources
+- **Customer controls model selection** at the process level — approved models enforced via enterprise API gateway
+- **Cost**: Pay the model provider directly (transparent, no platform markup)
+- **Portability**: If the customer's approved AI provider changes, update one connector config — the BPMN process doesn't change
+
+#### ServiceNow (Walled Garden)
+
+- **Now Assist** with proprietary Now LLMs as the default AI engine
+- **BYOLLM** added in Washington/Yokohama releases — but limited to cloud-hosted providers only (Azure OpenAI, Gemini, Claude, WatsonX, OpenAI)
+- **Self-hosted models not supported** — documented limitation for organizations with data sovereignty requirements
+- **AI capabilities channeled through "skills" framework** — not composable with arbitrary process logic
+- **AI Control Tower** adds governance but limits flexibility — all AI interactions must flow through ServiceNow's governance layer
+- **Consumption-based pricing**: "Assists" add 30-45% to licensing cost, unpredictable at scale
+- **AI investment is non-portable** — skills, prompts, and integrations are locked to the ServiceNow instance
+- **MCP/A2A support**: Unconfirmed as of March 2026 (flagged by Futurum Group as open question)
+
+#### Head-to-Head AI Comparison
+
+| Dimension | Software Lifecycle Automation (SLA) on Camunda 8 | ServiceNow |
+|-----------|--------------------------------------------------|------------|
+| Default AI model | None — customer chooses | Proprietary Now LLM |
+| External model support | Any OpenAI-compatible API + native Anthropic/Bedrock/Azure connectors | 5 cloud providers only (no self-hosted) |
+| Self-hosted models | Supported via custom Zeebe worker | Not supported |
+| How AI integrates | BPMN service task (same as any API call) | Platform "skills" framework |
+| AI governance | Customer's own infrastructure (API gateway, BPMN process variables, DMN rules) | ServiceNow AI Control Tower |
+| Cost model | Direct to provider (transparent, market-rate) | Consumption "assists" (30-45% licensing add-on) |
+| AI portability | Change connector config; BPMN process unchanged | AI investment locked to ServiceNow platform |
+| Open standards (MCP) | Published September 2025 | Unconfirmed |
+| AI in process context | LLM receives full process variable context (risk tier, vendor data, regulatory scope) | AI operates within ServiceNow data model only |
+| Multi-model orchestration | Single BPMN process can invoke different models for different tasks (Claude for analysis, GPT for summarization, custom model for classification) | Single provider per instance configuration |
+
+**The strategic question**: When the customer's AI strategy inevitably evolves — new models, new providers, new regulatory requirements for AI governance — which platform makes that evolution a configuration change vs. a re-implementation?
+
+### 7. Governance & Regulatory Compliance
+
+| Requirement | Software Lifecycle Automation (SLA) Approach | ServiceNow Approach | Advantage |
 |------------|-------------|---------------------|-----------|
 | OCC 2023-17 (TPRM) | 8-phase BPMN maps directly to guidance structure; DMN risk tiering; OneTrust integration for assessment depth | Manual TPRM module configuration to map guidance | **SLA** — the BPMN model IS the documentation |
 | SR 11-7 (Model Risk) | AI governance lane + DMN tables as versioned audit artifacts | No native framework mapping; custom config required | **SLA** — DMN tables satisfy "documented, auditable rules" |
@@ -125,7 +343,7 @@ That is what Camunda 8 does. It orchestrates the process while each system of re
 
 **Key regulatory insight**: Both OCC 2023-17 and SR 11-7 require that governance *processes themselves* be documented, version-controlled, and auditable. A BPMN model satisfies this structurally — and because it orchestrates across all 8+ systems, it provides the single source of truth for "what happened, when, and who approved it" that no individual system can offer alone. ServiceNow's audit logs only cover what happened inside ServiceNow.
 
-### 4. TPRM & Procurement Depth
+### 8. TPRM & Procurement Depth
 
 | Capability | SLA + Existing Tools | ServiceNow TPRM | Advantage |
 |-----------|---------------------|-----------------|-----------|
@@ -139,7 +357,7 @@ That is what Camunda 8 does. It orchestrates the process while each system of re
 
 **The TPRM comparison is moot.** The customer uses OneTrust for TPRM and Ariba for procurement — ServiceNow TPRM modules would be redundant. The real question is: "How do we orchestrate OneTrust assessments, Ariba procurement, Oracle financial approvals, and iManage/Box contracting into a single governed lifecycle?" That's what SLA does.
 
-### 5. User Experience & Applications
+### 9. User Experience & Applications
 
 | Feature | SLA | ServiceNow | Advantage |
 |---------|-----|------------|-----------|
@@ -152,7 +370,7 @@ That is what Camunda 8 does. It orchestrates the process while each system of re
 
 ---
 
-## Effort to Production: SLA vs. ServiceNow Build
+## Effort to Production: Software Lifecycle Automation (SLA) vs. ServiceNow Build
 
 ### SLA on Camunda 8 (Current Path)
 
@@ -171,6 +389,8 @@ That is what Camunda 8 does. It orchestrates the process while each system of re
 | Committee voting integration | 1-2 weeks | Built, not integrated |
 | Production hardening & testing | 2-3 weeks | Ongoing |
 | **Total remaining to full production** | **~20-28 weeks** | |
+
+**AI efficiency multiplier**: With AI-assisted tasks (contract analysis, vendor intelligence, risk narrative generation, document extraction), estimated manual effort reduction of **40-60%** across evaluation, contracting, and documentation phases — further accelerating time-to-value.
 
 ### ServiceNow Equivalent Build (Hypothetical)
 
@@ -234,7 +454,7 @@ Note: Several traditional ServiceNow advantages are neutralized by the customer'
 
 ---
 
-## Where SLA Wins (Decisive Advantages)
+## Where Software Lifecycle Automation (SLA) Wins (Decisive Advantages)
 
 1. **Cross-system orchestration**: The only solution that provides a single governed process across Jira, OneTrust, Ariba, Oracle, Confluence/AppFox, iManage, Box, and ServiceNow — this is the fundamental value proposition
 2. **Regulatory auditability**: The BPMN model IS the audit artifact — regulators can inspect the process independently, with full visibility into hand-offs between all 8+ systems
@@ -247,12 +467,15 @@ Note: Several traditional ServiceNow advantages are neutralized by the customer'
 9. **Long-running process state**: Zeebe handles 30-180 day onboarding lifecycles natively
 10. **Deal-killer pre-screening**: DMN-driven early rejection has no ServiceNow equivalent
 11. **Single pane of glass**: The only dashboard that can show the status of work spanning Jira tickets, OneTrust assessments, Ariba RFPs, iManage contracts, and Oracle approvals in one view
+12. **AI model freedom**: Any LLM provider (Anthropic, Azure OpenAI, Bedrock, self-hosted) is just another service task — no platform markup, no walled garden, no consumption-based "assists" pricing
+13. **AI + deterministic in one process**: A single BPMN process can invoke DMN tables (deterministic, auditable) and LLMs (generative, reviewed) in consecutive steps — the process model documents where AI is used and where it isn't
+14. **Contract AI as orchestration**: The highest-ROI AI use case (contract redline analysis) requires orchestrating iManage + LLM + legal review + Box — exactly what Camunda does natively
 
 ---
 
 ## Strategic Recommendation
 
-**Don't position this as SLA vs. ServiceNow — or SLA vs. any single system. Position SLA as the orchestration layer that connects the customer's existing investments.**
+**Don't position this as SLA vs. ServiceNow — or SLA vs. any single system. Position Software Lifecycle Automation (SLA) as the orchestration layer that connects the customer's existing investments — and as the AI-ready foundation that enables intelligent automation without platform lock-in.**
 
 The customer has made deliberate, funded decisions about their technology landscape: OneTrust for TPRM, Jira for technical work management, Ariba for procurement, AppFox/Confluence for EA, iManage/Box for legal, Oracle for finance, ServiceNow for ITSM. None of these are changing. The question is: **who orchestrates the governance lifecycle that spans all of them?**
 
@@ -289,4 +512,4 @@ To validate specific claims in this analysis:
 
 ---
 
-*Sources: PeerSpot (2025), Camunda blog (Oct 2025, Jan 2026), ServiceNow Community, Forrester TPRM Wave Q1 2024, ISACA Now Blog (2025), ServiceNow Spectaculars (2025), 6clicks pricing analysis (2025), Barclays/Goldman Sachs case studies, OCC 2023-17 interagency guidance, SR 11-7 supervisory guidance.*
+*Sources: PeerSpot (2025), Camunda blog (Oct 2025, Jan 2026), Camunda AI Agent Connector docs (2025), ServiceNow Community, ServiceNow Now Assist BYOLLM documentation (Washington/Yokohama), Futurum Group ServiceNow AI analysis (2025), Forrester TPRM Wave Q1 2024, ISACA Now Blog (2025), ServiceNow Spectaculars (2025), 6clicks pricing analysis (2025), Barclays/Goldman Sachs case studies, OCC 2023-17 interagency guidance (§60 contract provisions), SR 11-7 supervisory guidance, DORA Article 30 (ICT third-party contracts).*
