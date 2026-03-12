@@ -1,5 +1,22 @@
 # Changelog
 
+## [2026.03.115] - 2026-03-12
+
+### Changed
+- V17 BPMN task naming cleanup: remove "Step N:" prefixes from SP0 tasks, rename parallel assessment branches (PR #139)
+- V17 BPMN SP0 deal-killer flow restructure: new Gateway_09b8fik ("Proceed?") with merge gateway for kill/continue routing (PR #139)
+- V17 BPMN NDA enrichment: expanded multi-instance sub-process with nested Execute NDA flow (redlines, legal review, Ariba integration) (PR #139)
+- V17 BPMN SP3 parallel branch consolidation: removed Legal Review, Financial Analysis, Assess Vendor Landscape branches (PR #139)
+- jira-sync.js: extract taskName variable, auto-tag approval tasks with `approval` label (PR #139)
+
+### Fixed
+- Gateway_0pj195r dead end: add outgoing flow to NDA Complete end event (PR #139)
+- Gateway_15kvflp default flow inversion: swap default to forward path, add dealKillerFound condition (PR #139)
+- Gateway_09b8fik/1pkm06o/0z2defc: add missing conditionExpression on Yes flows (PR #139)
+- 4 generic `<bpmn:task>` elements promoted to userTask/serviceTask with proper Zeebe extensions (PR #139)
+- `procurement-lane` → `contracting-lane` (invalid candidateGroups value) (PR #139)
+- Visual overlap checker: skip expanded sub-process parent-child containment false positives (PR #139)
+
 ## [2026.03.114] - 2026-03-12
 
 ### Fixed
