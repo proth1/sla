@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026.03.113] - 2026-03-12
+
+### Added
+- v17 onboarding BPMN model downloaded from Camunda Web Modeler via Playwright browser automation (PR #135)
+- 20 new v17 BPMN diagram images (10 PNG + 10 SVG) rendered from v17 model (PR #135)
+
+### Changed
+- Replace v16 onboarding BPMN with v17 in `camunda-sync/` deployment directory (PR #135)
+- Render script updated to target v17 with new sub-process IDs (Activity_02eupjn for Vendor Sourcing) (PR #135)
+- Presentation slides updated: "Vendor Evaluation" → "Risk and SME Assessments", "Deep Dive Risk Assessment and Contracting" → "Contracting" (PR #135)
+- All 10 presentation BPMN image references updated from v16 to v17 (PR #135)
+
 ## [2026.03.112] - 2026-03-12
 
 ### Added

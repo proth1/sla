@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.112
+**Current Version**: 2026.03.113
 **Last Release**: 2026-03-12
-**Total Releases**: 112
+**Total Releases**: 113
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.113 | 2026-03-12 | #135 | Sync v17 BPMN from Web Modeler, re-render diagrams, update presentation |
 | 2026.03.112 | 2026-03-12 | #133 | Sync v16 BPMN, re-render diagrams, update presentation (50 slides) |
 | 2026.03.111 | 2026-03-12 | #132 | Presentation: competitive positioning + AI strategy slides (46 slides) |
 | 2026.03.110 | 2026-03-12 | #131 | Competitive analysis — AI opportunity mapping, contracting deep dive, open orchestration |
