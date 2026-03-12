@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026.03.109] - 2026-03-11
+
+### Added
+- Competitive analysis: SLA Governance (Camunda 8) vs ServiceNow — covers process modeling, regulatory compliance, TPRM depth, UX, effort estimates, 3-year TCO, and complementary positioning strategy (PR #130)
+
 ## [2026.03.108] - 2026-03-10
 
 ### Fixed

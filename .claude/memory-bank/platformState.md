@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.108
-**Last Release**: 2026-03-10
-**Total Releases**: 108
+**Current Version**: 2026.03.109
+**Last Release**: 2026-03-11
+**Total Releases**: 109
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.109 | 2026-03-11 | #130 | Competitive analysis: SLA Governance vs ServiceNow |
 | 2026.03.108 | 2026-03-10 | #128 | v16 BPMN — fix missing conditionExpressions and naming |
 | 2026.03.107 | 2026-03-10 | #126 | v15 BPMN model updates + Models in PowerPoint |
 | 2026.03.106 | 2026-03-10 | #125 | ADF-inspired UI enhancements for showcase apps |

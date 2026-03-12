@@ -2,21 +2,22 @@
 
 ## Last Session Summary
 
-**Date**: 2026-03-10
+**Date**: 2026-03-11
 **Branch**: main
-**Release Version**: 2026.03.108
+**Release Version**: 2026.03.109
 
-### v16 BPMN Condition Fixes (SLA-81, PR #128)
-- Fixed 2 HIGH findings: added conditionExpressions + default attributes on Gateway_1pkm06o and Gateway_1kdy51y
-- Fixed GW_TriageDecision semantic mismatch (triageDecision → continueWorkingRequest)
-- Renamed "Deep Dive Not Approved" → "Deep Dive Rejected"
+### Competitive Analysis — SLA vs ServiceNow (SLA-82, PR #130)
+- Created strategic competitive analysis document at `customers/fs-onboarding/docs/competitive-analysis-servicenow.md`
+- Covers: process modeling, regulatory compliance (OCC 2023-17, SR 11-7, DORA), TPRM depth, UX, effort estimates, 3-year TCO
+- Key finding: SLA is 3-5x cheaper, 4-5x faster to production vs ServiceNow equivalent build
+- Strategic rec: position as SLA + ServiceNow (complementary), not either/or
 
 ## Platform Stats
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.108 |
-| Total PRs Merged | 128 |
+| Release Version | 2026.03.109 |
+| Total PRs Merged | 130 |
 | DMN Decision Tables | 21 |
 | Cross-Cutting Sub-Processes | 6 |
 | Camunda 8 Forms | 52+ |
