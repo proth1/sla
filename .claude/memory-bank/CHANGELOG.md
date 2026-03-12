@@ -1,5 +1,14 @@
 # Changelog
 
+## [2026.03.111] - 2026-03-12
+
+### Added
+- Master presentation: 4 new slides (38-41) — Competitive Positioning section divider, AI Opportunity Map (D/AI/H across 50 tasks), Open AI Orchestration vs Walled Garden (9-dimension Camunda vs ServiceNow), Virtual Application Layer + 3-Year TCO ($310K-530K vs $1.3M-2.8M) (PR #132)
+
+### Changed
+- Master presentation: System Landscape slide updated with all 8+ customer systems (added iManage, Box, corrected ServiceNow role to ITSM, Jira integration marked as live) (PR #132)
+- Master presentation: TOC updated with Competitive Positioning section, slide counter 42 → 46 (PR #132)
+
 ## [2026.03.110] - 2026-03-12
 
 ### Added
