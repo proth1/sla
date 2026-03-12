@@ -1,5 +1,13 @@
 # Changelog
 
+## [2026.03.114] - 2026-03-12
+
+### Fixed
+- Rename stale v16 internal IDs to v17 in BPMN model (`Process_Onboarding_v16` → `v17`, `Collaboration_IdealState_v16` → `v17`, `Definitions_IdealState_v16` → `v17`) — fixes incorrect version display in Camunda Operate (PR #137)
+
+### Removed
+- 20 orphaned v16 diagram images (10 PNG + 10 SVG) no longer referenced by presentation (PR #137)
+
 ## [2026.03.113] - 2026-03-12
 
 ### Added
