@@ -432,7 +432,7 @@ const PHASE_MAP = {
   Task_RefineRequirements: 'SP4', Task_PerformPoC: 'SP4', Task_TechRiskEval: 'SP4', Task_NegotiateContract: 'SP4', Task_FinalizeContract: 'SP4', Task_DefineBuildReqs: 'SP4', Receive_SignedContract: 'SP4', Task_ComplianceReview: 'SP4', Task_EnableContractExec: 'SP4', Task_ContractDeviation: 'SP4', Task_CodingCorrection: 'SP4',
   Task_PerformUAT: 'SP5', Task_FinalApproval: 'SP5', Task_OnboardSoftware: 'SP5', Activity_0zf4l0g: 'SP5', Task_CloseRequest: 'SP5', Task_AssignOwnership: 'SP5', Task_ConditionVerification: 'SP5',
 };
-const PHASE_NAMES = { SP1: 'Request & Triage', SP2: 'Planning & Routing', SP3: 'Evaluation & DD', SP4: 'Contracting & Build', SP5: 'UAT & Go-Live' };
+const PHASE_NAMES = { SP1: 'Refine Request', SP2: 'Review, Refine & Prioritize', SP3: 'Risk & SME Assessments', SP4: 'Contracting', SP5: 'UAT & Go-Live' };
 const PHASE_COLORS = { SP1: '#3b82f6', SP2: '#8b5cf6', SP3: '#f59e0b', SP4: '#ef4444', SP5: '#22c55e' };
 const PHASE_CSS = { SP1: 'phase-sp1', SP2: 'phase-sp2', SP3: 'phase-sp3', SP4: 'phase-sp4', SP5: 'phase-sp5' };
 const LANE_LABELS = {
@@ -476,11 +476,11 @@ async function fetchDashboardData() {
   const [activeData, completedData, pendingTasks] = await Promise.all([
     fetchJSON('/api/instances/search', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v8' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 50 } }),
+      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v17' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 50 } }),
     }),
     fetchJSON('/api/instances/search', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v8', state: 'COMPLETED' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 20 } }),
+      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v17', state: 'COMPLETED' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 20 } }),
     }),
     fetchJSON('/api/tasks/search', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
