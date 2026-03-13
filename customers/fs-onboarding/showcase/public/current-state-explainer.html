@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Current State: Vendor Onboarding Journey</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --kpmg-blue: #00338D;
+    --kpmg-blue-light: #0051A5;
+    --kpmg-gold: #C4901C;
+    --kpmg-gold-light: #E8B44B;
+    --dark: #1a1a2e;
+    --darker: #0f0f1e;
+    --text: #e8e8f0;
+    --text-muted: #9898b0;
+    --danger: #e74c3c;
+    --danger-glow: rgba(231, 76, 60, 0.3);
+    --warning: #f39c12;
+    --warning-glow: rgba(243, 156, 18, 0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--darker);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── HERO SECTION ── */
+  .hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    scroll-snap-align: start;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0,51,141,0.25) 0%, transparent 70%),
+                var(--darker);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 80px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 80px);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--kpmg-blue), var(--kpmg-blue-light));
+    color: white;
+    padding: 8px 24px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards 0.3s;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards 0.6s;
+  }
+
+  .hero h1 .accent {
+    background: linear-gradient(135deg, var(--kpmg-gold), var(--kpmg-gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.35rem);
+    color: var(--text-muted);
+    max-width: 750px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards 0.9s;
+  }
+
+  .hero-scroll {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards 1.2s;
+  }
+
+  .scroll-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+
+  .scroll-indicator:hover { color: var(--kpmg-gold); }
+
+  .scroll-arrow {
+    width: 24px;
+    height: 24px;
+    border-right: 2px solid var(--kpmg-gold);
+    border-bottom: 2px solid var(--kpmg-gold);
+    transform: rotate(45deg);
+    animation: bounceDown 1.5s ease infinite;
+  }
+
+  /* ── PHASE SECTIONS ── */
+  .phase-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 5vw;
+    scroll-snap-align: start;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .phase-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0;
+    transition: opacity 1s ease;
+    pointer-events: none;
+  }
+
+  .phase-section.in-view::before { opacity: 1; }
+
+  .phase-section:nth-child(2)::before {
+    background: radial-gradient(ellipse at 20% 50%, rgba(0,51,141,0.15) 0%, transparent 60%);
+  }
+  .phase-section:nth-child(3)::before {
+    background: radial-gradient(ellipse at 80% 50%, rgba(196,144,28,0.12) 0%, transparent 60%);
+  }
+  .phase-section:nth-child(4)::before {
+    background: radial-gradient(ellipse at 30% 60%, rgba(231,76,60,0.1) 0%, transparent 60%);
+  }
+  .phase-section:nth-child(5)::before {
+    background: radial-gradient(ellipse at 70% 40%, rgba(243,156,18,0.1) 0%, transparent 60%);
+  }
+  .phase-section:nth-child(6)::before {
+    background: radial-gradient(ellipse at 50% 50%, rgba(0,51,141,0.12) 0%, transparent 60%);
+  }
+
+  .phase-inner {
+    max-width: 1200px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .phase-section:nth-child(odd) .phase-inner {
+    direction: rtl;
+  }
+  .phase-section:nth-child(odd) .phase-inner > * {
+    direction: ltr;
+  }
+
+  /* ── PHASE VISUAL ── */
+  .phase-visual {
+    position: relative;
+    opacity: 0;
+    transform: translateX(-60px);
+    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .phase-section:nth-child(odd) .phase-visual {
+    transform: translateX(60px);
+  }
+
+  .phase-section.in-view .phase-visual {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .phase-number-display {
+    font-size: clamp(8rem, 15vw, 14rem);
+    font-weight: 900;
+    line-height: 1;
+    opacity: 0.06;
+    position: absolute;
+    top: -40px;
+    left: -20px;
+    color: var(--kpmg-blue);
+    user-select: none;
+    z-index: 0;
+  }
+
+  .visual-card {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(145deg, rgba(30,30,55,0.9), rgba(20,20,40,0.95));
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 24px;
+    padding: 48px 40px;
+    backdrop-filter: blur(10px);
+  }
+
+  .visual-card-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .visual-card-icon::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 24px;
+    background: inherit;
+    opacity: 0.3;
+    filter: blur(16px);
+    z-index: -1;
+  }
+
+  .pain-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .pain-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: rgba(231,76,60,0.06);
+    border-left: 3px solid var(--danger);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+  }
+
+  .phase-section.in-view .pain-item {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .phase-section.in-view .pain-item:nth-child(1) { transition-delay: 0.3s; }
+  .phase-section.in-view .pain-item:nth-child(2) { transition-delay: 0.5s; }
+  .phase-section.in-view .pain-item:nth-child(3) { transition-delay: 0.7s; }
+
+  .pain-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    background: rgba(231,76,60,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    margin-top: 1px;
+  }
+
+  .pain-text {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  /* ── PHASE CONTENT ── */
+  .phase-content {
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+  }
+
+  .phase-section:nth-child(odd) .phase-content {
+    transform: translateX(-60px);
+  }
+
+  .phase-section.in-view .phase-content {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .phase-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .phase-label-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: white;
+  }
+
+  .phase-label-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+  }
+
+  .phase-title {
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .phase-desc {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+  }
+
+  .impact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .impact-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 20px;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.6s ease;
+  }
+
+  .phase-section.in-view .impact-card {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .phase-section.in-view .impact-card:nth-child(1) { transition-delay: 0.5s; }
+  .phase-section.in-view .impact-card:nth-child(2) { transition-delay: 0.65s; }
+  .phase-section.in-view .impact-card:nth-child(3) { transition-delay: 0.8s; }
+  .phase-section.in-view .impact-card:nth-child(4) { transition-delay: 0.95s; }
+
+  .impact-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--warning);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .impact-value {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  /* ── CONNECTOR LINE ── */
+  .connector {
+    position: fixed;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .connector-line {
+    width: 2px;
+    height: 0;
+    background: linear-gradient(180deg,
+      transparent,
+      rgba(0,51,141,0.3) 10%,
+      rgba(196,144,28,0.3) 50%,
+      rgba(0,51,141,0.3) 90%,
+      transparent
+    );
+    transition: height 0.1s linear;
+  }
+
+  /* ── PROGRESS NAV ── */
+  .progress-nav {
+    position: fixed;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 100;
+  }
+
+  .progress-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+  }
+
+  .progress-dot.active {
+    border-color: var(--kpmg-gold);
+    background: var(--kpmg-gold);
+    box-shadow: 0 0 20px rgba(196,144,28,0.4);
+  }
+
+  .progress-dot::after {
+    content: attr(data-label);
+    position: absolute;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .progress-dot:hover::after { opacity: 1; }
+
+  /* ── INSIGHTS SECTIONS ── */
+  .insights-section {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 5vw;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insights-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0;
+    transition: opacity 1s ease;
+    pointer-events: none;
+  }
+
+  .insights-section.in-view::before { opacity: 1; }
+
+  .insights-section.reveal-section::before {
+    background: radial-gradient(ellipse at 50% 40%, rgba(231,76,60,0.12) 0%, transparent 60%);
+  }
+
+  .insights-section.timeline-section::before {
+    background: radial-gradient(ellipse at 50% 60%, rgba(243,156,18,0.1) 0%, transparent 60%);
+  }
+
+  .insights-header {
+    text-align: center;
+    margin-bottom: 56px;
+    max-width: 800px;
+  }
+
+  .insights-badge {
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .insights-section.in-view .insights-badge {
+    animation: fadeInUp 0.7s ease forwards 0.1s;
+  }
+
+  .reveal-section .insights-badge {
+    background: linear-gradient(135deg, rgba(231,76,60,0.2), rgba(231,76,60,0.1));
+    color: var(--danger);
+    border: 1px solid rgba(231,76,60,0.2);
+  }
+
+  .timeline-section .insights-badge {
+    background: linear-gradient(135deg, rgba(243,156,18,0.2), rgba(243,156,18,0.1));
+    color: var(--warning);
+    border: 1px solid rgba(243,156,18,0.2);
+  }
+
+  .insights-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    margin-bottom: 16px;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .insights-section.in-view .insights-title {
+    animation: fadeInUp 0.8s ease forwards 0.2s;
+  }
+
+  .insights-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .insights-section.in-view .insights-subtitle {
+    animation: fadeInUp 0.8s ease forwards 0.35s;
+  }
+
+  .reveal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .reveal-card {
+    background: linear-gradient(145deg, rgba(30,30,55,0.95), rgba(20,20,40,0.98));
+    border-radius: 20px;
+    padding: 36px 32px;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .insights-section.in-view .reveal-card {
+    animation: fadeInUp 0.7s ease forwards;
+  }
+
+  .insights-section.in-view .reveal-card:nth-child(1) { animation-delay: 0.3s; }
+  .insights-section.in-view .reveal-card:nth-child(2) { animation-delay: 0.45s; }
+  .insights-section.in-view .reveal-card:nth-child(3) { animation-delay: 0.6s; }
+  .insights-section.in-view .reveal-card:nth-child(4) { animation-delay: 0.75s; }
+
+  .reveal-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+  }
+
+  .reveal-section .reveal-card::before {
+    background: linear-gradient(180deg, var(--danger), transparent);
+  }
+
+  .timeline-section .reveal-card::before {
+    background: linear-gradient(180deg, var(--warning), transparent);
+  }
+
+  .reveal-card-icon {
+    font-size: 1.6rem;
+    margin-bottom: 16px;
+  }
+
+  .reveal-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .reveal-card-bold {
+    color: white;
+    font-weight: 700;
+  }
+
+  .reveal-section .reveal-card-bold { color: var(--danger); }
+  .timeline-section .reveal-card-bold { color: var(--warning); }
+
+  .reveal-card-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  @media (max-width: 900px) {
+    .reveal-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── SUMMARY SECTION ── */
+  .summary-section {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 80px 5vw;
+    background: radial-gradient(ellipse at 50% 60%, rgba(231,76,60,0.08) 0%, transparent 60%),
+                var(--darker);
+    position: relative;
+  }
+
+  .summary-section h2 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: none;
+  }
+
+  .summary-section.in-view h2 {
+    animation: fadeInUp 0.8s ease forwards;
+  }
+
+  .summary-section h2 .danger { color: var(--danger); }
+
+  .summary-lead {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 700px;
+    line-height: 1.75;
+    margin-bottom: 56px;
+    opacity: 0;
+  }
+
+  .summary-section.in-view .summary-lead {
+    animation: fadeInUp 0.8s ease forwards 0.3s;
+  }
+
+  .pain-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .pain-summary-card {
+    background: linear-gradient(145deg, rgba(30,30,55,0.9), rgba(20,20,40,0.95));
+    border: 1px solid rgba(231,76,60,0.15);
+    border-radius: 20px;
+    padding: 36px 28px;
+    text-align: left;
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  .summary-section.in-view .pain-summary-card {
+    animation: fadeInUp 0.8s ease forwards;
+  }
+
+  .summary-section.in-view .pain-summary-card:nth-child(1) { animation-delay: 0.4s; }
+  .summary-section.in-view .pain-summary-card:nth-child(2) { animation-delay: 0.55s; }
+  .summary-section.in-view .pain-summary-card:nth-child(3) { animation-delay: 0.7s; }
+  .summary-section.in-view .pain-summary-card:nth-child(4) { animation-delay: 0.85s; }
+
+  .pain-summary-icon {
+    font-size: 2rem;
+    margin-bottom: 16px;
+  }
+
+  .pain-summary-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--danger);
+  }
+
+  .pain-summary-text {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── FLOATING PARTICLES ── */
+  .particles {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: rgba(196,144,28,0.3);
+    border-radius: 50%;
+    animation: float linear infinite;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounceDown {
+    0%, 100% { transform: translateY(0) rotate(45deg); }
+    50% { transform: translateY(8px) rotate(45deg); }
+  }
+
+  /* ── PHASE-FLOW VISUAL ── */
+  .phase-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 56px;
+    opacity: 0;
+  }
+
+  .summary-section.in-view .phase-flow {
+    animation: fadeInUp 0.8s ease forwards 0.15s;
+  }
+
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .flow-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: white;
+    background: var(--kpmg-blue);
+    border: 3px solid rgba(255,255,255,0.1);
+    position: relative;
+  }
+
+  .flow-circle::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid var(--danger);
+    opacity: 0;
+    animation: pulseRing 2s ease infinite;
+  }
+
+  .flow-step:nth-child(1) .flow-circle::after { animation-delay: 0s; }
+  .flow-step:nth-child(3) .flow-circle::after { animation-delay: 0.4s; }
+  .flow-step:nth-child(5) .flow-circle::after { animation-delay: 0.8s; }
+  .flow-step:nth-child(7) .flow-circle::after { animation-delay: 1.2s; }
+  .flow-step:nth-child(9) .flow-circle::after { animation-delay: 1.6s; }
+
+  @keyframes pulseRing {
+    0% { opacity: 0; transform: scale(0.8); }
+    50% { opacity: 0.6; }
+    100% { opacity: 0; transform: scale(1.4); }
+  }
+
+  .flow-label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 80px;
+  }
+
+  .flow-arrow {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--kpmg-blue), var(--danger));
+    position: relative;
+    margin: 0 4px;
+    margin-bottom: 22px;
+  }
+
+  .flow-arrow::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: -4px;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--danger);
+    border-top: 2px solid var(--danger);
+    transform: rotate(45deg);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .phase-inner {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .phase-section:nth-child(odd) .phase-inner { direction: ltr; }
+    .impact-grid { grid-template-columns: 1fr; }
+    .progress-nav { display: none; }
+    .phase-number-display { font-size: 7rem; }
+    .flow-arrow { width: 20px; }
+    .flow-circle { width: 40px; height: 40px; font-size: 0.9rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Progress navigation -->
+<nav class="progress-nav" id="progressNav">
+  <div class="progress-dot active" data-label="Overview" data-target="hero"></div>
+  <div class="progress-dot" data-label="Phase 1: Intake" data-target="phase1"></div>
+  <div class="progress-dot" data-label="Phase 2: Sourcing" data-target="phase2"></div>
+  <div class="progress-dot" data-label="Phase 3: Risk Review" data-target="phase3"></div>
+  <div class="progress-dot" data-label="Phase 4: Architecture" data-target="phase4"></div>
+  <div class="progress-dot" data-label="Phase 5: Contracting" data-target="phase5"></div>
+  <div class="progress-dot" data-label="Process Reveals" data-target="reveals"></div>
+  <div class="progress-dot" data-label="Timeline Impact" data-target="timeline"></div>
+  <div class="progress-dot" data-label="The Cost" data-target="summary"></div>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero" id="hero">
+  <div class="hero-badge">Current State Assessment</div>
+  <h1>Where Vendor Onboarding<br><span class="accent">Breaks Down Today</span></h1>
+  <p class="hero-subtitle">
+    Strong risk coverage, but fragmented intake and layered governance create
+    variability in speed, transparency, and execution across the vendor onboarding lifecycle.
+  </p>
+  <div class="hero-scroll">
+    <div class="scroll-indicator" onclick="document.getElementById('phase1').scrollIntoView()">
+      <span>EXPLORE THE JOURNEY</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PHASE 1 ═══════ -->
+<section class="phase-section" id="phase1">
+  <div class="phase-inner">
+    <div class="phase-visual">
+      <div class="phase-number-display">01</div>
+      <div class="visual-card">
+        <div class="visual-card-icon" style="background: linear-gradient(135deg, #00338D, #0051A5);">
+          <span>&#x1F4E5;</span>
+        </div>
+        <ul class="pain-items">
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Requests originate from multiple personas and enter through inconsistent intake paths</span>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Intake information is often incomplete or varies by request type</span>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">No single system tracks request status, ownership, or decisions</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-label">
+        <div class="phase-label-num" style="background: var(--kpmg-blue);">1</div>
+        <span class="phase-label-text">Phase One</span>
+      </div>
+      <h2 class="phase-title">Vendor Identification<br>& Intake</h2>
+      <p class="phase-desc">
+        The journey starts with friction. Requests arrive from different doors,
+        in different formats, with different levels of completeness. Before any
+        risk assessment even begins, the process is already accumulating delays.
+      </p>
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Rework and delays begin at the very start of the process</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Requesters carry a high coordination burden</div>
+        </div>
+        <div class="impact-card" style="grid-column: 1 / -1;">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Limited visibility into prioritization and progress across the portfolio</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PHASE 2 ═══════ -->
+<section class="phase-section" id="phase2">
+  <div class="phase-inner">
+    <div class="phase-visual">
+      <div class="phase-number-display">02</div>
+      <div class="visual-card">
+        <div class="visual-card-icon" style="background: linear-gradient(135deg, #C4901C, #E8B44B);">
+          <span>&#x1F50D;</span>
+        </div>
+        <ul class="pain-items">
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Sourcing coordinates across Legal, Risk, Privacy, and business teams</span>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Intake quality issues require mid-process clarification and rework</span>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Vendor reuse does not consistently eliminate repeat reviews</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-label">
+        <div class="phase-label-num" style="background: var(--kpmg-gold);">2</div>
+        <span class="phase-label-text">Phase Two</span>
+      </div>
+      <h2 class="phase-title">Sourcing & Commercial<br>Assessment</h2>
+      <p class="phase-desc">
+        Sourcing becomes the connective tissue between every stakeholder, but
+        without end-to-end control. Manual coordination across Legal, Risk, Privacy,
+        and business teams creates invisible bottlenecks and stalls throughput.
+      </p>
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Sourcing is perceived as owning delays without end-to-end control</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Manual coordination slows throughput across teams</div>
+        </div>
+        <div class="impact-card" style="grid-column: 1 / -1;">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">True drivers of delay are difficult to isolate or measure</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PHASE 3 ═══════ -->
+<section class="phase-section" id="phase3">
+  <div class="phase-inner">
+    <div class="phase-visual">
+      <div class="phase-number-display">03</div>
+      <div class="visual-card">
+        <div class="visual-card-icon" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+          <span>&#x1F6E1;</span>
+        </div>
+        <ul class="pain-items">
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">TPRM, Cyber, Privacy, and AI Governance reviews occur sequentially and in parallel</span>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Reviews rely on questionnaires, artifacts, and manual handoffs</span>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Findings and decisions are distributed across multiple tools</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-label">
+        <div class="phase-label-num" style="background: var(--danger);">3</div>
+        <span class="phase-label-text">Phase Three</span>
+      </div>
+      <h2 class="phase-title">Risk & Compliance<br>Review</h2>
+      <p class="phase-desc">
+        The heaviest phase. Multiple review functions operate with overlapping
+        scope, inconsistent tooling, and fragmented decision records. Vendors
+        face fatigue from redundant questionnaires while reviewers lack a
+        unified view of findings.
+      </p>
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Redundant reviews increase cycle time and vendor fatigue</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Limited integration reduces efficiency across tools</div>
+        </div>
+        <div class="impact-card" style="grid-column: 1 / -1;">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Distributed findings reduce transparency and auditability of decisions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PHASE 4 ═══════ -->
+<section class="phase-section" id="phase4">
+  <div class="phase-inner">
+    <div class="phase-visual">
+      <div class="phase-number-display">04</div>
+      <div class="visual-card">
+        <div class="visual-card-icon" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+          <span>&#x1F3DB;</span>
+        </div>
+        <ul class="pain-items">
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Enterprise Architecture and funding reviews often occur after solution direction is set</span>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Funding paths vary: budgeted, unbudgeted, renewals</span>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Final approvals converge late in the process</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-label">
+        <div class="phase-label-num" style="background: var(--warning);">4</div>
+        <span class="phase-label-text">Phase Four</span>
+      </div>
+      <h2 class="phase-title">Architecture, Funding<br>& Approval</h2>
+      <p class="phase-desc">
+        Critical decisions about architecture and funding arrive too late.
+        When Enterprise Architecture reviews happen after solution direction
+        is already set, changes at this stage become expensive, disruptive,
+        and demoralizing for teams that thought they were almost done.
+      </p>
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Late engagement drives rework and approval delays</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Changes at this stage are costly and disruptive</div>
+        </div>
+        <div class="impact-card" style="grid-column: 1 / -1;">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Prioritization and capacity tradeoffs lack transparency</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PHASE 5 ═══════ -->
+<section class="phase-section" id="phase5">
+  <div class="phase-inner">
+    <div class="phase-visual">
+      <div class="phase-number-display">05</div>
+      <div class="visual-card">
+        <div class="visual-card-icon" style="background: linear-gradient(135deg, #00338D, #2980b9);">
+          <span>&#x1F4DD;</span>
+        </div>
+        <ul class="pain-items">
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Legal contracting and accounting activities are highly manual & have limited resources</span>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Accounting is engaged late, post-contract execution</span>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">&#x26A0;</div>
+            <span class="pain-text">Vendor activation occurs only after all approvals are complete</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-label">
+        <div class="phase-label-num" style="background: var(--kpmg-blue-light);">5</div>
+        <span class="phase-label-text">Phase Five</span>
+      </div>
+      <h2 class="phase-title">Contracting, Activation<br>& Onboarding</h2>
+      <p class="phase-desc">
+        The final mile. After months of reviews and approvals, contracting
+        operates with limited resources and manual processes. Accounting joins
+        too late, activation depends on serial completion, and the finish line
+        keeps moving. Time-to-value becomes impossible to predict.
+      </p>
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Contract and activation timelines are hard to predict</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Late-stage issues delay time-to-value</div>
+        </div>
+        <div class="impact-card" style="grid-column: 1 / -1;">
+          <div class="impact-label">Impact</div>
+          <div class="impact-value">Manual processes limit scalability as vendor volume grows</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ WHAT THE PROCESS REVEALS ═══════ -->
+<section class="insights-section reveal-section" id="reveals">
+  <div class="insights-header">
+    <div class="insights-badge">Systemic Findings</div>
+    <h2 class="insights-title">What the Process Flow <span style="color: var(--danger);">Reveals</span></h2>
+    <p class="insights-subtitle">
+      Stepping back from individual phases, the end-to-end flow exposes structural
+      patterns that no single team can solve alone.
+    </p>
+  </div>
+  <div class="reveal-grid">
+    <div class="reveal-card">
+      <div class="reveal-card-icon">&#x1F5FA;</div>
+      <div class="reveal-card-title">No Documented Process Baseline</div>
+      <div class="reveal-card-text">
+        The <span class="reveal-card-bold">end-to-end process flow is not clearly documented,</span>
+        making it difficult to understand how work progresses from intake to activation.
+        Teams operate on tribal knowledge.
+      </div>
+    </div>
+    <div class="reveal-card">
+      <div class="reveal-card-icon">&#x1F465;</div>
+      <div class="reveal-card-title">Ambiguous Roles & Ownership</div>
+      <div class="reveal-card-text">
+        <span class="reveal-card-bold">Roles and responsibilities are inconsistently defined,</span>
+        creating ambiguity around step-level ownership and overall accountability.
+        No single guided, accountable owner for the end-to-end process.
+      </div>
+    </div>
+    <div class="reveal-card">
+      <div class="reveal-card-icon">&#x1F500;</div>
+      <div class="reveal-card-title">Informal Handoffs & Re-routing</div>
+      <div class="reveal-card-text">
+        Work moves through <span class="reveal-card-bold">informal handoffs and re-routing</span>
+        rather than a standardized, traceable flow. Teams rely on "phone a friend" to
+        navigate approvals and processes.
+      </div>
+    </div>
+    <div class="reveal-card">
+      <div class="reveal-card-icon">&#x1F3DB;</div>
+      <div class="reveal-card-title">Reinforced Functional Silos</div>
+      <div class="reveal-card-text">
+        The lack of a single accountable owner <span class="reveal-card-bold">reinforces functional silos,</span>
+        prompting teams to rely on who they know to navigate approvals rather than
+        a defined, repeatable process.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ TIMELINE & EXECUTION ═══════ -->
+<section class="insights-section timeline-section" id="timeline">
+  <div class="insights-header">
+    <div class="insights-badge">Execution Impact</div>
+    <h2 class="insights-title">Timeline & Execution <span style="color: var(--warning);">Implications</span></h2>
+    <p class="insights-subtitle">
+      These structural issues translate directly into measurable execution problems
+      that affect every request flowing through the system.
+    </p>
+  </div>
+  <div class="reveal-grid">
+    <div class="reveal-card">
+      <div class="reveal-card-icon">&#x1F4CA;</div>
+      <div class="reveal-card-title">Timelines Impossible to Analyze</div>
+      <div class="reveal-card-text">
+        <span class="reveal-card-bold">Current-state timelines are difficult to analyze</span>
+        due to the lack of a documented process baseline. Without measurement,
+        improvement targets remain arbitrary.
+      </div>
+    </div>
+    <div class="reveal-card">
+      <div class="reveal-card-icon">&#x1F504;</div>
+      <div class="reveal-card-title">Complex Back-and-Forth</div>
+      <div class="reveal-card-text">
+        Flow is complex with <span class="reveal-card-bold">frequent back-and-forth between teams</span>
+        and repeated touchpoints. A single request may bounce between the same
+        groups multiple times before resolution.
+      </div>
+    </div>
+    <div class="reveal-card">
+      <div class="reveal-card-icon">&#x1F6A7;</div>
+      <div class="reveal-card-title">Rework from Unclear Criteria</div>
+      <div class="reveal-card-text">
+        <span class="reveal-card-bold">Rework and delays are driven by unclear entry/exit criteria</span>
+        at each step, insufficient information, and lack of following the existing processes
+        that do exist.
+      </div>
+    </div>
+    <div class="reveal-card">
+      <div class="reveal-card-icon">&#x1F3B2;</div>
+      <div class="reveal-card-title">Unpredictable Execution Paths</div>
+      <div class="reveal-card-text">
+        <span class="reveal-card-bold">Inconsistent execution paths create unpredictable cycle times,</span>
+        even for similar requests. Two identical vendor onboardings can take
+        dramatically different amounts of time.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SUMMARY ═══════ -->
+<section class="summary-section" id="summary">
+  <h2>The <span class="danger">Cumulative Cost</span> of Fragmentation</h2>
+  <p class="summary-lead">
+    Each phase adds friction. Across the full lifecycle, these pain points compound
+    into unpredictable timelines, redundant effort, and limited transparency for
+    every stakeholder in the chain.
+  </p>
+
+  <div class="phase-flow">
+    <div class="flow-step">
+      <div class="flow-circle">1</div>
+      <div class="flow-label">Intake</div>
+    </div>
+    <div class="flow-arrow"></div>
+    <div class="flow-step">
+      <div class="flow-circle">2</div>
+      <div class="flow-label">Sourcing</div>
+    </div>
+    <div class="flow-arrow"></div>
+    <div class="flow-step">
+      <div class="flow-circle">3</div>
+      <div class="flow-label">Risk Review</div>
+    </div>
+    <div class="flow-arrow"></div>
+    <div class="flow-step">
+      <div class="flow-circle">4</div>
+      <div class="flow-label">Architecture</div>
+    </div>
+    <div class="flow-arrow"></div>
+    <div class="flow-step">
+      <div class="flow-circle">5</div>
+      <div class="flow-label">Contracting</div>
+    </div>
+  </div>
+
+  <div class="pain-summary-grid">
+    <div class="pain-summary-card">
+      <div class="pain-summary-icon">&#x23F3;</div>
+      <div class="pain-summary-title">Unpredictable Cycle Times</div>
+      <div class="pain-summary-text">
+        6-9 month vendor onboarding cycles with no clear way to identify
+        where time is being lost or how to accelerate.
+      </div>
+    </div>
+    <div class="pain-summary-card">
+      <div class="pain-summary-icon">&#x1F504;</div>
+      <div class="pain-summary-title">Redundant Effort</div>
+      <div class="pain-summary-text">
+        Multiple teams asking similar questions, vendors completing overlapping
+        questionnaires, and reviews that don't build on each other.
+      </div>
+    </div>
+    <div class="pain-summary-card">
+      <div class="pain-summary-icon">&#x1F576;</div>
+      <div class="pain-summary-title">Limited Transparency</div>
+      <div class="pain-summary-text">
+        No single source of truth for status, decisions, or accountability.
+        Leaders lack the data to make capacity and prioritization decisions.
+      </div>
+    </div>
+    <div class="pain-summary-card">
+      <div class="pain-summary-icon">&#x1F4C9;</div>
+      <div class="pain-summary-title">Scaling Constraints</div>
+      <div class="pain-summary-text">
+        Manual coordination and limited resources in contracting and compliance
+        create bottlenecks that worsen as vendor volume grows.
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ── Particle generator ──
+  const particlesEl = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 15) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+    particlesEl.appendChild(p);
+  }
+
+  // ── Intersection Observer for section animations ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        // Update progress dots
+        const id = entry.target.id;
+        document.querySelectorAll('.progress-dot').forEach(dot => {
+          dot.classList.toggle('active', dot.dataset.target === id);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.phase-section, .hero, .summary-section, .insights-section').forEach(s => observer.observe(s));
+
+  // ── Progress nav click ──
+  document.querySelectorAll('.progress-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      document.getElementById(dot.dataset.target).scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
