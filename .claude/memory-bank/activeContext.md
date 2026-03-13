@@ -4,19 +4,20 @@
 
 **Date**: 2026-03-12
 **Branch**: main
-**Release Version**: 2026.03.116
+**Release Version**: 2026.03.117
 
-### Rename business-lane to quarterback-lane (SLA-89, PR #141)
-- Replaced all `candidateGroups="business-lane"` with `quarterback-lane` in v17 onboarding BPMN (17 occurrences) and mini-rfp-pre-screen (6 occurrences)
-- Added user task inventory PPTX generator + output (51 tasks, 8 phases, KPMG-branded)
-- PPTX lane labels show "Quarterback" as responsible party
+### User task inventory PPTX v2 with BPMN diagrams (SLA-90, PR #143)
+- Re-rendered all 10 v17 sub-process diagrams from current BPMN model
+- Added BPMN diagram slides before each phase table (20 slides total)
+- SP3 parallel tasks annotated with [Parallel] prefix
+- Removed Camunda 8 reference from title slide
 
 ## Platform Stats
 
 | Metric | Value |
 |--------|-------|
-| Release Version | 2026.03.116 |
-| Total PRs Merged | 141 |
+| Release Version | 2026.03.117 |
+| Total PRs Merged | 143 |
 | DMN Decision Tables | 21 |
 | Cross-Cutting Sub-Processes | 6 |
 | Camunda 8 Forms | 52+ |

@@ -1,5 +1,15 @@
 # Changelog
 
+## [2026.03.117] - 2026-03-12
+
+### Added
+- User task inventory PPTX v2 with BPMN process model diagram slides rendered from current v17 model (PR #143)
+- 10 fresh PNG renders of all v17 sub-process diagrams in `bpmn-images/png/` (PR #143)
+
+### Changed
+- SP3 parallel assessment tasks annotated with `[Parallel]` prefix and concurrency note (PR #143)
+- Removed "Camunda 8" reference from PPTX title slide (PR #143)
+
 ## [2026.03.116] - 2026-03-12
 
 ### Changed
