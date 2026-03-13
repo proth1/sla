@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
-"""Generate User Task Inventory PPTX from v17 onboarding model data."""
+"""Generate User Task Inventory PPTX from v17 onboarding model data.
+
+v2: Adds BPMN process model diagram slides before each phase table.
+Requires PNG images pre-rendered from SVGs in bpmn-images/png/.
+"""
 
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from PIL import Image
 import os
+import subprocess
+import sys
 
 # Brand colors (from Software-Onboarding-Transformation.pptx)
 KPMG_BLUE = RGBColor(0x00, 0x33, 0x8D)
@@ -25,10 +32,14 @@ TOP_MARGIN = Inches(1.3)
 TABLE_WIDTH = Inches(12.33)
 COL_WIDTHS = [Inches(2.5), Inches(2.0), Inches(7.83)]
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+IMG_DIR = os.path.join(SCRIPT_DIR, "bpmn-images", "png")
+
 PHASES = [
     {
         "title": "SP0: Mini RFP Pre-Screening",
         "subtitle": "Nested within SP1 \u2014 Self-service vendor pre-screening before formal intake",
+        "images": ["v17-sp0-mini-rfp.png"],
         "tasks": [
             ("Understand the Need", "quarterback-lane",
              "Requester describes business problem, urgency, and what capability they need. Collects problem statement, desired outcomes, and timeline."),
@@ -49,6 +60,7 @@ PHASES = [
     {
         "title": "SP0: Vendor Response",
         "subtitle": "Vendor Pool \u2014 External vendor engagement tasks",
+        "images": ["v17-sp0-mini-rfp.png"],
         "tasks": [
             ("Receive from Vendor(s)", "Vendor (external)",
              "Vendor submits their RFP response, pricing, and supporting documentation."),
@@ -61,6 +73,7 @@ PHASES = [
     {
         "title": "SP1: Request & Triage",
         "subtitle": "Phase 1 \u2014 Intake, screening, and initial routing",
+        "images": ["v17-sp1-request-triage.png", "v17-sp1-execute-nda.png"],
         "tasks": [
             ("Review Problem and Existing Solutions", "quarterback-lane",
              "Requester reviews whether existing enterprise software already addresses the need. System shows current solution inventory; requester assesses fit (FullMatch/Partial/NeedsGuidance/NoMatch)."),
@@ -85,6 +98,7 @@ PHASES = [
     {
         "title": "SP2: Planning & Risk Scoping",
         "subtitle": "Phase 2 \u2014 Business case, risk appetite, and pathway routing",
+        "images": ["v17-sp2-planning-routing.png"],
         "tasks": [
             ("Preliminary Analysis", "governance-lane",
              "Business case and privacy screening. Collects market research summary, strategic alignment assessment, risk appetite alignment (Within/Borderline/Exceeds), preliminary cost/ROI estimates, budget source, DPIA requirement, capacity impact score, and whether full evaluation is needed."),
@@ -97,30 +111,32 @@ PHASES = [
     {
         "title": "SP3: Evaluation & Due Diligence",
         "subtitle": "Phase 3 \u2014 Parallel swarm evaluation across 9 domains",
+        "images": ["v17-sp3-risk-sme-assessments.png", "v17-sp3-vendor-sourcing.png"],
         "tasks": [
             ("Enterprise Architecture", "technical-assessment",
-             "Reviews technology stack compatibility, integration architecture, scalability, data flow patterns, and alignment with enterprise reference architecture."),
+             "[Parallel] Reviews technology stack compatibility, integration architecture, scalability, data flow patterns, and alignment with enterprise reference architecture. Runs concurrently with Security, AI Governance, TPRM, Compliance, Privacy, and Strategic Sourcing assessments."),
             ("Security Assessment", "technical-assessment",
-             "Cybersecurity posture evaluation. Collects security tier (1-6), encryption status, key management, MFA, privileged access, pen test dates, MTTP metrics, incident response plan, SOC 2/ISO 27001/PCI/FedRAMP certifications. Produces security risk rating and approval."),
+             "[Parallel] Cybersecurity posture evaluation. Collects security tier (1-6), encryption status, key management, MFA, privileged access, pen test dates, MTTP metrics, incident response plan, SOC 2/ISO 27001/PCI/FedRAMP certifications. Produces security risk rating and approval. Runs concurrently with other SME assessments."),
             ("AI Governance", "ai-review",
-             "AI model risk classification review. Evaluates AI involvement, bias/fairness controls, model transparency, explainability, and alignment with SR 11-7 and EU AI Act requirements."),
+             "[Parallel] AI model risk classification review. Evaluates AI involvement, bias/fairness controls, model transparency, explainability, and alignment with SR 11-7 and EU AI Act requirements. Runs concurrently with other SME assessments."),
             ("TPRM", "governance-lane",
-             "Third-Party Risk Management assessment. Identifies risks, scores probability/impact, defines mitigation strategies, and produces overall vendor risk rating."),
+             "[Parallel] Third-Party Risk Management assessment. Identifies risks, scores probability/impact, defines mitigation strategies, and produces overall vendor risk rating. Runs concurrently with other SME assessments."),
             ("Compliance", "compliance-lane",
-             "Maps applicable regulations to the solution. Reviews regulatory gaps, compliance status, and determines remediation requirements."),
+             "[Parallel] Maps applicable regulations to the solution. Reviews regulatory gaps, compliance status, and determines remediation requirements. Runs concurrently with other SME assessments."),
             ("Legal - Privacy", "compliance-lane",
-             "Data Protection Impact Assessment (DPIA) and privacy review. Evaluates data handling, consent mechanisms, cross-border transfers, and retention policies."),
+             "[Parallel] Data Protection Impact Assessment (DPIA) and privacy review. Evaluates data handling, consent mechanisms, cross-border transfers, and retention policies. Runs concurrently with other SME assessments."),
             ("Strategic Sourcing and Procurement", "ai-review",
-             "Market analysis and vendor competitive landscape assessment. Reviews vendor options, market maturity, switching costs, and procurement strategy."),
+             "[Parallel] Market analysis and vendor competitive landscape assessment. Reviews vendor options, market maturity, switching costs, and procurement strategy. Runs concurrently with other SME assessments."),
             ("Vendor Due Diligence", "contracting-lane",
-             "Comprehensive vendor assessment \u2014 financial health, references, customer satisfaction, operational resilience, sub-contractor dependencies, and contractual track record."),
+             "Comprehensive vendor assessment \u2014 financial health, references, customer satisfaction, operational resilience, sub-contractor dependencies, and contractual track record. Runs sequentially after parallel assessments complete."),
             ("Evaluate Vendor Response", "contracting-lane",
-             "Scores and analyzes vendor RFP/proposal response. Gap analysis against requirements, pricing evaluation, and comparative vendor ranking."),
+             "Scores and analyzes vendor RFP/proposal response. Gap analysis against requirements, pricing evaluation, and comparative vendor ranking. Runs sequentially after parallel assessments complete."),
         ],
     },
     {
         "title": "SP4: Governance Review & Contracting \u2014 Buy Pathway",
         "subtitle": "Phase 4 (Buy) \u2014 Requirements refinement, POC, negotiation, and contract execution",
+        "images": ["v17-sp4-contracting.png"],
         "tasks": [
             ("Refine Requirements", "quarterback-lane",
              "Detailed requirements refinement based on due diligence findings. Updates acceptance criteria, integration requirements, and performance expectations."),
@@ -145,6 +161,7 @@ PHASES = [
     {
         "title": "SP4: Build Pathway & PDLC",
         "subtitle": "Phase 4 (Build) \u2014 Custom development lifecycle",
+        "images": ["v17-pdlc.png"],
         "tasks": [
             ("Define Build Requirements", "quarterback-lane",
              "Defines build-specific requirements \u2014 architecture decisions, technology stack, timeline, resource needs, and security requirements for custom development."),
@@ -161,6 +178,7 @@ PHASES = [
     {
         "title": "SP5: UAT & Go-Live",
         "subtitle": "Phase 5 \u2014 Acceptance testing, audit, onboarding, and closure",
+        "images": ["v17-sp5-uat-golive.png"],
         "tasks": [
             ("Verify Conditions", "governance-lane",
              "Reviews and verifies that all governance conditions from prior approvals (conditional approvals, remediation items) have been satisfactorily addressed."),
@@ -228,6 +246,55 @@ def format_cell(cell, text, font_size=9, bold=False, color=DARK_TEXT, alignment=
     cell.margin_bottom = Inches(0.04)
 
 
+def add_diagram_slide(prs, title, image_path):
+    """Add a slide with a BPMN process model diagram."""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank
+
+    # Phase title bar
+    bar = slide.shapes.add_shape(
+        1, Inches(0), Inches(0), SLIDE_WIDTH, Inches(0.6)
+    )
+    bar.fill.solid()
+    bar.fill.fore_color.rgb = KPMG_BLUE
+    bar.line.fill.background()
+
+    txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.08), Inches(11), Inches(0.45))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    run = p.add_run()
+    run.text = title
+    run.font.size = Pt(18)
+    run.font.bold = True
+    run.font.color.rgb = WHITE
+    run.font.name = "Calibri"
+
+    # Load image to get aspect ratio
+    img = Image.open(image_path)
+    img_w, img_h = img.size
+    aspect = img_w / img_h
+
+    # Available area: full width minus margins, below title bar
+    avail_w = Inches(12.33)
+    avail_h = Inches(6.5)  # 7.5 - 0.6 title - 0.4 padding
+    avail_aspect = avail_w / avail_h
+
+    if aspect > avail_aspect:
+        # Image is wider — fit to width
+        pic_w = avail_w
+        pic_h = int(avail_w / aspect)
+    else:
+        # Image is taller — fit to height
+        pic_h = avail_h
+        pic_w = int(avail_h * aspect)
+
+    # Center horizontally, position below title
+    pic_x = (SLIDE_WIDTH - pic_w) // 2
+    pic_y = Inches(0.7)
+
+    slide.shapes.add_picture(image_path, pic_x, pic_y, pic_w, pic_h)
+
+
 def add_title_slide(prs):
     """Add title slide."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank layout
@@ -261,7 +328,7 @@ def add_title_slide(prs):
     p2 = tf2.paragraphs[0]
     p2.alignment = PP_ALIGN.LEFT
     run2 = p2.add_run()
-    run2.text = "Software Onboarding Process v17 (Camunda 8)"
+    run2.text = "Software Onboarding Process v17"
     run2.font.size = Pt(20)
     run2.font.color.rgb = DARK_TEXT
     run2.font.name = "Calibri"
@@ -366,14 +433,36 @@ def main():
     prs.slide_height = SLIDE_HEIGHT
 
     add_title_slide(prs)
-    for phase in PHASES:
-        add_phase_slide(prs, phase)
 
-    out_path = os.path.join(os.path.dirname(__file__), "user-task-inventory.pptx")
+    # Orchestrator overview diagram (slide 2)
+    orch_path = os.path.join(IMG_DIR, "v17-orchestrator.png")
+    if os.path.exists(orch_path):
+        add_diagram_slide(prs, "End-to-End Process Overview", orch_path)
+
+    slide_count = 2  # title + orchestrator
+    for phase in PHASES:
+        # Diagram slide(s) for this phase
+        seen = set()
+        for img_name in phase.get("images", []):
+            if img_name in seen:
+                continue
+            seen.add(img_name)
+            img_path = os.path.join(IMG_DIR, img_name)
+            if os.path.exists(img_path):
+                add_diagram_slide(prs, f"Process Model: {phase['title']}", img_path)
+                slide_count += 1
+            else:
+                print(f"  WARNING: Missing image {img_path}")
+
+        # Task table slide
+        add_phase_slide(prs, phase)
+        slide_count += 1
+
+    out_path = os.path.join(SCRIPT_DIR, "user-task-inventory.pptx")
     prs.save(out_path)
     print(f"Saved: {out_path}")
     total = sum(len(ph["tasks"]) for ph in PHASES)
-    print(f"  {len(PHASES)} phase slides + 1 title = {len(PHASES) + 1} slides")
+    print(f"  {slide_count} slides ({len(PHASES)} tables + diagram slides + title)")
     print(f"  {total} user tasks total")
 
 
