@@ -1,5 +1,5 @@
 {
-  "processDefinitionKey": "Process_Onboarding_v8",
+  "processDefinitionKey": "Process_Onboarding_v17",
   "jira": {
     "baseUrl": "https://agentic-sdlc.atlassian.net",
     "projectKey": "SLA",

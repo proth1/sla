@@ -10,7 +10,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // --- Shared Camunda Auth ---
 const auth = createCamundaAuth();
 const CONFIG = auth.config;
-CONFIG.processId = 'Process_Onboarding_v8';
+CONFIG.processId = 'Process_Onboarding_v17';
 
 // --- Personas (parsed from personas.js — single source of truth) ---
 const PERSONAS = (function() {

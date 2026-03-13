@@ -426,13 +426,13 @@ tbody td{padding:10px 16px;vertical-align:middle}
 // --- CONFIGURATION ---
 const REFRESH_INTERVAL = 10000;
 const PHASE_MAP = {
-  Task_ReviewExisting: 'SP1', Task_LeverageExisting: 'SP1', Task_GatherDocs: 'SP1', Task_SubmitRequest: 'SP1', Task_InitialTriage: 'SP1', Task_ClassifyRequest: 'SP1', Task_DealKillerCheck: 'SP1',
-  Task_PrelimAnalysis: 'SP2', Task_BacklogPrioritization: 'SP2', Task_PathwayRouting: 'SP2', Task_PrioritizationScoring: 'SP2',
-  Task_TechArchReview: 'SP3', Task_SecurityAssessment: 'SP3', Task_RiskCompliance: 'SP3', Task_FinancialAnalysis: 'SP3', Task_AssessVendorLandscape: 'SP3', Task_VendorDD: 'SP3', Task_EvaluateResponse: 'SP3', Task_AIGovernanceReview: 'SP3', Receive_VendorResponse: 'SP3', Task_DARTFormation: 'SP3', Task_CreateOneTrustAssessment: 'SP3', Task_SecurityTierRouting: 'SP3', Task_BaselineScan: 'SP3', Task_RetrieveOneTrustResults: 'SP3',
-  Task_RefineRequirements: 'SP4', Task_PerformPoC: 'SP4', Task_TechRiskEval: 'SP4', Task_NegotiateContract: 'SP4', Task_FinalizeContract: 'SP4', Task_DefineBuildReqs: 'SP4', Receive_SignedContract: 'SP4', Task_ComplianceReview: 'SP4', Task_EnableContractExec: 'SP4', Task_ContractDeviation: 'SP4', Task_CodingCorrection: 'SP4',
-  Task_PerformUAT: 'SP5', Task_FinalApproval: 'SP5', Task_OnboardSoftware: 'SP5', Activity_0zf4l0g: 'SP5', Task_CloseRequest: 'SP5', Task_AssignOwnership: 'SP5', Task_ConditionVerification: 'SP5',
+  Task_ReviewExisting: 'SP1', Task_LeverageExisting: 'SP1', Task_GatherDocs: 'SP1', Task_SubmitRequest: 'SP1', Task_InitialTriage: 'SP1', Task_ClassifyRequest: 'SP1', Task_DealKillerCheck: 'SP1', Task_CompletenessGate: 'SP1', Activity_0netfvm: 'SP1', Activity_1l8ugqb: 'SP1', SendTask_SP1Complete: 'SP1', Activity_1jd4o1m: 'SP1', Activity_07qg27e: 'SP1', Activity_0uolphp: 'SP1', Activity_0h9zvjd: 'SP1', Activity_15rnp82: 'SP1', Activity_1h2vsx3: 'SP1', Activity_06e21v6: 'SP1', Activity_16hgh8o: 'SP1', Activity_0qm2dwv: 'SP1', Activity_03zg52r: 'SP1', Activity_0urxkj1: 'SP1', Activity_0q0vqxd: 'SP1', Activity_0ebhoun: 'SP1', Activity_0ld0vwq: 'SP1',
+  Task_PrelimAnalysis: 'SP2', Task_Backlog: 'SP2', Activity_0r9imfk: 'SP2', SendTask_SP2Complete: 'SP2', Task_PathwayRouting: 'SP2', Task_PrioritizationScoring: 'SP2',
+  Task_TechArchReview: 'SP3', Task_SecurityAssessment: 'SP3', Task_AIGovernanceReview: 'SP3', Activity_0kq8o8j: 'SP3', Activity_0ksoea5: 'SP3', Activity_0mr2gdy: 'SP3', Activity_0i5wmr2: 'SP3', Task_DARTFormation: 'SP3', SendTask_SP3Complete: 'SP3', Task_BaselineSecurityCheck: 'SP3', Task_SecurityAssessmentRouting: 'SP3', Activity_1ma36oc: 'SP3', Activity_0w7eitv: 'SP3', Activity_0v9e5r3: 'SP3',
+  Activity_1f5ug9e: 'SP4', Activity_1b9jfde: 'SP4', Activity_0anscph: 'SP4', Activity_0brpj26: 'SP4', Activity_0ssggoi: 'SP4', Activity_0xpqph2: 'SP4', Activity_06ceaql: 'SP4', Activity_11hwl66: 'SP4', Activity_0yw9qai: 'SP4', Activity_0dv1m1z: 'SP4', Activity_1mgm488: 'SP4', Activity_0hj9mmb: 'SP4', Activity_0ohlk7l: 'SP4', Activity_0ccg5hj: 'SP4', Activity_1tswsdw: 'SP4', Activity_1wmq03k: 'SP4',
+  Task_PerformUAT: 'SP5', Task_OnboardSoftware: 'SP5', Task_AssignOwnership: 'SP5', Task_CloseRequest: 'SP5', Task_ConditionVerification: 'SP5', Task_SP5_OversightAudit: 'SP5', Activity_0zf4l0g: 'SP5',
 };
-const PHASE_NAMES = { SP1: 'Request & Triage', SP2: 'Planning & Routing', SP3: 'Evaluation & DD', SP4: 'Contracting & Build', SP5: 'UAT & Go-Live' };
+const PHASE_NAMES = { SP1: 'Refine Request', SP2: 'Review, Refine & Prioritize', SP3: 'Risk & SME Assessments', SP4: 'Contracting', SP5: 'UAT & Go-Live' };
 const PHASE_COLORS = { SP1: '#3b82f6', SP2: '#8b5cf6', SP3: '#f59e0b', SP4: '#ef4444', SP5: '#22c55e' };
 const PHASE_CSS = { SP1: 'phase-sp1', SP2: 'phase-sp2', SP3: 'phase-sp3', SP4: 'phase-sp4', SP5: 'phase-sp5' };
 const LANE_LABELS = {
@@ -476,11 +476,11 @@ async function fetchDashboardData() {
   const [activeData, completedData, pendingTasks] = await Promise.all([
     fetchJSON('/api/instances/search', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v8' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 50 } }),
+      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v17' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 50 } }),
     }),
     fetchJSON('/api/instances/search', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v8', state: 'COMPLETED' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 20 } }),
+      body: JSON.stringify({ filter: { processDefinitionId: 'Process_Onboarding_v17', state: 'COMPLETED' }, sort: [{ field: 'startDate', order: 'DESC' }], page: { limit: 20 } }),
     }),
     fetchJSON('/api/tasks/search', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
