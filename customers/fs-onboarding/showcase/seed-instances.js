@@ -107,7 +107,7 @@ const INSTANCES = [
     department: 'Research & Innovation',
     estimatedCost: 2000000,
     requesterName: 'Dr. Alex Kim',
-    stopAtTask: 'Task_ClassifyRequest',
+    stopAtTask: 'Task_TriageAndRoute',
     phase: 'SP1',
     routingOverrides: { requestType: 'speculative' },
   },

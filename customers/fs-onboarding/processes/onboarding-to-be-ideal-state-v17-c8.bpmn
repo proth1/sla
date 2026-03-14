@@ -235,14 +235,14 @@
       <bpmn:startEvent id="SP1_Start">
         <bpmn:outgoing>Flow_SP1_1</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:userTask id="Task_ReviewExisting" name="Review problem and existing&#10;solutions">
-        <bpmn:documentation>Review the organization's existing software portfolio and backlog to determine whether current solutions can fulfill the identified business need. Search the enterprise software catalog, asset management system, and approved vendor registry for existing capabilities that overlap with the request. Assess whether existing licenses, modules, or configurations can be leveraged before initiating a new procurement or build effort.</bpmn:documentation>
+      <bpmn:userTask id="Task_DescribeAndScreen" name="Describe &#38;&#10;Screen Need">
+        <bpmn:documentation>Capture the complete business need, screen against the enterprise software catalog for existing solutions, and certify the submission. Combines intake documentation, portfolio screening, and submission certification into a single step.</bpmn:documentation>
         <bpmn:extensionElements>
-          <zeebe:formDefinition formId="sp1-review-existing" />
+          <zeebe:formDefinition formId="sp1-describe-and-screen" />
           <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Intake" />
-            <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 20: Inventory management — the organization must maintain an accurate inventory of all third-party relationships; this review ensures new requests are checked against the existing portfolio to avoid duplicate vendor relationships and unmanaged concentration risk. (2) NIST CSF 2.0 ID.AM (Asset Management): Verify existing software assets are cataloged, classified, and their capabilities documented to enable effective reuse analysis. (3) SOX Section 404: Ensure any software reuse decision is documented with rationale to maintain an auditable trail of technology decisions impacting financial controls. EVIDENCE COLLECTION: (a) Search results from enterprise software catalog showing existing solutions evaluated. (b) Portfolio overlap analysis documenting how existing tools were assessed against the new requirement. (c) Decision rationale document if existing solution is deemed sufficient (bypass path) or insufficient (proceed to formal process). (d) Asset management system query log showing search criteria used. DATA POINTS: Request description, business unit, existing software matches found (name, version, license status, utilization rate), gap analysis summary (what the existing solution covers vs. what is missing), requester assessment of fit (sufficient/insufficient), estimated cost avoidance if existing solution is leveraged." />
+            <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 20: Inventory management — the organization must maintain an accurate inventory of all third-party relationships; this review ensures new requests are checked against the existing portfolio to avoid duplicate vendor relationships and unmanaged concentration risk. (2) NIST CSF 2.0 ID.AM (Asset Management): Verify existing software assets are cataloged, classified, and their capabilities documented to enable effective reuse analysis. (3) SOX Section 404: Ensure any software reuse decision is documented with rationale to maintain an auditable trail of technology decisions impacting financial controls. EVIDENCE COLLECTION: (a) Search results from enterprise software catalog showing existing solutions evaluated. (b) Portfolio overlap analysis documenting how existing tools were assessed against the new requirement. (c) Decision rationale document if existing solution is deemed sufficient (bypass path) or insufficient (proceed to formal process). (d) Asset management system query log showing search criteria used. DATA POINTS: Business problem, urgency, pathway preference, criticality, budget, data types, AI involvement, applicable regulations, business unit, deployment model, executive sponsor, catalog search results, existing solution assessment, submitter certification." />
             <zeebe:property name="raci_r" value="Business" />
             <zeebe:property name="raci_a" value="Business" />
             <zeebe:property name="raci_c" value="Governance" />
@@ -283,43 +283,10 @@
       <bpmn:endEvent id="End_Leveraged" name="Software&#10;Leveraged">
         <bpmn:incoming>Flow_SP1_EndLev</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:userTask id="Task_GatherDocs" name="Gather&#10;documentation">
-        <bpmn:documentation>Form: vendor-intake-form.html Sections 1-2 (Request Basics + Governance) — business persona view. Assemble all documentation required to support a formal software request submission. Gather business requirements, use cases, stakeholder sign-offs, budget authorization, data classification assessment, and any preliminary market research. Ensure the request package is complete per the standardized intake template to prevent delays during triage. Information collected here is centralized and reused throughout the lifecycle.</bpmn:documentation>
+      <bpmn:userTask id="Task_TriageAndRoute" name="Triage &#38;&#10;Route">
+        <bpmn:documentation>Classify the request type, review upstream screening results (deal killer pre-screen, existing solution disposition), and make the triage decision. Combines classification and triage into a single governance step.</bpmn:documentation>
         <bpmn:extensionElements>
-          <zeebe:formDefinition formId="sp1-gather-documentation" />
-          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
-          <zeebe:properties>
-            <zeebe:property name="topics" value="Intake, Funding, Privacy" />
-            <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 25: Needs assessment documentation — the business case must articulate the need, alternatives considered, and alignment with the organization&#39;s strategic plan. This documentation becomes part of the regulatory examination file for third-party risk management. (2) GDPR Article 35/CCPA: If the software will process personal data, a preliminary Data Protection Impact Assessment (DPIA) screening should be initiated at this stage to identify high-risk processing activities early. (3) SOX Section 404: Budget authorization and financial justification must follow the organization&#39;s delegated authority matrix and be documented for audit trail purposes. (4) NIST CSF 2.0 GV.RM (Risk Management Strategy): Preliminary risk indicators should be captured to enable early risk tier estimation. EVIDENCE COLLECTION: (a) Completed software request intake form per standardized template. (b) Business requirements document with use cases and success criteria. (c) Stakeholder sign-off confirming business need and sponsorship. (d) Budget authorization or funding source identification. (e) Preliminary data classification assessment (what data types will the software process). (f) Market research or preliminary vendor identification (if available). (g) DPIA screening questionnaire (if personal data processing is involved). DATA POINTS: Business unit, cost center, budget amount authorized, expected user count, data types to be processed (PII, PHI, financial, public), deployment model preference (cloud/on-premise/hybrid), integration requirements with existing systems, urgency level, strategic alignment score, compliance requirements identified." />
-            <zeebe:property name="raci_r" value="Business" />
-            <zeebe:property name="raci_a" value="Business" />
-            <zeebe:property name="raci_c" value="Finance, Privacy" />
-          </zeebe:properties>
-        </bpmn:extensionElements>
-        <bpmn:incoming>Flow_SP1_CG_No</bpmn:incoming>
-        <bpmn:incoming>Flow_0adyz70</bpmn:incoming>
-        <bpmn:outgoing>Flow_SP1_3</bpmn:outgoing>
-      </bpmn:userTask>
-      <bpmn:userTask id="Task_SubmitRequest" name="Submit software&#10;request">
-        <bpmn:documentation>Form: vendor-intake-form.html Section 5 (Review and Submit). Submit the completed software request package to the Product Management team for formal triage and evaluation. The submission must include all required documentation per the intake template. Upon submission, the request is assigned a tracking number and enters the governance workflow with full audit trail from this point forward.</bpmn:documentation>
-        <bpmn:extensionElements>
-          <zeebe:formDefinition formId="sp1-submit-request" />
-          <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
-          <zeebe:properties>
-            <zeebe:property name="topics" value="Intake" />
-            <zeebe:property name="comments" value="REGULATORY CONTROLS: (1) OCC 2023-17 Section 25: Formal submission creates the official record of the third-party engagement request — this is the point at which the governance audit trail formally begins. The submission must be timestamped and immutable once submitted. (2) NIST CSF 2.0 GV.OC (Organizational Context): The request must capture sufficient context about the business need, data sensitivity, and operational criticality to enable accurate downstream risk assessment and pathway routing. (3) SOX Section 302: The submitting business owner certifies the accuracy and completeness of the request documentation, creating accountability for the information provided. EVIDENCE COLLECTION: (a) Submitted request package with timestamp, submitter identity, and completeness validation result. (b) Tracking number assignment confirmation. (c) Acknowledgment receipt from Product Management confirming request received. (d) Completeness check result (all required fields populated per intake template). (e) Submitter certification that information is accurate and complete. DATA POINTS: Request tracking number, submission timestamp, submitter name and role, business unit, completeness score (percentage of template fields populated), attachments list, priority requested by business, estimated annual cost, data classification summary." />
-            <zeebe:property name="raci_r" value="Business" />
-            <zeebe:property name="raci_a" value="Business" />
-            <zeebe:property name="raci_c" value="Governance" />
-          </zeebe:properties>
-        </bpmn:extensionElements>
-        <bpmn:incoming>Flow_SP1_3</bpmn:incoming>
-        <bpmn:outgoing>Flow_SP1_4</bpmn:outgoing>
-      </bpmn:userTask>
-      <bpmn:userTask id="Task_InitialTriage" name="Initial Triage&#10;and Evaluation">
-        <bpmn:documentation>Form: vendor-intake-form.html (read-only view of submitted data). Perform initial triage of the incoming software request to evaluate feasibility, strategic alignment, duplicate detection, and resource availability. Includes automated pre-screening for known vendor matches and existing capability overlap. Assign preliminary priority and determine whether the request should proceed, be rejected, or be returned for additional information. This is the first governance gate in the onboarding lifecycle.</bpmn:documentation>
-        <bpmn:extensionElements>
-          <zeebe:formDefinition formId="sp1-initial-triage" />
+          <zeebe:formDefinition formId="sp1-triage-and-route" />
           <zeebe:assignmentDefinition candidateGroups="quarterback-lane" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Intake, Compliance, TPRM" />
@@ -330,27 +297,13 @@
             <zeebe:property name="raci_i" value="" />
           </zeebe:properties>
         </bpmn:extensionElements>
-        <bpmn:incoming>Flow_SP1_6</bpmn:incoming>
+        <bpmn:incoming>Flow_1wtaa9l</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_5</bpmn:outgoing>
       </bpmn:userTask>
       <bpmn:endEvent id="End_TriageSLAEscalation" name="Triage SLA&#10;Escalation">
         <bpmn:incoming>Flow_SP1_SLA</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:userTask id="Task_ClassifyRequest" name="Classify&#10;Request">
-        <bpmn:documentation>Classify the software request by type: Defined Need (standard procurement with clear requirements), Forced Update (mandatory vendor/regulatory-driven change), or Speculative (exploratory/innovation request for idea funnel). Classification drives downstream routing, required approvals, and process depth.</bpmn:documentation>
-        <bpmn:extensionElements>
-          <zeebe:formDefinition formId="sp1-classify-request" />
-          <zeebe:assignmentDefinition candidateGroups="governance-lane" />
-          <zeebe:properties>
-            <zeebe:property name="topics" value="Intake" />
-            <zeebe:property name="raci_r" value="Governance" />
-            <zeebe:property name="raci_a" value="Governance" />
-          </zeebe:properties>
-        </bpmn:extensionElements>
-        <bpmn:incoming>Flow_SP1_4</bpmn:incoming>
-        <bpmn:outgoing>Flow_SP1_6</bpmn:outgoing>
-      </bpmn:userTask>
-      <bpmn:serviceTask id="SendTask_SP1Complete" name="SP1&#10;Notification">
+            <bpmn:serviceTask id="SendTask_SP1Complete" name="SP1&#10;Notification">
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="status-notification" />
           <zeebe:properties>
@@ -364,40 +317,11 @@
       <bpmn:endEvent id="SP1_End" name="Triage&#10;Complete">
         <bpmn:incoming>Flow_SP1_Notify</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="Flow_SP1_1" sourceRef="SP1_Start" targetRef="Task_ReviewExisting" />
+      <bpmn:sequenceFlow id="Flow_SP1_1" sourceRef="SP1_Start" targetRef="Task_DescribeAndScreen" />
       <bpmn:sequenceFlow id="Flow_SP1_Yes" name="Yes" sourceRef="GW_BypassProcess" targetRef="Task_LeverageExisting">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=existingSolutionDisposition = "FullMatch"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_EndLev" sourceRef="Task_LeverageExisting" targetRef="End_Leveraged" />
-      <bpmn:sequenceFlow id="Flow_SP1_3" sourceRef="Task_GatherDocs" targetRef="Task_SubmitRequest" />
-      <bpmn:sequenceFlow id="Flow_SP1_4" sourceRef="Task_SubmitRequest" targetRef="Task_CompletenessGate" />
-      <bpmn:userTask id="Task_CompletenessGate" name="Completeness&#10;Gate">
-        <bpmn:documentation>Validate that the submitted software request meets all minimum completeness requirements before proceeding to classification and triage. Check for problem statement quality, business owner identification, urgency rating, and all required intake fields.</bpmn:documentation>
-        <bpmn:extensionElements>
-          <zeebe:formDefinition formId="sp1-completeness-gate" />
-          <zeebe:assignmentDefinition candidateGroups="automation-lane" />
-          <zeebe:properties>
-            <zeebe:property name="topics" value="Intake" />
-            <zeebe:property name="raci_r" value="Automation" />
-            <zeebe:property name="raci_a" value="Governance" />
-          </zeebe:properties>
-        </bpmn:extensionElements>
-        <bpmn:incoming>Flow_SP1_4</bpmn:incoming>
-        <bpmn:outgoing>Flow_SP1_CG1</bpmn:outgoing>
-      </bpmn:userTask>
-      <bpmn:exclusiveGateway id="GW_Complete" name="Complete?">
-        <bpmn:incoming>Flow_SP1_CG1</bpmn:incoming>
-        <bpmn:outgoing>Flow_SP1_CG_Yes</bpmn:outgoing>
-        <bpmn:outgoing>Flow_SP1_CG_No</bpmn:outgoing>
-      </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_SP1_CG1" sourceRef="Task_CompletenessGate" targetRef="GW_Complete" />
-      <bpmn:sequenceFlow id="Flow_SP1_CG_Yes" name="Yes" sourceRef="GW_Complete" targetRef="Task_ClassifyRequest">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=completenessDecision = "Complete"</bpmn:conditionExpression>
-      </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_SP1_CG_No" name="No" sourceRef="GW_Complete" targetRef="Task_GatherDocs">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=completenessDecision = "Incomplete"</bpmn:conditionExpression>
-      </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_SP1_6" sourceRef="Task_ClassifyRequest" targetRef="Task_DealKillerCheck" />
       <bpmn:businessRuleTask id="Task_DealKillerCheck" name="Deal Killer&#10;Pre-Screen">
         <bpmn:extensionElements>
           <zeebe:calledDecision decisionId="OB_DMN_DealKillerPrescreen" resultVariable="dealKillerResult" />
@@ -407,7 +331,7 @@
             <zeebe:property name="raci_a" value="Governance" />
           </zeebe:properties>
         </bpmn:extensionElements>
-        <bpmn:incoming>Flow_SP1_6</bpmn:incoming>
+        <bpmn:incoming>Flow_0gutlqh</bpmn:incoming>
         <bpmn:outgoing>Flow_SP1_DK1</bpmn:outgoing>
       </bpmn:businessRuleTask>
       <bpmn:exclusiveGateway id="GW_DealKiller" name="Deal Killer?">
@@ -419,21 +343,16 @@
         <bpmn:incoming>Flow_SP1_DK_Yes</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP1_DK1" sourceRef="Task_DealKillerCheck" targetRef="GW_DealKiller" />
-      <bpmn:sequenceFlow id="Flow_SP1_DK_No" name="No" sourceRef="GW_DealKiller" targetRef="Task_InitialTriage">
+      <bpmn:sequenceFlow id="Flow_SP1_DK_No" name="No" sourceRef="GW_DealKiller" targetRef="Gateway_0etf7nm">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dealKillerResult = "Proceed"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_DK_Yes" name="Yes" sourceRef="GW_DealKiller" targetRef="End_DealKiller">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dealKillerResult = "Blocked"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_SP1_5" sourceRef="Task_InitialTriage" targetRef="SendTask_SP1Complete" />
+      <bpmn:sequenceFlow id="Flow_SP1_5" sourceRef="Task_TriageAndRoute" targetRef="SendTask_SP1Complete" />
       <bpmn:sequenceFlow id="Flow_SP1_SLA" sourceRef="Timer_TriageSLA" targetRef="End_TriageSLAEscalation" />
-      <bpmn:exclusiveGateway id="Gateway_132net7" name="Mini RFP&#10;Required?">
+            <bpmn:subProcess id="Activity_0j7ifzh" name="Mini RFP&#10;Pre-Screen">
         <bpmn:incoming>Flow_0j4a2xs</bpmn:incoming>
-        <bpmn:outgoing>Flow_0f1ym01</bpmn:outgoing>
-        <bpmn:outgoing>Flow_0kh8omi</bpmn:outgoing>
-      </bpmn:exclusiveGateway>
-      <bpmn:subProcess id="Activity_0j7ifzh" name="Mini RFP&#10;Pre-Screen">
-        <bpmn:incoming>Flow_0f1ym01</bpmn:incoming>
         <bpmn:outgoing>Flow_1c4ei9u</bpmn:outgoing>
         <bpmn:startEvent id="Event_1xcpf6u">
           <bpmn:outgoing>Flow_02obvfw</bpmn:outgoing>
@@ -721,36 +640,29 @@
       </bpmn:subProcess>
       <bpmn:exclusiveGateway id="Gateway_1r9b08g">
         <bpmn:incoming>Flow_1c4ei9u</bpmn:incoming>
-        <bpmn:incoming>Flow_0kh8omi</bpmn:incoming>
+        <bpmn:incoming>Flow_1uwkw5j</bpmn:incoming>
         <bpmn:outgoing>Flow_1wtaa9l</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_0f1ym01" name="Yes" sourceRef="Gateway_132net7" targetRef="Activity_0j7ifzh">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=miniRfpRequired = true</bpmn:conditionExpression>
-      </bpmn:sequenceFlow>
+
       <bpmn:sequenceFlow id="Flow_1c4ei9u" sourceRef="Activity_0j7ifzh" targetRef="Gateway_1r9b08g" />
-      <bpmn:sequenceFlow id="Flow_0kh8omi" name="No" sourceRef="Gateway_132net7" targetRef="Gateway_1r9b08g" />
-      <bpmn:sequenceFlow id="Flow_1wtaa9l" sourceRef="Gateway_1r9b08g" targetRef="Gateway_00gwx9a" />
-      <bpmn:exclusiveGateway id="Gateway_0etf7nm" name="Have you run an RFP ?">
-        <bpmn:incoming>Flow_0gutlqh</bpmn:incoming>
+            <bpmn:sequenceFlow id="Flow_1wtaa9l" sourceRef="Gateway_1r9b08g" targetRef="Task_TriageAndRoute" />
+      <bpmn:exclusiveGateway id="Gateway_0etf7nm" name="RFP&#10;Needed ?">
+        <bpmn:incoming>Flow_SP1_DK_No</bpmn:incoming>
         <bpmn:outgoing>Flow_0j4a2xs</bpmn:outgoing>
         <bpmn:outgoing>Flow_1uwkw5j</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_0j4a2xs" name="No" sourceRef="Gateway_0etf7nm" targetRef="Gateway_132net7" />
-      <bpmn:boundaryEvent id="Timer_TriageSLA" attachedToRef="Task_InitialTriage">
+      <bpmn:sequenceFlow id="Flow_0j4a2xs" name="Yes" sourceRef="Gateway_0etf7nm" targetRef="Activity_0j7ifzh">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=rfpNeeded = true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:boundaryEvent id="Timer_TriageSLA" attachedToRef="Task_TriageAndRoute">
         <bpmn:outgoing>Flow_SP1_SLA</bpmn:outgoing>
         <bpmn:timerEventDefinition id="TimerEventDefinition_1rnn997">
           <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P2D</bpmn:timeDuration>
         </bpmn:timerEventDefinition>
       </bpmn:boundaryEvent>
-      <bpmn:sequenceFlow id="Flow_1uwkw5j" name="Yes" sourceRef="Gateway_0etf7nm" targetRef="Gateway_00gwx9a" />
-      <bpmn:exclusiveGateway id="Gateway_00gwx9a">
-        <bpmn:incoming>Flow_1wtaa9l</bpmn:incoming>
-        <bpmn:incoming>Flow_1uwkw5j</bpmn:incoming>
-        <bpmn:outgoing>Flow_01gazr0</bpmn:outgoing>
-      </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_0ccvusw" sourceRef="Task_ReviewExisting" targetRef="GW_BypassProcess" />
-      <bpmn:sequenceFlow id="Flow_01gazr0" sourceRef="Gateway_00gwx9a" targetRef="Gateway_1kdy51y" />
-      <bpmn:sequenceFlow id="Flow_0p7pllp" name="Partial&#10;Match" sourceRef="GW_BypassProcess" targetRef="Activity_1l8ugqb">
+      <bpmn:sequenceFlow id="Flow_1uwkw5j" name="No" sourceRef="Gateway_0etf7nm" targetRef="Gateway_1r9b08g" />
+            <bpmn:sequenceFlow id="Flow_0ccvusw" sourceRef="Task_DescribeAndScreen" targetRef="GW_BypassProcess" />
+            <bpmn:sequenceFlow id="Flow_0p7pllp" name="Partial&#10;Match" sourceRef="GW_BypassProcess" targetRef="Activity_1l8ugqb">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=existingSolutionDisposition = "Partial"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_15fp02f" name="Needs&#10;Guidance" sourceRef="GW_BypassProcess" targetRef="Activity_0netfvm">
@@ -765,7 +677,7 @@
         <bpmn:incoming>Flow_1fzbqt4</bpmn:incoming>
         <bpmn:outgoing>Flow_0gutlqh</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_0gutlqh" sourceRef="Gateway_0js8zzn" targetRef="Gateway_0etf7nm" />
+      <bpmn:sequenceFlow id="Flow_0gutlqh" sourceRef="Gateway_0js8zzn" targetRef="Task_DealKillerCheck" />
       <bpmn:sequenceFlow id="Flow_1q9y5tr" sourceRef="Activity_1l8ugqb" targetRef="Gateway_0js8zzn" />
       <bpmn:userTask id="Activity_0netfvm" name="Quarterback&#10;Assistance">
         <bpmn:extensionElements>
@@ -806,19 +718,7 @@
       <bpmn:sequenceFlow id="Flow_0uvqte0" name="No" sourceRef="Gateway_1rppvq7" targetRef="Event_0o39wbs">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=pursueRequest = false</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:exclusiveGateway id="Gateway_1kdy51y" name="Continue with&#10;Request ?" default="Flow_1gno2cn">
-        <bpmn:incoming>Flow_01gazr0</bpmn:incoming>
-        <bpmn:outgoing>Flow_0adyz70</bpmn:outgoing>
-        <bpmn:outgoing>Flow_1gno2cn</bpmn:outgoing>
-      </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_0adyz70" name="Yes" sourceRef="Gateway_1kdy51y" targetRef="Task_GatherDocs">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=continueWithRequest = true</bpmn:conditionExpression>
-      </bpmn:sequenceFlow>
-      <bpmn:endEvent id="Event_0z4wu9g" name="Deal Killed">
-        <bpmn:incoming>Flow_1gno2cn</bpmn:incoming>
-      </bpmn:endEvent>
-      <bpmn:sequenceFlow id="Flow_1gno2cn" sourceRef="Gateway_1kdy51y" targetRef="Event_0z4wu9g" />
-    </bpmn:subProcess>
+                            </bpmn:subProcess>
     <bpmn:endEvent id="End_Rejected" name="Request Not Approved">
       <bpmn:incoming>Flow_v5_4</bpmn:incoming>
     </bpmn:endEvent>
@@ -1926,7 +1826,7 @@
       <bpmndi:BPMNShape id="SP1_Start_di" bpmnElement="SP1_Start">
         <dc:Bounds x="142" y="122" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_ReviewExisting_di" bpmnElement="Task_ReviewExisting">
+      <bpmndi:BPMNShape id="Task_DescribeAndScreen_di" bpmnElement="Task_DescribeAndScreen">
         <dc:Bounds x="220" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -1945,83 +1845,56 @@
           <dc:Bounds x="634" y="256" width="52" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_GatherDocs_di" bpmnElement="Task_GatherDocs">
-        <dc:Bounds x="1380" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_SubmitRequest_di" bpmnElement="Task_SubmitRequest">
-        <dc:Bounds x="1520" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_InitialTriage_di" bpmnElement="Task_InitialTriage">
-        <dc:Bounds x="2280" y="100" width="100" height="80" />
+                  <bpmndi:BPMNShape id="Task_TriageAndRoute_di" bpmnElement="Task_TriageAndRoute">
+        <dc:Bounds x="1390" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_TriageSLAEscalation_di" bpmnElement="End_TriageSLAEscalation">
-        <dc:Bounds x="2432" y="222" width="36" height="36" />
+        <dc:Bounds x="1552" y="222" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2422" y="266" width="55" height="27" />
+          <dc:Bounds x="1542" y="266" width="55" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_ClassifyRequest_di" bpmnElement="Task_ClassifyRequest">
-        <dc:Bounds x="1890" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SendTask_SP1Complete_di" bpmnElement="SendTask_SP1Complete">
-        <dc:Bounds x="2430" y="100" width="100" height="80" />
+            <bpmndi:BPMNShape id="SendTask_SP1Complete_di" bpmnElement="SendTask_SP1Complete">
+        <dc:Bounds x="1540" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP1_End_di" bpmnElement="SP1_End">
-        <dc:Bounds x="2572" y="122" width="36" height="36" />
+        <dc:Bounds x="1690" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2566" y="166" width="48" height="27" />
+          <dc:Bounds x="1684" y="166" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_CompletenessGate_di" bpmnElement="Task_CompletenessGate">
-        <dc:Bounds x="1660" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GW_Complete_di" bpmnElement="GW_Complete" isMarkerVisible="true">
-        <dc:Bounds x="1795" y="115" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1794" y="93" width="54" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_DealKillerCheck_di" bpmnElement="Task_DealKillerCheck">
-        <dc:Bounds x="2040" y="100" width="100" height="80" />
+                  <bpmndi:BPMNShape id="Task_DealKillerCheck_di" bpmnElement="Task_DealKillerCheck">
+        <dc:Bounds x="790" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GW_DealKiller_di" bpmnElement="GW_DealKiller" isMarkerVisible="true">
-        <dc:Bounds x="2185" y="115" width="50" height="50" />
+        <dc:Bounds x="940" y="115" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2182" y="93" width="57" height="14" />
+          <dc:Bounds x="937" y="93" width="57" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_DealKiller_di" bpmnElement="End_DealKiller">
-        <dc:Bounds x="2262" y="222" width="36" height="36" />
+        <dc:Bounds x="1020" y="222" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2254" y="266" width="53" height="14" />
+          <dc:Bounds x="1012" y="266" width="53" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1lzqw2n" bpmnElement="Gateway_132net7" isMarkerVisible="true">
-        <dc:Bounds x="885" y="115" width="50" height="50" />
+            <bpmndi:BPMNShape id="BPMNShape_0m3ppk0" bpmnElement="Activity_0j7ifzh" isExpanded="false">
+        <dc:Bounds x="1140" y="100" width="100" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="884" y="77" width="51" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0m3ppk0" bpmnElement="Activity_0j7ifzh" isExpanded="false">
-        <dc:Bounds x="980" y="100" width="100" height="80" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="986" y="124" width="88" height="27" />
+          <dc:Bounds x="1146" y="124" width="88" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_18k4b9p" bpmnElement="Gateway_1r9b08g" isMarkerVisible="true">
-        <dc:Bounds x="1125" y="115" width="50" height="50" />
+        <dc:Bounds x="1290" y="115" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0etf7nm_di" bpmnElement="Gateway_0etf7nm" isMarkerVisible="true">
-        <dc:Bounds x="795" y="115" width="50" height="50" />
+        <dc:Bounds x="1040" y="115" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="779" y="78" width="81" height="27" />
+          <dc:Bounds x="1043" y="78" width="45" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_00gwx9a_di" bpmnElement="Gateway_00gwx9a" isMarkerVisible="true">
-        <dc:Bounds x="1205" y="115" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0js8zzn_di" bpmnElement="Gateway_0js8zzn" isMarkerVisible="true">
+            <bpmndi:BPMNShape id="Gateway_0js8zzn_di" bpmnElement="Gateway_0js8zzn" isMarkerVisible="true">
         <dc:Bounds x="695" y="115" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0efhz88_di" bpmnElement="Activity_0netfvm">
@@ -2043,27 +1916,15 @@
           <dc:Bounds x="694" y="485" width="52" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1kdy51y_di" bpmnElement="Gateway_1kdy51y" isMarkerVisible="true">
-        <dc:Bounds x="1285" y="115" width="50" height="50" />
+                  <bpmndi:BPMNShape id="Event_0hzwlo8_di" bpmnElement="Timer_TriageSLA">
+        <dc:Bounds x="1472" y="162" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1276" y="86" width="67" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0z4wu9g_di" bpmnElement="Event_0z4wu9g">
-        <dc:Bounds x="1382" y="232" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1374" y="275" width="53" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0hzwlo8_di" bpmnElement="Timer_TriageSLA">
-        <dc:Bounds x="2362" y="162" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2395" y="196" width="29" height="27" />
+          <dc:Bounds x="1505" y="196" width="29" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_SP1_Notify_di" bpmnElement="Flow_SP1_Notify">
-        <di:waypoint x="2530" y="140" />
-        <di:waypoint x="2572" y="140" />
+        <di:waypoint x="1640" y="140" />
+        <di:waypoint x="1690" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_1_di" bpmnElement="Flow_SP1_1">
         <di:waypoint x="178" y="140" />
@@ -2081,115 +1942,63 @@
         <di:waypoint x="600" y="310" />
         <di:waypoint x="642" y="310" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP1_3_di" bpmnElement="Flow_SP1_3">
-        <di:waypoint x="1480" y="140" />
-        <di:waypoint x="1520" y="140" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP1_4_di" bpmnElement="Flow_SP1_4">
-        <di:waypoint x="1620" y="140" />
-        <di:waypoint x="1660" y="140" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP1_CG1_di" bpmnElement="Flow_SP1_CG1">
-        <di:waypoint x="1760" y="140" />
-        <di:waypoint x="1795" y="140" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP1_CG_Yes_di" bpmnElement="Flow_SP1_CG_Yes">
-        <di:waypoint x="1845" y="140" />
-        <di:waypoint x="1890" y="140" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1860" y="122" width="18" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP1_CG_No_di" bpmnElement="Flow_SP1_CG_No">
-        <di:waypoint x="1820" y="165" />
-        <di:waypoint x="1820" y="220" />
-        <di:waypoint x="1430" y="220" />
-        <di:waypoint x="1430" y="180" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1618" y="202" width="15" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP1_6_di" bpmnElement="Flow_SP1_6">
-        <di:waypoint x="1990" y="140" />
-        <di:waypoint x="2040" y="140" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_SP1_DK1_di" bpmnElement="Flow_SP1_DK1">
-        <di:waypoint x="2140" y="140" />
-        <di:waypoint x="2185" y="140" />
+                                          <bpmndi:BPMNEdge id="Flow_SP1_DK1_di" bpmnElement="Flow_SP1_DK1">
+        <di:waypoint x="890" y="140" />
+        <di:waypoint x="940" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_DK_No_di" bpmnElement="Flow_SP1_DK_No">
-        <di:waypoint x="2235" y="140" />
-        <di:waypoint x="2280" y="140" />
+        <di:waypoint x="990" y="140" />
+        <di:waypoint x="1040" y="140" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2250" y="122" width="15" height="14" />
+          <dc:Bounds x="1007" y="122" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_DK_Yes_di" bpmnElement="Flow_SP1_DK_Yes">
-        <di:waypoint x="2210" y="165" />
-        <di:waypoint x="2210" y="240" />
-        <di:waypoint x="2262" y="240" />
+        <di:waypoint x="965" y="165" />
+        <di:waypoint x="965" y="240" />
+        <di:waypoint x="1020" y="240" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2216" y="200" width="18" height="14" />
+          <dc:Bounds x="971" y="200" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_5_di" bpmnElement="Flow_SP1_5">
-        <di:waypoint x="2380" y="140" />
-        <di:waypoint x="2430" y="140" />
+        <di:waypoint x="1490" y="140" />
+        <di:waypoint x="1540" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SP1_SLA_di" bpmnElement="Flow_SP1_SLA">
-        <di:waypoint x="2380" y="198" />
-        <di:waypoint x="2380" y="240" />
-        <di:waypoint x="2432" y="240" />
+        <di:waypoint x="1490" y="198" />
+        <di:waypoint x="1490" y="240" />
+        <di:waypoint x="1552" y="240" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_04xv2ih" bpmnElement="Flow_0f1ym01">
-        <di:waypoint x="935" y="140" />
-        <di:waypoint x="980" y="140" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="949" y="123" width="18" height="14" />
-        </bpmndi:BPMNLabel>
+            <bpmndi:BPMNEdge id="BPMNEdge_14hijr3" bpmnElement="Flow_1c4ei9u">
+        <di:waypoint x="1240" y="140" />
+        <di:waypoint x="1290" y="140" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_14hijr3" bpmnElement="Flow_1c4ei9u">
-        <di:waypoint x="1080" y="140" />
-        <di:waypoint x="1125" y="140" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0kh8omi_di" bpmnElement="Flow_0kh8omi">
-        <di:waypoint x="910" y="165" />
-        <di:waypoint x="910" y="230" />
-        <di:waypoint x="1150" y="230" />
-        <di:waypoint x="1150" y="165" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1023" y="212" width="15" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1wtaa9l_di" bpmnElement="Flow_1wtaa9l">
-        <di:waypoint x="1175" y="140" />
-        <di:waypoint x="1205" y="140" />
+            <bpmndi:BPMNEdge id="Flow_1wtaa9l_di" bpmnElement="Flow_1wtaa9l">
+        <di:waypoint x="1340" y="140" />
+        <di:waypoint x="1390" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0j4a2xs_di" bpmnElement="Flow_0j4a2xs">
-        <di:waypoint x="845" y="140" />
-        <di:waypoint x="885" y="140" />
+        <di:waypoint x="1090" y="140" />
+        <di:waypoint x="1140" y="140" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="858" y="122" width="15" height="14" />
+          <dc:Bounds x="1106" y="122" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1uwkw5j_di" bpmnElement="Flow_1uwkw5j">
-        <di:waypoint x="820" y="165" />
-        <di:waypoint x="820" y="260" />
-        <di:waypoint x="1230" y="260" />
-        <di:waypoint x="1230" y="165" />
+        <di:waypoint x="1065" y="165" />
+        <di:waypoint x="1065" y="230" />
+        <di:waypoint x="1315" y="230" />
+        <di:waypoint x="1315" y="165" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1018" y="242" width="18" height="14" />
+          <dc:Bounds x="1183" y="212" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ccvusw_di" bpmnElement="Flow_0ccvusw">
         <di:waypoint x="320" y="140" />
         <di:waypoint x="365" y="140" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_01gazr0_di" bpmnElement="Flow_01gazr0">
-        <di:waypoint x="1255" y="140" />
-        <di:waypoint x="1285" y="140" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0p7pllp_di" bpmnElement="Flow_0p7pllp">
+            <bpmndi:BPMNEdge id="Flow_0p7pllp_di" bpmnElement="Flow_0p7pllp">
         <di:waypoint x="390" y="165" />
         <di:waypoint x="390" y="210" />
         <di:waypoint x="500" y="210" />
@@ -2214,7 +2023,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0gutlqh_di" bpmnElement="Flow_0gutlqh">
         <di:waypoint x="745" y="140" />
-        <di:waypoint x="795" y="140" />
+        <di:waypoint x="790" y="140" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1q9y5tr_di" bpmnElement="Flow_1q9y5tr">
         <di:waypoint x="600" y="210" />
@@ -2241,19 +2050,7 @@
           <dc:Bounds x="668" y="438" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0adyz70_di" bpmnElement="Flow_0adyz70">
-        <di:waypoint x="1335" y="140" />
-        <di:waypoint x="1380" y="140" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1349" y="122" width="18" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1gno2cn_di" bpmnElement="Flow_1gno2cn">
-        <di:waypoint x="1310" y="165" />
-        <di:waypoint x="1310" y="250" />
-        <di:waypoint x="1382" y="250" />
-      </bpmndi:BPMNEdge>
-    </bpmndi:BPMNPlane>
+                </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
   <bpmndi:BPMNDiagram id="BPMNDiagram_SP2">
     <bpmndi:BPMNPlane id="BPMNPlane_SP2" bpmnElement="SP_PlanningRouting">
