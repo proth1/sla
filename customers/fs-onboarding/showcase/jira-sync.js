@@ -86,7 +86,7 @@ function parseDuration(iso) {
 
 // --- Phase Map (derived from task definition IDs) ---
 const PHASE_MAP = {
-  Task_ReviewExisting: 'sp1', Task_LeverageExisting: 'sp1', Task_GatherDocs: 'sp1', Task_SubmitRequest: 'sp1', Task_InitialTriage: 'sp1', Task_ClassifyRequest: 'sp1', Task_DealKillerCheck: 'sp1',
+  Task_DescribeAndScreen: 'sp1', Task_LeverageExisting: 'sp1', Task_TriageAndRoute: 'sp1', Task_DealKillerCheck: 'sp1',
   Task_PrelimAnalysis: 'sp2', Task_BacklogPrioritization: 'sp2', Task_PathwayRouting: 'sp2', Task_PrioritizationScoring: 'sp2',
   Task_TechArchReview: 'sp3', Task_SecurityAssessment: 'sp3', Task_RiskCompliance: 'sp3', Task_FinancialAnalysis: 'sp3', Task_AssessVendorLandscape: 'sp3', Task_VendorDD: 'sp3', Task_EvaluateResponse: 'sp3', Task_AIGovernanceReview: 'sp3', Receive_VendorResponse: 'sp3', Task_DARTFormation: 'sp3', Task_CreateOneTrustAssessment: 'sp3', Task_SecurityTierRouting: 'sp3', Task_BaselineScan: 'sp3', Task_RetrieveOneTrustResults: 'sp3',
   Task_RefineRequirements: 'sp4', Task_PerformPoC: 'sp4', Task_TechRiskEval: 'sp4', Task_NegotiateContract: 'sp4', Task_FinalizeContract: 'sp4', Task_DefineBuildReqs: 'sp4', Receive_SignedContract: 'sp4', Task_ComplianceReview: 'sp4', Task_EnableContractExec: 'sp4', Task_ContractDeviation: 'sp4', Task_CodingCorrection: 'sp4',

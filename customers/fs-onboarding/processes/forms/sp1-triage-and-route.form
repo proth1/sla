@@ -6,16 +6,16 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_InitialTriage",
+  "id": "Form_TriageAndRoute",
   "components": [
     {
       "type": "text",
-      "text": "## Initial Triage Assessment\nReview the submitted request and make a triage decision.",
-      "id": "Field_401"
+      "text": "## Triage & Route\nClassify the request, review upstream screening results, and make a triage decision.",
+      "id": "Field_TR01"
     },
     {
       "type": "separator",
-      "id": "Field_402"
+      "id": "Field_TR02"
     },
     {
       "type": "group",
@@ -26,49 +26,101 @@
           "key": "businessProblem",
           "label": "Business Problem",
           "disabled": true,
-          "id": "Field_403"
+          "id": "Field_TR03"
         },
         {
           "type": "textfield",
           "key": "urgencyLevel",
           "label": "Urgency Level",
           "disabled": true,
-          "id": "Field_404"
+          "id": "Field_TR04"
         },
         {
           "type": "textfield",
           "key": "pathwayPreference",
           "label": "Pathway Preference",
           "disabled": true,
-          "id": "Field_405"
+          "id": "Field_TR05"
         },
         {
           "type": "textfield",
           "key": "criticality",
           "label": "Business Criticality",
           "disabled": true,
-          "id": "Field_406"
+          "id": "Field_TR06"
         },
         {
           "type": "textfield",
           "key": "estimatedBudget",
           "label": "Estimated Budget",
           "disabled": true,
-          "id": "Field_407"
+          "id": "Field_TR07"
         },
         {
           "type": "textfield",
           "key": "hasAI",
           "label": "AI Involvement",
           "disabled": true,
-          "id": "Field_408"
+          "id": "Field_TR08"
+        },
+        {
+          "type": "textfield",
+          "key": "dealKillerResult",
+          "label": "Deal Killer Pre-Screen Result",
+          "disabled": true,
+          "description": "Automated deal killer check result (read-only).",
+          "id": "Field_TR09"
         }
       ],
-      "id": "Field_409"
+      "id": "Field_TR10"
     },
     {
       "type": "separator",
-      "id": "Field_410"
+      "id": "Field_TR11"
+    },
+    {
+      "type": "group",
+      "label": "Classification",
+      "components": [
+        {
+          "type": "radio",
+          "key": "requestType",
+          "label": "Request Type",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Defined Need \u2014 clear business requirement identified",
+              "value": "defined-need"
+            },
+            {
+              "label": "Forced Update \u2014 mandatory upgrade or regulatory requirement",
+              "value": "forced-update"
+            },
+            {
+              "label": "Speculative \u2014 exploratory or innovation-driven",
+              "value": "speculative"
+            }
+          ],
+          "id": "Field_TR12"
+        },
+        {
+          "type": "textarea",
+          "key": "classificationRationale",
+          "label": "Classification Rationale",
+          "validate": {
+            "required": true
+          },
+          "description": "Explain the reasoning behind the selected request type classification.",
+          "id": "Field_TR13"
+        }
+      ],
+      "id": "Field_TR14"
+    },
+    {
+      "type": "separator",
+      "id": "Field_TR15"
     },
     {
       "type": "group",
@@ -83,21 +135,21 @@
             "min": 1,
             "max": 5
           },
-          "id": "Field_411"
+          "id": "Field_TR16"
         },
         {
           "type": "textarea",
           "key": "duplicateDetectionResults",
           "label": "Duplicate Detection Results",
           "description": "Note any existing requests or solutions that overlap with this request.",
-          "id": "Field_412"
+          "id": "Field_TR17"
         },
         {
           "type": "textarea",
           "key": "concentrationRiskAssessment",
           "label": "Concentration Risk Assessment",
           "description": "Assess vendor concentration risk if this is a Buy pathway.",
-          "id": "Field_413"
+          "id": "Field_TR18"
         },
         {
           "type": "select",
@@ -117,60 +169,21 @@
               "value": "unavailable"
             }
           ],
-          "id": "Field_414"
+          "id": "Field_TR19"
         },
         {
           "type": "textarea",
           "key": "preliminaryRiskIndicators",
           "label": "Preliminary Risk Indicators",
           "description": "Note any early risk signals (regulatory, technical, financial).",
-          "id": "Field_415"
-        },
-        {
-          "type": "select",
-          "key": "requestType",
-          "label": "Request Type",
-          "validate": {
-            "required": true
-          },
-          "values": [
-            {
-              "label": "Defined Need",
-              "value": "defined-need"
-            },
-            {
-              "label": "Forced Update",
-              "value": "forced-update"
-            },
-            {
-              "label": "Speculative",
-              "value": "speculative"
-            }
-          ],
-          "id": "Field_780"
-        },
-        {
-          "type": "textfield",
-          "key": "ndaStatus",
-          "label": "NDA Status",
-          "disabled": true,
-          "description": "NDA execution status (read-only).",
-          "id": "Field_781"
-        },
-        {
-          "type": "textfield",
-          "key": "dealKillerResult",
-          "label": "Deal Killer Result",
-          "disabled": true,
-          "description": "Automated deal killer check result (read-only).",
-          "id": "Field_782"
+          "id": "Field_TR20"
         }
       ],
-      "id": "Field_416"
+      "id": "Field_TR21"
     },
     {
       "type": "separator",
-      "id": "Field_417"
+      "id": "Field_TR22"
     },
     {
       "type": "group",
@@ -197,7 +210,7 @@
               "value": "return-for-info"
             }
           ],
-          "id": "Field_418"
+          "id": "Field_TR23"
         },
         {
           "type": "textarea",
@@ -206,7 +219,7 @@
           "validate": {
             "required": true
           },
-          "id": "Field_419"
+          "id": "Field_TR24"
         },
         {
           "type": "select",
@@ -230,16 +243,16 @@
               "value": "low"
             }
           ],
-          "id": "Field_420"
+          "id": "Field_TR25"
         },
         {
           "type": "textfield",
           "key": "assignedAnalyst",
           "label": "Assigned Analyst",
-          "id": "Field_421"
+          "id": "Field_TR26"
         }
       ],
-      "id": "Field_422"
+      "id": "Field_TR27"
     }
   ],
   "type": "default"

@@ -6,16 +6,16 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_GatherDocumentation",
+  "id": "Form_DescribeAndScreen",
   "components": [
     {
       "type": "text",
-      "text": "## Software Onboarding Intake Form\nComplete all required fields to initiate the governance process. This maps to Vendor Intake Form Sections 1-2.",
-      "id": "Field_201"
+      "text": "## Describe & Screen Need\nCapture the business need, screen against existing solutions, and certify the submission. This combines intake, portfolio screening, and submission into a single step.",
+      "id": "Field_DS01"
     },
     {
       "type": "separator",
-      "id": "Field_202"
+      "id": "Field_DS02"
     },
     {
       "type": "group",
@@ -29,7 +29,7 @@
             "required": true
           },
           "description": "Describe the business problem or opportunity this software addresses.",
-          "id": "Field_203"
+          "id": "Field_DS03"
         },
         {
           "type": "select",
@@ -56,7 +56,7 @@
               "value": "exploratory"
             }
           ],
-          "id": "Field_204"
+          "id": "Field_DS04"
         },
         {
           "type": "select",
@@ -83,7 +83,7 @@
               "value": "unsure"
             }
           ],
-          "id": "Field_205"
+          "id": "Field_DS05"
         },
         {
           "type": "textarea",
@@ -93,7 +93,7 @@
             "required": true
           },
           "description": "Describe how the software will be used and by whom.",
-          "id": "Field_206"
+          "id": "Field_DS06"
         },
         {
           "type": "select",
@@ -120,14 +120,14 @@
               "value": "low"
             }
           ],
-          "id": "Field_207"
+          "id": "Field_DS07"
         }
       ],
-      "id": "Field_208"
+      "id": "Field_DS08"
     },
     {
       "type": "separator",
-      "id": "Field_209"
+      "id": "Field_DS09"
     },
     {
       "type": "group",
@@ -159,20 +159,20 @@
               "value": "unknown"
             }
           ],
-          "id": "Field_210"
+          "id": "Field_DS10"
         },
         {
           "type": "textfield",
           "key": "costCenter",
           "label": "Cost Center",
-          "id": "Field_211"
+          "id": "Field_DS11"
         }
       ],
-      "id": "Field_212"
+      "id": "Field_DS12"
     },
     {
       "type": "separator",
-      "id": "Field_213"
+      "id": "Field_DS13"
     },
     {
       "type": "group",
@@ -199,7 +199,7 @@
               "value": "unsure"
             }
           ],
-          "id": "Field_214"
+          "id": "Field_DS14"
         },
         {
           "type": "checklist",
@@ -231,7 +231,7 @@
               "value": "OtherRegulated"
             }
           ],
-          "id": "Field_215"
+          "id": "Field_DS15"
         },
         {
           "type": "checklist",
@@ -267,14 +267,14 @@
               "value": "OCC_2023_17"
             }
           ],
-          "id": "Field_216"
+          "id": "Field_DS16"
         }
       ],
-      "id": "Field_217"
+      "id": "Field_DS17"
     },
     {
       "type": "separator",
-      "id": "Field_218"
+      "id": "Field_DS18"
     },
     {
       "type": "group",
@@ -287,13 +287,13 @@
           "validate": {
             "required": true
           },
-          "id": "Field_219"
+          "id": "Field_DS19"
         },
         {
           "type": "number",
           "key": "expectedUserCount",
           "label": "Expected User Count",
-          "id": "Field_220"
+          "id": "Field_DS20"
         },
         {
           "type": "select",
@@ -313,21 +313,21 @@
               "value": "hybrid"
             }
           ],
-          "id": "Field_221"
+          "id": "Field_DS21"
         },
         {
           "type": "textarea",
           "key": "integrationRequirements",
           "label": "Integration Requirements",
           "description": "Describe systems this software must integrate with.",
-          "id": "Field_222"
+          "id": "Field_DS22"
         }
       ],
-      "id": "Field_223"
+      "id": "Field_DS23"
     },
     {
       "type": "separator",
-      "id": "Field_224"
+      "id": "Field_DS24"
     },
     {
       "type": "group",
@@ -337,16 +337,173 @@
           "type": "textfield",
           "key": "executiveSponsorName",
           "label": "Executive Sponsor Name",
-          "id": "Field_225"
+          "validate": {
+            "required": true
+          },
+          "id": "Field_DS25"
         },
         {
           "type": "textfield",
           "key": "executiveSponsorEmail",
           "label": "Executive Sponsor Email",
-          "id": "Field_226"
+          "id": "Field_DS26"
         }
       ],
-      "id": "Field_227"
+      "id": "Field_DS27"
+    },
+    {
+      "type": "separator",
+      "id": "Field_DS28"
+    },
+    {
+      "type": "group",
+      "label": "Existing Solution Screening",
+      "components": [
+        {
+          "type": "text",
+          "text": "Search the enterprise software catalog for existing solutions that may fulfill the need before initiating a new procurement or build.",
+          "id": "Field_DS29"
+        },
+        {
+          "type": "textarea",
+          "key": "catalogSearchResults",
+          "label": "Search Results from Software Catalog",
+          "description": "Paste or summarize results from the enterprise software catalog search.",
+          "id": "Field_DS30"
+        },
+        {
+          "type": "radio",
+          "key": "existingSolutionFound",
+          "label": "Existing Solution Found?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "label": "No",
+              "value": "no"
+            }
+          ],
+          "id": "Field_DS31"
+        },
+        {
+          "type": "textfield",
+          "key": "existingSolutionName",
+          "label": "Existing Solution Name",
+          "conditional": {
+            "hide": "=existingSolutionFound != \"yes\""
+          },
+          "id": "Field_DS32"
+        },
+        {
+          "type": "textfield",
+          "key": "existingSolutionVersion",
+          "label": "Version",
+          "conditional": {
+            "hide": "=existingSolutionFound != \"yes\""
+          },
+          "id": "Field_DS33"
+        },
+        {
+          "type": "textfield",
+          "key": "existingLicenseStatus",
+          "label": "License Status",
+          "conditional": {
+            "hide": "=existingSolutionFound != \"yes\""
+          },
+          "id": "Field_DS34"
+        },
+        {
+          "type": "number",
+          "key": "existingUtilizationRate",
+          "label": "Current Utilization Rate (%)",
+          "conditional": {
+            "hide": "=existingSolutionFound != \"yes\""
+          },
+          "id": "Field_DS35"
+        },
+        {
+          "type": "textarea",
+          "key": "gapAnalysis",
+          "label": "Gap Analysis",
+          "description": "What does the existing solution cover vs. what is missing?",
+          "conditional": {
+            "hide": "=existingSolutionFound != \"yes\""
+          },
+          "id": "Field_DS36"
+        },
+        {
+          "type": "radio",
+          "key": "existingSolutionSufficient",
+          "label": "Is the existing solution sufficient?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            {
+              "label": "Sufficient \u2014 can be leveraged as-is or with minor configuration",
+              "value": "sufficient"
+            },
+            {
+              "label": "Insufficient \u2014 new procurement or build required",
+              "value": "insufficient"
+            }
+          ],
+          "conditional": {
+            "hide": "=existingSolutionFound != \"yes\""
+          },
+          "id": "Field_DS37"
+        },
+        {
+          "type": "number",
+          "key": "estimatedCostAvoidance",
+          "label": "Estimated Cost Avoidance if Leveraged ($)",
+          "conditional": {
+            "hide": "=existingSolutionFound != \"yes\""
+          },
+          "id": "Field_DS38"
+        }
+      ],
+      "id": "Field_DS39"
+    },
+    {
+      "type": "separator",
+      "id": "Field_DS40"
+    },
+    {
+      "type": "group",
+      "label": "Certification",
+      "components": [
+        {
+          "type": "checkbox",
+          "key": "submitterCertification",
+          "label": "I certify the information provided is accurate and complete",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_DS41"
+        },
+        {
+          "type": "textfield",
+          "key": "submitterName",
+          "label": "Submitter Name",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_DS42"
+        },
+        {
+          "type": "textfield",
+          "key": "submitterTitle",
+          "label": "Submitter Title",
+          "id": "Field_DS43"
+        }
+      ],
+      "id": "Field_DS44"
     }
   ],
   "type": "default"
