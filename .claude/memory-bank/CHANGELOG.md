@@ -1,5 +1,31 @@
 # Changelog
 
+## [2026.03.119] - 2026-03-14
+
+### Changed
+- SP1 "Refine Request" optimization: merged 8 sequential tasks into 3, reducing quarterback touches from 4 to 2 (PR #147)
+- Moved Deal Killer pre-screen immediately after existing-solution merge for fail-fast rejection (PR #147)
+- Merged Classify Request into Triage & Route form, eliminating standalone governance task (PR #147)
+- Simplified Mini RFP gateway chain from 3 gateways to 2 (PR #147)
+- Eliminated completeness loop (replaced by form validation rules) (PR #147)
+
+### Added
+- `sp1-describe-and-screen.form` — combined intake, portfolio screening, and certification (23 fields) (PR #147)
+- `sp1-triage-and-route.form` — combined classification and triage assessment (13 fields) (PR #147)
+
+### Removed
+- 6 obsolete SP1 forms: sp1-review-existing, sp1-gather-documentation, sp1-submit-request, sp1-completeness-gate, sp1-classify-request, sp1-initial-triage (PR #147)
+
+## [2026.03.118] - 2026-03-13
+
+### Added
+- Animated current-state explainer HTML with 9 scroll-snap sections: hero, 5 vendor onboarding phases, systemic process findings, timeline implications, and cumulative cost summary (PR #146)
+- `kpmg.com` added as allowed OTP domain in auth worker alongside existing `proth1@gmail.com` and `agentic-innovations.com` (PR #146)
+
+### Deployed
+- Auth worker redeployed with updated allowed domains
+- Pages redeployed with `current-state-explainer.html` at `sla.agentic-innovations.com/current-state-explainer.html`
+
 ## [2026.03.117] - 2026-03-12
 
 ### Added
