@@ -1,5 +1,22 @@
 # Changelog
 
+## [2026.03.120] - 2026-03-15
+
+### Added
+- `SP_PerVendorEvaluation` parallel multi-instance subprocess inside Mini RFP Pre-Screen (PR #149)
+- `rfp-identify-vendors.form` — structured vendor list entry with dynamic list component (PR #149)
+- 14-day non-interrupting boundary timer (`Timer_VendorResponseSLA`) on per-vendor Receive task (PR #149)
+- `BPMNDiagram_SP_PV` — separate DI diagram for per-vendor subprocess internals (PR #149)
+
+### Changed
+- Mini RFP flow restructured: shared tasks (Understand Need, Classification, Deal-Killer, Question Selection/Preview) run once before per-vendor split (PR #149)
+- NDA Processing moved inside per-vendor MI subprocess; sequential multi-instance removed (PR #149)
+- "Send to Vendor(s)" → "Send to Vendor" — single-vendor form pre-populated from MI element variable (PR #149)
+- "Receive from Vendor(s)" → "Receive from Vendor" — per-vendor with SLA timer (PR #149)
+- `rfp-step5-send-vendor.form` simplified: vendor fields pre-populated from `vendor.*`, removed `additionalVendors` textarea (PR #149)
+- `rfp-step2-vendor-context.form` simplified: read-only vendor name header, removed `knownVendor`/`competitiveBid` fields (PR #149)
+- "Identify additional solutions vendors" → "Identify Vendors" with form reference (PR #149)
+
 ## [2026.03.119] - 2026-03-14
 
 ### Changed
