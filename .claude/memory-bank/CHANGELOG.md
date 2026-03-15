@@ -1,5 +1,19 @@
 # Changelog
 
+## [2026.03.122] - 2026-03-15
+
+### Fixed
+- E2E harness: dual-API task completion (Tasklist v1 + Zeebe v2 user tasks) (PR #153)
+- E2E harness: child instance discovery via Operate API (Zeebe v2 doesn't support parentKey filter) (PR #153)
+- DMN-6 security routing: resultVariable wrapped as securityRoutingResult with dot-notation conditions (PR #153)
+- DMN-5 prioritization: resultVariable wrapped as prioritizationResult (PR #153)
+- Mini RFP DMN ID mismatches: OB-DMN-7/8 → OB_DMN_DealKillerPrescreen/QuestionSelection (PR #153)
+
+### Added
+- Instance cleanup on stall/max-iterations (PR #153)
+- Flow node debugging on stale detection (PR #153)
+- E2E test results: 9/11 scenarios PASSED (S03/S09 Mini RFP DMN incident — follow-up) (PR #153)
+
 ## [2026.03.121] - 2026-03-15
 
 ### Added

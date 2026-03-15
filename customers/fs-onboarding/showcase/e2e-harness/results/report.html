@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SLA Governance E2E Test Report</title>
+  <style>
+    :root { --pass: #22c55e; --fail: #ef4444; --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 2rem; }
+    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.3rem; margin: 2rem 0 1rem; color: var(--muted); }
+    h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .header { text-align: center; margin-bottom: 2rem; }
+    .header p { color: var(--muted); }
+    .stats { display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0; }
+    .stat { background: var(--card); padding: 1rem 2rem; border-radius: 8px; text-align: center; }
+    .stat .value { font-size: 2rem; font-weight: bold; }
+    .stat .label { color: var(--muted); font-size: 0.85rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th { background: var(--card); padding: 0.75rem; text-align: left; font-size: 0.85rem; color: var(--muted); }
+    td { padding: 0.75rem; border-bottom: 1px solid #334155; font-size: 0.9rem; }
+    tr.pass { border-left: 3px solid var(--pass); }
+    tr.fail { border-left: 3px solid var(--fail); }
+    .badge { padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+    .badge-pass { background: #166534; color: #bbf7d0; }
+    .badge-fail { background: #991b1b; color: #fecaca; }
+    .scenario-detail { background: var(--card); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+    .expected { color: var(--muted); margin-bottom: 0.5rem; }
+    details { margin-top: 0.5rem; }
+    summary { cursor: pointer; color: #60a5fa; }
+    pre.log { background: #0f172a; padding: 1rem; border-radius: 4px; font-size: 0.8rem; max-height: 300px; overflow-y: auto; margin-top: 0.5rem; white-space: pre-wrap; }
+    .footer { text-align: center; color: var(--muted); margin-top: 3rem; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>SLA Governance E2E Test Report</h1>
+    <p>Generated: 2026-03-15 19:05:56 | Process: Process_Onboarding_v17</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="value">9/11</div><div class="label">Scenarios Passed</div></div>
+    <div class="stat"><div class="value">224</div><div class="label">Tasks Completed</div></div>
+    <div class="stat"><div class="value">17</div><div class="label">Child Instances</div></div>
+    <div class="stat"><div class="value" style="color:var(--fail)">FAILURES</div><div class="label">Overall</div></div>
+  </div>
+
+  <h2>Scenario Results</h2>
+  <table>
+    <thead><tr><th>ID</th><th>Scenario</th><th>Expected</th><th>Status</th><th>Tasks</th><th>Children</th><th>Time</th><th>Instance</th></tr></thead>
+    <tbody>
+      <tr class="pass">
+        <td>S01</td>
+        <td>Happy Path Buy — Snowflake Data Cloud</td>
+        <td>Software Onboarded</td>
+        <td><span class="badge badge-pass">COMPLETED</span></td>
+        <td>27</td>
+        <td>2</td>
+        <td>255.5s</td>
+        <td>4503599628603578</td>
+      </tr>
+
+      <tr class="pass">
+        <td>S02</td>
+        <td>Deal Killer — SanctionedCorp Analytics</td>
+        <td>Deal Killed</td>
+        <td><span class="badge badge-pass">COMPLETED</span></td>
+        <td>25</td>
+        <td>2</td>
+        <td>249.3s</td>
+        <td>6755399442289605</td>
+      </tr>
+
+      <tr class="fail">
+        <td>S03</td>
+        <td>Multi-Vendor Mini RFP — AI Trading Platform</td>
+        <td>Software Onboarded</td>
+        <td><span class="badge badge-fail">MAX_ITERATIONS</span></td>
+        <td>1</td>
+        <td>0</td>
+        <td>628.4s</td>
+        <td>4503599628607341</td>
+      </tr>
+
+      <tr class="pass">
+        <td>S04</td>
+        <td>Build Path — Internal Risk Engine</td>
+        <td>Software Onboarded</td>
+        <td><span class="badge badge-pass">COMPLETED</span></td>
+        <td>24</td>
+        <td>2</td>
+        <td>224.3s</td>
+        <td>6755399442295848</td>
+      </tr>
+
+      <tr class="pass">
+        <td>S05a</td>
+        <td>Existing Solution FullMatch — Salesforce CRM</td>
+        <td>Software Leveraged</td>
+        <td><span class="badge badge-pass">COMPLETED</span></td>
+        <td>26</td>
+        <td>2</td>
+        <td>256.8s</td>
+        <td>4503599628613091</td>
+      </tr>
+
+      <tr class="pass">
+        <td>S05b</td>
+        <td>Assessment Rejection — CloudVault Storage</td>
+        <td>Assessment Not Approved</td>
+        <td><span class="badge badge-pass">COMPLETED</span></td>
+        <td>15</td>
+        <td>1</td>
+        <td>126.5s</td>
+        <td>2251799814930697</td>
+      </tr>
+
+      <tr class="pass">
+        <td>S06</td>
+        <td>Partial Match Exception — Tableau Upgrade</td>
+        <td>Software Onboarded</td>
+        <td><span class="badge badge-pass">COMPLETED</span></td>
+        <td>27</td>
+        <td>2</td>
+        <td>264.2s</td>
+        <td>6755399442300193</td>
+      </tr>
+
+      <tr class="pass">
+        <td>S07</td>
+        <td>Needs Guidance → Withdrawn — Blockchain Experiment</td>
+        <td>Request Withdrawn</td>
+        <td><span class="badge badge-pass">COMPLETED</span></td>
+        <td>26</td>
+        <td>2</td>
+        <td>264.2s</td>
+        <td>2251799814933506</td>
+      </tr>
+
+      <tr class="pass">
+        <td>S08</td>
+        <td>Conditional Approval — Palantir Foundry</td>
+        <td>Software Onboarded</td>
+        <td><span class="badge badge-pass">COMPLETED</span></td>
+        <td>29</td>
+        <td>2</td>
+        <td>246.2s</td>
+        <td>4503599628619362</td>
+      </tr>
+
+      <tr class="fail">
+        <td>S09</td>
+        <td>10-Vendor Competitive Bid — Enterprise ITSM Platform</td>
+        <td>Software Onboarded</td>
+        <td><span class="badge badge-fail">MAX_ITERATIONS</span></td>
+        <td>1</td>
+        <td>0</td>
+        <td>627.6s</td>
+        <td>4503599628621588</td>
+      </tr>
+
+      <tr class="pass">
+        <td>S10</td>
+        <td>Governance Rejected — Shadow IT Discovery</td>
+        <td>Governance Rejected</td>
+        <td><span class="badge badge-pass">COMPLETED</span></td>
+        <td>23</td>
+        <td>2</td>
+        <td>213.3s</td>
+        <td>6755399442309670</td>
+      </tr></tbody>
+  </table>
+
+  <h2>Scenario Details</h2>
+  
+    <div class="scenario-detail">
+      <h3>S01: Happy Path Buy — Snowflake Data Cloud</h3>
+      <p class="expected">Expected: Software Onboarded | Actual: COMPLETED</p>
+      <details>
+        <summary>Execution Log (70 entries)</summary>
+        <pre class="log">[18:09:27] Starting: Happy Path Buy — Snowflake Data Cloud
+[18:09:27] Instance: 4503599628603578
+[18:09:38] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[18:09:48] Task completed: "Triage &
+Route" (Task_TriageAndRoute)
+[18:09:50] Job completed: status-notification (4503599628603820)
+[18:09:58] Task completed: "Preliminary
+Analysis" (Task_PrelimAnalysis)
+[18:09:58] Message published: VendorResponseMessage (VENDOR-SNOWFLAKE)
+[18:09:58] Message published: SignedContractMessage (CONTRACT-SNOWFLAKE)
+[18:09:58] Message published: MiniRFPResponseMessage (VENDOR-SNOWFLAKE)
+[18:10:08] Task completed: "Backlog
+Prioritization" (Task_Backlog)
+[18:10:16] Task completed: "Buy vs Build" (Activity_0r9imfk)
+[18:10:18] Job completed: resolve-committee-authority (4503599628604144)
+[18:10:18] Job completed: assemble-committee-brief (4503599628604162)
+[18:10:24] Message published: VendorResponseMessage (VENDOR-SNOWFLAKE)
+[18:10:24] Message published: SignedContractMessage (CONTRACT-SNOWFLAKE)
+[18:10:24] Message published: MiniRFPResponseMessage (VENDOR-SNOWFLAKE)
+[18:10:26] Discovered child instance: 4503599628604037 (parent: 4503599628603578)
+[18:10:34] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:10:36] Job completed: distribute-committee-brief (4503599628604258)
+[18:10:45] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:10:47] Job completed: tally-committee-votes (4503599628604356)
+[18:10:47] Job completed: status-notification (4503599628604403)
+[18:10:55] Task completed: "Vendor Due
+Diligence" (Activity_1ma36oc)
+[18:10:55] Message published: VendorResponseMessage (VENDOR-SNOWFLAKE)
+[18:10:55] Message published: SignedContractMessage (CONTRACT-SNOWFLAKE)
+[18:10:55] Message published: MiniRFPResponseMessage (VENDOR-SNOWFLAKE)
+[18:11:06] Task completed: "Evaluate Vendor
+Response" (Activity_0w7eitv)
+[18:11:08] Job completed: dart-formation (4503599628604522)
+[18:11:16] Task completed: "Strategic Sourcing and Procurement" (Activity_0i5wmr2)
+[18:11:18] Task completed: "Legal - Privacy" (Activity_0mr2gdy)
+[18:11:20] Task completed: "Compliance" (Activity_0ksoea5)
+[18:11:22] Task completed: "TPRM" (Activity_0kq8o8j)
+[18:11:24] Task completed: "Enterprise 
+Architecture" (Task_TechArchReview)
+[18:11:26] Task completed: "Security
+Assessment" (Task_SecurityAssessment)
+[18:11:28] Job completed: status-notification (4503599628604658)
+[18:11:36] Task completed: "Define Build
+Requirements" (Activity_0xpqph2)
+[18:11:36] Message published: VendorResponseMessage (VENDOR-SNOWFLAKE)
+[18:11:36] Message published: SignedContractMessage (CONTRACT-SNOWFLAKE)
+[18:11:36] Message published: MiniRFPResponseMessage (VENDOR-SNOWFLAKE)
+[18:11:46] Task completed: "Architecture
+Review" (Activity_0ohlk7l)
+[18:11:56] Task completed: "Development
+and Build" (Activity_0ccg5hj)
+[18:12:06] Task completed: "Testing and
+Quality Assurance" (Activity_1tswsdw)
+[18:12:06] Message published: VendorResponseMessage (VENDOR-SNOWFLAKE)
+[18:12:06] Message published: SignedContractMessage (CONTRACT-SNOWFLAKE)
+[18:12:06] Message published: MiniRFPResponseMessage (VENDOR-SNOWFLAKE)
+[18:12:16] Task completed: "Integration
+and Deployment" (Activity_1wmq03k)
+[18:12:18] Job completed: status-notification (4503599628605043)
+[18:12:26] Task completed: "Perform
+Pilot / UAT" (Task_PerformUAT)
+[18:12:28] Job completed: resolve-committee-authority (4503599628605197)
+[18:12:28] Job completed: assemble-committee-brief (4503599628605253)
+[18:12:34] Message published: VendorResponseMessage (VENDOR-SNOWFLAKE)
+[18:12:34] Message published: SignedContractMessage (CONTRACT-SNOWFLAKE)
+[18:12:34] Message published: MiniRFPResponseMessage (VENDOR-SNOWFLAKE)
+[18:12:36] Discovered child instance: 4503599628605089 (parent: 4503599628603578)
+[18:12:44] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:12:46] Job completed: distribute-committee-brief (4503599628605335)
+[18:12:54] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:12:56] Job completed: tally-committee-votes (4503599628605426)
+[18:13:04] Task completed: "Onboard
+Software" (Task_OnboardSoftware)
+[18:13:04] Message published: VendorResponseMessage (VENDOR-SNOWFLAKE)
+[18:13:04] Message published: SignedContractMessage (CONTRACT-SNOWFLAKE)
+[18:13:04] Message published: MiniRFPResponseMessage (VENDOR-SNOWFLAKE)
+[18:13:07] Job completed: notify-requester (4503599628605533)
+[18:13:14] Task completed: "3rd Line
+Audit Review" (Task_SP5_OversightAudit)
+[18:13:24] Task completed: "Assign
+Ownership" (Task_AssignOwnership)
+[18:13:34] Task completed: "Close Request" (Task_CloseRequest)
+[18:13:34] Message published: VendorResponseMessage (VENDOR-SNOWFLAKE)
+[18:13:34] Message published: SignedContractMessage (CONTRACT-SNOWFLAKE)
+[18:13:34] Message published: MiniRFPResponseMessage (VENDOR-SNOWFLAKE)
+[18:13:42] Process COMPLETED after 25 iterations</pre>
+      </details>
+    </div>
+
+    <div class="scenario-detail">
+      <h3>S02: Deal Killer — SanctionedCorp Analytics</h3>
+      <p class="expected">Expected: Deal Killed | Actual: COMPLETED</p>
+      <details>
+        <summary>Execution Log (68 entries)</summary>
+        <pre class="log">[18:13:45] Starting: Deal Killer — SanctionedCorp Analytics
+[18:13:45] Instance: 6755399442289605
+[18:13:56] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[18:14:06] Task completed: "Preliminary
+Analysis" (Task_PrelimAnalysis)
+[18:14:16] Task completed: "Backlog
+Prioritization" (Task_Backlog)
+[18:14:16] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:14:16] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:14:16] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:14:24] Task completed: "Buy vs Build" (Activity_0r9imfk)
+[18:14:27] Job completed: resolve-committee-authority (6755399442290088)
+[18:14:27] Job completed: assemble-committee-brief (6755399442290109)
+[18:14:34] Discovered child instance: 6755399442289979 (parent: 6755399442289605)
+[18:14:42] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:14:42] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:14:42] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:14:42] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:14:45] Job completed: distribute-committee-brief (6755399442290207)
+[18:15:01] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:15:03] Job completed: tally-committee-votes (6755399442290353)
+[18:15:03] Job completed: status-notification (6755399442290436)
+[18:15:11] Task completed: "Vendor Due
+Diligence" (Activity_1ma36oc)
+[18:15:11] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:15:11] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:15:11] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:15:21] Task completed: "Evaluate Vendor
+Response" (Activity_0w7eitv)
+[18:15:23] Job completed: dart-formation (6755399442290555)
+[18:15:23] Job completed: baseline-security-check (6755399442290597)
+[18:15:31] Task completed: "Strategic Sourcing and Procurement" (Activity_0i5wmr2)
+[18:15:33] Task completed: "Legal - Privacy" (Activity_0mr2gdy)
+[18:15:35] Task completed: "Compliance" (Activity_0ksoea5)
+[18:15:37] Task completed: "TPRM" (Activity_0kq8o8j)
+[18:15:39] Task completed: "Enterprise 
+Architecture" (Task_TechArchReview)
+[18:15:41] Job completed: status-notification (6755399442290693)
+[18:15:49] Task completed: "Define Build
+Requirements" (Activity_0xpqph2)
+[18:15:49] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:15:49] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:15:49] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:15:59] Task completed: "Architecture
+Review" (Activity_0ohlk7l)
+[18:16:09] Task completed: "Development
+and Build" (Activity_0ccg5hj)
+[18:16:18] Task completed: "Testing and
+Quality Assurance" (Activity_1tswsdw)
+[18:16:18] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:16:18] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:16:18] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:16:28] Task completed: "Integration
+and Deployment" (Activity_1wmq03k)
+[18:16:30] Job completed: status-notification (6755399442291017)
+[18:16:38] Task completed: "Perform
+Pilot / UAT" (Task_PerformUAT)
+[18:16:40] Job completed: resolve-committee-authority (6755399442291228)
+[18:16:40] Job completed: assemble-committee-brief (6755399442291246)
+[18:16:46] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:16:46] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:16:46] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:16:48] Discovered child instance: 6755399442291118 (parent: 6755399442289605)
+[18:16:56] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:16:58] Job completed: distribute-committee-brief (6755399442291341)
+[18:17:06] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:17:09] Job completed: tally-committee-votes (6755399442291454)
+[18:17:16] Task completed: "Onboard
+Software" (Task_OnboardSoftware)
+[18:17:16] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:17:16] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:17:16] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:17:19] Job completed: notify-requester (6755399442291495)
+[18:17:26] Task completed: "3rd Line
+Audit Review" (Task_SP5_OversightAudit)
+[18:17:36] Task completed: "Assign
+Ownership" (Task_AssignOwnership)
+[18:17:46] Task completed: "Close Request" (Task_CloseRequest)
+[18:17:46] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:17:46] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:17:46] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:17:55] Process COMPLETED after 25 iterations</pre>
+      </details>
+    </div>
+
+    <div class="scenario-detail">
+      <h3>S03: Multi-Vendor Mini RFP — AI Trading Platform</h3>
+      <p class="expected">Expected: Software Onboarded | Actual: MAX_ITERATIONS</p>
+      <details>
+        <summary>Execution Log (162 entries)</summary>
+        <pre class="log">[18:17:58] Starting: Multi-Vendor Mini RFP — AI Trading Platform
+[18:17:58] Instance: 4503599628607341
+[18:18:08] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[18:18:16] Incident resolved: 4503599628607552
+[18:18:23] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:18:24] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:18:24] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:18:24] Incident resolved: 4503599628607571
+[18:18:32] Incident resolved: 4503599628607655
+[18:18:40] Incident resolved: 4503599628607677
+[18:18:47] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:18:47] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:18:47] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:18:47] Incident resolved: 4503599628607758
+[18:18:55] Incident resolved: 4503599628607787
+[18:19:03] Incident resolved: 4503599628607861
+[18:19:10] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:19:10] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:19:10] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:19:11] Incident resolved: 4503599628607890
+[18:19:18] Incident resolved: 4503599628607964
+[18:19:26] Incident resolved: 4503599628607999
+[18:19:33] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:19:33] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:19:33] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:19:34] Incident resolved: 4503599628608066
+[18:19:42] Incident resolved: 4503599628608108
+[18:19:50] Incident resolved: 4503599628608170
+[18:19:57] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:19:57] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:19:57] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:19:58] Incident resolved: 4503599628608219
+[18:20:06] Incident resolved: 4503599628608273
+[18:20:14] Incident resolved: 4503599628608338
+[18:20:21] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:20:22] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:20:22] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:20:22] Incident resolved: 4503599628608375
+[18:20:30] Incident resolved: 4503599628608454
+[18:20:38] Incident resolved: 4503599628608478
+[18:20:45] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:20:45] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:20:45] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:20:46] Incident resolved: 4503599628608560
+[18:20:53] Incident resolved: 4503599628608581
+[18:21:01] Incident resolved: 4503599628608665
+[18:21:08] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:21:09] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:21:09] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:21:09] Incident resolved: 4503599628608683
+[18:21:17] Incident resolved: 4503599628608770
+[18:21:24] Incident resolved: 4503599628608786
+[18:21:32] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:21:32] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:21:32] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:21:32] Incident resolved: 4503599628608786
+[18:21:40] Incident resolved: 4503599628608872
+[18:21:48] Incident resolved: 4503599628608872
+[18:21:55] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:21:55] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:21:55] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:21:56] Incident resolved: 4503599628608974
+[18:22:03] Incident resolved: 4503599628608974
+[18:22:11] Incident resolved: 4503599628609076
+[18:22:18] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:22:18] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:22:19] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:22:19] Incident resolved: 4503599628609076
+[18:22:27] Incident resolved: 4503599628609180
+[18:22:35] Incident resolved: 4503599628609180
+[18:22:42] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:22:42] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:22:43] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:22:43] Incident resolved: 4503599628609282
+[18:22:51] Incident resolved: 4503599628609385
+[18:22:59] Incident resolved: 4503599628609417
+[18:23:06] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:23:06] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:23:06] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:23:06] Incident resolved: 4503599628609487
+[18:23:14] Incident resolved: 4503599628609525
+[18:23:22] Incident resolved: 4503599628609590
+[18:23:29] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:23:29] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:23:29] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:23:30] Incident resolved: 4503599628609625
+[18:23:37] Incident resolved: 4503599628609625
+[18:23:45] Incident resolved: 4503599628609693
+[18:23:52] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:23:52] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:23:52] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:23:53] Incident resolved: 4503599628609693
+[18:24:01] Incident resolved: 4503599628609795
+[18:24:08] Incident resolved: 4503599628609898
+[18:24:15] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:24:15] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:24:15] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:24:16] Incident resolved: 4503599628609943
+[18:24:23] Incident resolved: 4503599628610001
+[18:24:31] Incident resolved: 4503599628610047
+[18:24:38] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:24:38] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:24:38] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:24:39] Incident resolved: 4503599628610103
+[18:24:47] Incident resolved: 4503599628610155
+[18:24:54] Incident resolved: 4503599628610206
+[18:25:02] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:25:02] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:25:02] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:25:03] Incident resolved: 4503599628610262
+[18:25:10] Incident resolved: 4503599628610309
+[18:25:18] Incident resolved: 4503599628610374
+[18:25:25] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:25:26] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:25:26] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:25:26] Incident resolved: 4503599628610411
+[18:25:34] Incident resolved: 4503599628610488
+[18:25:41] Incident resolved: 4503599628610488
+[18:25:49] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:25:49] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:25:49] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:25:49] Incident resolved: 4503599628610514
+[18:25:57] Incident resolved: 4503599628610514
+[18:26:05] Incident resolved: 4503599628610617
+[18:26:12] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:26:12] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:26:12] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:26:13] Incident resolved: 4503599628610617
+[18:26:21] Incident resolved: 4503599628610718
+[18:26:28] Incident resolved: 4503599628610820
+[18:26:36] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:26:36] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:26:36] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:26:36] Incident resolved: 4503599628610906
+[18:26:44] Incident resolved: 4503599628610923
+[18:26:52] Incident resolved: 4503599628611008
+[18:26:59] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:26:59] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:26:59] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:26:59] Incident resolved: 4503599628611026
+[18:27:07] Incident resolved: 4503599628611113
+[18:27:14] Incident resolved: 4503599628611130
+[18:27:22] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:27:22] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:27:22] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:27:23] Incident resolved: 4503599628611215
+[18:27:30] Incident resolved: 4503599628611234
+[18:27:38] Incident resolved: 4503599628611320
+[18:27:45] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:27:45] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:27:45] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:27:46] Incident resolved: 4503599628611336
+[18:27:53] Incident resolved: 4503599628611336
+[18:28:01] Incident resolved: 4503599628611423
+[18:28:08] Message published: VendorResponseMessage (VENDOR-NEXUS)
+[18:28:08] Message published: SignedContractMessage (CONTRACT-NEXUS)
+[18:28:09] Message published: MiniRFPResponseMessage (VENDOR-NEXUS)
+[18:28:09] Incident resolved: 4503599628611423
+[18:28:17] Incident resolved: 4503599628611526
+[18:28:24] Incident resolved: 4503599628611526
+[18:28:26] MAX ITERATIONS reached, cancelling instance
+[18:28:26] Instance 4503599628607341 cancelled</pre>
+      </details>
+    </div>
+
+    <div class="scenario-detail">
+      <h3>S04: Build Path — Internal Risk Engine</h3>
+      <p class="expected">Expected: Software Onboarded | Actual: COMPLETED</p>
+      <details>
+        <summary>Execution Log (65 entries)</summary>
+        <pre class="log">[18:28:29] Starting: Build Path — Internal Risk Engine
+[18:28:29] Instance: 6755399442295848
+[18:28:40] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[18:28:50] Task completed: "Triage &
+Route" (Task_TriageAndRoute)
+[18:28:52] Job completed: status-notification (6755399442296079)
+[18:29:00] Task completed: "Preliminary
+Analysis" (Task_PrelimAnalysis)
+[18:29:00] Message published: VendorResponseMessage (INTERNAL-BUILD)
+[18:29:00] Message published: SignedContractMessage (INTERNAL-BUILD)
+[18:29:00] Message published: MiniRFPResponseMessage (INTERNAL-BUILD)
+[18:29:10] Task completed: "Backlog
+Prioritization" (Task_Backlog)
+[18:29:18] Task completed: "Buy vs Build" (Activity_0r9imfk)
+[18:29:19] Discovered child instance: 6755399442296296 (parent: 6755399442295848)
+[18:29:20] Job completed: resolve-committee-authority (6755399442296403)
+[18:29:20] Job completed: assemble-committee-brief (6755399442296421)
+[18:29:28] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:29:28] Message published: VendorResponseMessage (INTERNAL-BUILD)
+[18:29:28] Message published: SignedContractMessage (INTERNAL-BUILD)
+[18:29:28] Message published: MiniRFPResponseMessage (INTERNAL-BUILD)
+[18:29:31] Job completed: distribute-committee-brief (6755399442296444)
+[18:29:39] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:29:41] Job completed: tally-committee-votes (6755399442296548)
+[18:29:41] Job completed: status-notification (6755399442296591)
+[18:29:41] Job completed: dart-formation (6755399442296605)
+[18:29:41] Job completed: baseline-security-check (6755399442296634)
+[18:29:49] Task completed: "Strategic Sourcing and Procurement" (Activity_0i5wmr2)
+[18:29:51] Task completed: "Legal - Privacy" (Activity_0mr2gdy)
+[18:29:53] Task completed: "Compliance" (Activity_0ksoea5)
+[18:29:55] Task completed: "TPRM" (Activity_0kq8o8j)
+[18:29:57] Task completed: "Enterprise 
+Architecture" (Task_TechArchReview)
+[18:29:59] Job completed: status-notification (6755399442296717)
+[18:30:07] Task completed: "Define Build
+Requirements" (Activity_0xpqph2)
+[18:30:07] Message published: VendorResponseMessage (INTERNAL-BUILD)
+[18:30:07] Message published: SignedContractMessage (INTERNAL-BUILD)
+[18:30:07] Message published: MiniRFPResponseMessage (INTERNAL-BUILD)
+[18:30:17] Task completed: "Architecture
+Review" (Activity_0ohlk7l)
+[18:30:27] Task completed: "Development
+and Build" (Activity_0ccg5hj)
+[18:30:37] Task completed: "Testing and
+Quality Assurance" (Activity_1tswsdw)
+[18:30:37] Message published: VendorResponseMessage (INTERNAL-BUILD)
+[18:30:37] Message published: SignedContractMessage (INTERNAL-BUILD)
+[18:30:37] Message published: MiniRFPResponseMessage (INTERNAL-BUILD)
+[18:30:47] Task completed: "Integration
+and Deployment" (Activity_1wmq03k)
+[18:30:49] Job completed: status-notification (6755399442297095)
+[18:30:57] Task completed: "Perform
+Pilot / UAT" (Task_PerformUAT)
+[18:30:59] Job completed: resolve-committee-authority (6755399442297250)
+[18:30:59] Job completed: assemble-committee-brief (6755399442297302)
+[18:31:05] Message published: VendorResponseMessage (INTERNAL-BUILD)
+[18:31:05] Message published: SignedContractMessage (INTERNAL-BUILD)
+[18:31:05] Message published: MiniRFPResponseMessage (INTERNAL-BUILD)
+[18:31:07] Discovered child instance: 6755399442297142 (parent: 6755399442295848)
+[18:31:15] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:31:17] Job completed: distribute-committee-brief (6755399442297384)
+[18:31:25] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:31:27] Job completed: tally-committee-votes (6755399442297476)
+[18:31:35] Task completed: "Onboard
+Software" (Task_OnboardSoftware)
+[18:31:35] Message published: VendorResponseMessage (INTERNAL-BUILD)
+[18:31:35] Message published: SignedContractMessage (INTERNAL-BUILD)
+[18:31:35] Message published: MiniRFPResponseMessage (INTERNAL-BUILD)
+[18:31:38] Job completed: notify-requester (6755399442297582)
+[18:31:45] Task completed: "3rd Line
+Audit Review" (Task_SP5_OversightAudit)
+[18:31:55] Task completed: "Assign
+Ownership" (Task_AssignOwnership)
+[18:32:05] Task completed: "Close Request" (Task_CloseRequest)
+[18:32:05] Message published: VendorResponseMessage (INTERNAL-BUILD)
+[18:32:05] Message published: SignedContractMessage (INTERNAL-BUILD)
+[18:32:05] Message published: MiniRFPResponseMessage (INTERNAL-BUILD)
+[18:32:13] Process COMPLETED after 22 iterations</pre>
+      </details>
+    </div>
+
+    <div class="scenario-detail">
+      <h3>S05a: Existing Solution FullMatch — Salesforce CRM</h3>
+      <p class="expected">Expected: Software Leveraged | Actual: COMPLETED</p>
+      <details>
+        <summary>Execution Log (69 entries)</summary>
+        <pre class="log">[18:32:16] Starting: Existing Solution FullMatch — Salesforce CRM
+[18:32:17] Instance: 4503599628613091
+[18:32:27] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[18:32:37] Task completed: "Leverage existing
+software" (Task_LeverageExisting)
+[18:32:47] Task completed: "Preliminary
+Analysis" (Task_PrelimAnalysis)
+[18:32:47] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:32:47] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:32:47] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:32:57] Task completed: "Backlog
+Prioritization" (Task_Backlog)
+[18:33:05] Task completed: "Buy vs Build" (Activity_0r9imfk)
+[18:33:07] Job completed: resolve-committee-authority (4503599628613654)
+[18:33:07] Job completed: assemble-committee-brief (4503599628613672)
+[18:33:12] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:33:12] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:33:13] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:33:15] Discovered child instance: 4503599628613544 (parent: 4503599628613091)
+[18:33:22] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:33:24] Job completed: distribute-committee-brief (4503599628613770)
+[18:33:39] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:33:39] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:33:39] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:33:39] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:33:42] Job completed: tally-committee-votes (4503599628613897)
+[18:33:42] Job completed: status-notification (4503599628613932)
+[18:33:49] Task completed: "Vendor Due
+Diligence" (Activity_1ma36oc)
+[18:33:59] Task completed: "Evaluate Vendor
+Response" (Activity_0w7eitv)
+[18:34:01] Job completed: dart-formation (4503599628614053)
+[18:34:01] Job completed: baseline-security-check (4503599628614124)
+[18:34:09] Task completed: "Strategic Sourcing and Procurement" (Activity_0i5wmr2)
+[18:34:11] Task completed: "Legal - Privacy" (Activity_0mr2gdy)
+[18:34:13] Task completed: "Compliance" (Activity_0ksoea5)
+[18:34:15] Task completed: "TPRM" (Activity_0kq8o8j)
+[18:34:17] Task completed: "Enterprise 
+Architecture" (Task_TechArchReview)
+[18:34:17] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:34:17] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:34:17] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:34:20] Job completed: status-notification (4503599628614204)
+[18:34:27] Task completed: "Define Build
+Requirements" (Activity_0xpqph2)
+[18:34:37] Task completed: "Architecture
+Review" (Activity_0ohlk7l)
+[18:34:47] Task completed: "Development
+and Build" (Activity_0ccg5hj)
+[18:34:47] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:34:47] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:34:47] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:34:57] Task completed: "Testing and
+Quality Assurance" (Activity_1tswsdw)
+[18:35:07] Task completed: "Integration
+and Deployment" (Activity_1wmq03k)
+[18:35:09] Job completed: status-notification (4503599628614589)
+[18:35:17] Task completed: "Perform
+Pilot / UAT" (Task_PerformUAT)
+[18:35:17] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:35:17] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:35:17] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:35:20] Job completed: resolve-committee-authority (4503599628614744)
+[18:35:20] Job completed: assemble-committee-brief (4503599628614814)
+[18:35:27] Discovered child instance: 4503599628614632 (parent: 4503599628613091)
+[18:35:35] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:35:37] Job completed: distribute-committee-brief (4503599628614898)
+[18:35:45] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:35:45] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:35:45] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:35:45] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:35:48] Job completed: tally-committee-votes (4503599628614962)
+[18:35:55] Task completed: "Onboard
+Software" (Task_OnboardSoftware)
+[18:35:58] Job completed: notify-requester (4503599628615069)
+[18:36:05] Task completed: "3rd Line
+Audit Review" (Task_SP5_OversightAudit)
+[18:36:15] Task completed: "Assign
+Ownership" (Task_AssignOwnership)
+[18:36:15] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:36:15] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:36:16] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:36:25] Task completed: "Close Request" (Task_CloseRequest)
+[18:36:33] Process COMPLETED after 26 iterations</pre>
+      </details>
+    </div>
+
+    <div class="scenario-detail">
+      <h3>S05b: Assessment Rejection — CloudVault Storage</h3>
+      <p class="expected">Expected: Assessment Not Approved | Actual: COMPLETED</p>
+      <details>
+        <summary>Execution Log (38 entries)</summary>
+        <pre class="log">[18:36:36] Starting: Assessment Rejection — CloudVault Storage
+[18:36:36] Instance: 2251799814930697
+[18:36:46] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[18:36:55] Task completed: "Triage &
+Route" (Task_TriageAndRoute)
+[18:36:57] Job completed: status-notification (2251799814930928)
+[18:37:04] Task completed: "Preliminary
+Analysis" (Task_PrelimAnalysis)
+[18:37:04] Message published: VendorResponseMessage (VENDOR-CLOUDVAULT)
+[18:37:04] Message published: SignedContractMessage (CONTRACT-CLOUDVAULT)
+[18:37:04] Message published: MiniRFPResponseMessage (VENDOR-CLOUDVAULT)
+[18:37:14] Task completed: "Backlog
+Prioritization" (Task_Backlog)
+[18:37:22] Task completed: "Buy vs Build" (Activity_0r9imfk)
+[18:37:24] Job completed: resolve-committee-authority (2251799814931249)
+[18:37:24] Job completed: assemble-committee-brief (2251799814931269)
+[18:37:30] Message published: VendorResponseMessage (VENDOR-CLOUDVAULT)
+[18:37:30] Message published: SignedContractMessage (CONTRACT-CLOUDVAULT)
+[18:37:30] Message published: MiniRFPResponseMessage (VENDOR-CLOUDVAULT)
+[18:37:32] Discovered child instance: 2251799814931142 (parent: 2251799814930697)
+[18:37:39] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:37:41] Job completed: distribute-committee-brief (2251799814931368)
+[18:37:48] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:37:50] Job completed: tally-committee-votes (2251799814931420)
+[18:37:57] Task completed: "Vendor Due
+Diligence" (Activity_1ma36oc)
+[18:37:57] Message published: VendorResponseMessage (VENDOR-CLOUDVAULT)
+[18:37:57] Message published: SignedContractMessage (CONTRACT-CLOUDVAULT)
+[18:37:58] Message published: MiniRFPResponseMessage (VENDOR-CLOUDVAULT)
+[18:38:07] Task completed: "Evaluate Vendor
+Response" (Activity_0w7eitv)
+[18:38:09] Job completed: dart-formation (2251799814931613)
+[18:38:24] Task completed: "Strategic Sourcing and Procurement" (Activity_0i5wmr2)
+[18:38:26] Task completed: "Legal - Privacy" (Activity_0mr2gdy)
+[18:38:28] Task completed: "Compliance" (Activity_0ksoea5)
+[18:38:30] Task completed: "TPRM" (Activity_0kq8o8j)
+[18:38:32] Task completed: "Enterprise 
+Architecture" (Task_TechArchReview)
+[18:38:34] Task completed: "Security
+Assessment" (Task_SecurityAssessment)
+[18:38:34] Message published: VendorResponseMessage (VENDOR-CLOUDVAULT)
+[18:38:35] Message published: SignedContractMessage (CONTRACT-CLOUDVAULT)
+[18:38:35] Message published: MiniRFPResponseMessage (VENDOR-CLOUDVAULT)
+[18:38:37] Job completed: status-notification (2251799814931785)
+[18:38:43] Process COMPLETED after 13 iterations</pre>
+      </details>
+    </div>
+
+    <div class="scenario-detail">
+      <h3>S06: Partial Match Exception — Tableau Upgrade</h3>
+      <p class="expected">Expected: Software Onboarded | Actual: COMPLETED</p>
+      <details>
+        <summary>Execution Log (71 entries)</summary>
+        <pre class="log">[18:38:46] Starting: Partial Match Exception — Tableau Upgrade
+[18:38:46] Instance: 6755399442300193
+[18:38:55] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[18:39:04] Task completed: "Pursue Exception
+with Quarterback" (Activity_1l8ugqb)
+[18:39:13] Task completed: "Triage &
+Route" (Task_TriageAndRoute)
+[18:39:13] Message published: VendorResponseMessage (VENDOR-TABLEAU)
+[18:39:13] Message published: SignedContractMessage (CONTRACT-TABLEAU)
+[18:39:14] Message published: MiniRFPResponseMessage (VENDOR-TABLEAU)
+[18:39:16] Job completed: status-notification (6755399442300512)
+[18:39:23] Task completed: "Preliminary
+Analysis" (Task_PrelimAnalysis)
+[18:39:34] Task completed: "Backlog
+Prioritization" (Task_Backlog)
+[18:39:42] Task completed: "Buy vs Build" (Activity_0r9imfk)
+[18:39:42] Message published: VendorResponseMessage (VENDOR-TABLEAU)
+[18:39:42] Message published: SignedContractMessage (CONTRACT-TABLEAU)
+[18:39:43] Message published: MiniRFPResponseMessage (VENDOR-TABLEAU)
+[18:39:45] Job completed: resolve-committee-authority (6755399442300842)
+[18:39:45] Job completed: assemble-committee-brief (6755399442300862)
+[18:39:52] Discovered child instance: 6755399442300732 (parent: 6755399442300193)
+[18:39:59] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:40:02] Job completed: distribute-committee-brief (6755399442300957)
+[18:40:09] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:40:09] Message published: VendorResponseMessage (VENDOR-TABLEAU)
+[18:40:10] Message published: SignedContractMessage (CONTRACT-TABLEAU)
+[18:40:10] Message published: MiniRFPResponseMessage (VENDOR-TABLEAU)
+[18:40:12] Job completed: tally-committee-votes (6755399442301056)
+[18:40:12] Job completed: status-notification (6755399442301104)
+[18:40:20] Task completed: "Vendor Due
+Diligence" (Activity_1ma36oc)
+[18:40:31] Task completed: "Evaluate Vendor
+Response" (Activity_0w7eitv)
+[18:40:34] Job completed: dart-formation (6755399442301223)
+[18:40:34] Job completed: baseline-security-check (6755399442301266)
+[18:40:41] Task completed: "Strategic Sourcing and Procurement" (Activity_0i5wmr2)
+[18:40:43] Task completed: "Legal - Privacy" (Activity_0mr2gdy)
+[18:40:45] Task completed: "Compliance" (Activity_0ksoea5)
+[18:40:46] Task completed: "TPRM" (Activity_0kq8o8j)
+[18:40:48] Task completed: "Enterprise 
+Architecture" (Task_TechArchReview)
+[18:40:49] Message published: VendorResponseMessage (VENDOR-TABLEAU)
+[18:40:49] Message published: SignedContractMessage (CONTRACT-TABLEAU)
+[18:40:49] Message published: MiniRFPResponseMessage (VENDOR-TABLEAU)
+[18:40:51] Job completed: status-notification (6755399442301359)
+[18:41:00] Task completed: "Define Build
+Requirements" (Activity_0xpqph2)
+[18:41:10] Task completed: "Architecture
+Review" (Activity_0ohlk7l)
+[18:41:20] Task completed: "Development
+and Build" (Activity_0ccg5hj)
+[18:41:20] Message published: VendorResponseMessage (VENDOR-TABLEAU)
+[18:41:20] Message published: SignedContractMessage (CONTRACT-TABLEAU)
+[18:41:20] Message published: MiniRFPResponseMessage (VENDOR-TABLEAU)
+[18:41:31] Task completed: "Testing and
+Quality Assurance" (Activity_1tswsdw)
+[18:41:41] Task completed: "Integration
+and Deployment" (Activity_1wmq03k)
+[18:41:43] Job completed: status-notification (6755399442301723)
+[18:41:48] Message published: VendorResponseMessage (VENDOR-TABLEAU)
+[18:41:49] Message published: SignedContractMessage (CONTRACT-TABLEAU)
+[18:41:49] Message published: MiniRFPResponseMessage (VENDOR-TABLEAU)
+[18:41:59] Task completed: "Perform
+Pilot / UAT" (Task_PerformUAT)
+[18:42:01] Discovered child instance: 6755399442301872 (parent: 6755399442300193)
+[18:42:01] Job completed: resolve-committee-authority (6755399442301983)
+[18:42:01] Job completed: assemble-committee-brief (6755399442302002)
+[18:42:09] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:42:11] Job completed: distribute-committee-brief (6755399442302030)
+[18:42:19] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:42:19] Message published: VendorResponseMessage (VENDOR-TABLEAU)
+[18:42:19] Message published: SignedContractMessage (CONTRACT-TABLEAU)
+[18:42:19] Message published: MiniRFPResponseMessage (VENDOR-TABLEAU)
+[18:42:21] Job completed: tally-committee-votes (6755399442302127)
+[18:42:29] Task completed: "Onboard
+Software" (Task_OnboardSoftware)
+[18:42:31] Job completed: notify-requester (6755399442302233)
+[18:42:39] Task completed: "3rd Line
+Audit Review" (Task_SP5_OversightAudit)
+[18:42:50] Task completed: "Assign
+Ownership" (Task_AssignOwnership)
+[18:42:50] Message published: VendorResponseMessage (VENDOR-TABLEAU)
+[18:42:50] Message published: SignedContractMessage (CONTRACT-TABLEAU)
+[18:42:50] Message published: MiniRFPResponseMessage (VENDOR-TABLEAU)
+[18:43:02] Task completed: "Close Request" (Task_CloseRequest)
+[18:43:10] Process COMPLETED after 26 iterations</pre>
+      </details>
+    </div>
+
+    <div class="scenario-detail">
+      <h3>S07: Needs Guidance → Withdrawn — Blockchain Experiment</h3>
+      <p class="expected">Expected: Request Withdrawn | Actual: COMPLETED</p>
+      <details>
+        <summary>Execution Log (72 entries)</summary>
+        <pre class="log">[18:43:13] Starting: Needs Guidance → Withdrawn — Blockchain Experiment
+[18:43:13] Instance: 2251799814933506
+[18:43:23] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[18:43:32] Task completed: "Quarterback
+Assistance" (Activity_0netfvm)
+[18:43:41] Task completed: "Preliminary
+Analysis" (Task_PrelimAnalysis)
+[18:43:41] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:43:41] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:43:41] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:43:52] Task completed: "Backlog
+Prioritization" (Task_Backlog)
+[18:44:00] Task completed: "Buy vs Build" (Activity_0r9imfk)
+[18:44:02] Job completed: resolve-committee-authority (2251799814934040)
+[18:44:02] Job completed: assemble-committee-brief (2251799814934058)
+[18:44:08] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:44:08] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:44:08] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:44:10] Discovered child instance: 2251799814933934 (parent: 2251799814933506)
+[18:44:17] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:44:19] Job completed: distribute-committee-brief (2251799814934153)
+[18:44:26] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:44:28] Job completed: tally-committee-votes (2251799814934220)
+[18:44:28] Job completed: status-notification (2251799814934295)
+[18:44:35] Task completed: "Vendor Due
+Diligence" (Activity_1ma36oc)
+[18:44:35] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:44:35] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:44:35] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:44:45] Task completed: "Evaluate Vendor
+Response" (Activity_0w7eitv)
+[18:44:47] Job completed: dart-formation (2251799814934416)
+[18:44:47] Job completed: baseline-security-check (2251799814934459)
+[18:45:02] Task completed: "Strategic Sourcing and Procurement" (Activity_0i5wmr2)
+[18:45:04] Task completed: "Legal - Privacy" (Activity_0mr2gdy)
+[18:45:06] Task completed: "Compliance" (Activity_0ksoea5)
+[18:45:08] Task completed: "TPRM" (Activity_0kq8o8j)
+[18:45:10] Task completed: "Enterprise 
+Architecture" (Task_TechArchReview)
+[18:45:10] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:45:10] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:45:10] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:45:13] Job completed: status-notification (2251799814934573)
+[18:45:28] Task completed: "Define Build
+Requirements" (Activity_0xpqph2)
+[18:45:38] Task completed: "Architecture
+Review" (Activity_0ohlk7l)
+[18:45:38] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:45:38] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:45:38] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:45:48] Task completed: "Development
+and Build" (Activity_0ccg5hj)
+[18:45:58] Task completed: "Testing and
+Quality Assurance" (Activity_1tswsdw)
+[18:46:09] Task completed: "Integration
+and Deployment" (Activity_1wmq03k)
+[18:46:09] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:46:09] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:46:09] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:46:12] Job completed: status-notification (2251799814934976)
+[18:46:20] Task completed: "Perform
+Pilot / UAT" (Task_PerformUAT)
+[18:46:22] Discovered child instance: 2251799814935075 (parent: 2251799814933506)
+[18:46:23] Job completed: resolve-committee-authority (2251799814935183)
+[18:46:23] Job completed: assemble-committee-brief (2251799814935201)
+[18:46:30] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:46:33] Job completed: distribute-committee-brief (2251799814935267)
+[18:46:40] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:46:40] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:46:40] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:46:40] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:46:43] Job completed: tally-committee-votes (2251799814935326)
+[18:46:50] Task completed: "Onboard
+Software" (Task_OnboardSoftware)
+[18:46:53] Job completed: notify-requester (2251799814935430)
+[18:47:08] Task completed: "3rd Line
+Audit Review" (Task_SP5_OversightAudit)
+[18:47:08] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:47:09] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:47:09] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:47:18] Task completed: "Assign
+Ownership" (Task_AssignOwnership)
+[18:47:28] Task completed: "Close Request" (Task_CloseRequest)
+[18:47:37] Message published: VendorResponseMessage (VENDOR-E2E-001)
+[18:47:37] Message published: SignedContractMessage (CONTRACT-E2E-001)
+[18:47:37] Message published: MiniRFPResponseMessage (VENDOR-E2E-001)
+[18:47:37] Process COMPLETED after 27 iterations</pre>
+      </details>
+    </div>
+
+    <div class="scenario-detail">
+      <h3>S08: Conditional Approval — Palantir Foundry</h3>
+      <p class="expected">Expected: Software Onboarded | Actual: COMPLETED</p>
+      <details>
+        <summary>Execution Log (72 entries)</summary>
+        <pre class="log">[18:47:40] Starting: Conditional Approval — Palantir Foundry
+[18:47:40] Instance: 4503599628619362
+[18:47:50] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[18:47:59] Task completed: "Triage &
+Route" (Task_TriageAndRoute)
+[18:48:01] Job completed: status-notification (4503599628619611)
+[18:48:08] Task completed: "Preliminary
+Analysis" (Task_PrelimAnalysis)
+[18:48:08] Message published: VendorResponseMessage (VENDOR-PALANTIR)
+[18:48:09] Message published: SignedContractMessage (CONTRACT-PALANTIR)
+[18:48:09] Message published: MiniRFPResponseMessage (VENDOR-PALANTIR)
+[18:48:17] Task completed: "Backlog
+Prioritization" (Task_Backlog)
+[18:48:25] Task completed: "Buy vs Build" (Activity_0r9imfk)
+[18:48:27] Job completed: resolve-committee-authority (4503599628619913)
+[18:48:27] Job completed: assemble-committee-brief (4503599628619943)
+[18:48:33] Message published: VendorResponseMessage (VENDOR-PALANTIR)
+[18:48:33] Message published: SignedContractMessage (CONTRACT-PALANTIR)
+[18:48:33] Message published: MiniRFPResponseMessage (VENDOR-PALANTIR)
+[18:48:35] Discovered child instance: 4503599628619806 (parent: 4503599628619362)
+[18:48:42] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:48:45] Job completed: distribute-committee-brief (4503599628620033)
+[18:48:51] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:48:54] Job completed: tally-committee-votes (4503599628620140)
+[18:48:54] Job completed: status-notification (4503599628620172)
+[18:49:00] Task completed: "Vendor Due
+Diligence" (Activity_1ma36oc)
+[18:49:01] Message published: VendorResponseMessage (VENDOR-PALANTIR)
+[18:49:01] Message published: SignedContractMessage (CONTRACT-PALANTIR)
+[18:49:01] Message published: MiniRFPResponseMessage (VENDOR-PALANTIR)
+[18:49:10] Task completed: "Evaluate Vendor
+Response" (Activity_0w7eitv)
+[18:49:13] Job completed: dart-formation (4503599628620295)
+[18:49:20] Task completed: "Strategic Sourcing and Procurement" (Activity_0i5wmr2)
+[18:49:22] Task completed: "Legal - Privacy" (Activity_0mr2gdy)
+[18:49:25] Task completed: "Compliance" (Activity_0ksoea5)
+[18:49:27] Task completed: "TPRM" (Activity_0kq8o8j)
+[18:49:30] Task completed: "AI Governance" (Task_AIGovernanceReview)
+[18:49:34] Task completed: "Enterprise 
+Architecture" (Task_TechArchReview)
+[18:49:37] Task completed: "Security
+Assessment" (Task_SecurityAssessment)
+[18:49:39] Job completed: status-notification (4503599628620507)
+[18:49:46] Task completed: "Define Build
+Requirements" (Activity_0xpqph2)
+[18:49:46] Message published: VendorResponseMessage (VENDOR-PALANTIR)
+[18:49:46] Message published: SignedContractMessage (CONTRACT-PALANTIR)
+[18:49:46] Message published: MiniRFPResponseMessage (VENDOR-PALANTIR)
+[18:49:56] Task completed: "Architecture
+Review" (Activity_0ohlk7l)
+[18:50:05] Task completed: "Development
+and Build" (Activity_0ccg5hj)
+[18:50:15] Task completed: "Testing and
+Quality Assurance" (Activity_1tswsdw)
+[18:50:15] Message published: VendorResponseMessage (VENDOR-PALANTIR)
+[18:50:15] Message published: SignedContractMessage (CONTRACT-PALANTIR)
+[18:50:15] Message published: MiniRFPResponseMessage (VENDOR-PALANTIR)
+[18:50:25] Task completed: "Integration
+and Deployment" (Activity_1wmq03k)
+[18:50:27] Job completed: status-notification (4503599628620839)
+[18:50:34] Task completed: "Perform
+Pilot / UAT" (Task_PerformUAT)
+[18:50:36] Discovered child instance: 4503599628620928 (parent: 4503599628619362)
+[18:50:37] Job completed: resolve-committee-authority (4503599628621036)
+[18:50:37] Job completed: assemble-committee-brief (4503599628621064)
+[18:50:45] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[18:50:45] Message published: VendorResponseMessage (VENDOR-PALANTIR)
+[18:50:45] Message published: SignedContractMessage (CONTRACT-PALANTIR)
+[18:50:45] Message published: MiniRFPResponseMessage (VENDOR-PALANTIR)
+[18:50:47] Job completed: distribute-committee-brief (4503599628621084)
+[18:50:55] Task completed: "Cast
+Vote" (Task_CastVote)
+[18:50:57] Job completed: tally-committee-votes (4503599628621190)
+[18:51:05] Task completed: "Verify
+Conditions" (Task_ConditionVerification)
+[18:51:15] Task completed: "Onboard
+Software" (Task_OnboardSoftware)
+[18:51:15] Message published: VendorResponseMessage (VENDOR-PALANTIR)
+[18:51:15] Message published: SignedContractMessage (CONTRACT-PALANTIR)
+[18:51:15] Message published: MiniRFPResponseMessage (VENDOR-PALANTIR)
+[18:51:18] Job completed: notify-requester (4503599628621320)
+[18:51:25] Task completed: "3rd Line
+Audit Review" (Task_SP5_OversightAudit)
+[18:51:36] Task completed: "Assign
+Ownership" (Task_AssignOwnership)
+[18:51:46] Task completed: "Close Request" (Task_CloseRequest)
+[18:51:46] Message published: VendorResponseMessage (VENDOR-PALANTIR)
+[18:51:46] Message published: SignedContractMessage (CONTRACT-PALANTIR)
+[18:51:46] Message published: MiniRFPResponseMessage (VENDOR-PALANTIR)
+[18:51:46] Process COMPLETED after 24 iterations</pre>
+      </details>
+    </div>
+
+    <div class="scenario-detail">
+      <h3>S09: 10-Vendor Competitive Bid — Enterprise ITSM Platform</h3>
+      <p class="expected">Expected: Software Onboarded | Actual: MAX_ITERATIONS</p>
+      <details>
+        <summary>Execution Log (162 entries)</summary>
+        <pre class="log">[18:51:49] Starting: 10-Vendor Competitive Bid — Enterprise ITSM Platform
+[18:51:49] Instance: 4503599628621588
+[18:51:59] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[18:52:07] Incident resolved: 4503599628621735
+[18:52:14] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:52:14] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:52:14] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:52:15] Incident resolved: 4503599628621822
+[18:52:23] Incident resolved: 4503599628621844
+[18:52:31] Incident resolved: 4503599628621925
+[18:52:38] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:52:38] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:52:38] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:52:39] Incident resolved: 4503599628621953
+[18:52:46] Incident resolved: 4503599628622029
+[18:52:54] Incident resolved: 4503599628622061
+[18:53:01] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:53:01] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:53:01] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:53:02] Incident resolved: 4503599628622061
+[18:53:10] Incident resolved: 4503599628622131
+[18:53:17] Incident resolved: 4503599628622131
+[18:53:25] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:53:25] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:53:25] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:53:25] Incident resolved: 4503599628622234
+[18:53:33] Incident resolved: 4503599628622234
+[18:53:41] Incident resolved: 4503599628622336
+[18:53:48] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:53:48] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:53:48] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:53:49] Incident resolved: 4503599628622336
+[18:53:56] Incident resolved: 4503599628622438
+[18:54:04] Incident resolved: 4503599628622540
+[18:54:11] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:54:11] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:54:12] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:54:12] Incident resolved: 4503599628622593
+[18:54:20] Incident resolved: 4503599628622644
+[18:54:27] Incident resolved: 4503599628622702
+[18:54:35] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:54:35] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:54:35] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:54:35] Incident resolved: 4503599628622746
+[18:54:43] Incident resolved: 4503599628622817
+[18:54:51] Incident resolved: 4503599628622849
+[18:54:58] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:54:58] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:54:58] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:54:59] Incident resolved: 4503599628622922
+[18:55:07] Incident resolved: 4503599628622952
+[18:55:14] Incident resolved: 4503599628623031
+[18:55:22] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:55:22] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:55:22] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:55:22] Incident resolved: 4503599628623055
+[18:55:30] Incident resolved: 4503599628623138
+[18:55:38] Incident resolved: 4503599628623158
+[18:55:46] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:55:46] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:55:46] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:55:46] Incident resolved: 4503599628623245
+[18:55:54] Incident resolved: 4503599628623263
+[18:56:02] Incident resolved: 4503599628623348
+[18:56:09] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:56:09] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:56:09] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:56:10] Incident resolved: 4503599628623365
+[18:56:17] Incident resolved: 4503599628623451
+[18:56:25] Incident resolved: 4503599628623469
+[18:56:32] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:56:32] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:56:32] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:56:33] Incident resolved: 4503599628623553
+[18:56:41] Incident resolved: 4503599628623576
+[18:56:49] Incident resolved: 4503599628623658
+[18:56:56] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:56:56] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:56:56] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:56:57] Incident resolved: 4503599628623682
+[18:57:04] Incident resolved: 4503599628623761
+[18:57:12] Incident resolved: 4503599628623790
+[18:57:19] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:57:19] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:57:19] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:57:20] Incident resolved: 4503599628623868
+[18:57:28] Incident resolved: 4503599628623900
+[18:57:36] Incident resolved: 4503599628623971
+[18:57:43] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:57:43] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:57:43] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:57:44] Incident resolved: 4503599628624007
+[18:57:51] Incident resolved: 4503599628624076
+[18:57:59] Incident resolved: 4503599628624115
+[18:58:06] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:58:06] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:58:06] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:58:07] Incident resolved: 4503599628624178
+[18:58:14] Incident resolved: 4503599628624224
+[18:58:22] Incident resolved: 4503599628624282
+[18:58:29] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:58:29] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:58:29] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:58:30] Incident resolved: 4503599628624328
+[18:58:37] Incident resolved: 4503599628624385
+[18:58:45] Incident resolved: 4503599628624439
+[18:58:52] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:58:52] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:58:53] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:58:53] Incident resolved: 4503599628624489
+[18:59:01] Incident resolved: 4503599628624552
+[18:59:08] Incident resolved: 4503599628624592
+[18:59:16] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:59:16] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:59:16] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:59:16] Incident resolved: 4503599628624659
+[18:59:24] Incident resolved: 4503599628624697
+[18:59:32] Incident resolved: 4503599628624766
+[18:59:39] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[18:59:39] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[18:59:39] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[18:59:39] Incident resolved: 4503599628624766
+[18:59:47] Incident resolved: 4503599628624799
+[18:59:55] Incident resolved: 4503599628624901
+[19:00:02] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[19:00:02] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[19:00:02] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[19:00:03] Incident resolved: 4503599628624971
+[19:00:10] Incident resolved: 4503599628625004
+[19:00:18] Incident resolved: 4503599628625077
+[19:00:25] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[19:00:25] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[19:00:26] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[19:00:26] Incident resolved: 4503599628625106
+[19:00:34] Incident resolved: 4503599628625187
+[19:00:41] Incident resolved: 4503599628625209
+[19:00:49] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[19:00:49] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[19:00:49] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[19:00:50] Incident resolved: 4503599628625288
+[19:00:57] Incident resolved: 4503599628625312
+[19:01:05] Incident resolved: 4503599628625393
+[19:01:12] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[19:01:12] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[19:01:12] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[19:01:13] Incident resolved: 4503599628625414
+[19:01:21] Incident resolved: 4503599628625501
+[19:01:28] Incident resolved: 4503599628625518
+[19:01:35] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[19:01:36] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[19:01:36] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[19:01:36] Incident resolved: 4503599628625603
+[19:01:44] Incident resolved: 4503599628625622
+[19:01:51] Incident resolved: 4503599628625622
+[19:01:59] Message published: VendorResponseMessage (VENDOR-SERVICENOW)
+[19:01:59] Message published: SignedContractMessage (CONTRACT-SERVICENOW)
+[19:01:59] Message published: MiniRFPResponseMessage (VENDOR-SERVICENOW)
+[19:02:00] Incident resolved: 4503599628625706
+[19:02:07] Incident resolved: 4503599628625706
+[19:02:15] Incident resolved: 4503599628625809
+[19:02:17] MAX ITERATIONS reached, cancelling instance
+[19:02:17] Instance 4503599628621588 cancelled</pre>
+      </details>
+    </div>
+
+    <div class="scenario-detail">
+      <h3>S10: Governance Rejected — Shadow IT Discovery</h3>
+      <p class="expected">Expected: Governance Rejected | Actual: COMPLETED</p>
+      <details>
+        <summary>Execution Log (62 entries)</summary>
+        <pre class="log">[19:02:20] Starting: Governance Rejected — Shadow IT Discovery
+[19:02:20] Instance: 6755399442309670
+[19:02:30] Task completed: "Describe &
+Screen Need" (Task_DescribeAndScreen)
+[19:02:40] Task completed: "Triage &
+Route" (Task_TriageAndRoute)
+[19:02:42] Job completed: status-notification (6755399442309900)
+[19:02:50] Task completed: "Preliminary
+Analysis" (Task_PrelimAnalysis)
+[19:02:50] Message published: VendorResponseMessage (VENDOR-QUICKDEPLOY)
+[19:02:50] Message published: SignedContractMessage (CONTRACT-QUICKDEPLOY)
+[19:02:50] Message published: MiniRFPResponseMessage (VENDOR-QUICKDEPLOY)
+[19:03:00] Task completed: "Backlog
+Prioritization" (Task_Backlog)
+[19:03:07] Task completed: "Buy vs Build" (Activity_0r9imfk)
+[19:03:09] Job completed: resolve-committee-authority (6755399442310225)
+[19:03:10] Job completed: assemble-committee-brief (6755399442310250)
+[19:03:15] Message published: VendorResponseMessage (VENDOR-QUICKDEPLOY)
+[19:03:15] Message published: SignedContractMessage (CONTRACT-QUICKDEPLOY)
+[19:03:15] Message published: MiniRFPResponseMessage (VENDOR-QUICKDEPLOY)
+[19:03:18] Discovered child instance: 6755399442310118 (parent: 6755399442309670)
+[19:03:26] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[19:03:28] Job completed: distribute-committee-brief (6755399442310344)
+[19:03:36] Task completed: "Cast
+Vote" (Task_CastVote)
+[19:03:38] Job completed: tally-committee-votes (6755399442310453)
+[19:03:38] Job completed: status-notification (6755399442310485)
+[19:03:46] Task completed: "Vendor Due
+Diligence" (Activity_1ma36oc)
+[19:03:46] Message published: VendorResponseMessage (VENDOR-QUICKDEPLOY)
+[19:03:46] Message published: SignedContractMessage (CONTRACT-QUICKDEPLOY)
+[19:03:46] Message published: MiniRFPResponseMessage (VENDOR-QUICKDEPLOY)
+[19:03:56] Task completed: "Evaluate Vendor
+Response" (Activity_0w7eitv)
+[19:03:58] Job completed: dart-formation (6755399442310608)
+[19:04:06] Task completed: "Strategic Sourcing and Procurement" (Activity_0i5wmr2)
+[19:04:08] Task completed: "Legal - Privacy" (Activity_0mr2gdy)
+[19:04:10] Task completed: "Compliance" (Activity_0ksoea5)
+[19:04:12] Task completed: "TPRM" (Activity_0kq8o8j)
+[19:04:14] Task completed: "Enterprise 
+Architecture" (Task_TechArchReview)
+[19:04:16] Task completed: "Security
+Assessment" (Task_SecurityAssessment)
+[19:04:18] Job completed: status-notification (6755399442310796)
+[19:04:26] Task completed: "Define Build
+Requirements" (Activity_0xpqph2)
+[19:04:26] Message published: VendorResponseMessage (VENDOR-QUICKDEPLOY)
+[19:04:26] Message published: SignedContractMessage (CONTRACT-QUICKDEPLOY)
+[19:04:26] Message published: MiniRFPResponseMessage (VENDOR-QUICKDEPLOY)
+[19:04:36] Task completed: "Architecture
+Review" (Activity_0ohlk7l)
+[19:04:46] Task completed: "Development
+and Build" (Activity_0ccg5hj)
+[19:04:56] Task completed: "Testing and
+Quality Assurance" (Activity_1tswsdw)
+[19:04:56] Message published: VendorResponseMessage (VENDOR-QUICKDEPLOY)
+[19:04:56] Message published: SignedContractMessage (CONTRACT-QUICKDEPLOY)
+[19:04:56] Message published: MiniRFPResponseMessage (VENDOR-QUICKDEPLOY)
+[19:05:06] Task completed: "Integration
+and Deployment" (Activity_1wmq03k)
+[19:05:08] Job completed: status-notification (6755399442311143)
+[19:05:16] Task completed: "Perform
+Pilot / UAT" (Task_PerformUAT)
+[19:05:18] Job completed: resolve-committee-authority (6755399442311326)
+[19:05:18] Job completed: assemble-committee-brief (6755399442311368)
+[19:05:24] Message published: VendorResponseMessage (VENDOR-QUICKDEPLOY)
+[19:05:24] Message published: SignedContractMessage (CONTRACT-QUICKDEPLOY)
+[19:05:24] Message published: MiniRFPResponseMessage (VENDOR-QUICKDEPLOY)
+[19:05:26] Discovered child instance: 6755399442311218 (parent: 6755399442309670)
+[19:05:35] Task completed: "Review
+Brief" (Task_ReviewBrief)
+[19:05:37] Job completed: distribute-committee-brief (6755399442311464)
+[19:05:45] Task completed: "Cast
+Vote" (Task_CastVote)
+[19:05:47] Job completed: tally-committee-votes (6755399442311534)
+[19:05:53] Message published: VendorResponseMessage (VENDOR-QUICKDEPLOY)
+[19:05:53] Message published: SignedContractMessage (CONTRACT-QUICKDEPLOY)
+[19:05:53] Message published: MiniRFPResponseMessage (VENDOR-QUICKDEPLOY)
+[19:05:53] Process COMPLETED after 21 iterations</pre>
+      </details>
+    </div>
+
+  <div class="footer">
+    SLA Governance Platform | Enterprise Software Governance Framework | Camunda 8 Cloud
+  </div>
+</body>
+</html>
