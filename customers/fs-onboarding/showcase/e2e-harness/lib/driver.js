@@ -29,7 +29,7 @@ class ScenarioDriver {
     this.childKeys = new Set();
     this.completedTasks = new Set();
     this.iteration = 0;
-    this.maxIterations = 200;
+    this.maxIterations = 80;
     this.staleCount = 0;
   }
 
@@ -62,25 +62,50 @@ class ScenarioDriver {
       // 3. Find and complete user tasks
       progress = await this._handleUserTasks() || progress;
 
-      // 4. Publish messages for receive tasks (every 3rd iteration)
+      // 4. Publish messages for receive tasks (every 3rd iteration, doesn't count as progress)
       if (this.iteration % 3 === 0) {
-        progress = await this._handleMessages() || progress;
+        await this._handleMessages();
       }
 
-      // 5. Resolve incidents
+      // 5. Check for incidents and inject variables at process scope
+      const stateCheck = await this._checkState();
+      if (stateCheck === 'COMPLETED' || stateCheck === 'TERMINATED') {
+        this._log(`Process ${stateCheck} after ${this.iteration} iterations`);
+        return { status: stateCheck, log: this.log, iterations: this.iteration };
+      }
+
+      // If process has incidents or is stalled, inject all routing vars at process scope
+      if (!progress || this.staleCount > 1) {
+        try {
+          await api.updateVariables(this.instanceKey, this.scenario.baseVars);
+          // Also inject into all known children
+          for (const ck of this.childKeys) {
+            try { await api.updateVariables(ck, this.scenario.baseVars); } catch {}
+          }
+          if (this.staleCount > 1) this._log('Injected routing variables at process scope');
+        } catch (e) {
+          if (this.staleCount > 2) this._log(`Variable injection failed: ${e.message}`);
+        }
+      }
+
+      // Also try Operate-based incident resolution
       progress = await this._handleIncidents() || progress;
-
-      // 6. Check completion
-      const state = await this._checkState();
-      if (state === 'COMPLETED' || state === 'TERMINATED') {
-        this._log(`Process ${state} after ${this.iteration} iterations`);
-        return { status: state, log: this.log, iterations: this.iteration };
-      }
 
       if (!progress) {
         this.staleCount++;
-        if (this.staleCount > 8) {
-          this._log('STALLED — no progress for 8 iterations');
+        // On 3rd stale iteration, dump active flow nodes for diagnosis
+        if (this.staleCount === 3) {
+          try {
+            const nodes = await api.searchFlowNodes(this.instanceKey);
+            const items = nodes.items || [];
+            for (const n of items) {
+              this._log(`ACTIVE NODE: ${n.flowNodeId} (${n.type})${n.incident ? ' [INCIDENT]' : ''}`);
+            }
+          } catch (e) { this._log(`Flow node check failed: ${e.message}`); }
+        }
+        if (this.staleCount > 12) {
+          this._log('STALLED — no progress for 12 iterations, cancelling instance');
+          await this._cleanup();
           return { status: 'STALLED', log: this.log, iterations: this.iteration };
         }
       } else {
@@ -90,8 +115,25 @@ class ScenarioDriver {
       await sleep(this.staleCount > 3 ? 3000 : 1500);
     }
 
-    this._log('MAX ITERATIONS reached');
+    this._log('MAX ITERATIONS reached, cancelling instance');
+    await this._cleanup();
     return { status: 'MAX_ITERATIONS', log: this.log, iterations: this.iteration };
+  }
+
+  async _cleanup() {
+    try {
+      const res = await api.getProcess(this.instanceKey);
+      if (res.state === 'ACTIVE') {
+        const http = require('http');
+        await new Promise((resolve) => {
+          const req = http.request(`http://127.0.0.1:3847/api/process/${this.instanceKey}`, { method: 'DELETE' }, (r) => {
+            let d = ''; r.on('data', c => d += c); r.on('end', () => resolve(d));
+          });
+          req.end();
+        });
+        this._log(`Instance ${this.instanceKey} cancelled`);
+      }
+    } catch {}
   }
 
   async _discoverChildren() {
@@ -104,10 +146,16 @@ class ScenarioDriver {
           const ck = child.processInstanceKey || child.key;
           if (ck && !this.childKeys.has(String(ck))) {
             this.childKeys.add(String(ck));
-            this._log(`Discovered child instance: ${ck}`);
+            this._log(`Discovered child instance: ${ck} (parent: ${pk})`);
           }
         }
-      } catch {}
+      } catch (e) {
+        // Try Operate API as fallback for child discovery
+        try {
+          const nodes = await api.searchFlowNodes(pk);
+          // No action needed here — just using the Operate API to verify connectivity
+        } catch {}
+      }
     }
   }
 
@@ -161,14 +209,21 @@ class ScenarioDriver {
             name, value: JSON.stringify(value),
           }));
 
+          // Complete via BOTH APIs — Tasklist for job-based, Zeebe for zeebe:userTask
+          let completed = false;
           try {
             await api.assignTask(tid);
             await api.completeTask(tid, varsList);
+            completed = true;
+          } catch {}
+          try {
+            await api.completeZeebeUserTask(tid, vars);
+            completed = true;
+          } catch {}
+          if (completed) {
             this.completedTasks.add(tid);
             this._log(`Task completed: "${taskName}" (${taskDefId})`);
             progress = true;
-          } catch (e) {
-            // Task may have been resolved by another action
           }
         }
       } catch (e) {

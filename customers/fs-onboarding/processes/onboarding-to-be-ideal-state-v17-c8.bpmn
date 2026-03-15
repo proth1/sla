@@ -164,7 +164,7 @@
       </bpmn:businessRuleTask>
       <bpmn:businessRuleTask id="Task_PrioritizationScoring" name="Prioritization&#10;Scoring">
         <bpmn:extensionElements>
-          <zeebe:calledDecision decisionId="OB_DMN_PrioritizationScoring" resultVariable="priorityTier" />
+          <zeebe:calledDecision decisionId="OB_DMN_PrioritizationScoring" resultVariable="prioritizationResult" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Prioritization" />
             <zeebe:property name="raci_r" value="Governance" />
@@ -388,7 +388,7 @@
         </bpmn:userTask>
         <bpmn:businessRuleTask id="Activity_0qm2dwv" name="Deal-Killer&#10;Pre-Screen">
           <bpmn:extensionElements>
-            <zeebe:calledDecision decisionId="OB-DMN-7-deal-killer-prescreen" resultVariable="dealKillerResult" />
+            <zeebe:calledDecision decisionId="OB_DMN_DealKillerPrescreen" resultVariable="miniRfpDkResult" />
           </bpmn:extensionElements>
           <bpmn:incoming>Flow_0z8ekq0</bpmn:incoming>
           <bpmn:outgoing>Flow_1113k7p</bpmn:outgoing>
@@ -413,7 +413,7 @@
         </bpmn:userTask>
         <bpmn:businessRuleTask id="Activity_03zg52r" name="Question&#10;Selection">
           <bpmn:extensionElements>
-            <zeebe:calledDecision decisionId="OB-DMN-8-question-selection" resultVariable="selectedCategories" />
+            <zeebe:calledDecision decisionId="OB_DMN_QuestionSelection" resultVariable="selectedCategories" />
           </bpmn:extensionElements>
           <bpmn:incoming>Flow_1h27uuz</bpmn:incoming>
           <bpmn:outgoing>Flow_17o2xz0</bpmn:outgoing>
@@ -917,7 +917,7 @@
       </bpmn:sequenceFlow>
       <bpmn:businessRuleTask id="Task_SecurityAssessmentRouting" name="Cyber Security and Security Architecture">
         <bpmn:extensionElements>
-          <zeebe:calledDecision decisionId="OB_DMN_SecurityAssessmentRouting" resultVariable="securityAssessmentLevel" />
+          <zeebe:calledDecision decisionId="OB_DMN_SecurityAssessmentRouting" resultVariable="securityRoutingResult" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Cyber" />
             <zeebe:property name="raci_r" value="Automation" />
@@ -951,10 +951,10 @@
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_SP3_SAR1" sourceRef="Task_SecurityAssessmentRouting" targetRef="GW_SecurityLevel" />
       <bpmn:sequenceFlow id="Flow_SP3_SAR_Baseline" name="Baseline" sourceRef="GW_SecurityLevel" targetRef="Task_BaselineSecurityCheck">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=securityAssessmentLevel = "Baseline"</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=securityRoutingResult.assessmentLevel = "Baseline"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP3_SAR_Elevated" name="Elevated/Major" sourceRef="GW_SecurityLevel" targetRef="Task_SecurityAssessment">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=securityAssessmentLevel != "Baseline"</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=securityRoutingResult.assessmentLevel != "Baseline"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP3_SAR_BaselineJoin" sourceRef="Task_BaselineSecurityCheck" targetRef="GW_MergeSecurityAssessment" />
       <bpmn:sequenceFlow id="Flow_SP3_P2J" sourceRef="Task_SecurityAssessment" targetRef="GW_MergeSecurityAssessment" />
