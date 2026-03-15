@@ -119,9 +119,26 @@ async function searchInstances(filter) {
 }
 
 async function getChildInstances(parentKey) {
-  return camundaApi('POST', '/v2/process-instances/search', {
-    filter: { parentProcessInstanceKey: Number(parentKey) },
+  // Operate API — Zeebe v2 doesn't support parentProcessInstanceKey filter
+  const operate = `https://ric-1.operate.camunda.io/${CONFIG.clusterId}`;
+  const token = await auth.getToken('zeebe.camunda.io');
+  return new Promise((resolve, reject) => {
+    const u = new URL(`${operate}/v1/process-instances/search`);
+    const https = require('https');
+    const req = https.request({
+      hostname: u.hostname, port: 443, path: u.pathname, method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      timeout: 10000,
+    }, handler(resolve, reject));
+    req.on('error', (e) => reject(e));
+    req.on('timeout', () => { req.destroy(); reject(new Error('timeout')); });
+    req.write(JSON.stringify({ filter: { parentKey: Number(parentKey), state: 'ACTIVE' }, size: 50 }));
+    req.end();
   });
+}
+
+async function completeZeebeUserTask(taskKey, variables = {}) {
+  return camundaApi('POST', `/v2/user-tasks/${taskKey}/completion`, { variables });
 }
 
 async function searchTasks(filter) {
@@ -180,6 +197,6 @@ async function searchIncidents(processInstanceKey) {
 module.exports = {
   deploy, startProcess, getProcess, getTasks, assignTask, completeTask, getTaskVariables,
   activateJobs, completeJob, publishMessage, searchInstances, getChildInstances,
-  searchTasks, assignTaskDirect, completeTaskDirect, updateVariables, resolveIncident,
-  searchFlowNodes, searchIncidents,
+  searchTasks, assignTaskDirect, completeTaskDirect, completeZeebeUserTask,
+  updateVariables, resolveIncident, searchFlowNodes, searchIncidents,
 };
