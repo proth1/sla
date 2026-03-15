@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_RFP_Step5",
+  "id": "rfp-step5-send-vendor",
   "components": [
     {
       "type": "text",
@@ -33,14 +33,19 @@
       "type": "textfield",
       "key": "vendor.vendorContactName",
       "label": "Vendor Contact Name",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "id": "Field_S5_04"
     },
     {
       "type": "textfield",
       "key": "vendor.vendorContactEmail",
       "label": "Vendor Contact Email",
-      "validate": { "required": true, "pattern": "^[^@]+@[^@]+\\.[^@]+$" },
+      "validate": {
+        "required": true,
+        "pattern": "^[^@]+@[^@]+\\.[^@]+$"
+      },
       "id": "Field_S5_05"
     },
     {
@@ -57,7 +62,10 @@
       "key": "responseDeadlineDays",
       "label": "Response Deadline (calendar days)",
       "defaultValue": 14,
-      "validate": { "required": true, "min": 14 },
+      "validate": {
+        "required": true,
+        "min": 14
+      },
       "description": "Minimum 14 days (~10 business days). Shorter deadlines require Concierge override.",
       "id": "Field_S5_08"
     },
@@ -65,10 +73,18 @@
       "type": "select",
       "key": "deliveryMethod",
       "label": "Delivery Method",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "values": [
-        { "label": "Portal Link (recommended)", "value": "portal" },
-        { "label": "Email with Attachment", "value": "email" }
+        {
+          "label": "Portal Link (recommended)",
+          "value": "portal"
+        },
+        {
+          "label": "Email with Attachment",
+          "value": "email"
+        }
       ],
       "id": "Field_S5_09"
     },
@@ -88,8 +104,14 @@
       "description": "Auto-generated one-page letter framing the engagement as a partnership invitation.",
       "defaultValue": "yes",
       "values": [
-        { "label": "Yes — include cover letter", "value": "yes" },
-        { "label": "No — questionnaire only", "value": "no" }
+        {
+          "label": "Yes \u2014 include cover letter",
+          "value": "yes"
+        },
+        {
+          "label": "No \u2014 questionnaire only",
+          "value": "no"
+        }
       ],
       "id": "Field_S5_12"
     },
@@ -100,8 +122,14 @@
       "description": "Include category weights and scoring approach so vendor understands how responses will be evaluated.",
       "defaultValue": "yes",
       "values": [
-        { "label": "Yes — share criteria", "value": "yes" },
-        { "label": "No — keep criteria internal", "value": "no" }
+        {
+          "label": "Yes \u2014 share criteria",
+          "value": "yes"
+        },
+        {
+          "label": "No \u2014 keep criteria internal",
+          "value": "no"
+        }
       ],
       "id": "Field_S5_13"
     },

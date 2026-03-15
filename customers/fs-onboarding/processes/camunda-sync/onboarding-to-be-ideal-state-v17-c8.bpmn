@@ -442,7 +442,7 @@
         <bpmn:sequenceFlow id="Flow_0z8ekq0" sourceRef="Activity_0uolphp" targetRef="Activity_0qm2dwv" />
         <bpmn:sequenceFlow id="Flow_1113k7p" sourceRef="Activity_0qm2dwv" targetRef="Gateway_15kvflp" />
         <bpmn:sequenceFlow id="Flow_0lt8pon" name="Yes" sourceRef="Gateway_15kvflp" targetRef="Activity_0h9zvjd">
-          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dealKillerFound = true</bpmn:conditionExpression>
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=miniRfpDkResult.dealKillerResult = "Blocked"</bpmn:conditionExpression>
         </bpmn:sequenceFlow>
         <bpmn:sequenceFlow id="Flow_17o2xz0" sourceRef="Activity_03zg52r" targetRef="Gateway_1scqkxj" />
         <bpmn:sequenceFlow id="Flow_0rtpsy9" sourceRef="Activity_15rnp82" targetRef="SP_PerVendorEvaluation" />
