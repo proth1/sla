@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.121
+**Current Version**: 2026.03.122
 **Last Release**: 2026-03-15
-**Total Releases**: 121
+**Total Releases**: 122
 
 ## Artifact Counts
 
@@ -37,6 +37,7 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.122 | 2026-03-15 | #153 | E2E harness fixes — dual-API completion, 9/11 scenarios passing |
 | 2026.03.121 | 2026-03-15 | #151 | E2E test harness (10 scenarios) + deploy-ready v17 BPMN fixes |
 | 2026.03.120 | 2026-03-15 | #149 | Mini RFP multi-vendor parallel MI subprocess |
 | 2026.03.119 | 2026-03-14 | #147 | SP1 optimization — 8 tasks to 3, fail-fast deal killer, form consolidation |
