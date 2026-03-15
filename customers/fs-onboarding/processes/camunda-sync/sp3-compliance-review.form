@@ -1,0 +1,146 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "sp3-compliance-review",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Compliance Review\nReview regulatory alignment and identify any compliance findings that must be addressed before approval.",
+      "id": "Field_CR01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_CR02"
+    },
+    {
+      "type": "group",
+      "label": "Request Context",
+      "id": "Field_CR03",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "vendorName",
+          "label": "Vendor / Product Name",
+          "disabled": true,
+          "id": "Field_CR04"
+        },
+        {
+          "type": "textfield",
+          "key": "riskTier",
+          "label": "Risk Tier",
+          "disabled": true,
+          "description": "Risk tier assigned during triage (read-only).",
+          "id": "Field_CR05"
+        },
+        {
+          "type": "textfield",
+          "key": "dataClassification",
+          "label": "Data Classification",
+          "disabled": true,
+          "id": "Field_CR06"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_CR07"
+    },
+    {
+      "type": "group",
+      "label": "Regulatory Alignment Assessment",
+      "id": "Field_CR08",
+      "components": [
+        {
+          "type": "select",
+          "key": "complianceStatus",
+          "label": "Compliance Status",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Compliant — meets all applicable requirements", "value": "compliant" },
+            { "label": "Conditionally Compliant — meets requirements with conditions", "value": "conditionally-compliant" },
+            { "label": "Non-Compliant — fails to meet one or more requirements", "value": "non-compliant" }
+          ],
+          "id": "Field_CR09"
+        },
+        {
+          "type": "textarea",
+          "key": "regulatoryFindings",
+          "label": "Regulatory Findings",
+          "description": "Document any compliance findings, gaps, or concerns identified during this review.",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_CR10"
+        },
+        {
+          "type": "radio",
+          "key": "remediationRequired",
+          "label": "Is Remediation Required?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Yes", "value": "yes" },
+            { "label": "No", "value": "no" }
+          ],
+          "id": "Field_CR11"
+        },
+        {
+          "type": "textarea",
+          "key": "remediationPlan",
+          "label": "Remediation Plan",
+          "description": "Describe the steps required to achieve compliance. Include owner and target dates.",
+          "conditional": {
+            "hide": "=remediationRequired != \"yes\""
+          },
+          "id": "Field_CR12"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_CR13"
+    },
+    {
+      "type": "group",
+      "label": "Compliance Decision",
+      "id": "Field_CR14",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "complianceReviewerName",
+          "label": "Compliance Reviewer Name",
+          "id": "Field_CR15"
+        },
+        {
+          "type": "radio",
+          "key": "complianceApproval",
+          "label": "Compliance Approval Decision",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Approved — no compliance barriers", "value": "approved" },
+            { "label": "Rejected — compliance barriers cannot be resolved", "value": "rejected" }
+          ],
+          "id": "Field_CR16"
+        },
+        {
+          "type": "textarea",
+          "key": "complianceDecisionNotes",
+          "label": "Decision Notes",
+          "description": "Additional notes or conditions attached to this compliance decision.",
+          "id": "Field_CR17"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

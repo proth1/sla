@@ -1,0 +1,146 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "sp5-oversight-audit",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Oversight Audit Review\nInternal Audit / 3rd Line of Defense review before go-live. Verify that controls established throughout the governance process were properly applied and documented.",
+      "id": "Field_OA01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_OA02"
+    },
+    {
+      "type": "group",
+      "label": "Request Context",
+      "id": "Field_OA03",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "vendorName",
+          "label": "Vendor / Product Name",
+          "disabled": true,
+          "id": "Field_OA04"
+        },
+        {
+          "type": "textfield",
+          "key": "overallRiskRating",
+          "label": "Final Risk Rating",
+          "disabled": true,
+          "description": "Overall risk rating from risk assessment (read-only).",
+          "id": "Field_OA05"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_OA06"
+    },
+    {
+      "type": "group",
+      "label": "Audit Scope",
+      "id": "Field_OA07",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "auditScope",
+          "label": "Audit Scope",
+          "description": "Define the scope of this oversight review — which phases, controls, and documentation are being assessed.",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_OA08"
+        },
+        {
+          "type": "select",
+          "key": "controlsAdequacy",
+          "label": "Controls Adequacy",
+          "description": "Overall assessment of whether governance controls were adequate throughout the process.",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Adequate — controls are appropriately designed and operating effectively", "value": "adequate" },
+            { "label": "Needs Improvement — controls exist but have gaps or weaknesses", "value": "needs-improvement" },
+            { "label": "Inadequate — material control deficiencies identified", "value": "inadequate" }
+          ],
+          "id": "Field_OA09"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_OA10"
+    },
+    {
+      "type": "group",
+      "label": "Audit Findings",
+      "id": "Field_OA11",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "auditFindings",
+          "label": "Audit Findings",
+          "description": "Document all findings from the oversight review. Use finding codes (e.g., F-001) for traceability.",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_OA12"
+        },
+        {
+          "type": "textarea",
+          "key": "auditRecommendations",
+          "label": "Audit Recommendations",
+          "description": "List recommendations to address findings. Include priority (High/Medium/Low) and suggested remediation.",
+          "id": "Field_OA13"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_OA14"
+    },
+    {
+      "type": "group",
+      "label": "Oversight Decision",
+      "id": "Field_OA15",
+      "components": [
+        {
+          "type": "radio",
+          "key": "oversightApproval",
+          "label": "Oversight Approval Decision",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Approved — governance process was properly executed", "value": "approved" },
+            { "label": "Conditional — approved subject to addressing specific findings", "value": "conditional" },
+            { "label": "Rejected — material deficiencies require remediation before go-live", "value": "rejected" }
+          ],
+          "id": "Field_OA16"
+        },
+        {
+          "type": "textarea",
+          "key": "oversightDecisionNotes",
+          "label": "Decision Notes",
+          "description": "Capture any conditions, required follow-up actions, or management responses.",
+          "id": "Field_OA17"
+        },
+        {
+          "type": "textfield",
+          "key": "auditReviewerName",
+          "label": "Audit Reviewer Name",
+          "id": "Field_OA18"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}
