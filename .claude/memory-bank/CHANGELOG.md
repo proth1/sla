@@ -1,5 +1,20 @@
 # Changelog
 
+## [2026.03.121] - 2026-03-15
+
+### Added
+- E2E test harness with 10 scenarios covering all onboarding process paths (PR #151)
+- 6 missing Camunda forms: sp1-describe-and-screen, sp1-triage-and-route, sp3-compliance-review, sp3-privacy-assessment, sp3-risk-assessment, sp5-oversight-audit (PR #151)
+- OB-DMN-8-question-selection deployed to camunda-sync (PR #151)
+- HTML report generator for test results (dark-mode dashboard) (PR #151)
+
+### Fixed
+- 19 Camunda 8 deployment errors: added conditionExpressions to 10 gateway flows, default attributes to 9 gateways (PR #151)
+- MI subprocess outputElement fixed for FEEL expression compliance (=vendorResult) (PR #151)
+- DMN result variable naming: dkScreenResult wrapper to handle complex DMN output objects (PR #151)
+- sp1-triage-and-route.form: added missing riskTier and dataClassification fields (PR #151)
+- sp1-describe-and-screen.form: fixed form ID mismatch (PR #151)
+
 ## [2026.03.120] - 2026-03-15
 
 ### Added
