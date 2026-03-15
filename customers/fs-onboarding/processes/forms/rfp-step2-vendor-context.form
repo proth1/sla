@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_RFP_Step2",
+  "id": "rfp-step2-vendor-context",
   "components": [
     {
       "type": "text",
@@ -28,10 +28,18 @@
       "type": "radio",
       "key": "existingRelationship",
       "label": "Does the organization already use this vendor?",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "values": [
-        { "label": "Yes — existing relationship", "value": "yes" },
-        { "label": "No — new vendor", "value": "no" }
+        {
+          "label": "Yes \u2014 existing relationship",
+          "value": "yes"
+        },
+        {
+          "label": "No \u2014 new vendor",
+          "value": "no"
+        }
       ],
       "id": "Field_S2_06"
     },
@@ -39,12 +47,26 @@
       "type": "select",
       "key": "deploymentModel",
       "label": "Deployment Model",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "values": [
-        { "label": "Cloud (SaaS)", "value": "cloud" },
-        { "label": "On-Premise", "value": "on-premise" },
-        { "label": "Hybrid", "value": "hybrid" },
-        { "label": "Unknown", "value": "unknown" }
+        {
+          "label": "Cloud (SaaS)",
+          "value": "cloud"
+        },
+        {
+          "label": "On-Premise",
+          "value": "on-premise"
+        },
+        {
+          "label": "Hybrid",
+          "value": "hybrid"
+        },
+        {
+          "label": "Unknown",
+          "value": "unknown"
+        }
       ],
       "id": "Field_S2_07"
     },
@@ -53,12 +75,26 @@
       "key": "dataClassification",
       "label": "Data Classification",
       "description": "Highest classification of data this system will process.",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "values": [
-        { "label": "Public", "value": "public" },
-        { "label": "Internal", "value": "internal" },
-        { "label": "Confidential", "value": "confidential" },
-        { "label": "Restricted", "value": "restricted" }
+        {
+          "label": "Public",
+          "value": "public"
+        },
+        {
+          "label": "Internal",
+          "value": "internal"
+        },
+        {
+          "label": "Confidential",
+          "value": "confidential"
+        },
+        {
+          "label": "Restricted",
+          "value": "restricted"
+        }
       ],
       "id": "Field_S2_08"
     },
@@ -67,16 +103,42 @@
       "key": "regulatoryScope",
       "label": "Applicable Regulatory Frameworks",
       "description": "Select all regulations that may apply to this engagement.",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "values": [
-        { "label": "GDPR", "value": "GDPR" },
-        { "label": "CCPA", "value": "CCPA" },
-        { "label": "HIPAA", "value": "HIPAA" },
-        { "label": "SOX", "value": "SOX" },
-        { "label": "EU AI Act", "value": "EU_AI_Act" },
-        { "label": "DORA", "value": "DORA" },
-        { "label": "OCC 2023-17", "value": "OCC_2023_17" },
-        { "label": "None Known", "value": "None" }
+        {
+          "label": "GDPR",
+          "value": "GDPR"
+        },
+        {
+          "label": "CCPA",
+          "value": "CCPA"
+        },
+        {
+          "label": "HIPAA",
+          "value": "HIPAA"
+        },
+        {
+          "label": "SOX",
+          "value": "SOX"
+        },
+        {
+          "label": "EU AI Act",
+          "value": "EU_AI_Act"
+        },
+        {
+          "label": "DORA",
+          "value": "DORA"
+        },
+        {
+          "label": "OCC 2023-17",
+          "value": "OCC_2023_17"
+        },
+        {
+          "label": "None Known",
+          "value": "None"
+        }
       ],
       "id": "Field_S2_09"
     },
@@ -85,14 +147,34 @@
       "key": "dataTypes",
       "label": "Data Types Processed",
       "description": "What types of data will this system handle?",
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "values": [
-        { "label": "Personally Identifiable Information (PII)", "value": "PII" },
-        { "label": "Protected Health Information (PHI)", "value": "PHI" },
-        { "label": "Financial Data", "value": "Financial" },
-        { "label": "Public Data", "value": "Public" },
-        { "label": "Intellectual Property", "value": "IP" },
-        { "label": "Other Regulated Data", "value": "OtherRegulated" }
+        {
+          "label": "Personally Identifiable Information (PII)",
+          "value": "PII"
+        },
+        {
+          "label": "Protected Health Information (PHI)",
+          "value": "PHI"
+        },
+        {
+          "label": "Financial Data",
+          "value": "Financial"
+        },
+        {
+          "label": "Public Data",
+          "value": "Public"
+        },
+        {
+          "label": "Intellectual Property",
+          "value": "IP"
+        },
+        {
+          "label": "Other Regulated Data",
+          "value": "OtherRegulated"
+        }
       ],
       "id": "Field_S2_10"
     },
@@ -102,12 +184,30 @@
       "label": "Existing Vendor Assessments",
       "description": "Does the vendor already have any of these assessments? If so, we can skip duplicate questions.",
       "values": [
-        { "label": "SIG Lite", "value": "SIG_Lite" },
-        { "label": "SOC 2 Type II", "value": "SOC2_TypeII" },
-        { "label": "ISO 27001", "value": "ISO_27001" },
-        { "label": "PCI DSS", "value": "PCI_DSS" },
-        { "label": "HITRUST", "value": "HITRUST" },
-        { "label": "None", "value": "None" }
+        {
+          "label": "SIG Lite",
+          "value": "SIG_Lite"
+        },
+        {
+          "label": "SOC 2 Type II",
+          "value": "SOC2_TypeII"
+        },
+        {
+          "label": "ISO 27001",
+          "value": "ISO_27001"
+        },
+        {
+          "label": "PCI DSS",
+          "value": "PCI_DSS"
+        },
+        {
+          "label": "HITRUST",
+          "value": "HITRUST"
+        },
+        {
+          "label": "None",
+          "value": "None"
+        }
       ],
       "id": "Field_S2_11"
     }

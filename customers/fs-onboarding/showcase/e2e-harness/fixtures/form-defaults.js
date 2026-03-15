@@ -100,6 +100,17 @@ module.exports = {
   urgency: 6,
   capacityAvailability: 7,
 
+  // ── DMN-7 Deal Killer inputs ────────────────────────────────
+  aiModelName: 'N/A',
+  dataResidencyRequirement: 'Any',
+  complianceBlocker: false,
+
+  // ── DMN-8 Question Selection inputs ─────────────────────────
+  technologyType: 'SaaS',
+  existingRelationship: 'no',
+  businessCriticality: 'standard',
+  budgetRange: '100k_500k',
+
   // ── Form-specific fields ────────────────────────────────────
   triageDecision: 'proceed',
   triageRationale: 'Request proceeds based on clear business need.',
