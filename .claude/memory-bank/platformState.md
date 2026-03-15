@@ -1,8 +1,8 @@
 # Platform State
 
-**Current Version**: 2026.03.119
-**Last Release**: 2026-03-14
-**Total Releases**: 119
+**Current Version**: 2026.03.120
+**Last Release**: 2026-03-15
+**Total Releases**: 120
 
 ## Artifact Counts
 
@@ -37,13 +37,13 @@
 
 | Version | Date | PR | Summary |
 |---------|------|----|---------|
+| 2026.03.120 | 2026-03-15 | #149 | Mini RFP multi-vendor parallel MI subprocess |
 | 2026.03.119 | 2026-03-14 | #147 | SP1 optimization — 8 tasks to 3, fail-fast deal killer, form consolidation |
 | 2026.03.118 | 2026-03-13 | #146 | Current state animated explainer with kpmg.com OTP access |
 | 2026.03.117 | 2026-03-12 | #143 | User task inventory PPTX v2 with BPMN process model diagrams |
 | 2026.03.116 | 2026-03-12 | #141 | Rename business-lane to quarterback-lane in v17 BPMN + user task inventory PPTX |
 | 2026.03.115 | 2026-03-12 | #139 | V17 BPMN cleanup — task promotion, NDA enrichment, deal-killer restructure, overlap checker fix |
 | 2026.03.114 | 2026-03-12 | #137 | Fix stale v16 IDs in v17 BPMN, remove 20 orphaned v16 images |
-| 2026.03.113 | 2026-03-12 | #135 | Sync v17 BPMN from Web Modeler, re-render diagrams, update presentation |
 | 2026.03.112 | 2026-03-12 | #133 | Sync v16 BPMN, re-render diagrams, update presentation (50 slides) |
 | 2026.03.111 | 2026-03-12 | #132 | Presentation: competitive positioning + AI strategy slides (46 slides) |
 | 2026.03.110 | 2026-03-12 | #131 | Competitive analysis — AI opportunity mapping, contracting deep dive, open orchestration |
