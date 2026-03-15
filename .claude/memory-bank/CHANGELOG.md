@@ -1,5 +1,21 @@
 # Changelog
 
+## [2026.03.123] - 2026-03-15
+
+### Added
+- 14 new E2E scenarios (S11-S24) for full gateway coverage — 25 total (PR #155, #156)
+- Coverage: triage rejection, NDA redline, Enable pathway, vendor scoring, contract rejection,
+  CIO overrule, SP2 committee, PDLC retry, PoC required, major security, Mini RFP kill,
+  SP5 rejection, NDA pre-approved fast, full AI governance
+
+### Fixed
+- 17 RFP form ID mismatches (internal id vs BPMN formId references) (PR #155)
+- Mini RFP gateway condition: dealKillerFound -> miniRfpDkResult.dealKillerResult (PR #155)
+- Missing DMN-7/8 input variables in scenario fixtures (PR #155)
+
+### Changed
+- E2E test results: 25/25 scenarios PASSED against Camunda 8 Cloud (PR #155, #156)
+
 ## [2026.03.122] - 2026-03-15
 
 ### Fixed
