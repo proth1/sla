@@ -27,7 +27,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function main() {
   console.log('╔══════════════════════════════════════════════════════════╗');
-  console.log('║     SLA Governance E2E Test Harness (10 Scenarios)      ║');
+  console.log('║     SLA Governance E2E Test Harness (25 Scenarios)      ║');
   console.log('╚══════════════════════════════════════════════════════════╝\n');
 
   const selectedScenarios = scenarioFilter
