@@ -1,0 +1,72 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "Form_RFP_IdentifyVendors",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Identify Vendors\nAdd all vendors to evaluate in this Mini RFP. Each vendor will receive the questionnaire independently and be tracked with their own NDA, context review, and response timeline.",
+      "id": "Field_IV_01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_IV_02"
+    },
+    {
+      "type": "text",
+      "text": "### Vendor List\nAdd one or more vendors. Each entry creates a parallel evaluation track.",
+      "id": "Field_IV_03"
+    },
+    {
+      "type": "dynamiclist",
+      "key": "vendorList",
+      "label": "Vendors to Evaluate",
+      "description": "Add each vendor that should receive the Mini RFP questionnaire.",
+      "validate": { "required": true, "minItems": 1 },
+      "components": [
+        {
+          "type": "textfield",
+          "key": "vendorName",
+          "label": "Vendor / Product Name",
+          "validate": { "required": true },
+          "id": "Field_IV_05"
+        },
+        {
+          "type": "textfield",
+          "key": "vendorContactName",
+          "label": "Vendor Contact Name",
+          "validate": { "required": true },
+          "id": "Field_IV_06"
+        },
+        {
+          "type": "textfield",
+          "key": "vendorContactEmail",
+          "label": "Vendor Contact Email",
+          "validate": { "required": true, "pattern": "^[^@]+@[^@]+\\.[^@]+$" },
+          "id": "Field_IV_07"
+        }
+      ],
+      "id": "Field_IV_04"
+    },
+    {
+      "type": "separator",
+      "id": "Field_IV_08"
+    },
+    {
+      "type": "radio",
+      "key": "competitiveBid",
+      "label": "Is this a competitive bid?",
+      "description": "Multiple vendors enables side-by-side comparison of responses.",
+      "values": [
+        { "label": "Yes — evaluating multiple vendors", "value": "yes" },
+        { "label": "No — single vendor", "value": "no" }
+      ],
+      "id": "Field_IV_09"
+    }
+  ]
+}
