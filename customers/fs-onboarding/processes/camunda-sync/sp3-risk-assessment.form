@@ -1,0 +1,166 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "sp3-risk-assessment",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Enterprise Risk Assessment\nScore operational, vendor, and financial risk dimensions. This assessment feeds the overall risk register and informs governance approval routing.",
+      "id": "Field_RA01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_RA02"
+    },
+    {
+      "type": "group",
+      "label": "Request Context",
+      "id": "Field_RA03",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "vendorName",
+          "label": "Vendor / Product Name",
+          "disabled": true,
+          "id": "Field_RA04"
+        },
+        {
+          "type": "textfield",
+          "key": "riskTier",
+          "label": "Preliminary Risk Tier",
+          "disabled": true,
+          "description": "Risk tier from triage (read-only). This assessment may refine it.",
+          "id": "Field_RA05"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_RA06"
+    },
+    {
+      "type": "group",
+      "label": "Risk Scoring",
+      "id": "Field_RA07",
+      "components": [
+        {
+          "type": "number",
+          "key": "operationalRiskScore",
+          "label": "Operational Risk Score (1–10)",
+          "description": "Score the risk to business operations if this solution fails or is unavailable.",
+          "validate": {
+            "required": true,
+            "min": 1,
+            "max": 10
+          },
+          "id": "Field_RA08"
+        },
+        {
+          "type": "number",
+          "key": "vendorRiskScore",
+          "label": "Vendor Risk Score (1–10)",
+          "description": "Score vendor stability, concentration risk, and third-party dependency exposure.",
+          "validate": {
+            "required": true,
+            "min": 1,
+            "max": 10
+          },
+          "id": "Field_RA09"
+        },
+        {
+          "type": "number",
+          "key": "financialRiskScore",
+          "label": "Financial Risk Score (1–10)",
+          "description": "Score financial exposure including budget risk, contract terms, and cost overrun likelihood.",
+          "validate": {
+            "required": true,
+            "min": 1,
+            "max": 10
+          },
+          "id": "Field_RA10"
+        },
+        {
+          "type": "select",
+          "key": "overallRiskRating",
+          "label": "Overall Risk Rating",
+          "description": "Consolidated risk rating based on all dimensions assessed.",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Low — limited risk exposure", "value": "low" },
+            { "label": "Medium — manageable risk with standard controls", "value": "medium" },
+            { "label": "High — significant risk requiring enhanced oversight", "value": "high" },
+            { "label": "Critical — unacceptable risk without major mitigation", "value": "critical" }
+          ],
+          "id": "Field_RA11"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_RA12"
+    },
+    {
+      "type": "group",
+      "label": "Risk Mitigation",
+      "id": "Field_RA13",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "riskMitigationPlan",
+          "label": "Risk Mitigation Plan",
+          "description": "Describe controls, contingencies, and mitigating factors that reduce the identified risks.",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_RA14"
+        },
+        {
+          "type": "textarea",
+          "key": "residualRiskNotes",
+          "label": "Residual Risk After Mitigation",
+          "description": "Document any risk that remains after mitigation is applied.",
+          "id": "Field_RA15"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_RA16"
+    },
+    {
+      "type": "group",
+      "label": "Risk Assessment Decision",
+      "id": "Field_RA17",
+      "components": [
+        {
+          "type": "radio",
+          "key": "riskAssessmentApproval",
+          "label": "Risk Assessment Approval",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Approved — risk is acceptable with stated mitigations", "value": "approved" },
+            { "label": "Rejected — risk exceeds tolerance and cannot be mitigated", "value": "rejected" }
+          ],
+          "id": "Field_RA18"
+        },
+        {
+          "type": "textarea",
+          "key": "riskDecisionNotes",
+          "label": "Decision Notes",
+          "description": "Additional context or conditions for the risk approval decision.",
+          "id": "Field_RA19"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

@@ -1,0 +1,149 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.28.0"
+  },
+  "schemaVersion": 16,
+  "id": "sp3-privacy-assessment",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Privacy Assessment\nEvaluate data protection impact, PII exposure, and data residency requirements. Required for any solution processing personal or regulated data.",
+      "id": "Field_PA01"
+    },
+    {
+      "type": "separator",
+      "id": "Field_PA02"
+    },
+    {
+      "type": "group",
+      "label": "Request Context",
+      "id": "Field_PA03",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "vendorName",
+          "label": "Vendor / Product Name",
+          "disabled": true,
+          "id": "Field_PA04"
+        },
+        {
+          "type": "textfield",
+          "key": "dataClassification",
+          "label": "Data Classification",
+          "disabled": true,
+          "description": "From triage (read-only).",
+          "id": "Field_PA05"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_PA06"
+    },
+    {
+      "type": "group",
+      "label": "Data Protection Impact",
+      "id": "Field_PA07",
+      "components": [
+        {
+          "type": "select",
+          "key": "dataProtectionImpact",
+          "label": "Data Protection Impact Level",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Low — minimal personal data, low sensitivity", "value": "low" },
+            { "label": "Medium — moderate personal data or regulated data", "value": "medium" },
+            { "label": "High — significant PII, financial, or health data", "value": "high" }
+          ],
+          "id": "Field_PA08"
+        },
+        {
+          "type": "radio",
+          "key": "piiProcessed",
+          "label": "Is PII (Personally Identifiable Information) Processed?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Yes", "value": "yes" },
+            { "label": "No", "value": "no" }
+          ],
+          "id": "Field_PA09"
+        },
+        {
+          "type": "select",
+          "key": "dataResidency",
+          "label": "Data Residency",
+          "description": "Where will data be stored and processed?",
+          "values": [
+            { "label": "US Only", "value": "us-only" },
+            { "label": "European Union", "value": "eu" },
+            { "label": "Global / Multi-region", "value": "global" },
+            { "label": "Unknown / To Be Determined", "value": "unknown" }
+          ],
+          "id": "Field_PA10"
+        },
+        {
+          "type": "radio",
+          "key": "dpaRequired",
+          "label": "Is a Data Processing Agreement (DPA) Required?",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Yes — DPA required before processing begins", "value": "yes" },
+            { "label": "No — DPA not required", "value": "no" }
+          ],
+          "id": "Field_PA11"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "id": "Field_PA12"
+    },
+    {
+      "type": "group",
+      "label": "Privacy Findings & Decision",
+      "id": "Field_PA13",
+      "components": [
+        {
+          "type": "textarea",
+          "key": "privacyFindings",
+          "label": "Privacy Assessment Findings",
+          "description": "Document privacy risks, gaps, or concerns. Include GDPR/CCPA considerations where applicable.",
+          "validate": {
+            "required": true
+          },
+          "id": "Field_PA14"
+        },
+        {
+          "type": "radio",
+          "key": "privacyApproval",
+          "label": "Privacy Approval Decision",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Approved — privacy requirements can be satisfied", "value": "approved" },
+            { "label": "Rejected — privacy risks cannot be mitigated", "value": "rejected" }
+          ],
+          "id": "Field_PA15"
+        },
+        {
+          "type": "textarea",
+          "key": "privacyConditions",
+          "label": "Conditions / Required Controls",
+          "description": "If approved with conditions, list the privacy controls that must be implemented.",
+          "id": "Field_PA16"
+        }
+      ]
+    }
+  ],
+  "type": "default"
+}

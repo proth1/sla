@@ -6,7 +6,7 @@
     "version": "5.28.0"
   },
   "schemaVersion": 16,
-  "id": "Form_TriageAndRoute",
+  "id": "sp1-triage-and-route",
   "components": [
     {
       "type": "text",
@@ -126,6 +126,33 @@
       "type": "group",
       "label": "Triage Assessment",
       "components": [
+        {
+          "type": "select",
+          "key": "riskTier",
+          "label": "Risk Tier",
+          "validate": {
+            "required": true
+          },
+          "values": [
+            { "label": "Low", "value": "Low" },
+            { "label": "Medium", "value": "Medium" },
+            { "label": "High", "value": "High" },
+            { "label": "Critical", "value": "Critical" }
+          ],
+          "id": "Field_TR28"
+        },
+        {
+          "type": "select",
+          "key": "dataClassification",
+          "label": "Data Classification",
+          "values": [
+            { "label": "Public", "value": "Public" },
+            { "label": "Internal", "value": "Internal" },
+            { "label": "Confidential", "value": "Confidential" },
+            { "label": "Restricted", "value": "Restricted" }
+          ],
+          "id": "Field_TR29"
+        },
         {
           "type": "number",
           "key": "strategicAlignment",

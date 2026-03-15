@@ -1,0 +1,97 @@
+/**
+ * Scenario 9: 10-Vendor Competitive Bid — Enterprise ITSM Platform
+ * Maximum vendor count. Tests MI subprocess at scale.
+ * 2 vendors fail deal-killer, 8 proceed through evaluation.
+ * Expected: Software Onboarded
+ */
+const defaults = require('../fixtures/form-defaults');
+
+const vendorList = [
+  { vendorName: 'ServiceNow', vendorContactName: 'Tom Bradley', vendorContactEmail: 'tbradley@servicenow.com' },
+  { vendorName: 'BMC Helix', vendorContactName: 'Lisa Chang', vendorContactEmail: 'lchang@bmc.com' },
+  { vendorName: 'Ivanti Neurons', vendorContactName: 'David Park', vendorContactEmail: 'dpark@ivanti.com' },
+  { vendorName: 'Freshservice', vendorContactName: 'Priya Sharma', vendorContactEmail: 'psharma@freshworks.com' },
+  { vendorName: 'Jira Service Mgmt', vendorContactName: 'Ryan O\'Neil', vendorContactEmail: 'roneil@atlassian.com' },
+  { vendorName: 'ManageEngine', vendorContactName: 'Wei Zhang', vendorContactEmail: 'wzhang@manageengine.com' },
+  { vendorName: 'SysAid', vendorContactName: 'Sarah Goldstein', vendorContactEmail: 'sgoldstein@sysaid.com' },
+  { vendorName: 'Zendesk', vendorContactName: 'Marco Rossi', vendorContactEmail: 'mrossi@zendesk.com' },
+  { vendorName: 'HaloITSM', vendorContactName: 'Emily Watson', vendorContactEmail: 'ewatson@haloitsm.com' },
+  { vendorName: 'TOPdesk', vendorContactName: 'Henrik Johansson', vendorContactEmail: 'hjohansson@topdesk.com' },
+];
+
+module.exports = {
+  id: 'S09',
+  name: '10-Vendor Competitive Bid — Enterprise ITSM Platform',
+  description: '10 vendors in parallel MI subprocess. Stress test for concurrent vendor evaluation.',
+  expectedOutcome: 'Software Onboarded',
+  vendors: vendorList.map(v => v.vendorName),
+
+  startVars: {
+    ...defaults,
+    requestDescription: 'Enterprise ITSM platform replacement. 10-vendor competitive bid to replace legacy HP Service Manager. Full RFP process required.',
+    businessProblem: 'HP Service Manager EOL in 18 months. Need modern cloud-native ITSM with AI-powered ticket routing, self-service portal, and CMDB integration.',
+    vendorName: 'ServiceNow',
+    productName: 'Enterprise ITSM Platform',
+    existingSolutionDisposition: 'NoMatch',
+    ndaSigned: false,
+    rfpNeeded: true,
+    miniRfpRequired: true,
+    competitiveBid: 'yes',
+    vendorList,
+    pathway: 'Buy',
+    selectedPathway: 'Buy',
+    riskTier: 'High',
+    dataClassification: 'Confidential',
+    hasAIComponent: true,
+    hasAI: 'yes',
+    aiGovernanceRequired: true,
+    deploymentModel: 'cloud-saas',
+    estimatedBudget: 2000000,
+    expectedUserCount: 5000,
+    criticality: 'critical',
+    securityAssessmentLevel: 'Major',
+    approvalDecision: 'Approved',
+    finalDecision: 'Approved',
+    dealKillerFound: false,
+    dealKillerDecision: 'Proceed',
+    dealKillerResult: 'Proceed',
+    vendorId: 'VENDOR-SERVICENOW',
+    contractId: 'CONTRACT-SERVICENOW',
+    vendorToken: 'VENDOR-SERVICENOW',
+    applicableRegulations: 'SOX, OCC 2023-17, GDPR, NIST CSF 2.0, ISO 27001',
+  },
+
+  baseVars: {
+    ...defaults,
+    vendorName: 'ServiceNow',
+    existingSolutionDisposition: 'NoMatch',
+    rfpNeeded: true,
+    vendorList,
+    pathway: 'Buy',
+    selectedPathway: 'Buy',
+    riskTier: 'High',
+    dataClassification: 'Confidential',
+    hasAIComponent: true,
+    aiGovernanceRequired: true,
+    securityAssessmentLevel: 'Major',
+    approvalDecision: 'Approved',
+    finalDecision: 'Approved',
+    assessmentApproved: true,
+    governanceApproved: true,
+    contractApproved: true,
+    dealKillerFound: false,
+    dealKillerDecision: 'Proceed',
+    dealKillerResult: 'Proceed',
+    competitiveBid: 'yes',
+    ndaSigned: false,
+    ndaExecuted: true,
+    noModifications: true,
+    vendorId: 'VENDOR-SERVICENOW',
+    contractId: 'CONTRACT-SERVICENOW',
+    vendorToken: 'VENDOR-SERVICENOW',
+  },
+
+  taskOverrides: {
+    'rfp-identify-vendors': { vendorList },
+  },
+};

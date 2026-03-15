@@ -207,12 +207,14 @@
         <bpmn:incoming>Flow_SP2_6</bpmn:incoming>
         <bpmn:outgoing>Flow_19a3oiv</bpmn:outgoing>
       </bpmn:callActivity>
-      <bpmn:exclusiveGateway id="Gateway_14plxti" name="Approved ?">
+      <bpmn:exclusiveGateway id="Gateway_14plxti" name="Approved ?" default="Flow_070km79">
         <bpmn:incoming>Flow_19a3oiv</bpmn:incoming>
         <bpmn:outgoing>Flow_0dokh20</bpmn:outgoing>
         <bpmn:outgoing>Flow_070km79</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_0dokh20" name="Yes" sourceRef="Gateway_14plxti" targetRef="Task_PathwayRouting" />
+      <bpmn:sequenceFlow id="Flow_0dokh20" name="Yes" sourceRef="Gateway_14plxti" targetRef="Task_PathwayRouting" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=assessmentApproved = true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
       <bpmn:endEvent id="Event_09y2vf5" name="Prioritization Committee Not Approved">
         <bpmn:incoming>Flow_070km79</bpmn:incoming>
       </bpmn:endEvent>
@@ -324,7 +326,7 @@
       <bpmn:sequenceFlow id="Flow_SP1_EndLev" sourceRef="Task_LeverageExisting" targetRef="End_Leveraged" />
       <bpmn:businessRuleTask id="Task_DealKillerCheck" name="Deal Killer&#10;Pre-Screen">
         <bpmn:extensionElements>
-          <zeebe:calledDecision decisionId="OB_DMN_DealKillerPrescreen" resultVariable="dealKillerResult" />
+          <zeebe:calledDecision decisionId="OB_DMN_DealKillerPrescreen" resultVariable="dkScreenResult" />
           <zeebe:properties>
             <zeebe:property name="topics" value="Intake, Compliance" />
             <zeebe:property name="raci_r" value="Automation" />
@@ -344,10 +346,10 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_SP1_DK1" sourceRef="Task_DealKillerCheck" targetRef="GW_DealKiller" />
       <bpmn:sequenceFlow id="Flow_SP1_DK_No" name="No" sourceRef="GW_DealKiller" targetRef="Gateway_0etf7nm">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dealKillerResult = "Proceed"</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dkScreenResult.dealKillerResult = "Proceed"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_DK_Yes" name="Yes" sourceRef="GW_DealKiller" targetRef="End_DealKiller">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dealKillerResult = "Blocked"</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=dkScreenResult.dealKillerResult = "Blocked"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_SP1_5" sourceRef="Task_TriageAndRoute" targetRef="SendTask_SP1Complete" />
       <bpmn:sequenceFlow id="Flow_SP1_SLA" sourceRef="Timer_TriageSLA" targetRef="End_TriageSLAEscalation" />
@@ -479,7 +481,7 @@
           <bpmn:outgoing>Flow_1nkeoj0</bpmn:outgoing>
           <bpmn:multiInstanceLoopCharacteristics isSequential="false">
             <bpmn:extensionElements>
-              <zeebe:loopCharacteristics inputCollection="=vendorList" inputElement="vendor" outputCollection="vendorResults" outputElement="vendorResult" />
+              <zeebe:loopCharacteristics inputCollection="=vendorList" inputElement="vendor" outputCollection="vendorResults" outputElement="=vendorResult" />
             </bpmn:extensionElements>
           </bpmn:multiInstanceLoopCharacteristics>
           <bpmn:startEvent id="SP_PV_Start">
@@ -499,7 +501,7 @@
             <bpmn:startEvent id="Event_0bqv8mn">
               <bpmn:outgoing>Flow_0vnp2xs</bpmn:outgoing>
             </bpmn:startEvent>
-            <bpmn:exclusiveGateway id="Gateway_02yrq8b" name="Do we have a signed NDA ?">
+            <bpmn:exclusiveGateway id="Gateway_02yrq8b" name="Do we have a signed NDA ?" default="Flow_04q5ap3">
               <bpmn:incoming>Flow_0vnp2xs</bpmn:incoming>
               <bpmn:outgoing>Flow_1ei6fsx</bpmn:outgoing>
               <bpmn:outgoing>Flow_04q5ap3</bpmn:outgoing>
@@ -534,7 +536,7 @@
                 <bpmn:incoming>Flow_10ezqvk</bpmn:incoming>
                 <bpmn:outgoing>Flow_0o87qcd</bpmn:outgoing>
               </bpmn:serviceTask>
-              <bpmn:exclusiveGateway id="Gateway_1pb8jz4" name="No&#10;modifications ?">
+              <bpmn:exclusiveGateway id="Gateway_1pb8jz4" name="No&#10;modifications ?" default="Flow_0xyv17p">
                 <bpmn:incoming>Flow_0o87qcd</bpmn:incoming>
                 <bpmn:outgoing>Flow_07y850n</bpmn:outgoing>
                 <bpmn:outgoing>Flow_0xyv17p</bpmn:outgoing>
@@ -558,10 +560,12 @@
               </bpmn:userTask>
               <bpmn:sequenceFlow id="Flow_10ezqvk" sourceRef="Event_0w8v0hd" targetRef="Activity_0ebhoun" />
               <bpmn:sequenceFlow id="Flow_0o87qcd" sourceRef="Activity_0ebhoun" targetRef="Gateway_1pb8jz4" />
-              <bpmn:sequenceFlow id="Flow_07y850n" name="Yes" sourceRef="Gateway_1pb8jz4" targetRef="Activity_0ld0vwq" />
+              <bpmn:sequenceFlow id="Flow_07y850n" name="Yes" sourceRef="Gateway_1pb8jz4" targetRef="Activity_0ld0vwq" >
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=noModifications = true</bpmn:conditionExpression>
+              </bpmn:sequenceFlow>
               <bpmn:sequenceFlow id="Flow_0xyv17p" name="No" sourceRef="Gateway_1pb8jz4" targetRef="Activity_0urxkj1" />
               <bpmn:sequenceFlow id="Flow_0zfccpt" sourceRef="Activity_0ld0vwq" targetRef="Gateway_0rklhsc" />
-              <bpmn:exclusiveGateway id="Gateway_1kbtzux" name="Pre-approved changes ?">
+              <bpmn:exclusiveGateway id="Gateway_1kbtzux" name="Pre-approved changes ?" default="Flow_0wk78qo">
                 <bpmn:incoming>Flow_1qkapgi</bpmn:incoming>
                 <bpmn:outgoing>Flow_1rozoz1</bpmn:outgoing>
                 <bpmn:outgoing>Flow_0wk78qo</bpmn:outgoing>
@@ -573,9 +577,11 @@
                 <bpmn:outgoing>Flow_085qst2</bpmn:outgoing>
               </bpmn:exclusiveGateway>
               <bpmn:sequenceFlow id="Flow_085qst2" sourceRef="Gateway_0rklhsc" targetRef="Gateway_00h8mfh" />
-              <bpmn:sequenceFlow id="Flow_1rozoz1" name="Yes" sourceRef="Gateway_1kbtzux" targetRef="Gateway_0rklhsc" />
+              <bpmn:sequenceFlow id="Flow_1rozoz1" name="Yes" sourceRef="Gateway_1kbtzux" targetRef="Gateway_0rklhsc" >
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=preApproved = true</bpmn:conditionExpression>
+              </bpmn:sequenceFlow>
               <bpmn:sequenceFlow id="Flow_0wk78qo" name="No" sourceRef="Gateway_1kbtzux" targetRef="Activity_0q0vqxd" />
-              <bpmn:exclusiveGateway id="Gateway_0nnhe5x" name="Accept Red&#10;Lines ?">
+              <bpmn:exclusiveGateway id="Gateway_0nnhe5x" name="Accept Red&#10;Lines ?" default="Flow_08nd4ev">
                 <bpmn:incoming>Flow_1m33fvm</bpmn:incoming>
                 <bpmn:outgoing>Flow_0bxcda5</bpmn:outgoing>
                 <bpmn:outgoing>Flow_08nd4ev</bpmn:outgoing>
@@ -594,13 +600,15 @@
                 <bpmn:outgoing>Flow_0kcjz1d</bpmn:outgoing>
               </bpmn:exclusiveGateway>
               <bpmn:sequenceFlow id="Flow_0kcjz1d" sourceRef="Gateway_00h8mfh" targetRef="Event_082cy29" />
-              <bpmn:sequenceFlow id="Flow_0bxcda5" name="Yes" sourceRef="Gateway_0nnhe5x" targetRef="Gateway_00h8mfh" />
+              <bpmn:sequenceFlow id="Flow_0bxcda5" name="Yes" sourceRef="Gateway_0nnhe5x" targetRef="Gateway_00h8mfh" >
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=redLinesAccepted = true</bpmn:conditionExpression>
+              </bpmn:sequenceFlow>
               <bpmn:endEvent id="Event_1fimixu" name="Red Lines to NDA Not Accepted ?">
                 <bpmn:incoming>Flow_08nd4ev</bpmn:incoming>
               </bpmn:endEvent>
               <bpmn:sequenceFlow id="Flow_08nd4ev" name="No" sourceRef="Gateway_0nnhe5x" targetRef="Event_1fimixu" />
             </bpmn:subProcess>
-            <bpmn:exclusiveGateway id="Gateway_1e31bbb" name="NDA Signed ?">
+            <bpmn:exclusiveGateway id="Gateway_1e31bbb" name="NDA Signed ?" default="Flow_045dbxm">
               <bpmn:incoming>Flow_0s30d8w</bpmn:incoming>
               <bpmn:outgoing>Flow_0q86nzo</bpmn:outgoing>
               <bpmn:outgoing>Flow_045dbxm</bpmn:outgoing>
@@ -608,9 +616,13 @@
             <bpmn:endEvent id="Event_1502ynf" name="NDA Not Executed">
               <bpmn:incoming>Flow_045dbxm</bpmn:incoming>
             </bpmn:endEvent>
-            <bpmn:sequenceFlow id="Flow_1ei6fsx" name="Yes" sourceRef="Gateway_02yrq8b" targetRef="Gateway_0pj195r" />
+            <bpmn:sequenceFlow id="Flow_1ei6fsx" name="Yes" sourceRef="Gateway_02yrq8b" targetRef="Gateway_0pj195r" >
+              <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=ndaSigned = true</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
             <bpmn:sequenceFlow id="Flow_04q5ap3" name="No" sourceRef="Gateway_02yrq8b" targetRef="Activity_0mpg74s" />
-            <bpmn:sequenceFlow id="Flow_0q86nzo" name="Yes" sourceRef="Gateway_1e31bbb" targetRef="Gateway_0pj195r" />
+            <bpmn:sequenceFlow id="Flow_0q86nzo" name="Yes" sourceRef="Gateway_1e31bbb" targetRef="Gateway_0pj195r" >
+              <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=ndaExecuted = true</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
             <bpmn:sequenceFlow id="Flow_0s30d8w" sourceRef="Activity_0mpg74s" targetRef="Gateway_1e31bbb" />
             <bpmn:sequenceFlow id="Flow_045dbxm" name="No" sourceRef="Gateway_1e31bbb" targetRef="Event_1502ynf" />
             <bpmn:sequenceFlow id="Flow_0vnp2xs" sourceRef="Event_0bqv8mn" targetRef="Gateway_02yrq8b" />
@@ -684,7 +696,7 @@
 
       <bpmn:sequenceFlow id="Flow_1c4ei9u" sourceRef="Activity_0j7ifzh" targetRef="Gateway_1r9b08g" />
             <bpmn:sequenceFlow id="Flow_1wtaa9l" sourceRef="Gateway_1r9b08g" targetRef="Task_TriageAndRoute" />
-      <bpmn:exclusiveGateway id="Gateway_0etf7nm" name="RFP&#10;Needed ?">
+      <bpmn:exclusiveGateway id="Gateway_0etf7nm" name="RFP&#10;Needed ?" default="Flow_1uwkw5j">
         <bpmn:incoming>Flow_SP1_DK_No</bpmn:incoming>
         <bpmn:outgoing>Flow_0j4a2xs</bpmn:outgoing>
         <bpmn:outgoing>Flow_1uwkw5j</bpmn:outgoing>
@@ -840,7 +852,9 @@
         <bpmn:incoming>Flow_SP3_P1</bpmn:incoming>
         <bpmn:outgoing>Flow_0ocj7ql</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:sequenceFlow id="Flow_SP3_P1" sourceRef="GW_ParallelSplit" targetRef="Task_TechArchReview" />
+      <bpmn:sequenceFlow id="Flow_SP3_P1" sourceRef="GW_ParallelSplit" targetRef="Task_TechArchReview" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
       <bpmn:userTask id="Task_SecurityAssessment" name="Security&#10;Assessment">
         <bpmn:documentation>Conduct a comprehensive security assessment of the proposed solution covering vulnerability posture, threat modeling, access control design, encryption standards, network security, application security, and incident response readiness. For Buy pathway, evaluate vendor security controls; for Build pathway, evaluate the security architecture of the proposed design. Identify security risks and required mitigations before proceeding.</bpmn:documentation>
         <bpmn:extensionElements>
@@ -1029,7 +1043,9 @@
         <bpmn:incoming>Flow_1xcxkci</bpmn:incoming>
         <bpmn:outgoing>Flow_1bed6kc</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:sequenceFlow id="Flow_1xcxkci" sourceRef="GW_ParallelSplit" targetRef="Activity_0i5wmr2" />
+      <bpmn:sequenceFlow id="Flow_1xcxkci" sourceRef="GW_ParallelSplit" targetRef="Activity_0i5wmr2" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_1bed6kc" sourceRef="Activity_0i5wmr2" targetRef="GW_ParallelJoin" />
     </bpmn:subProcess>
     <bpmn:endEvent id="Event_0dh7yxn" name="Assessment Not Approved">
@@ -1364,12 +1380,14 @@
       <bpmn:sequenceFlow id="Flow_16h7lwx" name="Yes" sourceRef="Gateway_1462snl" targetRef="Gateway_0mtas45">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=codingMatrixCorrect = true</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:exclusiveGateway id="Gateway_1263ru7" name="Proof of Concept Required ?">
+      <bpmn:exclusiveGateway id="Gateway_1263ru7" name="Proof of Concept Required ?" default="Flow_11k19u2">
         <bpmn:incoming>Flow_0vggvcp</bpmn:incoming>
         <bpmn:outgoing>Flow_1dzi17v</bpmn:outgoing>
         <bpmn:outgoing>Flow_11k19u2</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_1dzi17v" name="Yes" sourceRef="Gateway_1263ru7" targetRef="Activity_1b9jfde" />
+      <bpmn:sequenceFlow id="Flow_1dzi17v" name="Yes" sourceRef="Gateway_1263ru7" targetRef="Activity_1b9jfde" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=pocRequired = true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
       <bpmn:exclusiveGateway id="Gateway_1xkdzgc">
         <bpmn:incoming>Flow_0yqw9bd</bpmn:incoming>
         <bpmn:incoming>Flow_11k19u2</bpmn:incoming>
@@ -1390,12 +1408,14 @@
         <bpmn:outgoing>Flow_12ew9wd</bpmn:outgoing>
       </bpmn:callActivity>
       <bpmn:sequenceFlow id="Flow_12ew9wd" sourceRef="Activity_1lnaqfx" targetRef="Gateway_06ma9wy" />
-      <bpmn:exclusiveGateway id="Gateway_06ma9wy" name="Approved ?">
+      <bpmn:exclusiveGateway id="Gateway_06ma9wy" name="Approved ?" default="Flow_04fcmc2">
         <bpmn:incoming>Flow_12ew9wd</bpmn:incoming>
         <bpmn:outgoing>Flow_0wzga6a</bpmn:outgoing>
         <bpmn:outgoing>Flow_04fcmc2</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:sequenceFlow id="Flow_0wzga6a" name="Yes" sourceRef="Gateway_06ma9wy" targetRef="Activity_0brpj26" />
+      <bpmn:sequenceFlow id="Flow_0wzga6a" name="Yes" sourceRef="Gateway_06ma9wy" targetRef="Activity_0brpj26" >
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=governanceApproved = true</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
       <bpmn:endEvent id="Event_08ppsj8" name="Not Approved by Governance Committee">
         <bpmn:incoming>Flow_04fcmc2</bpmn:incoming>
       </bpmn:endEvent>
