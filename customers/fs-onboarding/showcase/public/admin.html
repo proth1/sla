@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SLA Governance — Admin Console</title>
+  <style>
+    :root {
+      --bg: #0f172a; --card: #1e293b; --border: #334155;
+      --text: #e2e8f0; --muted: #94a3b8; --accent: #3b82f6;
+      --green: #22c55e; --yellow: #eab308; --red: #ef4444;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    .header { background: var(--card); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.4rem; }
+    .header .badge { background: var(--accent); color: white; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; }
+    .nav { display: flex; gap: 0.5rem; margin-left: auto; }
+    .nav a { color: var(--muted); text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; }
+    .nav a:hover, .nav a.active { background: var(--border); color: var(--text); }
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+    .section { background: var(--card); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1.5rem; overflow: hidden; }
+    .section-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .section-header h2 { font-size: 1.1rem; }
+    .section-body { padding: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 0.6rem 1rem; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+    td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    tr:last-child td { border-bottom: none; }
+    input[type="text"], select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 0.4rem 0.6rem; border-radius: 4px; font-size: 0.85rem; width: 100%; }
+    input:focus, select:focus { outline: none; border-color: var(--accent); }
+    .btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+    .toast { position: fixed; top: 1rem; right: 1rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.5rem; border-radius: 8px; display: none; z-index: 999; }
+    .toast.error { background: #991b1b; color: #fecaca; }
+
+    /* SLA progress bars */
+    .sla-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .sla-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+    .sla-fill.green { background: var(--green); }
+    .sla-fill.yellow { background: var(--yellow); }
+    .sla-fill.red { background: var(--red); }
+    .sla-pct { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+    .toggle { position: relative; display: inline-block; width: 36px; height: 20px; }
+    .toggle input { display: none; }
+    .toggle .slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--border); border-radius: 10px; cursor: pointer; transition: 0.2s; }
+    .toggle input:checked + .slider { background: var(--accent); }
+    .toggle .slider::before { content: ''; position: absolute; height: 14px; width: 14px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+    .toggle input:checked + .slider::before { transform: translateX(16px); }
+
+    .empty-state { text-align: center; padding: 3rem; color: var(--muted); }
+    .empty-state p { margin-top: 0.5rem; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>SLA Governance</h1>
+    <span class="badge">Admin Console</span>
+    <nav class="nav">
+      <a href="index.html">Task Worker</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="mini-rfp.html">Mini RFP</a>
+      <a href="admin.html" class="active">Admin</a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <!-- Lane SLA Configuration -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Lane SLA Configuration</h2>
+        <button class="btn btn-primary btn-sm" onclick="saveConfig()">Save Changes</button>
+      </div>
+      <div class="section-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Lane</th>
+              <th>SLA Duration</th>
+              <th>Warning %</th>
+              <th>Accountable</th>
+              <th>Escalation Chain</th>
+              <th>Jira Sync</th>
+            </tr>
+          </thead>
+          <tbody id="lane-config-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Task-Level Overrides -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Task-Level SLA Overrides</h2>
+        <button class="btn btn-primary btn-sm" onclick="addTaskOverride()">+ Add Override</button>
+      </div>
+      <div class="section-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Task Definition ID</th>
+              <th>SLA Override</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="task-overrides-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Active SLA Dashboard -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Active SLA Status</h2>
+        <span style="color: var(--muted); font-size: 0.8rem;" id="sla-refresh-time">—</span>
+      </div>
+      <div class="section-body" id="sla-dashboard">
+        <div class="empty-state">
+          <p>Connecting to jira-sync service on port 3848...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Epic Tracking -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Jira Epics</h2>
+      </div>
+      <div class="section-body" id="epic-dashboard">
+        <div class="empty-state">
+          <p>Loading epics...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const JIRA_SYNC_URL = 'http://127.0.0.1:3848';
+    let currentConfig = null;
+
+    function showToast(msg, isError) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast' + (isError ? ' error' : '');
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 3000);
+    }
+
+    async function loadConfig() {
+      try {
+        const res = await fetch(`${JIRA_SYNC_URL}/api/config`);
+        currentConfig = await res.json();
+        renderLaneConfig();
+        renderTaskOverrides();
+      } catch (err) {
+        showToast('Cannot connect to jira-sync service (port 3848)', true);
+      }
+    }
+
+    function renderLaneConfig() {
+      const body = document.getElementById('lane-config-body');
+      const lanes = Object.keys(currentConfig.raci || {});
+      const jiraGroups = currentConfig.routing?.jiraGroups || [];
+      const excludeGroups = currentConfig.routing?.excludeGroups || [];
+
+      body.innerHTML = lanes.map(lane => {
+        const r = currentConfig.raci[lane];
+        const isSynced = jiraGroups.includes(lane) && !excludeGroups.includes(lane);
+        return `<tr>
+          <td><strong>${lane}</strong></td>
+          <td><input type="text" data-lane="${lane}" data-field="sla" value="${r.sla}" /></td>
+          <td><input type="text" data-lane="${lane}" data-field="warning" value="80" style="width:50px" />%</td>
+          <td>${r.accountable}</td>
+          <td>${(r.escalationChain || []).join(' → ') || '—'}</td>
+          <td><label class="toggle"><input type="checkbox" ${isSynced ? 'checked' : ''} data-lane="${lane}" data-field="sync" /><span class="slider"></span></label></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderTaskOverrides() {
+      const body = document.getElementById('task-overrides-body');
+      const overrides = currentConfig.taskOverrides || {};
+      const entries = Object.entries(overrides);
+
+      if (entries.length === 0) {
+        body.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--muted)">No task overrides configured. Lane defaults apply to all tasks.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = entries.map(([taskId, cfg]) => `<tr>
+        <td><code>${taskId}</code></td>
+        <td><input type="text" data-task="${taskId}" value="${cfg.sla || ''}" /></td>
+        <td><button class="btn btn-sm" onclick="removeTaskOverride('${taskId}')" style="background:var(--red);color:white">Remove</button></td>
+      </tr>`).join('');
+    }
+
+    function addTaskOverride() {
+      const taskId = prompt('Enter task definition ID (e.g., Task_TechArchReview):');
+      if (!taskId) return;
+      const sla = prompt('Enter SLA duration (ISO 8601, e.g., P3D, PT4H):');
+      if (!sla) return;
+
+      if (!currentConfig.taskOverrides) currentConfig.taskOverrides = {};
+      currentConfig.taskOverrides[taskId] = { sla };
+      renderTaskOverrides();
+      showToast(`Override added for ${taskId}. Click "Save Changes" to persist.`);
+    }
+
+    function removeTaskOverride(taskId) {
+      delete currentConfig.taskOverrides[taskId];
+      renderTaskOverrides();
+      showToast(`Override removed for ${taskId}. Click "Save Changes" to persist.`);
+    }
+
+    async function saveConfig() {
+      // Read back lane SLA values from inputs
+      document.querySelectorAll('input[data-lane][data-field="sla"]').forEach(input => {
+        const lane = input.dataset.lane;
+        if (currentConfig.raci[lane]) {
+          currentConfig.raci[lane].sla = input.value;
+        }
+      });
+
+      // Read back task override values
+      document.querySelectorAll('input[data-task]').forEach(input => {
+        const taskId = input.dataset.task;
+        if (currentConfig.taskOverrides?.[taskId]) {
+          currentConfig.taskOverrides[taskId].sla = input.value;
+        }
+      });
+
+      try {
+        const res = await fetch(`${JIRA_SYNC_URL}/api/config`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(currentConfig),
+        });
+        const result = await res.json();
+        showToast(result.message || 'Config saved');
+      } catch (err) {
+        showToast('Save failed: ' + err.message, true);
+      }
+    }
+
+    async function loadSLAStatus() {
+      try {
+        const res = await fetch(`${JIRA_SYNC_URL}/api/sla-status`);
+        const data = await res.json();
+        const container = document.getElementById('sla-dashboard');
+        document.getElementById('sla-refresh-time').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+
+        if (!data.statuses || data.statuses.length === 0) {
+          container.innerHTML = '<div class="empty-state"><p>No active SLA-tracked tasks</p></div>';
+          return;
+        }
+
+        container.innerHTML = `<table>
+          <thead><tr><th>Task</th><th>Lane</th><th>Phase</th><th>Jira</th><th>SLA Progress</th><th>Remaining</th></tr></thead>
+          <tbody>${data.statuses.map(s => {
+            const color = s.pct >= 100 ? 'red' : s.pct >= 80 ? 'yellow' : 'green';
+            const remaining = s.remainingMin > 60 ? `${Math.round(s.remainingMin/60)}h` : `${s.remainingMin}m`;
+            return `<tr>
+              <td><code>${s.taskDefinitionId || s.taskKey}</code></td>
+              <td>${s.candidateGroup}</td>
+              <td>${s.phase}</td>
+              <td><a href="https://agentic-sdlc.atlassian.net/browse/${s.jiraIssueKey}" target="_blank" style="color:var(--accent)">${s.jiraIssueKey}</a></td>
+              <td style="min-width:150px"><div class="sla-bar"><div class="sla-fill ${color}" style="width:${Math.min(s.pct, 100)}%"></div></div><div class="sla-pct">${s.pct}%${s.warned ? ' ⚠' : ''}${s.escalated ? ' 🔴' : ''}</div></td>
+              <td>${s.pct >= 100 ? '<strong style="color:var(--red)">BREACHED</strong>' : remaining}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>`;
+      } catch {
+        // Service not running — keep empty state
+      }
+    }
+
+    async function loadEpics() {
+      try {
+        const res = await fetch(`${JIRA_SYNC_URL}/api/epics`);
+        const data = await res.json();
+        const container = document.getElementById('epic-dashboard');
+
+        if (!data.epics || data.epics.length === 0) {
+          container.innerHTML = '<div class="empty-state"><p>No Jira Epics created yet. Epics are created automatically when a process instance generates its first Jira task.</p></div>';
+          return;
+        }
+
+        container.innerHTML = `<table>
+          <thead><tr><th>Epic</th><th>Vendor</th><th>Request</th><th>Process Instance</th></tr></thead>
+          <tbody>${data.epics.map(e => `<tr>
+            <td><a href="https://agentic-sdlc.atlassian.net/browse/${e.epicKey}" target="_blank" style="color:var(--accent)">${e.epicKey}</a></td>
+            <td>${e.vendorName}</td>
+            <td>${e.requestName}</td>
+            <td><code>${e.processInstanceKey}</code></td>
+          </tr>`).join('')}</tbody>
+        </table>`;
+      } catch {
+        // Service not running
+      }
+    }
+
+    // Init
+    loadConfig();
+    loadSLAStatus();
+    loadEpics();
+    setInterval(loadSLAStatus, 10000);
+    setInterval(loadEpics, 30000);
+  </script>
+</body>
+</html>

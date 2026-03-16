@@ -1,0 +1,134 @@
+{
+  "description": "SLA timer configuration for v18 onboarding process. Phase-level timers are BPMN boundary events; per-task SLAs are zeebe:property metadata enforced by jira-sync.js.",
+  "phaseTimers": {
+    "SP_RequestTriage": {
+      "label": "SP1: Refine Request",
+      "reminderDuration": "PT12H",
+      "escalationDuration": "P1D",
+      "deadlineDuration": "P2D",
+      "prdTarget": "1-2 days"
+    },
+    "SP_PlanningRouting": {
+      "label": "SP2: Planning & Routing",
+      "reminderDuration": "P2D",
+      "escalationDuration": "P3D",
+      "deadlineDuration": "P5D",
+      "prdTarget": "3-5 days"
+    },
+    "Activity_02eupjn": {
+      "label": "SP-VS: Vendor Sourcing",
+      "reminderDuration": "P3D",
+      "escalationDuration": "P5D",
+      "deadlineDuration": "P7D",
+      "prdTarget": "5-7 days"
+    },
+    "SP_EvalDD": {
+      "label": "SP3: Evaluation & Due Diligence",
+      "reminderDuration": "P4D",
+      "escalationDuration": "P6D",
+      "deadlineDuration": "P8D",
+      "prdTarget": "5-8 days"
+    },
+    "Activity_19ph1cx": {
+      "label": "SP4: Deep Dive Risk & Contracting",
+      "reminderDuration": "P3D",
+      "escalationDuration": "P5D",
+      "deadlineDuration": "P7D",
+      "prdTarget": "5-7 days"
+    },
+    "SP_UATGoLive": {
+      "label": "SP5: UAT & Go-Live",
+      "reminderDuration": "P1D",
+      "escalationDuration": "P2D",
+      "deadlineDuration": "P3D",
+      "prdTarget": "2-3 days"
+    }
+  },
+  "taskSLAs": {
+    "Task_DescribeAndScreen": { "sla": "PT8H", "lane": "quarterback-lane" },
+    "Task_LeverageExisting": { "sla": "PT4H", "lane": "quarterback-lane" },
+    "Task_TriageAndRoute": { "sla": "P1D", "lane": "quarterback-lane" },
+    "Activity_06e21v6": { "sla": "P1D", "lane": "quarterback-lane" },
+    "Activity_0netfvm": { "sla": "PT4H", "lane": "business-lane" },
+    "Activity_1l8ugqb": { "sla": "PT4H", "lane": "business-lane" },
+    "Activity_1jd4o1m": { "sla": "PT4H", "lane": "quarterback-lane" },
+    "Activity_0uolphp": { "sla": "PT4H", "lane": "governance-lane" },
+    "Activity_0h9zvjd": { "sla": "PT4H", "lane": "business-lane" },
+    "Activity_15rnp82": { "sla": "PT4H", "lane": "governance-lane" },
+    "Activity_07qg27e": { "sla": "PT4H", "lane": "quarterback-lane" },
+    "Activity_1h2vsx3": { "sla": "PT4H", "lane": "quarterback-lane" },
+    "Activity_16hgh8o": { "sla": "P5D", "lane": "vendor-response" },
+    "Activity_0w7eitv": { "sla": "P1D", "lane": "quarterback-lane" },
+    "Activity_1ma36oc": { "sla": "P3D", "lane": "vendor-response" },
+    "Activity_0urxkj1": { "sla": "P1D", "lane": "contracting-lane" },
+    "Activity_0q0vqxd": { "sla": "P1D", "lane": "contracting-lane" },
+    "Task_PrelimAnalysis": { "sla": "P1D", "lane": "governance-lane" },
+    "Task_Backlog": { "sla": "P2D", "lane": "governance-lane" },
+    "Activity_0r9imfk": { "sla": "P2D", "lane": "governance-lane" },
+    "Task_DARTFormation": { "sla": "P1D", "lane": "contracting-lane" },
+    "Task_SecurityAssessmentRouting": { "sla": "PT4H", "lane": "technical-assessment" },
+    "Task_BaselineSecurityCheck": { "sla": "P1D", "lane": "technical-assessment" },
+    "Task_SecurityAssessment": { "sla": "P3D", "lane": "technical-assessment" },
+    "Task_TechArchReview": { "sla": "P3D", "lane": "technical-assessment" },
+    "Task_AIGovernanceReview": { "sla": "P3D", "lane": "ai-review" },
+    "Activity_0kq8o8j": { "sla": "P3D", "lane": "compliance-lane" },
+    "Activity_0ksoea5": { "sla": "P3D", "lane": "compliance-lane" },
+    "Activity_0mr2gdy": { "sla": "P3D", "lane": "contracting-lane" },
+    "Activity_0i5wmr2": { "sla": "P3D", "lane": "procurement-lane" },
+    "Task_DealKillerCheck": { "sla": "P1D", "lane": "business-lane" },
+    "Task_ConditionVerification": { "sla": "P2D", "lane": "governance-lane" },
+    "Task_FinalApproval": { "sla": "P2D", "lane": "governance-lane" },
+    "Activity_1f5ug9e": { "sla": "P2D", "lane": "business-lane" },
+    "Activity_1b9jfde": { "sla": "P5D", "lane": "technical-assessment" },
+    "Activity_0anscph": { "sla": "P3D", "lane": "technical-assessment" },
+    "Activity_0brpj26": { "sla": "P3D", "lane": "contracting-lane" },
+    "Activity_0ssggoi": { "sla": "P2D", "lane": "contracting-lane" },
+    "Activity_0xpqph2": { "sla": "P3D", "lane": "technical-assessment" },
+    "Activity_0ohlk7l": { "sla": "P2D", "lane": "technical-assessment" },
+    "Activity_0ccg5hj": { "sla": "P5D", "lane": "technical-assessment" },
+    "Activity_1tswsdw": { "sla": "P3D", "lane": "technical-assessment" },
+    "Activity_1wmq03k": { "sla": "P2D", "lane": "technical-assessment" },
+    "Activity_06ceaql": { "sla": "P2D", "lane": "compliance-lane" },
+    "Activity_11hwl66": { "sla": "P2D", "lane": "contracting-lane" },
+    "Activity_0yw9qai": { "sla": "P1D", "lane": "compliance-lane" },
+    "Activity_0dv1m1z": { "sla": "P1D", "lane": "compliance-lane" },
+    "Task_PerformUAT": { "sla": "P2D", "lane": "technical-assessment" },
+    "Task_OnboardSoftware": { "sla": "P1D", "lane": "automation-lane" },
+    "Task_AssignOwnership": { "sla": "P1D", "lane": "business-lane" },
+    "Task_CloseRequest": { "sla": "PT4H", "lane": "automation-lane" },
+    "Task_SP5_OversightAudit": { "sla": "P2D", "lane": "oversight-lane" }
+  },
+  "slaConfigProcessVar": {
+    "description": "Injected as 'slaConfig' process variable at instance start",
+    "sp1": {
+      "reminderDuration": "PT12H",
+      "escalationDuration": "P1D",
+      "deadlineDuration": "P2D"
+    },
+    "sp2": {
+      "reminderDuration": "P2D",
+      "escalationDuration": "P3D",
+      "deadlineDuration": "P5D"
+    },
+    "spVS": {
+      "reminderDuration": "P3D",
+      "escalationDuration": "P5D",
+      "deadlineDuration": "P7D"
+    },
+    "sp3": {
+      "reminderDuration": "P4D",
+      "escalationDuration": "P6D",
+      "deadlineDuration": "P8D"
+    },
+    "sp4": {
+      "reminderDuration": "P3D",
+      "escalationDuration": "P5D",
+      "deadlineDuration": "P7D"
+    },
+    "sp5": {
+      "reminderDuration": "P1D",
+      "escalationDuration": "P2D",
+      "deadlineDuration": "P3D"
+    }
+  }
+}

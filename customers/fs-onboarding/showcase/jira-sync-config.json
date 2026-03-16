@@ -1,5 +1,5 @@
 {
-  "processDefinitionKey": "Process_Onboarding_v8",
+  "processDefinitionKey": "Process_Onboarding_v18",
   "jira": {
     "baseUrl": "https://agentic-sdlc.atlassian.net",
     "projectKey": "SLA",
@@ -56,6 +56,13 @@
     "procurement-lane": "procurement",
     "finance-lane": "finance"
   },
+  "epic": {
+    "enabled": true,
+    "issueType": "Epic",
+    "summaryTemplate": "[Onboarding] {vendorName} — {requestName}",
+    "labels": ["camunda-synced", "onboarding-v18"]
+  },
+  "taskOverrides": {},
   "raci": {
     "technical-assessment": {
       "accountable": "governance-lane",

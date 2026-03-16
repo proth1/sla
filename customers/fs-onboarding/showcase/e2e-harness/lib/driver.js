@@ -11,6 +11,7 @@ const SERVICE_TYPES = [
   'distribute-committee-brief', 'tally-committee-votes',
   'apply-default-voting-rule', 'auto-escalate-governance',
   'send-voting-escalation', 'send-voting-reminder',
+  'sla-phase-notification',
 ];
 
 const MESSAGES = [

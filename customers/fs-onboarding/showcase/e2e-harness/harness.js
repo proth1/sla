@@ -199,7 +199,7 @@ function generateReport(results) {
 <body>
   <div class="header">
     <h1>SLA Governance E2E Test Report</h1>
-    <p>Generated: ${timestamp} | Process: Process_Onboarding_v17</p>
+    <p>Generated: ${timestamp} | Process: Process_Onboarding_v18</p>
   </div>
 
   <div class="stats">
