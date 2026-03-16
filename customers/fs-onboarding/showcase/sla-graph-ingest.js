@@ -226,16 +226,19 @@ async function pollJiraSyncEvents() {
       // Map jira-sync event directions to graph events
       let graphEvent = null;
       if (evt.direction === 'outbound' && evt.status.startsWith('Created for')) {
+        // Extract SLA duration from status message: "Created for ... [SLA: P3D]"
+        const slaMatch = evt.status.match(/\[SLA:\s*([^\]]+)\]/);
+        const sla = slaMatch ? slaMatch[1] : 'P1D';
         graphEvent = {
           type: 'task_created',
           data: {
             taskKey: evt.camundaTaskKey,
-            processInstanceKey: 'unknown', // Will be enriched
-            taskDefinitionId: 'unknown',
+            processInstanceKey: evt.processInstanceKey || 'unknown',
+            taskDefinitionId: evt.taskDefinitionId || 'unknown',
             taskName: evt.status.replace('Created for "', '').replace(/".*/, ''),
-            candidateGroup: 'unknown',
-            phase: 'unknown',
-            slaTarget: 'P1D',
+            candidateGroup: evt.candidateGroup || 'unknown',
+            phase: evt.phase || 'unknown',
+            slaTarget: sla,
             startTime: evt.timestamp,
             jiraIssueKey: evt.jiraIssueKey,
           },

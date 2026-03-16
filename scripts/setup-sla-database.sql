@@ -118,9 +118,7 @@ INSERT INTO sla_config (lane, sla_duration, escalation_chain) VALUES
     ('governance-lane', 'P2D', '["oversight-lane"]'),
     ('oversight-lane', 'P5D', '[]'),
     ('ai-review', 'P1D', '["governance-lane", "oversight-lane"]'),
-    ('contracting-lane', 'P3D', '["governance-lane", "oversight-lane"]'),
-    ('procurement-lane', 'P2D', '["governance-lane", "oversight-lane"]'),
-    ('finance-lane', 'P2D', '["governance-lane", "oversight-lane"]')
+    ('contracting-lane', 'P3D', '["governance-lane", "oversight-lane"]')
 ON CONFLICT (lane, task_definition_id) DO NOTHING;
 
 -- ══════════════════════════════════════════════════════════
@@ -156,6 +154,6 @@ SELECT
     pi.jira_epic_key
 FROM sla_events se
 JOIN process_instances pi ON pi.process_instance_key = se.process_instance_key
-WHERE se.event_type IN ('breach', 'chronic_breach')
+WHERE se.event_type IN ('sla_breach', 'chronic_breach')
 GROUP BY pi.process_instance_key, pi.vendor_name, pi.pathway, pi.risk_tier, pi.jira_epic_key
 ORDER BY chronic_breaches DESC, breached_tasks DESC;

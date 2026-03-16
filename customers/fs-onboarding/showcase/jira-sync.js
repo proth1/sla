@@ -158,10 +158,23 @@ async function ensureEpic(processInstanceKey) {
   let vendorName = 'Unknown Vendor';
   let requestName = 'Software Onboarding';
   try {
-    const vars = await zeebeApi('GET', `/v2/process-instances/${processInstanceKey}`);
-    // Variable names vary — try common ones
+    const piData = await zeebeApi('GET', `/v2/process-instances/${processInstanceKey}`);
+    // Try to get variables from search (Zeebe v2 API)
+    const varsResult = await zeebeApi('POST', '/v2/variables/search', {
+      filter: { processInstanceKey: Number(processInstanceKey) },
+    });
+    if (varsResult.items) {
+      for (const v of varsResult.items) {
+        if (v.name === 'vendorName' && v.value) vendorName = JSON.parse(v.value);
+        if (v.name === 'requestName' && v.value) requestName = JSON.parse(v.value);
+        if (v.name === 'requestDescription' && v.value && requestName === 'Software Onboarding') {
+          requestName = JSON.parse(v.value).slice(0, 80);
+        }
+      }
+    }
   } catch (err) {
     // Non-fatal: use defaults
+    console.warn(`Epic variable lookup failed for PI ${processInstanceKey}: ${err.message}`);
   }
 
   const summary = (config.epic.summaryTemplate || '[Onboarding] {vendorName} — {requestName}')
@@ -187,8 +200,8 @@ async function ensureEpic(processInstanceKey) {
   }
 }
 
-function logEvent(direction, camundaTaskKey, jiraIssueKey, status) {
-  const entry = { timestamp: new Date().toISOString(), direction, camundaTaskKey, jiraIssueKey, status };
+function logEvent(direction, camundaTaskKey, jiraIssueKey, status, meta) {
+  const entry = { timestamp: new Date().toISOString(), direction, camundaTaskKey, jiraIssueKey, status, ...meta };
   eventLog.unshift(entry);
   if (eventLog.length > 200) eventLog.length = 200;
   const arrows = { outbound: '>>>', webhook: '<<<', 'sla-warning': '!! ', 'sla-breach': '!!!', 'chronic-breach': 'XXX', error: 'ERR' };
@@ -332,7 +345,12 @@ async function outboundSync() {
         warned: false,
         escalated: false,
       });
-      logEvent('outbound', task.id, issue.key, `Created for "${(task.name || '').replace(/\n/g, ' ')}" [SLA: ${raci.sla}]`);
+      logEvent('outbound', task.id, issue.key, `Created for "${(task.name || '').replace(/\n/g, ' ')}" [SLA: ${slaIso}]`, {
+        processInstanceKey: task.processInstanceKey,
+        taskDefinitionId: task.taskDefinitionId,
+        candidateGroup,
+        phase: PHASE_MAP[task.taskDefinitionId] || 'unknown',
+      });
     }
   } catch (err) {
     logEvent('error', null, null, `Outbound error: ${err.message}`);
