@@ -84,23 +84,124 @@ function parseDuration(iso) {
   return ((days * 24 + hours) * 3600 + mins * 60 + secs) * 1000;
 }
 
-// --- Phase Map (derived from task definition IDs) ---
+// --- Phase Map (derived from task definition IDs — v18 expanded) ---
 const PHASE_MAP = {
-  Task_DescribeAndScreen: 'sp1', Task_LeverageExisting: 'sp1', Task_TriageAndRoute: 'sp1', Task_DealKillerCheck: 'sp1',
-  Task_PrelimAnalysis: 'sp2', Task_BacklogPrioritization: 'sp2', Task_PathwayRouting: 'sp2', Task_PrioritizationScoring: 'sp2',
-  Task_TechArchReview: 'sp3', Task_SecurityAssessment: 'sp3', Task_RiskCompliance: 'sp3', Task_FinancialAnalysis: 'sp3', Task_AssessVendorLandscape: 'sp3', Task_VendorDD: 'sp3', Task_EvaluateResponse: 'sp3', Task_AIGovernanceReview: 'sp3', Receive_VendorResponse: 'sp3', Task_DARTFormation: 'sp3', Task_CreateOneTrustAssessment: 'sp3', Task_SecurityTierRouting: 'sp3', Task_BaselineScan: 'sp3', Task_RetrieveOneTrustResults: 'sp3',
-  Task_RefineRequirements: 'sp4', Task_PerformPoC: 'sp4', Task_TechRiskEval: 'sp4', Task_NegotiateContract: 'sp4', Task_FinalizeContract: 'sp4', Task_DefineBuildReqs: 'sp4', Receive_SignedContract: 'sp4', Task_ComplianceReview: 'sp4', Task_EnableContractExec: 'sp4', Task_ContractDeviation: 'sp4', Task_CodingCorrection: 'sp4',
-  Task_PerformUAT: 'sp5', Task_FinalApproval: 'sp5', Task_OnboardSoftware: 'sp5', Activity_0zf4l0g: 'sp5', Task_CloseRequest: 'sp5', Task_AssignOwnership: 'sp5', Task_ConditionVerification: 'sp5',
+  // SP1: Refine Request
+  Task_DescribeAndScreen: 'sp1', Task_LeverageExisting: 'sp1', Task_TriageAndRoute: 'sp1',
+  Task_DealKillerCheck: 'sp1', Activity_06e21v6: 'sp1', Activity_0netfvm: 'sp1',
+  Activity_1l8ugqb: 'sp1', Activity_1jd4o1m: 'sp1', Activity_0uolphp: 'sp1',
+  Activity_0h9zvjd: 'sp1', Activity_15rnp82: 'sp1', Activity_07qg27e: 'sp1',
+  Activity_1h2vsx3: 'sp1', Activity_16hgh8o: 'sp1', Activity_0w7eitv: 'sp1',
+  Activity_1ma36oc: 'sp1', Activity_0urxkj1: 'sp1', Activity_0q0vqxd: 'sp1',
+  // SP2: Planning & Routing
+  Task_PrelimAnalysis: 'sp2', Task_Backlog: 'sp2', Task_BacklogPrioritization: 'sp2',
+  Task_PathwayRouting: 'sp2', Task_PrioritizationScoring: 'sp2', Activity_0r9imfk: 'sp2',
+  // SP3: Evaluation & Due Diligence
+  Task_TechArchReview: 'sp3', Task_SecurityAssessment: 'sp3', Task_SecurityAssessmentRouting: 'sp3',
+  Task_BaselineSecurityCheck: 'sp3', Task_RiskCompliance: 'sp3', Task_FinancialAnalysis: 'sp3',
+  Task_AssessVendorLandscape: 'sp3', Task_VendorDD: 'sp3', Task_EvaluateResponse: 'sp3',
+  Task_AIGovernanceReview: 'sp3', Receive_VendorResponse: 'sp3', Task_DARTFormation: 'sp3',
+  Task_CreateOneTrustAssessment: 'sp3', Task_SecurityTierRouting: 'sp3', Task_BaselineScan: 'sp3',
+  Task_RetrieveOneTrustResults: 'sp3', Activity_0kq8o8j: 'sp3', Activity_0ksoea5: 'sp3',
+  Activity_0mr2gdy: 'sp3', Activity_0i5wmr2: 'sp3',
+  // SP4: Deep Dive Risk & Contracting
+  Task_RefineRequirements: 'sp4', Task_PerformPoC: 'sp4', Task_TechRiskEval: 'sp4',
+  Task_NegotiateContract: 'sp4', Task_FinalizeContract: 'sp4', Task_DefineBuildReqs: 'sp4',
+  Receive_SignedContract: 'sp4', Task_ComplianceReview: 'sp4', Task_EnableContractExec: 'sp4',
+  Task_ContractDeviation: 'sp4', Task_CodingCorrection: 'sp4', Activity_1f5ug9e: 'sp4',
+  Activity_1b9jfde: 'sp4', Activity_0anscph: 'sp4', Activity_0brpj26: 'sp4',
+  Activity_0ssggoi: 'sp4', Activity_0xpqph2: 'sp4', Activity_0ohlk7l: 'sp4',
+  Activity_0ccg5hj: 'sp4', Activity_1tswsdw: 'sp4', Activity_1wmq03k: 'sp4',
+  Activity_06ceaql: 'sp4', Activity_11hwl66: 'sp4', Activity_0yw9qai: 'sp4',
+  Activity_0dv1m1z: 'sp4',
+  // SP5: UAT & Go-Live
+  Task_PerformUAT: 'sp5', Task_FinalApproval: 'sp5', Task_OnboardSoftware: 'sp5',
+  Activity_0zf4l0g: 'sp5', Task_CloseRequest: 'sp5', Task_AssignOwnership: 'sp5',
+  Task_ConditionVerification: 'sp5', Task_SP5_OversightAudit: 'sp5',
 };
 
 // --- Sync State ---
 const syncMap = new Map();
+const epicMap = new Map(); // processInstanceKey → { epicKey, vendorName, requestName }
 const eventLog = [];
 let numericProcessDefinitionKey = null;
 const instanceBreachCount = new Map();
 
-function logEvent(direction, camundaTaskKey, jiraIssueKey, status) {
-  const entry = { timestamp: new Date().toISOString(), direction, camundaTaskKey, jiraIssueKey, status };
+// --- Hot-reloadable config ---
+function reloadConfig() {
+  try {
+    const raw = fs.readFileSync(path.join(__dirname, 'jira-sync-config.json'), 'utf8');
+    const newConfig = JSON.parse(raw);
+    Object.assign(config, newConfig);
+    console.log('Config reloaded from disk');
+  } catch (err) {
+    console.error(`Config reload failed: ${err.message}`);
+  }
+}
+
+// --- SLA Duration Override ---
+function getSLAForTask(candidateGroup, taskDefinitionId) {
+  // Task-level override takes precedence
+  if (config.taskOverrides?.[taskDefinitionId]?.sla) {
+    return config.taskOverrides[taskDefinitionId].sla;
+  }
+  // Fall back to lane-level RACI SLA
+  return getRaci(candidateGroup).sla;
+}
+
+// --- Epic Lifecycle ---
+async function ensureEpic(processInstanceKey) {
+  if (!config.epic?.enabled) return null;
+  if (epicMap.has(processInstanceKey)) return epicMap.get(processInstanceKey).epicKey;
+
+  // Get process instance variables to extract vendorName and requestName
+  let vendorName = 'Unknown Vendor';
+  let requestName = 'Software Onboarding';
+  try {
+    const piData = await zeebeApi('GET', `/v2/process-instances/${processInstanceKey}`);
+    // Try to get variables from search (Zeebe v2 API)
+    const varsResult = await zeebeApi('POST', '/v2/variables/search', {
+      filter: { processInstanceKey: Number(processInstanceKey) },
+    });
+    if (varsResult.items) {
+      for (const v of varsResult.items) {
+        if (v.name === 'vendorName' && v.value) vendorName = JSON.parse(v.value);
+        if (v.name === 'requestName' && v.value) requestName = JSON.parse(v.value);
+        if (v.name === 'requestDescription' && v.value && requestName === 'Software Onboarding') {
+          requestName = JSON.parse(v.value).slice(0, 80);
+        }
+      }
+    }
+  } catch (err) {
+    // Non-fatal: use defaults
+    console.warn(`Epic variable lookup failed for PI ${processInstanceKey}: ${err.message}`);
+  }
+
+  const summary = (config.epic.summaryTemplate || '[Onboarding] {vendorName} — {requestName}')
+    .replace('{vendorName}', vendorName)
+    .replace('{requestName}', requestName);
+
+  try {
+    const epic = await jiraApi('POST', '/rest/api/3/issue', {
+      fields: {
+        project: { key: config.jira.projectKey },
+        issuetype: { name: config.epic.issueType || 'Epic' },
+        summary,
+        labels: [...(config.epic.labels || []), `pi-${processInstanceKey}`],
+      },
+    });
+
+    epicMap.set(processInstanceKey, { epicKey: epic.key, vendorName, requestName });
+    logEvent('outbound', null, epic.key, `Epic created for PI ${processInstanceKey}`);
+    return epic.key;
+  } catch (err) {
+    logEvent('error', null, null, `Epic creation failed: ${err.message}`);
+    return null;
+  }
+}
+
+function logEvent(direction, camundaTaskKey, jiraIssueKey, status, meta) {
+  const entry = { timestamp: new Date().toISOString(), direction, camundaTaskKey, jiraIssueKey, status, ...meta };
   eventLog.unshift(entry);
   if (eventLog.length > 200) eventLog.length = 200;
   const arrows = { outbound: '>>>', webhook: '<<<', 'sla-warning': '!! ', 'sla-breach': '!!!', 'chronic-breach': 'XXX', error: 'ERR' };
@@ -197,8 +298,12 @@ async function outboundSync() {
 
       const raci = getRaci(candidateGroup);
       const label = getLabelForGroup(candidateGroup);
-      const slaDurationMs = parseDuration(raci.sla);
+      const slaIso = getSLAForTask(candidateGroup, task.taskDefinitionId);
+      const slaDurationMs = parseDuration(slaIso);
       const now = Date.now();
+
+      // Ensure Epic exists for this process instance
+      const epicKey = await ensureEpic(task.processInstanceKey);
 
       const taskName = (task.name || task.taskDefinitionId).replace(/\n/g, ' ');
       const fields = {
@@ -211,10 +316,15 @@ async function outboundSync() {
           'camunda-synced',
           `pi-${task.processInstanceKey}`,
           PHASE_MAP[task.taskDefinitionId] || 'unknown-phase',
-          'onboarding-v8',
+          'onboarding-v18',
           ...(/approval/i.test(taskName) || /approval/i.test(task.taskDefinitionId) ? ['Approval'] : []),
         ],
       };
+
+      // Link to Epic if available
+      if (epicKey) {
+        fields.parent = { key: epicKey };
+      }
 
       const component = getComponentForGroup(candidateGroup);
       if (component) {
@@ -235,7 +345,12 @@ async function outboundSync() {
         warned: false,
         escalated: false,
       });
-      logEvent('outbound', task.id, issue.key, `Created for "${(task.name || '').replace(/\n/g, ' ')}" [SLA: ${raci.sla}]`);
+      logEvent('outbound', task.id, issue.key, `Created for "${(task.name || '').replace(/\n/g, ' ')}" [SLA: ${slaIso}]`, {
+        processInstanceKey: task.processInstanceKey,
+        taskDefinitionId: task.taskDefinitionId,
+        candidateGroup,
+        phase: PHASE_MAP[task.taskDefinitionId] || 'unknown',
+      });
     }
   } catch (err) {
     logEvent('error', null, null, `Outbound error: ${err.message}`);
@@ -249,6 +364,15 @@ async function handleJiraWebhook(payload) {
 
     const changelog = payload.changelog;
     if (!changelog || !changelog.items) return;
+
+    // Handle In Progress transition: assign Camunda task to Jira assignee
+    const inProgressChange = changelog.items.find(
+      item => item.field === 'status' && item.toString && item.toString.toLowerCase() === 'in progress'
+    );
+    if (inProgressChange) {
+      await handleInProgressTransition(payload);
+    }
+
     const statusChange = changelog.items.find(
       item => item.field === 'status' && item.toString && item.toString.toLowerCase() === 'done'
     );
@@ -307,6 +431,35 @@ async function handleJiraWebhook(payload) {
     logEvent('webhook', camundaTaskKey, issue.key, 'Completed Camunda task from Jira webhook');
   } catch (err) {
     logEvent('error', null, null, `Webhook handler error: ${err.message}`);
+  }
+}
+
+// --- In Progress Handler ---
+async function handleInProgressTransition(payload) {
+  try {
+    const issue = payload.issue;
+    if (!issue) return;
+
+    const labels = issue.fields?.labels || [];
+    if (!labels.includes('camunda-synced')) return;
+    if (labels.includes('sla-escalation')) return;
+
+    const descText = extractDescriptionText(issue.fields?.description);
+    const taskKeyMatch = descText.match(/\[camunda:taskKey:([^\]]+)\]/);
+    if (!taskKeyMatch) return;
+
+    const camundaTaskKey = taskKeyMatch[1];
+    const jiraAssignee = issue.fields?.assignee?.displayName || 'jira-user';
+
+    // Assign the Camunda task to match Jira assignee
+    await tasklistApi('PATCH', `/v1/tasks/${camundaTaskKey}/assign`, {
+      assignee: jiraAssignee,
+      allowOverrideAssignment: true,
+    });
+
+    logEvent('webhook', camundaTaskKey, issue.key, `In Progress — assigned to ${jiraAssignee}`);
+  } catch (err) {
+    logEvent('error', null, null, `In Progress handler error: ${err.message}`);
   }
 }
 
@@ -380,7 +533,7 @@ async function slaMonitor() {
                 { type: 'text', text: `\nPer REQ-NFR-006: Escalation to next governance level required.` },
               ]}],
             },
-            labels: [targetLabel, 'sla-escalation', 'camunda-synced', `pi-${piKey}`, 'onboarding-v8'],
+            labels: [targetLabel, 'sla-escalation', 'camunda-synced', `pi-${piKey}`, 'onboarding-v18'],
           },
         });
 
@@ -558,6 +711,74 @@ app.get('/api/sync-status', (req, res) => {
   }
 
   res.json({ stats, events: eventLog.slice(0, 50), slaStatus });
+});
+
+// --- Config API ---
+app.get('/api/config', (req, res) => {
+  res.json(config);
+});
+
+app.put('/api/config', (req, res) => {
+  try {
+    const newConfig = req.body;
+    fs.writeFileSync(path.join(__dirname, 'jira-sync-config.json'), JSON.stringify(newConfig, null, 2));
+    Object.assign(config, newConfig);
+    logEvent('outbound', null, null, 'Config updated via API');
+    res.json({ status: 'ok', message: 'Config saved and hot-reloaded' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/config/raci/:lane', (req, res) => {
+  const lane = req.params.lane;
+  if (!config.raci[lane]) return res.status(404).json({ error: `Lane ${lane} not found` });
+  res.json({ lane, ...config.raci[lane] });
+});
+
+app.put('/api/config/raci/:lane', (req, res) => {
+  const lane = req.params.lane;
+  config.raci[lane] = { ...config.raci[lane], ...req.body };
+  try {
+    fs.writeFileSync(path.join(__dirname, 'jira-sync-config.json'), JSON.stringify(config, null, 2));
+    res.json({ status: 'ok', lane, config: config.raci[lane] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/sla-status', (req, res) => {
+  const now = Date.now();
+  const statuses = [];
+  for (const [taskKey, entry] of syncMap) {
+    if (entry.status !== 'synced') continue;
+    const elapsed = now - entry.createdAt;
+    const total = entry.slaDeadlineMs - entry.createdAt;
+    const pct = Math.min(Math.round((elapsed / total) * 100), 999);
+    statuses.push({
+      taskKey,
+      jiraIssueKey: entry.jiraIssueKey,
+      candidateGroup: entry.candidateGroup,
+      taskDefinitionId: entry.taskDefinitionId,
+      phase: entry.phase,
+      processInstanceKey: entry.processInstanceKey,
+      pct,
+      warned: entry.warned,
+      escalated: entry.escalated,
+      remainingMin: Math.max(0, Math.round((entry.slaDeadlineMs - now) / 60000)),
+      createdAt: new Date(entry.createdAt).toISOString(),
+      deadline: new Date(entry.slaDeadlineMs).toISOString(),
+    });
+  }
+  res.json({ count: statuses.length, statuses });
+});
+
+app.get('/api/epics', (req, res) => {
+  const epics = [];
+  for (const [piKey, epic] of epicMap) {
+    epics.push({ processInstanceKey: piKey, ...epic });
+  }
+  res.json({ count: epics.length, epics });
 });
 
 app.post('/start', async (req, res) => {

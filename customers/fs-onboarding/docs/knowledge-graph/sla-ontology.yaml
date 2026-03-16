@@ -1,0 +1,186 @@
+# SLA Governance Knowledge Graph Ontology
+# Domain-specific graph schema for Neo4j
+# Extends kmflow 22-type ontology with governance nodes/relationships
+
+ontology:
+  version: "1.0.0"
+  domain: "SLA Governance — Financial Services Vendor Onboarding"
+  engine: "Neo4j 5.x"
+
+nodes:
+  ProcessInstance:
+    description: "A single run of the onboarding process"
+    properties:
+      instanceKey: { type: string, required: true, unique: true }
+      processDefinitionKey: { type: string, required: true }
+      requestName: { type: string }
+      vendorName: { type: string }
+      pathway: { type: string, enum: [Buy, Build, Enable, FastTrack] }
+      riskTier: { type: string, enum: [High, Medium, Low, Minimal] }
+      status: { type: string, enum: [ACTIVE, COMPLETED, TERMINATED, CANCELED] }
+      startedAt: { type: datetime }
+      completedAt: { type: datetime }
+      jiraEpicKey: { type: string }
+
+  TaskExecution:
+    description: "A single task execution within a process instance"
+    properties:
+      taskKey: { type: string, required: true, unique: true }
+      taskDefinitionId: { type: string, required: true }
+      taskName: { type: string }
+      candidateGroup: { type: string }
+      assignee: { type: string }
+      phase: { type: string, enum: [sp1, sp2, spVS, sp3, sp4, sp5] }
+      startTime: { type: datetime }
+      endTime: { type: datetime }
+      durationMs: { type: integer }
+      slaTarget: { type: string, description: "ISO 8601 duration" }
+      slaBreached: { type: boolean, default: false }
+      jiraIssueKey: { type: string }
+
+  SLAEvent:
+    description: "SLA monitoring events (warnings, breaches, escalations)"
+    properties:
+      eventId: { type: string, required: true, unique: true }
+      eventType: { type: string, enum: [warning, breach, chronic_breach, escalation] }
+      threshold: { type: integer, description: "Percentage elapsed (80, 100, etc.)" }
+      timestamp: { type: datetime }
+      elapsedMs: { type: integer }
+      targetMs: { type: integer }
+      jiraEscalationKey: { type: string }
+      escalationTarget: { type: string }
+
+  Lane:
+    description: "Governance swim lane (organizational unit)"
+    properties:
+      name: { type: string, required: true, unique: true }
+      candidateGroups: { type: string }
+      defenseLevel: { type: string, enum: ["1st", "2nd", "3rd"] }
+      raciRole: { type: string }
+      defaultSla: { type: string }
+
+  Regulation:
+    description: "Applicable regulation or compliance framework"
+    properties:
+      code: { type: string, required: true, unique: true }
+      fullName: { type: string }
+      jurisdiction: { type: string }
+      applicablePhases: { type: list }
+
+  ComplianceEvidence:
+    description: "Audit evidence artifact linked to a task or decision"
+    properties:
+      evidenceId: { type: string, required: true, unique: true }
+      artifactType: { type: string, enum: [assessment, approval, review, contract, test_result] }
+      regulation: { type: string }
+      hash: { type: string, description: "SHA-256 of evidence content" }
+      createdAt: { type: datetime }
+      metadata: { type: json }
+
+  DMNDecision:
+    description: "A DMN decision table execution"
+    properties:
+      decisionId: { type: string, required: true }
+      decisionName: { type: string }
+      inputVars: { type: json }
+      outputVars: { type: json }
+      executedAt: { type: datetime }
+      hitPolicy: { type: string }
+
+relationships:
+  EXECUTED_IN:
+    from: TaskExecution
+    to: ProcessInstance
+    description: "Task belongs to this process instance"
+
+  ASSIGNED_TO:
+    from: TaskExecution
+    to: Lane
+    description: "Task is assigned to this governance lane"
+    properties:
+      raciRole: { type: string, enum: [R, A, C, I] }
+
+  BREACHED_SLA:
+    from: SLAEvent
+    to: TaskExecution
+    description: "SLA event occurred for this task"
+
+  ESCALATED_TO:
+    from: SLAEvent
+    to: Lane
+    description: "Escalation was routed to this lane"
+
+  REQUIRES_COMPLIANCE:
+    from: TaskExecution
+    to: Regulation
+    description: "Task has regulatory compliance requirements"
+    properties:
+      requirement: { type: string }
+
+  EVIDENCED_BY:
+    from: TaskExecution
+    to: ComplianceEvidence
+    description: "Task produced this compliance evidence"
+
+  DECIDED_BY:
+    from: ProcessInstance
+    to: DMNDecision
+    description: "Process routing was determined by this DMN decision"
+
+  FOLLOWS:
+    from: TaskExecution
+    to: TaskExecution
+    description: "Task execution order within a process instance"
+
+  INSTANCE_OF:
+    from: ProcessInstance
+    to: ProcessInstance
+    description: "Child process instance (e.g., committee voting) of parent"
+
+indexes:
+  - label: ProcessInstance
+    property: instanceKey
+    type: unique
+  - label: TaskExecution
+    property: taskKey
+    type: unique
+  - label: TaskExecution
+    property: taskDefinitionId
+    type: non_unique
+  - label: SLAEvent
+    property: eventId
+    type: unique
+  - label: SLAEvent
+    property: eventType
+    type: non_unique
+  - label: Lane
+    property: name
+    type: unique
+
+cypher_setup: |
+  // Create Lane nodes (static — run once)
+  MERGE (l:Lane {name: 'business-lane', candidateGroups: 'business-lane', defenseLevel: '1st', raciRole: 'Business Owner', defaultSla: 'P2D'})
+  MERGE (l:Lane {name: 'governance-lane', candidateGroups: 'governance-lane', defenseLevel: '2nd', raciRole: 'Risk & Governance', defaultSla: 'P2D'})
+  MERGE (l:Lane {name: 'contracting-lane', candidateGroups: 'contracting-lane', defenseLevel: '1st/2nd', raciRole: 'Legal', defaultSla: 'P3D'})
+  MERGE (l:Lane {name: 'technical-assessment', candidateGroups: 'technical-assessment', defenseLevel: '2nd', raciRole: 'Cybersecurity', defaultSla: 'PT4H'})
+  MERGE (l:Lane {name: 'ai-review', candidateGroups: 'ai-review', defenseLevel: '2nd', raciRole: 'AI Governance', defaultSla: 'P1D'})
+  MERGE (l:Lane {name: 'compliance-lane', candidateGroups: 'compliance-lane', defenseLevel: '2nd', raciRole: 'Compliance', defaultSla: 'P1D'})
+  MERGE (l:Lane {name: 'oversight-lane', candidateGroups: 'oversight-lane', defenseLevel: '3rd', raciRole: 'Internal Audit', defaultSla: 'P5D'})
+  MERGE (l:Lane {name: 'automation-lane', candidateGroups: 'automation-lane', defenseLevel: '1st', raciRole: 'BPM Engine', defaultSla: 'PT1H'})
+  MERGE (l:Lane {name: 'vendor-response', candidateGroups: 'vendor-response', defenseLevel: 'N/A', raciRole: 'External Vendor', defaultSla: 'P5D'})
+
+  // Create Regulation nodes (static)
+  MERGE (:Regulation {code: 'OCC-2023-17', fullName: 'OCC Third-Party Risk Management', jurisdiction: 'US', applicablePhases: ['sp2', 'sp3', 'sp4']})
+  MERGE (:Regulation {code: 'SR-11-7', fullName: 'SR 11-7 Model Risk Management', jurisdiction: 'US', applicablePhases: ['sp2']})
+  MERGE (:Regulation {code: 'SOX', fullName: 'Sarbanes-Oxley Act', jurisdiction: 'US', applicablePhases: ['sp3']})
+  MERGE (:Regulation {code: 'GDPR', fullName: 'General Data Protection Regulation', jurisdiction: 'EU', applicablePhases: ['sp2']})
+  MERGE (:Regulation {code: 'EU-AI-Act', fullName: 'EU AI Act', jurisdiction: 'EU', applicablePhases: ['sp2']})
+  MERGE (:Regulation {code: 'DORA', fullName: 'Digital Operational Resilience Act', jurisdiction: 'EU', applicablePhases: ['sp4']})
+  MERGE (:Regulation {code: 'NIST-CSF-2', fullName: 'NIST Cybersecurity Framework 2.0', jurisdiction: 'US', applicablePhases: ['sp3', 'sp4']})
+
+  // Create indexes
+  CREATE CONSTRAINT IF NOT EXISTS FOR (pi:ProcessInstance) REQUIRE pi.instanceKey IS UNIQUE;
+  CREATE CONSTRAINT IF NOT EXISTS FOR (te:TaskExecution) REQUIRE te.taskKey IS UNIQUE;
+  CREATE CONSTRAINT IF NOT EXISTS FOR (se:SLAEvent) REQUIRE se.eventId IS UNIQUE;
+  CREATE CONSTRAINT IF NOT EXISTS FOR (l:Lane) REQUIRE l.name IS UNIQUE;
+  CREATE CONSTRAINT IF NOT EXISTS FOR (r:Regulation) REQUIRE r.code IS UNIQUE;

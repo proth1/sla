@@ -77,6 +77,16 @@ module.exports = {
   conditionalCount: 0,
   hasConflictingConditions: false,
 
+  // ── Phase-level SLA timer config (v18) ──────────────────────
+  slaConfig: {
+    sp1:  { reminderDuration: 'PT12H', escalationDuration: 'P1D',  deadlineDuration: 'P2D' },
+    sp2:  { reminderDuration: 'P2D',   escalationDuration: 'P3D',  deadlineDuration: 'P5D' },
+    spVS: { reminderDuration: 'P3D',   escalationDuration: 'P5D',  deadlineDuration: 'P7D' },
+    sp3:  { reminderDuration: 'P4D',   escalationDuration: 'P6D',  deadlineDuration: 'P8D' },
+    sp4:  { reminderDuration: 'P3D',   escalationDuration: 'P5D',  deadlineDuration: 'P7D' },
+    sp5:  { reminderDuration: 'P1D',   escalationDuration: 'P2D',  deadlineDuration: 'P3D' },
+  },
+
   // ── Message correlation keys ────────────────────────────────
   vendorId: 'VENDOR-E2E-001',
   vendorResponseReceived: true,
